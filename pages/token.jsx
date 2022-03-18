@@ -103,6 +103,7 @@ const paperStyle = {
 
 const Token = () => {
     const [expanded, setExpanded] = useState(false);
+    const [initialErgopadSupply, setInitialErgopadSupply] = useState('Loading...');
     const [currentErgopadSupply, setCurrentErgopadSupply] = useState('Loading...');
     const [ergopadBurned, setErgopadBurned] = useState('Loading...');
     const [ergopadInCirculation, setErgopadInCirculation] = useState('Loading...');
@@ -112,16 +113,20 @@ const Token = () => {
     };
 
     useEffect(() => {
+        const initualSupply = 400000000.0
+
         axios.get(`${process.env.API_URL}/blockchain/totalSupply/${TOKEN_ID}`)
             .then((res) => {
-                setCurrentErgopadSupply(res.data)
-                setErgopadBurned(400000000.0 - res.data)
+                setCurrentErgopadSupply((res.data).toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }))
+                setErgopadBurned((initualSupply - res.data).toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }))
             });
           
         axios.get(`${process.env.API_URL}/blockchain/ergopadInCirculation`)
             .then((res) => {
-                setErgopadInCirculation(res.data)
+                setErgopadInCirculation((res.data).toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }))
             });
+        
+        setInitialErgopadSupply(initualSupply.toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }))
     }, [])
 
     const tokenCards = [
@@ -135,21 +140,22 @@ const Token = () => {
         },
         {
             title: 'Initial Total Supply:',
-            desc: '400M'
+            desc: initialErgopadSupply
         },
         {
             title: 'Current Total Supply:',
-            desc: currentErgopadSupply.toLocaleString(navigator.language, { maximumFractionDigits: 0 })
+            desc: currentErgopadSupply
         },
         {
             title: 'Ergopad Burned:',
-            desc: ergopadBurned.toLocaleString(navigator.language, { maximumFractionDigits: 0 })
+            desc: ergopadBurned
         },
         {
             title: 'Ergopad in Circulation:',
-            desc: ergopadInCirculation.toLocaleString(navigator.language, { maximumFractionDigits: 0 })
+            desc: ergopadInCirculation
         },
     ]
+    
 
   return (
     <>

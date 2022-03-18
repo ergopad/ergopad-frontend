@@ -3,7 +3,7 @@ import createEmotionServer from '@emotion/server/create-instance';
 import createEmotionCache from '../styles/createEmotionCache';
 import React from 'react'
 
-export default class MyDocument extends Document {
+class MyDocument extends Document {
   render() {
     return (
       <Html lang="en">
@@ -34,8 +34,6 @@ export default class MyDocument extends Document {
     );
   }
 }
-
-MyDocument.displayName = 'MyDocumentNext';
 
 // `getInitialProps` belongs to `_document` (instead of `_app`),
 // it's compatible with static-site generation (SSG).
@@ -94,3 +92,4 @@ MyDocument.getInitialProps = async (ctx) => {
   };
 };
 
+export default MyDocument;
