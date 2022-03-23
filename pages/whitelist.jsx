@@ -260,7 +260,7 @@ const Whitelist = () => {
     e.preventDefault();
     setLoading(true);
 
-    const emptyCheck = formData.ergoAddress !== '';
+    const emptyCheck = formData.ergoAddress !== '' && formData.sigValue !== 0;
     const errorCheck = Object.values(formErrors).every((v) => v === false);
 
     const form = {
