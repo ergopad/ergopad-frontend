@@ -533,7 +533,7 @@ const Contribute = () => {
     <>
         <Container maxWidth="lg" sx={{ px: {xs: 2, md: 3 } }}>
 		<PageTitle 
-			title="Paideia Token Staker Round"
+			title="Paideia Staker Round"
 			subtitle="Contribute Ergo or Sigusd to the Paideia DAO to reserve your Paideia governance tokens."
 		/>
         </Container>
@@ -555,7 +555,7 @@ const Contribute = () => {
                     </Typography>
 
                     <Typography variant="p" sx={{ fontSize: '1rem', mb: 3 }}>
-                      The vesting period for this round will be [VESTING_TIME_FRAME] and emission will happen [DAILY]. You may wait for them to accumulate and claim at any time, or claim each time tokens are unlocked. 
+                      The vesting period for this round will be 12 months and emission will happen daily following the IDO. 
                     </Typography>
 				</Box>
 			</Grid>
