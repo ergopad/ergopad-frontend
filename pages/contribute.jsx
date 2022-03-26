@@ -55,7 +55,7 @@ const WHITELIST_TOKEN_ID =
 //   '03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04';
 // const PAIDEIA_TOKEN_ID = 'paideia_token_id';
 const PAIDEIA_CONVERSION_RATE = 0.001;
-const NERG_FEES = 4 * 1000 * 1000;
+const NERG_FEES = 20 * 1000 * 1000;
 
 const initialFormData = Object.freeze({
   vestingAmount: 0,
