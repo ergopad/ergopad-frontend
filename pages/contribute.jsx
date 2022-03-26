@@ -48,7 +48,7 @@ const modalStyle = {
 // todo: update constants
 const EVENT_NAME = 'staker-paideia-202203';
 const ROUND_PROXY_NFT =
-  '1a01a48318a3d747a728cb1844f30cebe4d198a62bc9a7876185880567efc5f6';
+  '0b63f674dc8b6ed346a445b1737c25ff6aab0d53b50e251d9021d73e348116e2';
 const WHITELIST_TOKEN_ID =
   '8b70d5e59232d6437a74afec8d0eca20c00abaccd2518dbccf0ecde918b8831a';
 // const SIGUSD_TOKEN_ID =
