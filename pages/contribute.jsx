@@ -644,6 +644,7 @@ const Contribute = () => {
                 </FormHelperText>
               </FormGroup>
             </FormControl>
+            It can take time to retrieve the oracle value and generate the transaction. Please be patient, and try again if you get an oracle error. Once you sign the transcation, check the explorer link and give it a few minutes to confirm on the blockchain. 
             <Button
               type="submit"
               fullWidth
