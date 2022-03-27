@@ -30,16 +30,26 @@ const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-const EVENT_NAME = 'staker-paideia-202202wl';
+// events
+const STAKER_EVENT_NAME = 'staker-seed-paideia-202203wl';
+const EVENT_NAME = 'seed-paideia-202203wl';
+
+// states
+const NOT_STARTED = 'NOT_STARTED';
+const STAKER_ONLY = 'STAKER_ONLY';
+const PUBLIC = 'PUBLIC';
+const ROUND_END = 'ROUND_END';
 
 const initialFormData = Object.freeze({
   email: '',
   ergoAddress: '',
+  sigValue: 0,
 });
 
 const initialFormErrors = Object.freeze({
   email: false,
   ergoAddress: false,
+  sigValue: false,
 });
 
 const initialCheckboxState = Object.freeze({
@@ -76,8 +86,8 @@ const Whitelist = () => {
     'Please eliminate form errors and try again'
   );
   // disable form after API endpoint reports max submissions hit
-  const [soldOut, setSoldOut] = useState(false);
-  const [timeLock, setTimeLock] = useState(true);
+  const [whitelistState, setWhitelistState] = useState(NOT_STARTED);
+  const [totalStaked, setTotalStaked] = useState(0);
   // brings wallet data from AddWallet modal component. Will load from localStorage if wallet is set
   const { wallet } = useWallet();
   // opens the modal to set wallet into localStorage
@@ -87,28 +97,46 @@ const Whitelist = () => {
     setAddWalletOpen(true);
   };
 
-  const apiCheck = () => {
-    // call new endpoint for checking
-    axios
-      .get(`${process.env.API_URL}/whitelist/info/${EVENT_NAME}`, {
-        ...defaultOptions,
-      })
-      .then((res) => {
-        // only enable button for the window
+  const apiCheck = async () => {
+    try {
+      const res = await axios.get(
+        `${process.env.API_URL}/whitelist/info/${STAKER_EVENT_NAME}`,
+        defaultOptions
+      );
+      if (res.data.isBeforeSignup) {
+        setWhitelistState(NOT_STARTED);
+      } else if (res.data.isAfterSignup || res.data.isFundingComplete) {
+        const res = await axios.get(
+          `${process.env.API_URL}/whitelist/info/${EVENT_NAME}`
+        );
         if (res.data.isBeforeSignup) {
-          setTimeLock(true);
-          setSoldOut(false);
+          setWhitelistState(NOT_STARTED);
         } else if (res.data.isAfterSignup || res.data.isFundingComplete) {
-          setTimeLock(false);
-          setSoldOut(true);
+          setWhitelistState(ROUND_END);
         } else {
-          setTimeLock(false);
-          setSoldOut(false);
+          setWhitelistState(PUBLIC);
         }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      } else {
+        setWhitelistState(STAKER_ONLY);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const getErgoPadStaked = async () => {
+    try {
+      const res = await axios.post(
+        `${process.env.API_URL}/staking/staked/`,
+        {
+          addresses: [wallet],
+        },
+        defaultOptions
+      );
+      setTotalStaked(Math.round(res.data.totalStaked * 100) / 100);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   useEffect(() => {
@@ -125,11 +153,14 @@ const Whitelist = () => {
         ...formErrors,
         ergoAddress: false,
       });
+      // get ergopad staked from address
+      getErgoPadStaked();
     } else {
       setFormErrors({
         ...formErrors,
         ergoAddress: true,
       });
+      setTotalStaked(0);
     }
   }, [wallet]);
 
@@ -168,6 +199,21 @@ const Whitelist = () => {
       }
     }
 
+    if (e.target.name == 'sigValue') {
+      const sigNumber = Number(e.target.value);
+      if (sigNumber <= 2000 && sigNumber > 0) {
+        setFormErrors({
+          ...formErrors,
+          sigValue: false,
+        });
+      } else {
+        setFormErrors({
+          ...formErrors,
+          sigValue: true,
+        });
+      }
+    }
+
     updateFormData({
       ...formData,
 
@@ -187,12 +233,15 @@ const Whitelist = () => {
   const checkboxError = [legal, risks, dao].filter((v) => v).length !== 3;
 
   useEffect(() => {
-    if (!checkboxError && !timeLock && !soldOut) {
+    if (
+      !checkboxError &&
+      (whitelistState === STAKER_ONLY || whitelistState === PUBLIC)
+    ) {
       setbuttonDisabled(false);
     } else {
       setbuttonDisabled(true);
     }
-  }, [checkboxError, timeLock, soldOut]);
+  }, [checkboxError, whitelistState]);
 
   // snackbar for error reporting
   const handleCloseError = (event, reason) => {
@@ -211,19 +260,19 @@ const Whitelist = () => {
     e.preventDefault();
     setLoading(true);
 
-    const emptyCheck = formData.ergoAddress !== '';
+    const emptyCheck = formData.ergoAddress !== '' && formData.sigValue !== 0;
     const errorCheck = Object.values(formErrors).every((v) => v === false);
 
     const form = {
       name: '__anon_ergonaut',
       email: formData.email,
-      sigValue: 0,
+      sigValue: formData.sigValue,
       ergoAddress: formData.ergoAddress,
       chatHandle: '__hardcoded_patch',
       chatPlatform: '__hardcoded_patch',
       socialHandle: '__hardcoded_patch',
       socialPlatform: '__hardcoded_patch',
-      event: EVENT_NAME,
+      event: whitelistState === STAKER_ONLY ? STAKER_EVENT_NAME : EVENT_NAME,
     };
 
     if (errorCheck && emptyCheck) {
@@ -270,12 +319,11 @@ const Whitelist = () => {
     <>
       <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
         <PageTitle
-          title="Paideia Staker Whitelist"
-          subtitle="Apply here for the Paideia staker round. $ERGOPAD stakers will get exclusive access to this sale."
+          title="Paideia Seed Round Whitelist"
+          subtitle="Apply here for the Paideia seed round. $ERGOPAD stakers will get early access to this sale."
           // main={true}
         />
       </Container>
-
       <Grid
         container
         maxWidth="lg"
@@ -359,24 +407,35 @@ const Whitelist = () => {
             Details
           </Typography>
           <Typography variant="p" sx={{ fontSize: '1rem', mb: 3 }}>
-            Sign up to have your address scanned for the ergopad staker round
-            for Paideia. The snapshot will take place March 5th at 15:00 UTC,
-            and allocation will be determined by your staking tier at that time.
+            This form is for the paideia seed round whitelist. By signing up,
+            you reserve your space to contribute up to $2k sigusd. If approved,
+            your address will be airdropped seed round tokens which represent
+            your reserved number. The amount you invest can be less than the
+            amount you reserve on this form. If your entrance is received after
+            the whitelist is full, you will be added to a waitlist. We will
+            airdrop seed round tokens periodically after the whitelist
+            contribution round expires, and at that time you&apos;ll be able to
+            contribute to lock your Paideia tokens.
           </Typography>
           <Typography variant="p" sx={{ fontSize: '1rem', mb: 3 }}>
             You may include your email address to be notified of your allocation
             and with further instructions, but it is not required.
           </Typography>
         </Grid>
-
         <Grid item md={8}>
           <Box component="form" noValidate onSubmit={handleSubmit}>
-            <Typography variant="h4" sx={{ mb: 4, fontWeight: '700' }}>
+            <Typography variant="h4" sx={{ mb: 1, fontWeight: '700' }}>
               Application Form
+            </Typography>
+            <Typography color="text.secondary" sx={{ mb: 3 }}>
+              Form opens 1 hour early for ErgoPad stakers. You must have atleast
+              1000 ErgoPad staked from the signup address to get early access.
+              You have {totalStaked} ergopad tokens staked from this address.
             </Typography>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
+                  sx={{ mt: 1 }}
                   InputProps={{ disableUnderline: true }}
                   fullWidth
                   name="email"
@@ -388,6 +447,28 @@ const Whitelist = () => {
                     formErrors.email && 'Please enter a valid email address'
                   }
                   onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Typography color="text.secondary">
+                  Enter how much in sigUSD you&apos;d like to invest. You can
+                  send Erg or SigUSD on the sale date.{' '}
+                </Typography>
+                <TextField
+                  sx={{ mt: 1 }}
+                  InputProps={{ disableUnderline: true }}
+                  required
+                  fullWidth
+                  id="sigValue"
+                  label="How much would you like to invest in SigUSD value"
+                  name="sigValue"
+                  variant="filled"
+                  helperText={
+                    formErrors.sigValue &&
+                    'Please enter between 1 and 2000 sigUSD'
+                  }
+                  onChange={handleChange}
+                  error={formErrors.sigValue}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -491,11 +572,15 @@ const Whitelist = () => {
               )}
             </Box>
             <Typography sx={{ color: theme.palette.text.secondary }}>
-              {soldOut &&
+              {whitelistState === ROUND_END &&
                 'We apologize for the inconvenience, the pre-sale round is sold out'}
             </Typography>
             <Typography sx={{ color: theme.palette.text.secondary }}>
-              {timeLock &&
+              {whitelistState === STAKER_ONLY &&
+                'You need atleast 1000 ergopad tokens staked to signup for the whitelist now.\n Come back in an hour to signup with the public round.'}
+            </Typography>
+            <Typography sx={{ color: theme.palette.text.secondary }}>
+              {whitelistState === NOT_STARTED &&
                 'This form is not yet active. Please check back later.'}
             </Typography>
             <Snackbar

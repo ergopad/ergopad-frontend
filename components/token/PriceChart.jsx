@@ -110,7 +110,7 @@ const PriceChart = () => {
   return (
     <>
       <Typography variant="h4">
-        1 Ergopad = {lastPrice}
+        1 ErgoPad = {lastPrice}
         {pairBaseCurrencyMapper[pair]}
       </Typography>
       <Grid>

@@ -94,6 +94,7 @@ const paperStyle = {
 const Dashboard = () => {
   const { wallet, dAppWallet } = useWallet();
   const [vestedTokens, setVestedTokens] = useState([]);
+  const [vestedTokensNFT, setVestedTokensNFT] = useState({});
   const [stakedTokens, setStakedTokens] = useState(initStakedData);
   const [holdingData, setHoldingData] = useState(defaultHoldingData);
   const [holdingDataAggregated, setHoldingDataAggregated] =
@@ -132,6 +133,7 @@ const Dashboard = () => {
     setHistoryData(initHistoryData);
     setStakedTokens(initStakedData);
     setVestedTokens([]);
+    setVestedTokensNFT({});
   };
 
   useEffect(() => {
@@ -252,7 +254,7 @@ const Dashboard = () => {
 
         try {
           const res = await axios.get(
-            `${process.env.API_URL}/asset/price/history/all?stepSize=${STEP_SIZE}&stepUnit=${STEP_UNIT}&limit=6`,
+            `${process.env.API_URL}/asset/price/history/all?stepSize=${STEP_SIZE}&stepUnit=${STEP_UNIT}&limit=12`,
             { ...defaultOptions }
           );
           const priceHistory = res.data;
@@ -305,6 +307,13 @@ const Dashboard = () => {
         .map((res) => (res?.data?.status === 'success' ? res.data.vested : []))
         .filter((vested) => vested.length);
       setVestedTokens(reduceVested(vested));
+
+      const vestedTokensNFTResponse = await axios.post(
+        `${process.env.API_URL}/vesting/vestedWithNFT/`,
+        { addresses: [...addresses] },
+        { ...defaultOptions }
+      );
+      setVestedTokensNFT(vestedTokensNFTResponse.data);
       setLoadingVestingTable(false);
     };
 
@@ -357,7 +366,7 @@ const Dashboard = () => {
           if (ergopadValueOpt.length) {
             const ergopadValue =
               ergopadValueOpt[0].totalVested * priceData.ergopad;
-            holdingState.push({ x: 'ergopad (vested)', y: ergopadValue });
+            holdingState.push({ x: 'ergopad (vesting)', y: ergopadValue });
           }
           const ergopadHistoryOpt = priceHistoryData.filter(
             (token) => token.token === 'ergopad'
@@ -369,7 +378,7 @@ const Dashboard = () => {
                 value: pt.price * ergopadValueOpt[0].totalVested,
               };
             });
-            historyState.push({ token: 'ergopad (vested)', history: history });
+            historyState.push({ token: 'ergopad (vesting)', history: history });
           }
         } catch (e) {
           console.log(e);
@@ -516,7 +525,10 @@ const Dashboard = () => {
               {loadingVestingTable ? (
                 <CircularProgress color="inherit" />
               ) : (
-                <VestingTable vestedObject={vestedTokens} />
+                <VestingTable
+                  vestedObject={vestedTokens}
+                  vestedTokensWithNFT={vestedTokensNFT}
+                />
               )}
             </Paper>
           </Grid>

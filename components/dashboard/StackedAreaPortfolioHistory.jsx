@@ -82,6 +82,7 @@ const StackedAreaPortfolioHistory = (props) => {
         }}
       />
       <VictoryAxis
+        fixLabelOverlap
         crossAxis
         invertAxis
         tickFormat={(timestamp) => {
