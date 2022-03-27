@@ -357,7 +357,7 @@ const Dashboard = () => {
           if (ergopadValueOpt.length) {
             const ergopadValue =
               ergopadValueOpt[0].totalVested * priceData.ergopad;
-            holdingState.push({ x: 'ergopad (vested)', y: ergopadValue });
+            holdingState.push({ x: 'ergopad (vesting)', y: ergopadValue });
           }
           const ergopadHistoryOpt = priceHistoryData.filter(
             (token) => token.token === 'ergopad'
@@ -369,7 +369,7 @@ const Dashboard = () => {
                 value: pt.price * ergopadValueOpt[0].totalVested,
               };
             });
-            historyState.push({ token: 'ergopad (vested)', history: history });
+            historyState.push({ token: 'ergopad (vesting)', history: history });
           }
         } catch (e) {
           console.log(e);

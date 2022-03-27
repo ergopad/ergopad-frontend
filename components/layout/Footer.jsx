@@ -152,17 +152,17 @@ const Footer = () => {
 				<Grid item xs={6} md={2}>
 					<Typography variant='inherit' sx={titleStyles}>DAPP</Typography>
 					<List>
-						<ListItem disableGutters sx={listItemStyles}>
+						{/* <ListItem disableGutters sx={listItemStyles}>
 							<Link activeClassName='active' href='/whitelist' sx={linkStyles}>
 								Paideia Whitelist Sign-up
 							</Link>
-						</ListItem>
-						{/* <ListItem disableGutters sx={listItemStyles}>
-							<Link activeClassName='active' href='/purchase' sx={linkStyles}>
-								Purchase
-							</Link>
 						</ListItem> */}
 						<ListItem disableGutters sx={listItemStyles}>
+							<Link activeClassName='active' href='/contribute' sx={linkStyles}>
+								Paideia Contribution
+							</Link>
+						</ListItem>
+						{/* <ListItem disableGutters sx={listItemStyles}>
 							<Link activeClassName='active' href='/exchange' sx={linkStyles}>
 								Exchange
 							</Link>
@@ -171,7 +171,7 @@ const Footer = () => {
 							<Link activeClassName='active' href='/refund' sx={linkStyles}>
 								Refund
 							</Link>
-						</ListItem>
+						</ListItem> */}
 					</List>
 				</Grid>
 			</Grid>
