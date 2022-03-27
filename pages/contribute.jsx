@@ -457,6 +457,12 @@ const Contribute = () => {
             </Typography>
             <Grid container spacing={2}>
               <Grid item xs={12}>
+                <Typography variant="p" sx={{ fontSize: '1rem', mb: '1rem' }}>
+                  <Typography variant="span" sx={{ fontWeight: 'bold' }}>
+                    YOROI IS NOT SUPPORTED. {' '}
+                  </Typography>
+                   You <Typography variant="span" sx={{ fontWeight: 'bold' }}>MUST</Typography> use Nautilus v0.2.2 or SAFEW. Please see <MuiNextLink href="https://ergopad.medium.com/paideia-contribution-instructions-8e897d64cfed" target="_blank">this post</MuiNextLink> for more information. 
+                </Typography>
                 <Typography variant="p" sx={{ fontSize: '1rem', mb: 1 }}>
                   Your wallet currently has {walletBalance.whitelist} whitelist
                   tokens. Reconnect your wallet with the dapp connector to hard
@@ -543,7 +549,7 @@ const Contribute = () => {
                 </Grid>
               </Grid>
               <Grid item xs={12}>
-                <Typography variant="p" sx={{ fontSize: '1rem', mb: 0 }}>
+                <Typography variant="p" sx={{ fontSize: '1rem', mb: '1rem' }}>
                   You are receiving {formData.vestingAmount} Paideia tokens at $
                   {PAIDEIA_CONVERSION_RATE} per token. Your total contribution
                   value is $
@@ -553,9 +559,7 @@ const Contribute = () => {
                   .
                 </Typography>
                 <Typography variant="p" sx={{ fontSize: '1rem', mb: 0 }}>
-                  You can decide to contribute the entire sum in ergo or with
-                  sigUSD. If you wish to contribute ergo, it will be taken at an
-                  exchange of ~${conversionRate} sigUSD per ergo.
+                  You may contribute the entire sum in ergo or sigUSD. If you wish to contribute ergo, it will be taken at an exchange of ~${conversionRate} sigUSD per ergo.
                 </Typography>
               </Grid>
               <Grid item md={12}>
@@ -644,7 +648,12 @@ const Contribute = () => {
                 </FormHelperText>
               </FormGroup>
             </FormControl>
-            It can take time to retrieve the oracle value and generate the transaction. Please be patient, and try again if you get an oracle error. Once you sign the transcation, check the explorer link and give it a few minutes to confirm on the blockchain. 
+            <Typography variant="p" sx={{ fontSize: '1rem', mb: '1rem' }}>
+              It can take time to retrieve the oracle value and generate the transaction. Please be patient, and try again if you get an oracle error. Once you sign the transcation, check the explorer link and give it a few minutes to confirm on the blockchain. 
+            </Typography>
+            <Typography variant="p" sx={{ fontWeight: 'bold', mb: 0 }}>
+                    YOROI IS NOT SUPPORTED. 
+            </Typography>
             <Button
               type="submit"
               fullWidth
