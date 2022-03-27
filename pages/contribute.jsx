@@ -48,9 +48,9 @@ const modalStyle = {
 // todo: update constants
 const EVENT_NAME = 'staker-paideia-202203';
 const ROUND_PROXY_NFT =
-  '0b63f674dc8b6ed346a445b1737c25ff6aab0d53b50e251d9021d73e348116e2';
+  'e172d5737145a0a7fdf551d122dec848207b2fd5e02df52d475e5dd45ec2aa80';
 const WHITELIST_TOKEN_ID =
-  '8b70d5e59232d6437a74afec8d0eca20c00abaccd2518dbccf0ecde918b8831a';
+  '87fb172d186d260f1855eb627fc7a70beb9bafdcadfd5c1ff392f094442cf35e';
 // const SIGUSD_TOKEN_ID =
 //   '03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04';
 // const PAIDEIA_TOKEN_ID = 'paideia_token_id';
@@ -159,7 +159,7 @@ const Contribute = () => {
       if (res.data.isBeforeSignup) {
         setFormState(formOpenState.EARLY);
       } else if (res.data.isAfterSignup) {
-        setFormState(formOpenState.OPEN); // change to CLOSED
+        setFormState(formOpenState.CLOSED); // change to CLOSED
       } else {
         setFormState(formOpenState.OPEN);
       }
