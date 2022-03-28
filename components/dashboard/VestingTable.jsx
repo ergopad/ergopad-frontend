@@ -47,8 +47,8 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
     );
   }
 
-  const redeem = (boxId) => {
-    setRedeemModal(boxId);
+  const redeem = (box) => {
+    setRedeemModal(box);
   };
 
   return (
@@ -196,7 +196,7 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                       {box['Next unlock']}
                     </TableCell>
                     <TableCell sx={{ color: theme.palette.text.secondary }}>
-                      <Button onClick={() => redeem(box.boxId)}>Redeem</Button>
+                      <Button onClick={() => redeem(box)}>Redeem</Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -257,7 +257,7 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                         p: 1,
                       }}
                     >
-                      <Button onClick={() => redeem(box.boxId)}>Redeem</Button>
+                      <Button onClick={() => redeem(box)}>Redeem</Button>
                     </TableCell>
                   </TableRow>
                 </>
@@ -267,7 +267,7 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
         </Box>
       ))}
       <TokenRedeemModal
-        boxId={redeemModal}
+        box={redeemModal}
         onClose={() => setRedeemModal(null)}
       />
     </>

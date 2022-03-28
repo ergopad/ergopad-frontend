@@ -21,11 +21,11 @@ import {
 } from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
 import { useWallet } from 'utils/WalletContext';
 import { useAddWallet } from 'utils/AddWalletContext';
 import MuiNextLink from '@components/MuiNextLink';
 import PageTitle from '@components/PageTitle';
+import TransactionSubmitted from '@components/TransactionSubmitted';
 import theme from '@styles/theme';
 import axios from 'axios';
 
@@ -91,12 +91,6 @@ const transactionModalState = Object.freeze({
   USER_PENDING: 'USER_PENDING',
   CLOSED: 'CLOSED',
 });
-
-const friendlyTransactionId = (addr, tot = 15) => {
-  if (addr === undefined || addr.slice === undefined) return '';
-  if (addr.length < 30) return addr;
-  return addr.slice(0, tot) + '...' + addr.slice(-tot);
-};
 
 const defaultOptions = {
   headers: {
@@ -459,9 +453,20 @@ const Contribute = () => {
               <Grid item xs={12}>
                 <Typography variant="p" sx={{ fontSize: '1rem', mb: '1rem' }}>
                   <Typography variant="span" sx={{ fontWeight: 'bold' }}>
-                    YOROI IS NOT SUPPORTED. {' '}
+                    YOROI IS NOT SUPPORTED.{' '}
                   </Typography>
-                   You <Typography variant="span" sx={{ fontWeight: 'bold' }}>MUST</Typography> use Nautilus v0.2.2 or SAFEW. Please see <MuiNextLink href="https://ergopad.medium.com/paideia-contribution-instructions-8e897d64cfed" target="_blank">this post</MuiNextLink> for more information. 
+                  You{' '}
+                  <Typography variant="span" sx={{ fontWeight: 'bold' }}>
+                    MUST
+                  </Typography>{' '}
+                  use Nautilus v0.2.2 or SAFEW. Please see{' '}
+                  <MuiNextLink
+                    href="https://ergopad.medium.com/paideia-contribution-instructions-8e897d64cfed"
+                    target="_blank"
+                  >
+                    this post
+                  </MuiNextLink>{' '}
+                  for more information.
                 </Typography>
                 <Typography variant="p" sx={{ fontSize: '1rem', mb: 1 }}>
                   Your wallet currently has {walletBalance.whitelist} whitelist
@@ -559,7 +564,9 @@ const Contribute = () => {
                   .
                 </Typography>
                 <Typography variant="p" sx={{ fontSize: '1rem', mb: 0 }}>
-                  You may contribute the entire sum in ergo or sigUSD. If you wish to contribute ergo, it will be taken at an exchange of ~${conversionRate} sigUSD per ergo.
+                  You may contribute the entire sum in ergo or sigUSD. If you
+                  wish to contribute ergo, it will be taken at an exchange of ~$
+                  {conversionRate} sigUSD per ergo.
                 </Typography>
               </Grid>
               <Grid item md={12}>
@@ -643,16 +650,19 @@ const Contribute = () => {
                   label="I understand that the funds raised by this project will be controlled by the Paideia DAO, which has members throughout the world, and my tokens will represent my membership in this DAO. I am aware that this DAO does not fall within the jurisdiction of any one country, and accept the implications therein."
                   sx={{ color: theme.palette.text.secondary, mb: 3 }}
                 />
-                <FormHelperText>
+                <FormHelperText sx={{ mt: 0, mb: 3 }}>
                   {checkboxError && 'Please accept the terms before submitting'}
                 </FormHelperText>
               </FormGroup>
             </FormControl>
             <Typography variant="p" sx={{ fontSize: '1rem', mb: '1rem' }}>
-              It can take time to retrieve the oracle value and generate the transaction. Please be patient, and try again if you get an oracle error. Once you sign the transcation, check the explorer link and give it a few minutes to confirm on the blockchain. 
+              It can take time to retrieve the oracle value and generate the
+              transaction. Please be patient, and try again if you get an oracle
+              error. Once you sign the transcation, check the explorer link and
+              give it a few minutes to confirm on the blockchain.
             </Typography>
             <Typography variant="p" sx={{ fontWeight: 'bold', mb: 0 }}>
-                    YOROI IS NOT SUPPORTED. 
+              YOROI IS NOT SUPPORTED.
             </Typography>
             <Button
               type="submit"
@@ -698,48 +708,10 @@ const Contribute = () => {
           <Typography id="modal-title" variant="h6" component="h2">
             Contribution
           </Typography>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              mb: 3,
-              mt: 3,
-            }}
-          >
-            <Box
-              sx={{
-                textAlign: 'center',
-                maxWidth: '768px',
-              }}
-            >
-              {openModal === transactionModalState.USER_PENDING ? (
-                <>
-                  <CircularProgress sx={{ mt: 3, mb: 3 }} />
-                  <Typography variant="h4">
-                    Awaiting User Confirmation
-                  </Typography>
-                </>
-              ) : (
-                <>
-                  <CheckCircleOutlineIcon sx={{ fontSize: '8rem' }} />
-                  <Typography variant="h4">Transaction Submitted</Typography>
-                  <Typography variant="subtitle1">
-                    Transaction ID:{' '}
-                    <MuiNextLink
-                      href={
-                        'https://explorer.ergoplatform.com/en/transactions/' +
-                        transactionId
-                      }
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      {friendlyTransactionId(transactionId)}
-                    </MuiNextLink>
-                  </Typography>
-                </>
-              )}
-            </Box>
-          </Box>
+          <TransactionSubmitted
+            transactionId={transactionId}
+            pending={openModal === transactionModalState.USER_PENDING}
+          />
         </Box>
       </Modal>
       <Snackbar
