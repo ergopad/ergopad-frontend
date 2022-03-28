@@ -494,7 +494,8 @@ const Dashboard = () => {
                     Tokens Locked in Vesting Contracts
                   </Typography>
                 </Grid>
-                {vestedTokens.length > 0 && (
+                {vestedTokens.length + Object.keys(vestedTokensNFT).length >
+                  0 && (
                   <Grid
                     container
                     xs={12}

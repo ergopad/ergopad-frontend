@@ -1,4 +1,27 @@
-import { Box, Modal, Typography, useMediaQuery } from '@mui/material';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  FilledInput,
+  FormControl,
+  FormHelperText,
+  Grid,
+  InputLabel,
+  Modal,
+  Snackbar,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
+
+import axios from 'axios';
+import { useEffect, useState, forwardRef } from 'react';
+import { useWallet } from 'utils/WalletContext';
+import TransactionSubmitted from '../TransactionSubmitted';
+
+const Alert = forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const modalStyle = {
   position: 'absolute',
@@ -12,13 +35,120 @@ const modalStyle = {
   p: 4,
 };
 
-const TokenRedeemModal = ({ boxId, onClose }) => {
+const NERG_FEES = 20 * 1000 * 1000;
+
+const initFormData = Object.freeze({
+  address: '',
+});
+
+const initFormErrors = Object.freeze({
+  address: false,
+});
+
+const defaultOptions = {
+  headers: {
+    'Content-Type': 'application/json',
+  },
+};
+
+const TokenRedeemModal = ({ box, onClose }) => {
   const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
+  // wallet
+  const { wallet, dAppWallet } = useWallet();
+  // form
+  const [formErrors, setFormErrors] = useState(initFormErrors);
+  const [formData, setFormData] = useState(initFormData);
+  // loading
+  const [loading, setLoading] = useState(false);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+  // open error snackbar
+  const [openError, setOpenError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(
+    'Please eliminate form errors and Try Again'
+  );
+  // transaction submitted
+  const [transactionSubmitted, setTransactionSubmitted] = useState(null);
+
+  useEffect(() => {
+    setFormData({ address: wallet });
+    if (wallet !== '' && dAppWallet.connected) {
+      setFormErrors({ address: false });
+    } else {
+      setFormErrors({ address: true });
+    }
+  }, [wallet, dAppWallet.connected]);
+
+  useEffect(() => {
+    setButtonDisabled(loading);
+  }, [loading]);
+
+  // snackbar for error reporting
+  const handleCloseError = (e, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenError(false);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    const emptyCheck = Object.values(formData).every(
+      (v) => v !== '' && v !== 0
+    );
+    const errorCheck = Object.values(formErrors).every((v) => v === false);
+    if (emptyCheck && errorCheck) {
+      try {
+        const nergs = NERG_FEES;
+        // prettier-ignore
+        const fees = await ergo.get_utxos(nergs.toString()); // eslint-disable-line
+        // prettier-ignore
+        const nft = await ergo.get_utxos('1', box["Vesting Key Id"]); // eslint-disable-line
+        const utxos = Array.from(
+          new Set([...fees, ...nft].map((x) => x.boxId))
+        );
+        const res = await axios.post(
+          `${process.env.API_URL}/vesting/redeemWithNFT`,
+          {
+            boxId: box.boxId,
+            address: formData.address,
+            utxos: [...utxos],
+          },
+          defaultOptions
+        );
+        const unsignedtx = res.data;
+        const signedtx = await ergo.sign_tx(unsignedtx); // eslint-disable-line
+        const ok = await ergo.submit_tx(signedtx); // eslint-disable-line
+        setTransactionSubmitted(ok);
+      } catch (e) {
+        // snackbar for error message
+        if (e.response) {
+          setErrorMessage(
+            'Error: ' + e.response.status + ' - ' + e.response.data
+          );
+        } else {
+          console.log(e);
+          setErrorMessage('Failed to sign transaction');
+        }
+        setOpenError(true);
+      }
+    } else {
+      setFormErrors({ address: true });
+      // // snackbar for error message
+      setErrorMessage('Please eliminate form errors and try again');
+      setOpenError(true);
+    }
+    setLoading(false);
+  };
+
   return (
     <>
       <Modal
-        open={boxId !== null}
-        onClose={onClose}
+        open={box !== null}
+        onClose={() => {
+          setTransactionSubmitted(null);
+          onClose();
+        }}
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
       >
@@ -26,11 +156,88 @@ const TokenRedeemModal = ({ boxId, onClose }) => {
           <Typography id="modal-modal-title" variant="h6" component="h2">
             Redeem
           </Typography>
-          <Typography color="text.secondary">
-            You will be able to claim your vested tokens here.
-          </Typography>
+          {box !== null ? (
+            <>
+              {transactionSubmitted ? (
+                <TransactionSubmitted transactionId={transactionSubmitted} />
+              ) : (
+                <Box component="form" noValidate onSubmit={handleSubmit}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <FormControl
+                        variant="filled"
+                        fullWidth
+                        required
+                        name="address"
+                        error={formErrors.address}
+                      >
+                        <InputLabel
+                          htmlFor="ergoAddress"
+                          sx={{ '&.Mui-focused': { color: 'text.secondary' } }}
+                        >
+                          Ergo Wallet Address
+                        </InputLabel>
+                        <FilledInput
+                          id="address"
+                          value={formData.address}
+                          disabled
+                          disableUnderline={true}
+                          name="address"
+                          type="ergoAddress"
+                          sx={{
+                            width: '100%',
+                            border: '1px solid rgba(82,82,90,1)',
+                            borderRadius: '4px',
+                          }}
+                        />
+                        <FormHelperText>
+                          {formErrors.address &&
+                            'Please use the dapp connector to add a wallet address.'}
+                        </FormHelperText>
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Typography variant="p" sx={{ fontSize: '1rem', mb: 0 }}>
+                        You can now redeem <b>{box ? box['Redeemable'] : 0} </b>
+                        tokens.
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                  <Button
+                    type="submit"
+                    disabled={buttonDisabled}
+                    variant="contained"
+                    sx={{ mt: 3, color: '#fff' }}
+                  >
+                    Claim tokens
+                    {loading && (
+                      <CircularProgress
+                        sx={{ ml: 2, color: 'white' }}
+                        size={'1.2rem'}
+                      />
+                    )}
+                  </Button>
+                </Box>
+              )}
+            </>
+          ) : (
+            <></>
+          )}
         </Box>
       </Modal>
+      <Snackbar
+        open={openError}
+        autoHideDuration={4500}
+        onClose={handleCloseError}
+      >
+        <Alert
+          onClose={handleCloseError}
+          severity="error"
+          sx={{ width: '100%' }}
+        >
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
