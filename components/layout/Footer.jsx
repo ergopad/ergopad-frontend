@@ -163,7 +163,9 @@ const Footer = () => {
 							</Link>
 						</ListItem>
 						<ListItem disableGutters sx={listItemStyles}>
-							<Link activeClassName='active' href='/contribute/paideia_seed_round' sx={linkStyles}>
+
+							<Link activeClassName='active' href='/contribute/paideia/seed' sx={linkStyles}>
+
 								Paideia Seed Contribution
 							</Link>
 						</ListItem>
