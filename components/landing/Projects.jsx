@@ -132,7 +132,7 @@ const Projects = () => {
               },
             }}
           >
-            More projects
+            More Projects
           </Button>
         </Box>
       </Box>

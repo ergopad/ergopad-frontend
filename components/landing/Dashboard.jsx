@@ -80,7 +80,7 @@ const Dashboard = () => {
               },
             }}
           >
-            Explore dashboard
+            Explore Dashboard
           </Button>
         </Grid>
       </Grid>

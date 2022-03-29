@@ -225,6 +225,7 @@ const PriceChart = () => {
                 fontSize: '1rem',
                 py: '0.6rem',
                 px: '1.6rem',
+                textTransform: 'none',
                 backgroundColor: theme.palette.tertiary.main,
                 '&:hover': {
                   backgroundColor: theme.palette.tertiary.hover,
