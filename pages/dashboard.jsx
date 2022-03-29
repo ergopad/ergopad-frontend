@@ -94,6 +94,7 @@ const paperStyle = {
 const Dashboard = () => {
   const { wallet, dAppWallet } = useWallet();
   const [vestedTokens, setVestedTokens] = useState([]);
+  const [vestedTokensNFT, setVestedTokensNFT] = useState({});
   const [stakedTokens, setStakedTokens] = useState(initStakedData);
   const [holdingData, setHoldingData] = useState(defaultHoldingData);
   const [holdingDataAggregated, setHoldingDataAggregated] =
@@ -132,6 +133,7 @@ const Dashboard = () => {
     setHistoryData(initHistoryData);
     setStakedTokens(initStakedData);
     setVestedTokens([]);
+    setVestedTokensNFT({});
   };
 
   useEffect(() => {
@@ -305,6 +307,13 @@ const Dashboard = () => {
         .map((res) => (res?.data?.status === 'success' ? res.data.vested : []))
         .filter((vested) => vested.length);
       setVestedTokens(reduceVested(vested));
+
+      const vestedTokensNFTResponse = await axios.post(
+        `${process.env.API_URL}/vesting/vestedWithNFT/`,
+        { addresses: [...addresses] },
+        { ...defaultOptions }
+      );
+      setVestedTokensNFT(vestedTokensNFTResponse.data);
       setLoadingVestingTable(false);
     };
 
@@ -485,7 +494,8 @@ const Dashboard = () => {
                     Tokens Locked in Vesting Contracts
                   </Typography>
                 </Grid>
-                {vestedTokens.length > 0 && (
+                {vestedTokens.length + Object.keys(vestedTokensNFT).length >
+                  0 && (
                   <Grid
                     container
                     xs={12}
@@ -516,7 +526,10 @@ const Dashboard = () => {
               {loadingVestingTable ? (
                 <CircularProgress color="inherit" />
               ) : (
-                <VestingTable vestedObject={vestedTokens} />
+                <VestingTable
+                  vestedObject={vestedTokens}
+                  vestedTokensWithNFT={vestedTokensNFT}
+                />
               )}
             </Paper>
           </Grid>

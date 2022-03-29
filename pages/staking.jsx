@@ -229,7 +229,7 @@ const Staking = () => {
       // prettier-ignore
       const tokens = await ergo.get_utxos(tokenAmount.toString(), STAKE_TOKEN_ID); // eslint-disable-line
       // prettier-ignore
-      const fees = await ergo.get_utxos('30000000'); // eslint-disable-line
+      const fees = await ergo.get_utxos('280000000'); // eslint-disable-line
       const utxos = Array.from(
         new Set([...fees, ...tokens].map((x) => x.boxId))
       );
