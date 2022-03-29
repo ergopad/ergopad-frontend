@@ -92,6 +92,10 @@ const transactionModalState = Object.freeze({
   CLOSED: 'CLOSED',
 });
 
+const initialRoundDetails = Object.freeze({
+  remaining: 0,
+});
+
 const defaultOptions = {
   headers: {
     'Content-Type': 'application/json',
@@ -113,7 +117,7 @@ const ContributeSeedRound = () => {
   const [formErrors, setFormErrors] = useState(initialFormErrors);
   const [formData, updateFormData] = useState(initialFormData);
   const [walletBalance, setWalletBalance] = useState(initialWalletBalance);
-  const [roundDetails, setRoundDetails] = useState({ remaining: 0 });
+  const [roundDetails, setRoundDetails] = useState(initialRoundDetails);
   // open error snackbar
   const [openError, setOpenError] = useState(false);
   const [errorMessage, setErrorMessage] = useState(
@@ -172,7 +176,7 @@ const ContributeSeedRound = () => {
       const round = res.data.activeRounds.filter(
         (round) => round.proxyNFT === ROUND_PROXY_NFT
       )[0];
-      setRoundDetails(round);
+      setRoundDetails(round ? round : initialRoundDetails);
     } catch (e) {
       console.log(e);
     }
