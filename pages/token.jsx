@@ -107,26 +107,32 @@ const Token = () => {
     const [currentErgopadSupply, setCurrentErgopadSupply] = useState('Loading...');
     const [ergopadBurned, setErgopadBurned] = useState('Loading...');
     const [ergopadInCirculation, setErgopadInCirculation] = useState('Loading...');
+    const [marketCap, setMarketCap] = useState('Loading...');
 
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
     };
 
     useEffect(() => {
-        const initualSupply = 400000000.0
+        const initialSupply = 400000000.0
 
         axios.get(`${process.env.API_URL}/blockchain/totalSupply/${TOKEN_ID}`)
             .then((res) => {
                 setCurrentErgopadSupply((res.data).toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }))
-                setErgopadBurned((initualSupply - res.data).toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }))
+                setErgopadBurned((initialSupply - res.data).toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }))
             });
           
         axios.get(`${process.env.API_URL}/blockchain/ergopadInCirculation`)
             .then((res) => {
                 setErgopadInCirculation((res.data).toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }))
+                let ergInCirc = res.data
+                axios.get(`${process.env.API_URL}/asset/price/ergopad`)
+                .then((res) => {
+                    setMarketCap('$' + (res.data.price * ergInCirc).toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }))
+                });
             });
-        
-        setInitialErgopadSupply(initualSupply.toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }))
+
+        setInitialErgopadSupply(initialSupply.toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }))
     }, [])
 
     const tokenCards = [
@@ -135,8 +141,8 @@ const Token = () => {
             desc: 'ErgoPad'
         },
         {
-            title: 'Blockchain:',
-            desc: 'Ergo'
+            title: 'Market Cap:',
+            desc: marketCap
         },
         {
             title: 'Initial Total Supply:',
