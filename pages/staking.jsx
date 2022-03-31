@@ -29,7 +29,8 @@ import StakingRewardsBox from '@components/staking/StakingRewardsBox';
 import StakingTiers from '@components/staking/StakingTiers';
 import UnstakingFeesTable from '@components/staking/UnstakingFeesTable';
 import UnstakingTable from '@components/staking/UnstakingTable';
-import TransactionSubmitted from '@components/staking/TransactionSubmitted';
+import TransactionSubmitted from '@components/TransactionSubmitted';
+import ErgopayModalBody from '@components/ErgopayModalBody';
 import MuiNextLink from '@components/MuiNextLink';
 import theme from '@styles/theme';
 import { useWallet } from 'utils/WalletContext';
@@ -133,12 +134,14 @@ const Staking = () => {
     initStakingFormErrors
   );
   const [stakeLoading, setStakeLoading] = useState(false);
+  const [stakeErgopayLoading, setStakeErgopayLoading] = useState(false);
   // unstake table
   const [unstakeTableLoading, setUnstakeTableLoading] = useState(false);
   const [stakedData, setStakedData] = useState(initStaked);
   // unstake modal
   const [openUnstakeModal, setOpenUnstakeModal] = useState(false);
   const [unstakeModalLoading, setUnstakeModalLoading] = useState(false);
+  const [unstakeErgopayLoading, setUnstakeErgopayLoading] = useState(false);
   const [unstakeModalData, setUnstakeModalData] = useState(initUnstaked);
   const [unstakingForm, setUnstakingForm] = useState(initUnstakingForm);
   const [unstakingFormErrors, setUnstakingFormErrors] = useState(
@@ -156,6 +159,8 @@ const Staking = () => {
   const stakeButtonEnabled = checkBox && true; // use other conditions to enable this
   // transaction submitted
   const [transactionSubmitted, setTransactionSubmitted] = useState(null);
+  const [ergopayUrl, setErgopayUrl] = useState(null);
+  // tabs
   const [tabValue, setTabValue] = useState(0);
 
   const handleTabChange = (event, newValue) => {
@@ -184,24 +189,23 @@ const Staking = () => {
 
     if (wallet !== '') {
       getStaked();
+    } else {
+      setStakedData(initStaked);
     }
-  }, [wallet, dAppWallet.connected]);
+  }, [wallet]);
 
   useEffect(() => {
     // reset staking Form on wallet change
     setStakingForm({ ...initStakingForm, wallet: wallet });
-  }, [wallet]);
-
-  useEffect(() => {
     setStakingFormErrors({
       ...initStakingFormErrors,
-      wallet: !dAppWallet.connected,
+      wallet: wallet === '',
     });
     setUnstakingFormErrors({
       ...initUnstakingFormErrors,
-      wallet: !dAppWallet.connected,
+      wallet: wallet === '',
     });
-  }, [dAppWallet.connected]);
+  }, [wallet]);
 
   useEffect(() => {
     // get ergopad balance
@@ -210,6 +214,19 @@ const Staking = () => {
         if (dAppWallet.connected) {
           const balance = await ergo.get_balance(STAKE_TOKEN_ID); // eslint-disable-line
           setTokenBalance(balance / 100);
+        } else if (wallet !== '') {
+          const res = await axios.get(
+            `${process.env.API_URL}/asset/balance/${wallet}`,
+            { ...defaultOptions }
+          );
+          const token = res.data.balance.ERG.tokens.filter(
+            (token) => token.tokenId === STAKE_TOKEN_ID
+          )[0];
+          if (token) {
+            setTokenBalance(token.amount / 100);
+          }
+        } else {
+          setTokenBalance(0);
         }
       } catch (e) {
         console.log('ERROR: ', e);
@@ -219,104 +236,275 @@ const Staking = () => {
     if (openModal) {
       getTokenBalance();
     }
-  }, [dAppWallet.connected, openModal]);
+  }, [dAppWallet.connected, openModal, wallet]);
 
   const stake = async (e) => {
     e.preventDefault();
     setStakeLoading(true);
-    try {
-      const tokenAmount = Math.round(stakingForm.tokenAmount * 100);
-      // prettier-ignore
-      const tokens = await ergo.get_utxos(tokenAmount.toString(), STAKE_TOKEN_ID); // eslint-disable-line
-      // prettier-ignore
-      const fees = await ergo.get_utxos('280000000'); // eslint-disable-line
-      const utxos = Array.from(
-        new Set([...fees, ...tokens].map((x) => x.boxId))
-      );
-      const request = {
-        wallet: stakingForm.wallet,
-        amount: tokenAmount / 100,
-        utxos: utxos,
-        txFormat: 'eip-12',
-      };
-      const res = await axios.post(
-        `${process.env.API_URL}/staking/stake/`,
-        request,
-        { ...defaultOptions }
-      );
-      const unsignedtx = res.data;
-      const signedtx = await ergo.sign_tx(unsignedtx); // eslint-disable-line
-      const ok = await ergo.submit_tx(signedtx); // eslint-disable-line
-      setSuccessMessageSnackbar('Transaction Submitted: ' + ok);
-      setTransactionSubmitted(ok);
-      setOpenSuccessSnackbar(true);
-    } catch (e) {
-      if (e.response) {
-        setErrorMessage(
-          'Error: ' + e.response.status + ' - ' + e.response.data
+    const emptyCheck = Object.values(stakingForm).every(
+      (v) => v !== '' && v !== 0
+    );
+    const errorCheck = Object.values(stakingFormErrors).every(
+      (v) => v === false
+    );
+    if (emptyCheck && errorCheck) {
+      try {
+        const tokenAmount = Math.round(stakingForm.tokenAmount * 100);
+        // prettier-ignore
+        const tokens = await ergo.get_utxos(tokenAmount.toString(), STAKE_TOKEN_ID); // eslint-disable-line
+        // prettier-ignore
+        const fees = await ergo.get_utxos('280000000'); // eslint-disable-line
+        const utxos = Array.from(
+          new Set([...fees, ...tokens].map((x) => x.boxId))
         );
-      } else {
-        setErrorMessage('Error: Failed to build transaction');
+        const request = {
+          wallet: stakingForm.wallet,
+          amount: tokenAmount / 100,
+          utxos: utxos,
+          txFormat: 'eip-12',
+        };
+        const res = await axios.post(
+          `${process.env.API_URL}/staking/stake/`,
+          request,
+          { ...defaultOptions }
+        );
+        const unsignedtx = res.data;
+        const signedtx = await ergo.sign_tx(unsignedtx); // eslint-disable-line
+        const ok = await ergo.submit_tx(signedtx); // eslint-disable-line
+        setSuccessMessageSnackbar('Transaction Submitted: ' + ok);
+        setTransactionSubmitted(ok);
+        setOpenSuccessSnackbar(true);
+      } catch (e) {
+        if (e.response) {
+          setErrorMessage(
+            'Error: ' + e.response.status + ' - ' + e.response.data
+          );
+        } else {
+          setErrorMessage('Error: Failed to build transaction');
+        }
+        setOpenError(true);
       }
+    } else {
+      let updateErrors = {};
+      Object.entries(stakingForm).forEach((entry) => {
+        const [key, value] = entry;
+        if (value == '') {
+          if (Object.hasOwn(stakingFormErrors, key)) {
+            let newEntry = { [key]: true };
+            updateErrors = { ...updateErrors, ...newEntry };
+          }
+        }
+      });
+      setStakingFormErrors({
+        ...stakingFormErrors,
+        ...updateErrors,
+      });
+      // snackbar for error message
+      setErrorMessage('Please eliminate form errors and try again');
       setOpenError(true);
     }
     setStakeLoading(false);
   };
 
+  const stakeErgopay = async () => {
+    setStakeErgopayLoading(true);
+    const emptyCheck = Object.values(stakingForm).every(
+      (v) => v !== '' && v !== 0
+    );
+    const errorCheck = Object.values(stakingFormErrors).every(
+      (v) => v === false
+    );
+    if (emptyCheck && errorCheck) {
+      try {
+        const tokenAmount = Math.round(stakingForm.tokenAmount * 100);
+        const request = {
+          wallet: stakingForm.wallet,
+          amount: tokenAmount / 100,
+          utxos: [],
+          txFormat: 'ergo_pay',
+        };
+        const res = await axios.post(
+          `${process.env.API_URL}/staking/stake/`,
+          request,
+          { ...defaultOptions }
+        );
+        setErgopayUrl(res.data.url);
+        setSuccessMessageSnackbar('Form Submitted');
+        setOpenSuccessSnackbar(true);
+      } catch (e) {
+        if (e.response) {
+          setErrorMessage(
+            'Error: ' + e.response.status + ' - ' + e.response.data
+          );
+        } else {
+          setErrorMessage('Error: Failed to build transaction');
+        }
+        setOpenError(true);
+      }
+    } else {
+      let updateErrors = {};
+      Object.entries(stakingForm).forEach((entry) => {
+        const [key, value] = entry;
+        if (value == '') {
+          if (Object.hasOwn(stakingFormErrors, key)) {
+            let newEntry = { [key]: true };
+            updateErrors = { ...updateErrors, ...newEntry };
+          }
+        }
+      });
+      setStakingFormErrors({
+        ...stakingFormErrors,
+        ...updateErrors,
+      });
+      // snackbar for error message
+      setErrorMessage('Please eliminate form errors and try again');
+      setOpenError(true);
+    }
+    setStakeErgopayLoading(false);
+  };
+
   const initUnstake = () => {
     setTransactionSubmitted(null);
+    setErgopayUrl(null);
     setUnstakePenalty(-1);
     setUnstakingForm(initUnstakingForm);
     setUnstakingFormErrors({
       tokenAmount: false,
-      wallet: !dAppWallet.connected,
+      wallet: wallet === '',
     });
   };
 
-  const unstake = async (e) => {
-    e.preventDefault();
+  const unstake = async () => {
     setUnstakeModalLoading(true);
-    try {
-      const tokenAmount = unstakingForm.tokenAmount * 100;
-      const stakeKey = unstakeModalData.stakeKeyId;
-      // prettier-ignore
-      const tokens = await ergo.get_utxos('1', stakeKey); // eslint-disable-line
-      // prettier-ignore
-      const fees = await ergo.get_utxos('20000000'); // eslint-disable-line
-      const utxos = Array.from(
-        new Set([...tokens, ...fees].map((x) => x.boxId))
-      );
-      const request = {
-        stakeBox: unstakeModalData.boxId,
-        amount: tokenAmount / 100,
-        utxos: utxos,
-        txFormat: 'eip-12',
-      };
-      const res = await axios.post(
-        `${process.env.API_URL}/staking/unstake/`,
-        request,
-        { ...defaultOptions }
-      );
-      const penalty = res.data.penalty;
-      setUnstakePenalty(penalty);
-      const unsignedtx = res.data.unsignedTX;
-      const signedtx = await ergo.sign_tx(unsignedtx); // eslint-disable-line
-      const ok = await ergo.submit_tx(signedtx); // eslint-disable-line
-      setSuccessMessageSnackbar('Transaction Submitted: ' + ok);
-      setTransactionSubmitted(ok);
-      setOpenSuccessSnackbar(true);
-    } catch (e) {
-      if (e.response) {
-        setErrorMessage(
-          'Error: ' + e.response.status + ' - ' + e.response.data
+    const emptyCheck = Object.values(unstakingForm).every(
+      (v) => v !== '' && v !== 0
+    );
+    const errorCheck = Object.values(unstakingFormErrors).every(
+      (v) => v === false
+    );
+    if (emptyCheck && errorCheck) {
+      try {
+        const tokenAmount = unstakingForm.tokenAmount * 100;
+        const stakeKey = unstakeModalData.stakeKeyId;
+        // prettier-ignore
+        const tokens = await ergo.get_utxos('1', stakeKey); // eslint-disable-line
+        // prettier-ignore
+        const fees = await ergo.get_utxos('20000000'); // eslint-disable-line
+        const utxos = Array.from(
+          new Set([...tokens, ...fees].map((x) => x.boxId))
         );
-      } else {
-        setErrorMessage('Error: Failed to build transaction');
+        const request = {
+          stakeBox: unstakeModalData.boxId,
+          amount: tokenAmount / 100,
+          address: wallet,
+          utxos: utxos,
+          txFormat: 'eip-12',
+        };
+        const res = await axios.post(
+          `${process.env.API_URL}/staking/unstake/`,
+          request,
+          { ...defaultOptions }
+        );
+        const penalty = res.data.penalty;
+        setUnstakePenalty(penalty);
+        const unsignedtx = res.data.unsignedTX;
+        const signedtx = await ergo.sign_tx(unsignedtx); // eslint-disable-line
+        const ok = await ergo.submit_tx(signedtx); // eslint-disable-line
+        setSuccessMessageSnackbar('Transaction Submitted: ' + ok);
+        setTransactionSubmitted(ok);
+        setOpenSuccessSnackbar(true);
+      } catch (e) {
+        if (e.response) {
+          setErrorMessage(
+            'Error: ' + e.response.status + ' - ' + e.response.data
+          );
+        } else {
+          setErrorMessage('Error: Failed to build transaction');
+        }
+        initUnstake();
+        setOpenError(true);
       }
-      initUnstake();
+    } else {
+      let updateErrors = {};
+      Object.entries(unstakingForm).forEach((entry) => {
+        const [key, value] = entry;
+        if (value == '') {
+          if (Object.hasOwn(unstakingFormErrors, key)) {
+            let newEntry = { [key]: true };
+            updateErrors = { ...updateErrors, ...newEntry };
+          }
+        }
+      });
+      setUnstakingFormErrors({
+        ...unstakingFormErrors,
+        ...updateErrors,
+      });
+      // snackbar for error message
+      setErrorMessage('Please eliminate form errors and try again');
       setOpenError(true);
     }
     setUnstakeModalLoading(false);
+  };
+
+  const unstakeErgopay = async () => {
+    setUnstakeErgopayLoading(true);
+    const emptyCheck = Object.values(unstakingForm).every(
+      (v) => v !== '' && v !== 0
+    );
+    const errorCheck = Object.values(unstakingFormErrors).every(
+      (v) => v === false
+    );
+    if (emptyCheck && errorCheck) {
+      try {
+        const tokenAmount = unstakingForm.tokenAmount * 100;
+        const request = {
+          stakeBox: unstakeModalData.boxId,
+          amount: tokenAmount / 100,
+          address: wallet,
+          utxos: [],
+          txFormat: 'ergo_pay',
+        };
+        const res = await axios.post(
+          `${process.env.API_URL}/staking/unstake/`,
+          request,
+          { ...defaultOptions }
+        );
+        const penalty = res.data.penalty;
+        setUnstakePenalty(penalty);
+        setErgopayUrl(res.data.url);
+        setSuccessMessageSnackbar('Form Submitted');
+        setOpenSuccessSnackbar(true);
+      } catch (e) {
+        if (e.response) {
+          setErrorMessage(
+            'Error: ' + e.response.status + ' - ' + e.response.data
+          );
+        } else {
+          setErrorMessage('Error: Failed to build transaction');
+        }
+        initUnstake();
+        setOpenError(true);
+      }
+    } else {
+      let updateErrors = {};
+      Object.entries(unstakingForm).forEach((entry) => {
+        const [key, value] = entry;
+        if (value == '') {
+          if (Object.hasOwn(unstakingFormErrors, key)) {
+            let newEntry = { [key]: true };
+            updateErrors = { ...updateErrors, ...newEntry };
+          }
+        }
+      });
+      setUnstakingFormErrors({
+        ...unstakingFormErrors,
+        ...updateErrors,
+      });
+      // snackbar for error message
+      setErrorMessage('Please eliminate form errors and try again');
+      setOpenError(true);
+    }
+    setUnstakeErgopayLoading(false);
   };
 
   // snackbar for error reporting
@@ -338,7 +526,7 @@ const Staking = () => {
   const handleStakingFormChange = (e) => {
     if (e.target.name === 'stakingAmount') {
       const amount = Number(e.target.value);
-      if (amount > 0.0 && amount <= tokenBalance) {
+      if (amount >= 10 && amount <= tokenBalance) {
         setStakingFormErrors({
           ...stakingFormErrors,
           tokenAmount: false,
@@ -402,7 +590,6 @@ const Staking = () => {
       </Container>
       <Container maxWidth="lg">
         <StakingSummary />
-
         <Grid
           container
           spacing={3}
@@ -452,13 +639,14 @@ const Staking = () => {
                   circulation, reducing the total supply of Ergopad tokens.
                 </Typography>
                 <Typography variant="p">
-                  Note: Please stake a minimum of 10 ergopad tokens, fewer will not work. 
+                  Note: Please stake a minimum of 10 ergopad tokens, fewer will
+                  not work.
                 </Typography>
                 <Typography variant="h4">Terms &amp; Conditions</Typography>
                 <Typography variant="p">
                   By using this website to stake tokens on the Ergo blockchain,
-                  you accept that you are interacting with a smart contract
-                  that this website has no control over. The operators of this
+                  you accept that you are interacting with a smart contract that
+                  this website has no control over. The operators of this
                   website accept no liability whatsoever in relation to your use
                   of these smart contracts. By using this website to stake, you
                   also have read and agree to the{' '}
@@ -558,12 +746,13 @@ const Staking = () => {
           </Grid>
         </Grid>
       </Container>
-
       <Modal
         open={openModal}
         onClose={() => {
           setOpenModal(false);
           setTransactionSubmitted(null);
+          setErgopayUrl(null);
+          setStakingFormErrors(initStakingFormErrors);
         }}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
@@ -572,8 +761,12 @@ const Staking = () => {
           <Typography id="modal-modal-title" variant="h6" component="h2">
             Stake Tokens
           </Typography>
-          {transactionSubmitted ? (
-            <TransactionSubmitted transaction={transactionSubmitted} />
+          {transactionSubmitted || ergopayUrl ? (
+            transactionSubmitted ? (
+              <TransactionSubmitted transactionId={transactionSubmitted} />
+            ) : (
+              <ErgopayModalBody ergopayUrl={ergopayUrl} />
+            )
           ) : (
             <>
               <Typography variant="p" sx={{ fontSize: '1rem', mb: 2 }}>
@@ -581,12 +774,10 @@ const Staking = () => {
                 approve the transaction. Make sure you verify token amounts
                 before approving it.
               </Typography>
-              <Box component="form" noValidate onSubmit={stake}>
-                {dAppWallet.connected && (
-                  <Typography color="text.secondary" sx={{ mb: 1 }}>
-                    You have {tokenBalance} ergopad tokens.
-                  </Typography>
-                )}
+              <Box>
+                <Typography color="text.secondary" sx={{ mb: 1 }}>
+                  You have {tokenBalance} ergopad tokens.
+                </Typography>
                 <Grid
                   container
                   spacing={3}
@@ -594,7 +785,7 @@ const Staking = () => {
                   justifyContent="center"
                   sx={{ flexGrow: 1 }}
                 >
-                  <Grid item md={10} xs={9}>
+                  <Grid item md={10} xs={8}>
                     <TextField
                       InputProps={{ disableUnderline: true }}
                       required
@@ -613,7 +804,7 @@ const Staking = () => {
                       }
                     />
                   </Grid>
-                  <Grid item md={2} xs={3}>
+                  <Grid item md={2} xs={4}>
                     <Button
                       onClick={() => {
                         handleStakingFormChange({
@@ -656,12 +847,51 @@ const Staking = () => {
                   />
                   <FormHelperText>
                     {stakingFormErrors.wallet &&
-                      'Please connect with yoroi or nautilus to proceed'}
+                      'Please connect wallet to proceed'}
                   </FormHelperText>
                 </FormControl>
                 <Button
                   variant="contained"
-                  disabled={stakeLoading || stakingFormErrors.wallet}
+                  disabled={
+                    stakeErgopayLoading ||
+                    stakeLoading ||
+                    stakingFormErrors.wallet ||
+                    !dAppWallet.connected
+                  }
+                  sx={{
+                    color: '#fff',
+                    fontSize: '1rem',
+                    mt: 2,
+                    mr: 1,
+                    py: '0.6rem',
+                    px: '1.2rem',
+                    textTransform: 'none',
+                    background: theme.palette.tertiary.main,
+                    '&:hover': {
+                      background: theme.palette.tertiary.hover,
+                      boxShadow: 'none',
+                    },
+                    '&:active': {
+                      background: theme.palette.tertiary.active,
+                    },
+                  }}
+                  onClick={stake}
+                >
+                  Pay with dApp Wallet
+                  {stakeLoading && (
+                    <CircularProgress
+                      sx={{ ml: 2, color: 'white' }}
+                      size={'1.2rem'}
+                    />
+                  )}
+                </Button>
+                <Button
+                  variant="contained"
+                  disabled={
+                    stakeErgopayLoading ||
+                    stakeLoading ||
+                    stakingFormErrors.wallet
+                  }
                   sx={{
                     color: '#fff',
                     fontSize: '1rem',
@@ -678,10 +908,10 @@ const Staking = () => {
                       background: theme.palette.tertiary.active,
                     },
                   }}
-                  type="submit"
+                  onClick={stakeErgopay}
                 >
-                  Submit
-                  {stakeLoading && (
+                  Pay with Ergopay
+                  {stakeErgopayLoading && (
                     <CircularProgress
                       sx={{ ml: 2, color: 'white' }}
                       size={'1.2rem'}
@@ -698,6 +928,8 @@ const Staking = () => {
         onClose={() => {
           setOpenUnstakeModal(false);
           setTransactionSubmitted(null);
+          setErgopayUrl(null);
+          setUnstakingFormErrors(initUnstakingFormErrors);
         }}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
@@ -706,8 +938,12 @@ const Staking = () => {
           <Typography id="modal-modal-title" variant="h6" component="h2">
             Unstake Tokens
           </Typography>
-          {transactionSubmitted ? (
-            <TransactionSubmitted transaction={transactionSubmitted} />
+          {transactionSubmitted || ergopayUrl ? (
+            transactionSubmitted ? (
+              <TransactionSubmitted transactionId={transactionSubmitted} />
+            ) : (
+              <ErgopayModalBody ergopayUrl={ergopayUrl} />
+            )
           ) : (
             <>
               <Typography variant="p" sx={{ fontSize: '1rem', mb: 2 }}>
@@ -739,7 +975,7 @@ const Staking = () => {
                   return StakingItem(item, 6);
                 })}
               </Grid>
-              <Box component="form" noValidate onSubmit={unstake}>
+              <Box>
                 <Grid
                   container
                   spacing={3}
@@ -783,12 +1019,51 @@ const Staking = () => {
                 </Grid>
                 <FormHelperText>
                   {unstakingFormErrors.wallet
-                    ? 'Please connect with yoroi or nautilus to proceed'
+                    ? 'Please connect wallet to proceed'
                     : 'Submit to calculate unstaking penalty (if any)'}
                 </FormHelperText>
                 <Button
                   variant="contained"
-                  disabled={unstakeModalLoading || unstakingFormErrors.wallet}
+                  disabled={
+                    unstakeModalLoading ||
+                    unstakeErgopayLoading ||
+                    unstakingFormErrors.wallet ||
+                    !dAppWallet.connected
+                  }
+                  sx={{
+                    color: '#fff',
+                    fontSize: '1rem',
+                    mt: 2,
+                    mr: 1,
+                    py: '0.6rem',
+                    px: '1.2rem',
+                    textTransform: 'none',
+                    background: theme.palette.secondary.main,
+                    '&:hover': {
+                      background: theme.palette.secondary.hover,
+                      boxShadow: 'none',
+                    },
+                    '&:active': {
+                      background: theme.palette.secondary.active,
+                    },
+                  }}
+                  onClick={unstake}
+                >
+                  Pay with dApp Wallet
+                  {unstakeModalLoading && (
+                    <CircularProgress
+                      sx={{ ml: 2, color: 'white' }}
+                      size={'1.2rem'}
+                    />
+                  )}
+                </Button>
+                <Button
+                  variant="contained"
+                  disabled={
+                    unstakeModalLoading ||
+                    unstakeErgopayLoading ||
+                    unstakingFormErrors.wallet
+                  }
                   sx={{
                     color: '#fff',
                     fontSize: '1rem',
@@ -805,10 +1080,10 @@ const Staking = () => {
                       background: theme.palette.secondary.active,
                     },
                   }}
-                  type="submit"
+                  onClick={unstakeErgopay}
                 >
-                  Submit
-                  {unstakeModalLoading && (
+                  Pay with Ergopay
+                  {unstakeErgopayLoading && (
                     <CircularProgress
                       sx={{ ml: 2, color: 'white' }}
                       size={'1.2rem'}
