@@ -30,12 +30,12 @@ import StakingTiers from '@components/staking/StakingTiers';
 import UnstakingFeesTable from '@components/staking/UnstakingFeesTable';
 import UnstakingTable from '@components/staking/UnstakingTable';
 import TransactionSubmitted from '@components/TransactionSubmitted';
+import ErgopayModalBody from '@components/ErgopayModalBody';
 import MuiNextLink from '@components/MuiNextLink';
 import theme from '@styles/theme';
 import { useWallet } from 'utils/WalletContext';
 import { forwardRef, useEffect, useState } from 'react';
 import axios from 'axios';
-import ErgopayModalBody from '../components/ErgopayModalBody';
 
 const STAKE_TOKEN_ID =
   'd71693c49a84fbbecd4908c94813b46514b18b67a99952dc1e6e4791556de413';
@@ -862,6 +862,7 @@ const Staking = () => {
                     color: '#fff',
                     fontSize: '1rem',
                     mt: 2,
+                    mr: 1,
                     py: '0.6rem',
                     px: '1.2rem',
                     textTransform: 'none',
@@ -895,7 +896,6 @@ const Staking = () => {
                     color: '#fff',
                     fontSize: '1rem',
                     mt: 2,
-                    ml: checkSmall ? 1 : 0,
                     py: '0.6rem',
                     px: '1.2rem',
                     textTransform: 'none',
@@ -1034,6 +1034,7 @@ const Staking = () => {
                     color: '#fff',
                     fontSize: '1rem',
                     mt: 2,
+                    mr: 1,
                     py: '0.6rem',
                     px: '1.2rem',
                     textTransform: 'none',
@@ -1067,7 +1068,6 @@ const Staking = () => {
                     color: '#fff',
                     fontSize: '1rem',
                     mt: 2,
-                    ml: checkSmall ? 1 : 0,
                     py: '0.6rem',
                     px: '1.2rem',
                     textTransform: 'none',
