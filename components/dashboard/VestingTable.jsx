@@ -196,7 +196,12 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                       {box['Next unlock']}
                     </TableCell>
                     <TableCell sx={{ color: theme.palette.text.secondary }}>
-                      <Button onClick={() => redeem(box)}>Redeem</Button>
+                      <Button
+                        sx={{ textTransform: 'none' }}
+                        onClick={() => redeem(box)}
+                      >
+                        Redeem
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -257,7 +262,12 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                         p: 1,
                       }}
                     >
-                      <Button onClick={() => redeem(box)}>Redeem</Button>
+                      <Button
+                        sx={{ textTransform: 'none' }}
+                        onClick={() => redeem(box)}
+                      >
+                        Redeem
+                      </Button>
                     </TableCell>
                   </TableRow>
                 </>

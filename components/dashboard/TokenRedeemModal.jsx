@@ -13,11 +13,10 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
-
 import axios from 'axios';
 import { useEffect, useState, forwardRef } from 'react';
 import { useWallet } from 'utils/WalletContext';
-import TransactionSubmitted from '../TransactionSubmitted';
+import TransactionSubmitted from '@components/TransactionSubmitted';
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -79,8 +78,8 @@ const TokenRedeemModal = ({ box, onClose }) => {
   }, [wallet, dAppWallet.connected]);
 
   useEffect(() => {
-    setButtonDisabled(loading);
-  }, [loading]);
+    setButtonDisabled(loading || formErrors.address);
+  }, [loading, formErrors.address]);
 
   // snackbar for error reporting
   const handleCloseError = (e, reason) => {
@@ -207,9 +206,9 @@ const TokenRedeemModal = ({ box, onClose }) => {
                     type="submit"
                     disabled={buttonDisabled}
                     variant="contained"
-                    sx={{ mt: 3, color: '#fff' }}
+                    sx={{ mt: 3, color: '#fff', textTransform: 'none' }}
                   >
-                    Claim tokens
+                    Claim Tokens
                     {loading && (
                       <CircularProgress
                         sx={{ ml: 2, color: 'white' }}
