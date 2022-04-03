@@ -64,7 +64,7 @@ const Whitelist = () => {
   // whitelist data
   const [whitelistData, setWhitelistData] = useState(null);
   const [whitelistState, setWhitelistState] = useState(NOT_STARTED);
-  const [whitelistLoading, setWhitelistLoading] = useState(false);
+  const [whitelistLoading, setWhitelistLoading] = useState(true);
   // boolean object for each checkbox
   const [checkboxState, setCheckboxState] = useState([]);
   // set true to disable submit button
@@ -98,7 +98,7 @@ const Whitelist = () => {
       setWhitelistLoading(true);
       try {
         const res = await axios.get(
-          `${process.env.API_URL}/whitelist/events/${projectName}/${roundName}/`
+          `${process.env.API_URL}/whitelist/events/${projectName}/${roundName}`
         );
         setWhitelistData(res.data);
         setCheckboxState(
@@ -112,7 +112,7 @@ const Whitelist = () => {
       setWhitelistLoading(false);
     };
 
-    getWhitelistData();
+    if (projectName && roundName) getWhitelistData();
   }, [projectName, roundName]);
 
   useEffect(() => {
@@ -436,7 +436,6 @@ const Whitelist = () => {
                       </a>
                     </Box>
                   </Box>
-
                   <Typography
                     variant="h4"
                     sx={{ fontWeight: '700', lineHeight: '1.2', mt: 6 }}
@@ -549,7 +548,10 @@ const Whitelist = () => {
                               />
                             }
                             label={checkbox.text}
-                            sx={{ color: theme.palette.text.secondary, mb: 2 }}
+                            sx={{
+                              color: theme.palette.text.secondary,
+                              mb: 2,
+                            }}
                           />
                         ))}
                         <FormHelperText>
