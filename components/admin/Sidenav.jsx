@@ -104,6 +104,49 @@ const Sidenav = () => {
       </Box>
       <Box sx={{ mr: { md: 12, xs: 0 }, mt: { md: 0, xs: 4 } }}>
         <Typography variant="h4" sx={{ fontWeight: '700', lineHeight: '1.2' }}>
+          Whitelist Events
+        </Typography>
+        <List>
+        <ListItem
+            button
+            sx={{ ...listItemSx }}
+            onClick={() => {
+              router.push('/admin/whitelist_event_summary');
+            }}
+          >
+            <ListItemText primary="Whitelist Events Summary" />
+          </ListItem>
+          <ListItem
+            button
+            sx={{ ...listItemSx }}
+            onClick={() => {
+              router.push('/admin/create_whitelist_event');
+            }}
+          >
+            <ListItemText primary="Create Whitelist Events" />
+          </ListItem>
+          <ListItem
+            button
+            sx={{ ...listItemSx }}
+            onClick={() => {
+              router.push('/admin/edit_whitelist_event');
+            }}
+          >
+            <ListItemText primary="Edit Whitelist Events" />
+          </ListItem>
+          <ListItem
+            button
+            sx={{ mb: 2, ...listItemSx }}
+            onClick={() => {
+              router.push('/admin/delete_whitelist_event');
+            }}
+          >
+            <ListItemText primary="Delete Whitelist Events" />
+          </ListItem>
+        </List>
+      </Box>
+      <Box sx={{ mr: { md: 12, xs: 0 }, mt: { md: 0, xs: 4 } }}>
+        <Typography variant="h4" sx={{ fontWeight: '700', lineHeight: '1.2' }}>
           Projects
         </Typography>
         <List>

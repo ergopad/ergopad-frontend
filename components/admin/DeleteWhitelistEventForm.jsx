@@ -28,9 +28,9 @@ const initialFormErrors = Object.freeze({
   url: false,
 });
 
-const DeleteFaqForm = () => {
+const DeleteWhitelistEventForm = () => {
   // table data
-  const [faqData, setFaqData] = useState([]);
+  const [tableData, setTableData] = useState([]);
   // form data is all strings
   const [formData, updateFormData] = useState(initialFormData);
   // form error object, all booleans
@@ -60,9 +60,9 @@ const DeleteFaqForm = () => {
     const getTableData = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${process.env.API_URL}/faq/`);
+        const res = await axios.get(`${process.env.API_URL}/whitelist/events/`);
         res.data.sort((a, b) => a.id - b.id);
-        setFaqData(res.data);
+        setTableData(res.data);
       } catch (e) {
         console.log(e);
       }
@@ -126,7 +126,10 @@ const DeleteFaqForm = () => {
         },
       };
       try {
-        await axios.delete(`${process.env.API_URL}/faq/${id}`, defaultOptions);
+        await axios.delete(
+          `${process.env.API_URL}/whitelist/events/${id}`,
+          defaultOptions
+        );
         setOpenSuccess(true);
         updateFormData(initialFormData);
       } catch (e) {
@@ -157,21 +160,25 @@ const DeleteFaqForm = () => {
     <>
       <Box component="form" onSubmit={handleSubmit}>
         <Typography variant="h4" sx={{ mt: 10, mb: 2, fontWeight: '700' }}>
-          Delete FAQ
+          Delete Whitelist Event
         </Typography>
         <Grid container spacing={2} />
         <Grid item xs={12}>
           <Typography color="text.secondary" sx={{ mt: 2, mb: 1 }}>
-            Enter FAQ id manually or select one from the table below. This is an
-            irreversible action. All faq details will be deleted and cannot be
-            recovered afterwards.
+            Enter whitelist event id manually or select one from the table
+            below. This is an irreversible action.{' '}
+            <b>
+              All details will be deleted and cannot be recovered afterwards
+            </b>
+            . It is <b>not recommended</b> to use this page. Forms can be
+            disabled by editing the end times.
           </Typography>
           <TextField
             InputProps={{ disableUnderline: true }}
             required
             fullWidth
             id="url"
-            label="FAQ Id"
+            label="Whitelist Event Id"
             name="url"
             variant="filled"
             value={formData.url}
@@ -181,12 +188,12 @@ const DeleteFaqForm = () => {
           />
           <Accordion sx={{ mt: 1 }}>
             <AccordionSummary>
-              <strong>Expand to see FAQs</strong>
+              <strong>Expand to see Whitelist Events</strong>
             </AccordionSummary>
             <AccordionDetails>
               <PaginatedTable
-                rows={faqData.map((faq) => {
-                  return { ...faq, name: faq.question };
+                rows={tableData.map((event) => {
+                  return { ...event };
                 })}
                 onClick={(id) => {
                   updateFormData({ ...formData, url: id });
@@ -249,4 +256,4 @@ const DeleteFaqForm = () => {
   );
 };
 
-export default DeleteFaqForm;
+export default DeleteWhitelistEventForm;
