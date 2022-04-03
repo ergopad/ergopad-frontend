@@ -588,7 +588,10 @@ const Whitelist = () => {
                     </Typography>
                     <Typography sx={{ color: theme.palette.text.secondary }}>
                       {whitelistState === NOT_STARTED &&
-                        'This form is not yet active. Please check back later.'}
+                        'This form is not yet active. The round will start at ' +
+                          new Date(
+                            Date.parse(whitelistData.start_dtz)
+                          ).toTimeString()}
                     </Typography>
                     <Snackbar
                       open={openError}
