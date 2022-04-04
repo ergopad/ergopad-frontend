@@ -1,8 +1,4 @@
-import {
-  Button,
-  Grid,
-  TextField,
-} from '@mui/material';
+import { Button, Grid, TextField } from '@mui/material';
 
 const ListTextInput = ({ label, data, setData }) => {
   return (
@@ -12,10 +8,12 @@ const ListTextInput = ({ label, data, setData }) => {
           <Grid item md={11} xs={10} sx={{ pr: 1 }}>
             <TextField
               label={label}
+              multiline
               InputProps={{ disableUnderline: true }}
               fullWidth
               variant="filled"
               value={text}
+              rows={2}
               onChange={(e) => {
                 const updatedData = data.map((text, i) => {
                   if (index === i) {

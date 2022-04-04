@@ -15,6 +15,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import axios from 'axios';
+import { CSVDownload } from 'react-csv';
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -28,9 +29,11 @@ const initialFormErrors = Object.freeze({
   id: false,
 });
 
-const DeleteWhitelistEventForm = () => {
+const GenerateWhitelistEventReportForm = () => {
   // table data
   const [tableData, setTableData] = useState([]);
+  // csv data
+  const [csvData, setCsvData] = useState(null);
   // form data is all strings
   const [formData, updateFormData] = useState(initialFormData);
   // form error object, all booleans
@@ -115,9 +118,10 @@ const DeleteWhitelistEventForm = () => {
     e.preventDefault();
     setOpenError(false);
     setLoading(true);
+    setCsvData(null);
     const errorCheck = Object.values(formErrors).every((v) => v === false);
     if (errorCheck) {
-      const id = formData.id;
+      const event = tableData.filter((event) => event.id === formData.id)[0];
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
@@ -126,10 +130,16 @@ const DeleteWhitelistEventForm = () => {
         },
       };
       try {
-        await axios.delete(
-          `${process.env.API_URL}/whitelist/events/${id}`,
+        const res = await axios.get(
+          `${process.env.API_URL}/whitelist/events/${event.projectName}/${event.roundName}/`,
           defaultOptions
         );
+        const eventName = res.data.eventName;
+        const csv = await axios.get(
+          `${process.env.API_URL}/whitelist/summary/${eventName}`,
+          defaultOptions
+        );
+        setCsvData(csv.data.data);
         setOpenSuccess(true);
         updateFormData(initialFormData);
       } catch (e) {
@@ -160,18 +170,13 @@ const DeleteWhitelistEventForm = () => {
     <>
       <Box component="form" onSubmit={handleSubmit}>
         <Typography variant="h4" sx={{ mt: 10, mb: 2, fontWeight: '700' }}>
-          Delete Whitelist Event
+          Generate Whitelist Event CSV Report
         </Typography>
         <Grid container spacing={2} />
         <Grid item xs={12}>
           <Typography color="text.secondary" sx={{ mt: 2, mb: 1 }}>
             Enter whitelist event id manually or select one from the table
-            below. This is an irreversible action.{' '}
-            <b>
-              All details will be deleted and cannot be recovered afterwards
-            </b>
-            . It is <b>not recommended</b> to use this page. Forms can be
-            disabled by editing the end times.
+            below.
           </Typography>
           <TextField
             InputProps={{ disableUnderline: true }}
@@ -207,10 +212,9 @@ const DeleteWhitelistEventForm = () => {
             type="submit"
             disabled={buttonDisabled}
             variant="contained"
-            color="error"
             sx={{ mt: 1, mb: 1 }}
           >
-            Delete
+            Download
           </Button>
           {isLoading && (
             <CircularProgress
@@ -249,11 +253,12 @@ const DeleteWhitelistEventForm = () => {
           severity="success"
           sx={{ width: '100%' }}
         >
-          Changes were saved.
+          Starting Download
         </Alert>
       </Snackbar>
+      {csvData && <CSVDownload data={csvData} target="_blank" />}
     </>
   );
 };
 
-export default DeleteWhitelistEventForm;
+export default GenerateWhitelistEventReportForm;
