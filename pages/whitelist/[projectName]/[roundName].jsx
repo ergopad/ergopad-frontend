@@ -310,7 +310,14 @@ const Whitelist = () => {
       let updateErrors = {};
       Object.entries(formData).forEach((entry) => {
         const [key, value] = entry;
-        if (value == '') {
+        // special patch for email regex
+        if (key !== 'email' && value == '') {
+          let newEntry = { [key]: true };
+          updateErrors = { ...updateErrors, ...newEntry };
+        } else if (
+          key === 'email' &&
+          !(emailRegex.test(value) || value === '')
+        ) {
           let newEntry = { [key]: true };
           updateErrors = { ...updateErrors, ...newEntry };
         }
