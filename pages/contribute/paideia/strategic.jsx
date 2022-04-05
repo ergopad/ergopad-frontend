@@ -23,7 +23,6 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { useWallet } from 'utils/WalletContext';
 import { useAddWallet } from 'utils/AddWalletContext';
-import MuiNextLink from '@components/MuiNextLink';
 import PageTitle from '@components/PageTitle';
 import TransactionSubmitted from '@components/TransactionSubmitted';
 import ErgopayModalBody from '@components/ErgopayModalBody';
@@ -523,7 +522,7 @@ const ContributeStrategicRound = () => {
             <Typography variant="h4" sx={{ fontWeight: '700' }}>
               Token Contribution Form
             </Typography>
-            <Typography variant="p" sx={{ mb: 0 }}>
+            <Typography variant="p" sx={{ mb: 1 }}>
               Tokens remaining to be distributed for this round:{' '}
               {Math.round(roundDetails.remaining * 10000) / 10000}.
             </Typography>
@@ -534,23 +533,6 @@ const ContributeStrategicRound = () => {
             </Typography>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <Typography variant="p" sx={{ fontSize: '1rem', mb: '1rem' }}>
-                  <Typography variant="span" sx={{ fontWeight: 'bold' }}>
-                    YOROI IS NOT SUPPORTED.{' '}
-                  </Typography>
-                  You{' '}
-                  <Typography variant="span" sx={{ fontWeight: 'bold' }}>
-                    MUST
-                  </Typography>{' '}
-                  use Nautilus v0.2.2 or SAFEW. Please see{' '}
-                  <MuiNextLink
-                    href="https://ergopad.medium.com/paideia-contribution-instructions-8e897d64cfed"
-                    target="_blank"
-                  >
-                    this post
-                  </MuiNextLink>{' '}
-                  for more information.
-                </Typography>
                 <Typography variant="p" sx={{ fontSize: '1rem', mb: 1 }}>
                   Your wallet currently has {walletBalance.whitelist} whitelist
                   tokens. Reconnect your wallet with the dapp connector to hard
