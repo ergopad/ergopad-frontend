@@ -26,6 +26,7 @@ import { useAddWallet } from 'utils/AddWalletContext';
 import MuiNextLink from '@components/MuiNextLink';
 import PageTitle from '@components/PageTitle';
 import TransactionSubmitted from '@components/TransactionSubmitted';
+import ErgopayModalBody from '@components/ErgopayModalBody';
 import theme from '@styles/theme';
 import axios from 'axios';
 
@@ -46,15 +47,15 @@ const modalStyle = {
 };
 
 // todo: update constants
-const EVENT_NAME = 'staker-paideia-202203';
+const EVENT_NAME = 'strategic-paideia-202202';
 const ROUND_PROXY_NFT =
-  'e172d5737145a0a7fdf551d122dec848207b2fd5e02df52d475e5dd45ec2aa80';
+  '610efa09f2c581e2e309b31175930876fe3cc814650f7b82febfeb7874198377';
 const WHITELIST_TOKEN_ID =
-  '87fb172d186d260f1855eb627fc7a70beb9bafdcadfd5c1ff392f094442cf35e';
+  '23b1ff0bfae87de54c4d8513c660109b3a0061db429917a3d59c7af1ef5b6c6e';
 // const SIGUSD_TOKEN_ID =
 //   '03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04';
 // const PAIDEIA_TOKEN_ID = 'paideia_token_id';
-const PAIDEIA_CONVERSION_RATE = 0.001;
+const PAIDEIA_CONVERSION_RATE = 0.008;
 const NERG_FEES = 20 * 1000 * 1000;
 
 const initialFormData = Object.freeze({
@@ -92,13 +93,17 @@ const transactionModalState = Object.freeze({
   CLOSED: 'CLOSED',
 });
 
+const initialRoundDetails = Object.freeze({
+  remaining: 0,
+});
+
 const defaultOptions = {
   headers: {
     'Content-Type': 'application/json',
   },
 };
 
-const Contribute = () => {
+const ContributeStrategicRound = () => {
   const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
   // wallet
   const { wallet, dAppWallet } = useWallet();
@@ -113,6 +118,7 @@ const Contribute = () => {
   const [formErrors, setFormErrors] = useState(initialFormErrors);
   const [formData, updateFormData] = useState(initialFormData);
   const [walletBalance, setWalletBalance] = useState(initialWalletBalance);
+  const [roundDetails, setRoundDetails] = useState(initialRoundDetails);
   // open error snackbar
   const [openError, setOpenError] = useState(false);
   const [errorMessage, setErrorMessage] = useState(
@@ -125,20 +131,41 @@ const Contribute = () => {
   // success modal
   const [openModal, setOpenModal] = useState(transactionModalState.CLOSED);
   const [transactionId, setTransactionId] = useState('');
+  const [ergopayUrl, setErgopayUrl] = useState('');
   // erg conversion rate loading from backend
   const [conversionRate, setConversionRate] = useState(1.0);
 
   const readWallet = async () => {
     // todo: fix infinite promise
     try {
-      const whitelistBalance = await ergo.get_balance(WHITELIST_TOKEN_ID); // eslint-disable-line
-      // const sigUSDBalance = await ergo.get_balance(SIGUSD_TOKEN_ID); // eslint-disable-line
-      const ergBalance = await ergo.get_balance(); // eslint-disable-line
-      setWalletBalance({
-        whitelist: whitelistBalance / 10000,
-        sigusd: 0, // sigusd validation is disabled
-        ergs: ergBalance / (1000 * 1000 * 1000),
-      });
+      if (dAppWallet.connected) {
+        const whitelistBalance = await ergo.get_balance(WHITELIST_TOKEN_ID); // eslint-disable-line
+        // const sigUSDBalance = await ergo.get_balance(SIGUSD_TOKEN_ID); // eslint-disable-line
+        const ergBalance = await ergo.get_balance(); // eslint-disable-line
+        setWalletBalance({
+          whitelist: whitelistBalance / 10000,
+          sigusd: 0, // sigusd validation is disabled
+          ergs: ergBalance / (1000 * 1000 * 1000),
+        });
+      } else if (wallet !== '') {
+        const res = await axios.get(
+          `${process.env.API_URL}/asset/balance/${wallet}`,
+          { ...defaultOptions }
+        );
+        const ergs = res.data.balance.ERG.balance;
+        const token = res.data.balance.ERG.tokens.filter(
+          (token) => token.tokenId === WHITELIST_TOKEN_ID
+        )[0];
+        if (token) {
+          setWalletBalance({
+            whitelist: token.amount / 10000,
+            sigusd: 0,
+            ergs: ergs,
+          });
+        }
+      } else {
+        setWalletBalance(initialWalletBalance);
+      }
     } catch (e) {
       console.log(e);
     }
@@ -153,10 +180,25 @@ const Contribute = () => {
       if (res.data.isBeforeSignup) {
         setFormState(formOpenState.EARLY);
       } else if (res.data.isAfterSignup) {
-        setFormState(formOpenState.CLOSED); // change to CLOSED
+        setFormState(formOpenState.CLOSED);
       } else {
         setFormState(formOpenState.OPEN);
       }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const getRemainingTokens = async () => {
+    try {
+      const res = await axios.get(
+        `${process.env.API_URL}/vesting/activeRounds`,
+        defaultOptions
+      );
+      const round = res.data.activeRounds.filter(
+        (round) => round.proxyNFT === ROUND_PROXY_NFT
+      )[0];
+      setRoundDetails(round ? round : initialRoundDetails);
     } catch (e) {
       console.log(e);
     }
@@ -175,6 +217,7 @@ const Contribute = () => {
   useEffect(() => {
     updateConversionRate();
     apiCheck();
+    getRemainingTokens();
   }, []);
 
   useEffect(() => {
@@ -183,7 +226,7 @@ const Contribute = () => {
       address: wallet,
     });
 
-    if (dAppWallet.connected) {
+    if (wallet !== '') {
       // wait till js injection?
       setTimeout(readWallet, 500);
       setFormErrors({
@@ -248,18 +291,6 @@ const Contribute = () => {
   };
 
   const handleChange = (e) => {
-    // if (e.target.value === '') {
-    //   setFormErrors({
-    //     ...formErrors,
-    //     [e.target.name]: true,
-    //   });
-    // } else {
-    //   setFormErrors({
-    //     ...formErrors,
-    //     [e.target.name]: false,
-    //   });
-    // }
-
     if (e.target.name === 'vestingAmount') {
       const amount = Number(e.target.value);
       if (amount > 0 && amount <= walletBalance.whitelist) {
@@ -280,8 +311,7 @@ const Contribute = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setLoading(true);
     const emptyCheck = Object.values(formData).every(
       (v) => v !== '' && v !== 0
@@ -330,30 +360,6 @@ const Contribute = () => {
           defaultOptions
         );
         const unsignedtx = res.data;
-        // patch
-        // const unsignedtx_t = {
-        //   ...unsignedtx,
-        //   dataInputs: unsignedtx.dataInputs.map((input) => {
-        //     return {
-        //       ...input,
-        //       assets: input.assets.map((asset) => {
-        //         return { ...asset, amount: asset.amount.toString() };
-        //       }),
-        //       extension: {},
-        //       value: input.value.toString(),
-        //     };
-        //   }),
-        //   inputs: unsignedtx.inputs.map((input) => {
-        //     return {
-        //       ...input,
-        //       assets: input.assets.map((asset) => {
-        //         return { ...asset, amount: asset.amount.toString() };
-        //       }),
-        //       extension: {},
-        //       value: input.value.toString(),
-        //     };
-        //   }),
-        // };
         // form submitted
         setSuccessMessageSnackbar('Form Submitted: Awaiting user confirmation');
         setOpenSuccessSnackbar(true);
@@ -403,11 +409,79 @@ const Contribute = () => {
     setLoading(false);
   };
 
+  const handleSubmitErgopay = async () => {
+    setLoading(true);
+    const emptyCheck = Object.values(formData).every(
+      (v) => v !== '' && v !== 0
+    );
+    const errorCheck = Object.values(formErrors).every((v) => v === false);
+    if (errorCheck && emptyCheck) {
+      try {
+        const sigUSDAmount =
+          formData.currency === 'erg'
+            ? 0
+            : Math.round(
+                formData.vestingAmount * PAIDEIA_CONVERSION_RATE * 100
+              ) / 100;
+        const res = await axios.post(
+          `${process.env.API_URL}/vesting/vestFromProxy`,
+          {
+            proxyNFT: ROUND_PROXY_NFT,
+            vestingAmount: formData.vestingAmount,
+            sigUSDAmount: sigUSDAmount,
+            address: formData.address,
+            utxos: [],
+            txFormat: 'ergo_pay',
+          },
+          defaultOptions
+        );
+        setErgopayUrl(res.data.url);
+        setSuccessMessageSnackbar('Form Submitted');
+        setOpenSuccessSnackbar(true);
+        setOpenModal(transactionModalState.USER_PENDING);
+      } catch (e) {
+        // snackbar for error message
+        if (e.response) {
+          setErrorMessage(
+            'Error: ' + e.response.status + ' - ' + e.response.data
+          );
+        } else {
+          console.log(e);
+          setOpenSuccessSnackbar(false);
+          setErrorMessage('Failed to sign transaction');
+        }
+        setOpenError(true);
+        setOpenModal(transactionModalState.CLOSED);
+      }
+    } else {
+      let updateErrors = {};
+      Object.entries(formData).forEach((entry) => {
+        const [key, value] = entry;
+        if (value === '' || value === 0) {
+          if (Object.hasOwn(formErrors, key)) {
+            let newEntry = { [key]: true };
+            updateErrors = { ...updateErrors, ...newEntry };
+          }
+        }
+      });
+      setFormErrors({
+        ...formErrors,
+        ...updateErrors,
+      });
+
+      // snackbar for error message
+      setErrorMessage('Please eliminate form errors and try again');
+      setOpenError(true);
+    }
+    // turn off loading spinner for submit button
+    setLoading(false);
+  };
+
   return (
     <>
       <Container maxWidth="lg" sx={{ px: { xs: 2, md: 3 } }}>
         <PageTitle
-          title="Paideia Staker Round"
+          title="Paideia Strategic Round"
           subtitle="Contribute Ergo or SigUsd to the Paideia DAO to reserve your Paideia governance tokens."
         />
       </Container>
@@ -439,15 +513,24 @@ const Contribute = () => {
               transactions to the smart contract.
             </Typography>
             <Typography variant="p" sx={{ fontSize: '1rem', mb: 3 }}>
-              The vesting period for this round will be 12 months and emission
+              The vesting period for this round will be 6 months and emission
               will happen daily following the IDO.
             </Typography>
           </Box>
         </Grid>
         <Grid item md={8}>
-          <Box component="form" noValidate onSubmit={handleSubmit}>
-            <Typography variant="h4" sx={{ mb: 3, fontWeight: '700' }}>
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: '700' }}>
               Token Contribution Form
+            </Typography>
+            <Typography variant="p" sx={{ mb: 0 }}>
+              Tokens remaining to be distributed for this round:{' '}
+              {Math.round(roundDetails.remaining * 10000) / 10000}.
+            </Typography>
+            <Typography variant="p" sx={{ mb: 3 }}>
+              <b>Note:</b> If you are whitelisted for seed or strategic rounds,
+              be aware of the waitlist open dates, where others may be able to
+              claim your reserved tokens.
             </Typography>
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -501,8 +584,6 @@ const Contribute = () => {
                     }}
                   />
                   <FormHelperText>
-                    {/* {formErrors.address &&
-                      'Your address must be approved on the whitelist. '} */}
                     {formErrors.address &&
                       'Please use the dapp connector to add a wallet address.'}
                   </FormHelperText>
@@ -664,15 +745,36 @@ const Contribute = () => {
             <Typography variant="p" sx={{ fontWeight: 'bold', mb: 0 }}>
               YOROI IS NOT SUPPORTED.
             </Typography>
-            <Button
-              type="submit"
-              fullWidth
-              disabled={buttonDisabled}
-              variant="contained"
-              sx={{ mt: 3, mb: 3 }}
-            >
-              Submit
-            </Button>
+            <Grid container>
+              <Grid item xs={6} sx={{ pr: 0.5 }}>
+                <Button
+                  type="submit"
+                  fullWidth
+                  disabled={
+                    buttonDisabled ||
+                    formErrors.address ||
+                    !dAppWallet.connected
+                  }
+                  variant="contained"
+                  sx={{ mt: 3, mb: 3 }}
+                  onClick={handleSubmit}
+                >
+                  Pay with dApp
+                </Button>
+              </Grid>
+              <Grid item xs={6} sx={{ pl: 0.5 }}>
+                <Button
+                  type="submit"
+                  fullWidth
+                  disabled={buttonDisabled || formErrors.address}
+                  variant="contained"
+                  sx={{ mt: 3, mb: 3 }}
+                  onClick={handleSubmitErgopay}
+                >
+                  Pay with Ergopay
+                </Button>
+              </Grid>
+            </Grid>
             {isLoading && (
               <CircularProgress
                 size={24}
@@ -688,7 +790,7 @@ const Contribute = () => {
           </Box>
           <Typography sx={{ color: theme.palette.text.secondary }}>
             {formState === formOpenState.EARLY &&
-              'The Paideia stakers contribution is yet to start.'}
+              'This contribution round is yet to start.'}
           </Typography>
           <Typography sx={{ color: theme.palette.text.secondary }}>
             {formState === formOpenState.CLOSED && 'The round is closed.'}
@@ -700,6 +802,7 @@ const Contribute = () => {
         onClose={() => {
           setOpenModal(transactionModalState.CLOSED);
           setTransactionId('');
+          setErgopayUrl('');
         }}
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
@@ -708,10 +811,14 @@ const Contribute = () => {
           <Typography id="modal-title" variant="h6" component="h2">
             Contribution
           </Typography>
-          <TransactionSubmitted
-            transactionId={transactionId}
-            pending={openModal === transactionModalState.USER_PENDING}
-          />
+          {ergopayUrl ? (
+            <ErgopayModalBody ergopayUrl={ergopayUrl} />
+          ) : (
+            <TransactionSubmitted
+              transactionId={transactionId}
+              pending={openModal === transactionModalState.USER_PENDING}
+            />
+          )}
         </Box>
       </Modal>
       <Snackbar
@@ -744,4 +851,4 @@ const Contribute = () => {
   );
 };
 
-export default Contribute;
+export default ContributeStrategicRound;
