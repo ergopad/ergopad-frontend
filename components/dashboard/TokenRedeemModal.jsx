@@ -17,6 +17,7 @@ import axios from 'axios';
 import { useEffect, useState, forwardRef } from 'react';
 import { useWallet } from 'utils/WalletContext';
 import TransactionSubmitted from '@components/TransactionSubmitted';
+import ErgopayModalBody from '@components/ErgopayModalBody';
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -59,6 +60,7 @@ const TokenRedeemModal = ({ box, onClose }) => {
   const [formData, setFormData] = useState(initFormData);
   // loading
   const [loading, setLoading] = useState(false);
+  const [ergopayLoading, setErgopayLoading] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   // open error snackbar
   const [openError, setOpenError] = useState(false);
@@ -67,19 +69,20 @@ const TokenRedeemModal = ({ box, onClose }) => {
   );
   // transaction submitted
   const [transactionSubmitted, setTransactionSubmitted] = useState(null);
+  const [ergopayUrl, setErgopayUrl] = useState(null);
 
   useEffect(() => {
     setFormData({ address: wallet });
-    if (wallet !== '' && dAppWallet.connected) {
+    if (wallet !== '') {
       setFormErrors({ address: false });
     } else {
       setFormErrors({ address: true });
     }
-  }, [wallet, dAppWallet.connected]);
+  }, [wallet]);
 
   useEffect(() => {
-    setButtonDisabled(loading || formErrors.address);
-  }, [loading, formErrors.address]);
+    setButtonDisabled(loading || ergopayLoading || formErrors.address);
+  }, [loading, formErrors.address, ergopayLoading]);
 
   // snackbar for error reporting
   const handleCloseError = (e, reason) => {
@@ -89,8 +92,7 @@ const TokenRedeemModal = ({ box, onClose }) => {
     setOpenError(false);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setLoading(true);
     const emptyCheck = Object.values(formData).every(
       (v) => v !== '' && v !== 0
@@ -140,12 +142,53 @@ const TokenRedeemModal = ({ box, onClose }) => {
     setLoading(false);
   };
 
+  const handleSubmitErgopay = async () => {
+    setErgopayLoading(true);
+    const emptyCheck = Object.values(formData).every(
+      (v) => v !== '' && v !== 0
+    );
+    const errorCheck = Object.values(formErrors).every((v) => v === false);
+    if (emptyCheck && errorCheck) {
+      try {
+        const res = await axios.post(
+          `${process.env.API_URL}/vesting/redeemWithNFT`,
+          {
+            boxId: box.boxId,
+            address: formData.address,
+            utxos: [],
+            txFormat: 'ergo_pay',
+          },
+          defaultOptions
+        );
+        setErgopayUrl(res.data.url);
+      } catch (e) {
+        // snackbar for error message
+        if (e.response) {
+          setErrorMessage(
+            'Error: ' + e.response.status + ' - ' + e.response.data
+          );
+        } else {
+          console.log(e);
+          setErrorMessage('Failed to build transaction');
+        }
+        setOpenError(true);
+      }
+    } else {
+      setFormErrors({ address: true });
+      // // snackbar for error message
+      setErrorMessage('Please eliminate form errors and try again');
+      setOpenError(true);
+    }
+    setErgopayLoading(false);
+  };
+
   return (
     <>
       <Modal
         open={box !== null}
         onClose={() => {
           setTransactionSubmitted(null);
+          setErgopayUrl(null);
           onClose();
         }}
         aria-labelledby="modal-title"
@@ -157,10 +200,14 @@ const TokenRedeemModal = ({ box, onClose }) => {
           </Typography>
           {box !== null ? (
             <>
-              {transactionSubmitted ? (
-                <TransactionSubmitted transactionId={transactionSubmitted} />
+              {transactionSubmitted || ergopayUrl ? (
+                transactionSubmitted ? (
+                  <TransactionSubmitted transactionId={transactionSubmitted} />
+                ) : (
+                  <ErgopayModalBody ergopayUrl={ergopayUrl} />
+                )
               ) : (
-                <Box component="form" noValidate onSubmit={handleSubmit}>
+                <Box>
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
                       <FormControl
@@ -204,12 +251,28 @@ const TokenRedeemModal = ({ box, onClose }) => {
                   </Grid>
                   <Button
                     type="submit"
+                    disabled={buttonDisabled || !dAppWallet.connected}
+                    variant="contained"
+                    sx={{ mt: 3, color: '#fff', textTransform: 'none', mr: 1 }}
+                    onClick={handleSubmit}
+                  >
+                    Claim with dApp
+                    {loading && (
+                      <CircularProgress
+                        sx={{ ml: 2, color: 'white' }}
+                        size={'1.2rem'}
+                      />
+                    )}
+                  </Button>
+                  <Button
+                    type="submit"
                     disabled={buttonDisabled}
                     variant="contained"
                     sx={{ mt: 3, color: '#fff', textTransform: 'none' }}
+                    onClick={handleSubmitErgopay}
                   >
-                    Claim Tokens
-                    {loading && (
+                    Claim with Ergopay
+                    {ergopayLoading && (
                       <CircularProgress
                         sx={{ ml: 2, color: 'white' }}
                         size={'1.2rem'}

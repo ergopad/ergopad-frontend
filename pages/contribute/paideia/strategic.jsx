@@ -447,7 +447,7 @@ const ContributeStrategicRound = () => {
         } else {
           console.log(e);
           setOpenSuccessSnackbar(false);
-          setErrorMessage('Failed to sign transaction');
+          setErrorMessage('Failed to build transaction');
         }
         setOpenError(true);
         setOpenModal(transactionModalState.CLOSED);
