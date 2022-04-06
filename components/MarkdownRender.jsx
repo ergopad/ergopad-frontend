@@ -30,7 +30,7 @@ const MarkdownRender = ({ description }) => {
         p: ({ node, ...props }) => <Typography variant="p" {...props} />,
         ul: ({ node, ...props }) => <MarkdownList {...props} />,
         li: ({ node, ...props }) => <MarkdownListItem {...props} />,
-        a: ({ node, ...props }) => <MuiNextLink {...props} />,
+        a: ({ node, ...props }) => <MuiNextLink {...props} sx={{ wordBreak: 'break-all' }} />,
       }}
       remarkPlugins={[remarkGfm]}
     >

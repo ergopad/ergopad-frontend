@@ -26,6 +26,10 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import MarkdownRender from '@components/MarkdownRender';
 import Image from 'next/image'
+import Roadmap from '@components/Roadmap'
+import Team from '@components/Team'
+import Tokenomics from '@components/Tokenomics'
+import Distribution from '@components/Distribution'
 
 const navBarLinks = [
   {
@@ -36,27 +40,27 @@ const navBarLinks = [
   {
     name: 'Roadmap',
     icon: 'signpost',
-    link: '#'
+    link: '#roadmap'
   },
   {
     name: 'Team',
     icon: 'people',
-    link: '#'
+    link: '#team'
   },
   {
     name: 'Tokenomics',
     icon: 'data_usage',
-    link: '#'
+    link: '#tokenomics'
   },
   {
     name: 'Distribution',
     icon: 'toc',
-    link: '#'
+    link: '#distribution'
   },
   {
     name: 'Social',
     icon: 'forum',
-    link: '#'
+    link: '#social'
   }
 ]
 
@@ -133,12 +137,23 @@ const Project = () => {
                       height={800}
                     />
                   </Box>
+                  <Box sx={{ 
+                    position: '-webkit-sticky', 
+                    position: 'sticky', 
+                    top: 20,
+                    // bottom: 20, 
+                    paddingTop: '40px',
+                    // paddingBottom: '40px',
+                    zIndex: 0,
+                  }}>
                   <List>
                   {navBarLinks.map(({ icon, name, link }, i) => (
                     <ListItem
                       button
                       sx={{ ...listItemSx }}
-                      onClick={() => {link}}
+                      onClick={() => {
+                        router.push(`/projects/${project_id}/${link}`);
+                      }}
                     >
                       <ListItemIcon>
                         <Icon>
@@ -149,6 +164,23 @@ const Project = () => {
                     </ListItem>
                   ))}
                   </List>
+                  {project?.socials?.website ? (
+                    <>
+                    <Typography fontWeight="600" sx={{ fontSize: '1rem', mt: 2 }}>
+                      Website:
+                    </Typography>
+                      <Link
+                        href={project.socials.website}
+                        aria-label="website"
+                        title="Web"
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        {project.socials.website}
+                      </Link>
+                    </>
+                  ) : null}
+                  </Box>
                 </Grid>
                 <Grid item xs={12} md={9}>
                   
@@ -159,18 +191,36 @@ const Project = () => {
 
                   {project.description && (
                     <>
-                      <Typography variant="h4" sx={{ mt: '2rem' }}>
+                      <Typography variant="h4" sx={{ mt: '2rem', fontWeight: '800' }}>
                         Description
                       </Typography>
                       <MarkdownRender description={project.description} />
                     </>
                   )}
-                  {/* <Typography variant="h4">Meet the team</Typography>
-                  {/* todo: Add rendering for team 
-                  <Typography variant="p">
-                    Update team description for content in this section.
-                  </Typography> */}
-                  {/* socials go here */}
+
+                  <Typography variant="h4" sx={{ mt: '2rem', fontWeight: '800' }} id="roadmap">
+                    Roadmap
+                  </Typography>
+                  <Roadmap />
+
+                  <Typography variant="h4" sx={{ mt: '2rem', fontWeight: '800' }} id="team">
+                    Team
+                  </Typography>
+                  <Team />
+
+                  <Typography variant="h4" sx={{ mt: '2rem', fontWeight: '800' }} id="tokenomics">
+                    Tokenomics
+                  </Typography>
+                  <Tokenomics />
+
+                  <Typography variant="h4" sx={{ mt: '2rem', fontWeight: '800' }} id="distribution">
+                    Distribution
+                  </Typography>
+                  <Distribution />
+
+                  <Typography variant="h4" sx={{ mt: '2rem', fontWeight: '800' }} id="social">
+                    Social
+                  </Typography>
                   <Grid container>
                     {project?.socials?.discord ? (
                       <Link
