@@ -283,10 +283,6 @@ const Whitelist = () => {
       email: formData.email,
       sigValue: formData.sigValue,
       ergoAddress: formData.ergoAddress,
-      chatHandle: '__hardcoded_patch',
-      chatPlatform: '__hardcoded_patch',
-      socialHandle: '__hardcoded_patch',
-      socialPlatform: '__hardcoded_patch',
       event: whitelistData.eventName,
     };
 
