@@ -7,6 +7,8 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  FormControlLabel,
+  Checkbox,
 } from '@mui/material';
 import { forwardRef } from 'react';
 import { useEffect, useState } from 'react';
@@ -31,7 +33,10 @@ const initialFormData = Object.freeze({
   checkBoxes: {
     checkBoxText: [],
   },
-  additionalDetails: { min_stake: 0 },
+  additionalDetails: {
+    min_stake: 0,
+    add_to_footer: false,
+  },
   total_sigusd: 0,
   buffer_sigusd: 0,
   individualCap: 0,
@@ -170,13 +175,24 @@ const EditWhitelistEventForm = () => {
       });
     }
 
-    if (['min_stake'].includes(e.target.name)) {
-      updateFormData({
-        ...formData,
-        additionalDetails: {
-          [e.target.name]: e.target.value,
-        },
-      });
+    if (['min_stake', 'add_to_footer'].includes(e.target.name)) {
+      if (e.target.name === 'min_stake') {
+        updateFormData({
+          ...formData,
+          additionalDetails: {
+            ...formData.additionalDetails,
+            [e.target.name]: e.target.value,
+          },
+        });
+      } else {
+        updateFormData({
+          ...formData,
+          additionalDetails: {
+            ...formData.additionalDetails,
+            [e.target.name]: e.target.checked,
+          },
+        });
+      }
     } else {
       updateFormData({
         ...formData,
@@ -517,6 +533,23 @@ const EditWhitelistEventForm = () => {
               onChange={handleChange}
               error={formErrors.end_dtz}
               helperText={formErrors.end_dtz && 'Invalid Format'}
+            />
+          </Grid>
+        </Grid>
+        <Typography variant="h6" sx={{ mt: 4, mb: 1, fontWeight: '700' }}>
+          Form Configuration
+        </Typography>
+        <Grid container item>
+          <Grid item xs={12} md={6}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="add_to_footer"
+                  checked={formData.additionalDetails.add_to_footer}
+                  onChange={handleChange}
+                />
+              }
+              label="Add to Footer"
             />
           </Grid>
         </Grid>
