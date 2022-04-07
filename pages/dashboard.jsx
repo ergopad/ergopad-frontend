@@ -308,11 +308,19 @@ const Dashboard = () => {
         .filter((vested) => vested.length);
       setVestedTokens(reduceVested(vested));
 
-      const vestedTokensNFTResponse = await axios.post(
-        `${process.env.API_URL}/vesting/vestedWithNFT/`,
-        { addresses: [...addresses] },
-        { ...defaultOptions }
-      );
+      const vestedTokensNFTResponse = await axios
+        .post(
+          `${process.env.API_URL}/vesting/vestedWithNFT/`,
+          { addresses: [...addresses] },
+          { ...defaultOptions }
+        )
+        .catch((e) => {
+          console.log('ERROR FETCHING', e);
+          return {
+            data: [],
+          };
+        });
+
       setVestedTokensNFT(vestedTokensNFTResponse.data);
       setLoadingVestingTable(false);
     };
