@@ -36,6 +36,7 @@ const initialFormData = Object.freeze({
   additionalDetails: {
     min_stake: 0,
     add_to_footer: false,
+    staker_snapshot_whitelist: false,
   },
   total_sigusd: 0,
   buffer_sigusd: 0,
@@ -175,8 +176,12 @@ const EditWhitelistEventForm = () => {
       });
     }
 
-    if (['min_stake', 'add_to_footer'].includes(e.target.name)) {
-      if (e.target.name === 'min_stake') {
+    if (
+      ['min_stake', 'add_to_footer', 'staker_snapshot_whitelist'].includes(
+        e.target.name
+      )
+    ) {
+      if (['min_stake'].includes(e.target.name)) {
         updateFormData({
           ...formData,
           additionalDetails: {
@@ -214,8 +219,12 @@ const EditWhitelistEventForm = () => {
           )}`,
         },
       };
+      const stakerRound = formData.additionalDetails.staker_snapshot_whitelist;
       const data = {
         ...formData,
+        // random buffer to allow signups
+        buffer_sigusd: stakerRound ? 0xc0ffee : formData.buffer_sigusd,
+        individualCap: stakerRound ? 0xc0ffee : formData.individualCap,
       };
       try {
         await axios.put(
@@ -433,6 +442,7 @@ const EditWhitelistEventForm = () => {
             <TextField
               sx={{ p: 0.5 }}
               InputProps={{ disableUnderline: true }}
+              disabled={formData.additionalDetails.staker_snapshot_whitelist}
               required
               fullWidth
               id="total_sigusd"
@@ -451,6 +461,7 @@ const EditWhitelistEventForm = () => {
             <TextField
               sx={{ p: 0.5 }}
               InputProps={{ disableUnderline: true }}
+              disabled={formData.additionalDetails.staker_snapshot_whitelist}
               required
               fullWidth
               id="buffer_sigusd"
@@ -471,6 +482,7 @@ const EditWhitelistEventForm = () => {
             <TextField
               sx={{ p: 0.5 }}
               InputProps={{ disableUnderline: true }}
+              disabled={formData.additionalDetails.staker_snapshot_whitelist}
               required
               fullWidth
               id="individualCap"
@@ -489,6 +501,7 @@ const EditWhitelistEventForm = () => {
             <TextField
               sx={{ p: 0.5 }}
               InputProps={{ disableUnderline: true }}
+              disabled={formData.additionalDetails.staker_snapshot_whitelist}
               fullWidth
               id="min_stake"
               label="Minimum Stake (0 for default)"
@@ -496,6 +509,20 @@ const EditWhitelistEventForm = () => {
               variant="filled"
               value={formData.additionalDetails.min_stake}
               onChange={handleChange}
+            />
+          </Grid>
+        </Grid>
+        <Grid container item>
+          <Grid item xs={12} md={6} sx={{ mt: 1 }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="staker_snapshot_whitelist"
+                  checked={formData.additionalDetails.staker_snapshot_whitelist}
+                  onChange={handleChange}
+                />
+              }
+              label="Staker Snapshot Whitelist"
             />
           </Grid>
         </Grid>

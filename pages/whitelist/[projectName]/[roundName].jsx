@@ -65,21 +65,19 @@ const Whitelist = () => {
   const [whitelistData, setWhitelistData] = useState(null);
   const [whitelistState, setWhitelistState] = useState(NOT_STARTED);
   const [whitelistLoading, setWhitelistLoading] = useState(true);
-  // boolean object for each checkbox
   const [checkboxState, setCheckboxState] = useState([]);
   // set true to disable submit button
   const [buttonDisabled, setbuttonDisabled] = useState(true);
-  // form error object, all booleans
+  // form data
   const [formErrors, setFormErrors] = useState(initialFormErrors);
-  // form data is all strings
   const [formData, updateFormData] = useState(initialFormData);
   // loading spinner for submit button
   const [isLoading, setLoading] = useState(false);
-  // open error snackbar
-  const [openError, setOpenError] = useState(false);
   // open success modal
   const [openSuccess, setOpenSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('Saved');
   // change error message for error snackbar
+  const [openError, setOpenError] = useState(false);
   const [errorMessage, setErrorMessage] = useState(
     'Please eliminate form errors and try again'
   );
@@ -271,49 +269,68 @@ const Whitelist = () => {
     setOpenSuccess(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const emptyCheck = formData.ergoAddress !== '' && formData.sigValue !== 0;
+    const emptyCheck =
+      formData.ergoAddress !== '' &&
+      (formData.sigValue !== 0 ||
+        whitelistData.additionalDetails.staker_snapshot_whitelist);
     const errorCheck = Object.values(formErrors).every((v) => v === false);
 
     const form = {
       name: '__anon_ergonaut',
       email: formData.email,
-      sigValue: formData.sigValue,
+      sigValue: whitelistData.additionalDetails.staker_snapshot_whitelist
+        ? 1
+        : formData.sigValue,
       ergoAddress: formData.ergoAddress,
       event: whitelistData.eventName,
     };
 
     if (errorCheck && emptyCheck) {
-      axios
-        .post(`${process.env.API_URL}/whitelist/signup`, { ...form })
-        .then(() => {
-          setLoading(false);
-          // modal for success message
-          setOpenSuccess(true);
-        })
-        .catch((err) => {
-          // snackbar for error message
-          setErrorMessage(
-            'Error: ' + err.response.status + ' - ' + err.response.data
-          );
-          setOpenError(true);
-          setLoading(false);
-        });
+      try {
+        const res = await axios.post(
+          `${process.env.API_URL}/whitelist/signup`,
+          { ...form }
+        );
+        // modal for success message
+        setSuccessMessage(
+          whitelistData.additionalDetails.staker_snapshot_whitelist
+            ? 'Saved'
+            : `Saved: ${res.data.detail}`
+        );
+        setOpenSuccess(true);
+      } catch (err) {
+        // snackbar for error message
+        setErrorMessage(
+          'Error: ' + err.response.status + ' - ' + err.response.data
+        );
+        setOpenError(true);
+      }
     } else {
       let updateErrors = {};
       Object.entries(formData).forEach((entry) => {
         const [key, value] = entry;
         // special patch for email regex
-        if (key !== 'email' && value == '') {
+        if (!['email', 'sigValue'].includes(key) && value == '') {
+          // default
           let newEntry = { [key]: true };
           updateErrors = { ...updateErrors, ...newEntry };
         } else if (
           key === 'email' &&
           !(emailRegex.test(value) || value === '')
         ) {
+          // email check
+          let newEntry = { [key]: true };
+          updateErrors = { ...updateErrors, ...newEntry };
+        } else if (
+          key === 'sigValue' &&
+          value === 0 &&
+          !whitelistData.additionalDetails.staker_snapshot_whitelist
+        ) {
+          // handle sigValue case
           let newEntry = { [key]: true };
           updateErrors = { ...updateErrors, ...newEntry };
         }
@@ -327,10 +344,9 @@ const Whitelist = () => {
       // snackbar for error message
       setErrorMessage('Please eliminate form errors and try again');
       setOpenError(true);
-
-      // turn off loading spinner for submit button
-      setLoading(false);
     }
+    // turn off loading spinner for submit button
+    setLoading(false);
   };
 
   return (
@@ -478,28 +494,31 @@ const Whitelist = () => {
                           onChange={handleChange}
                         />
                       </Grid>
-                      <Grid item xs={12}>
-                        <Typography color="text.secondary">
-                          Enter how much in SigUSD you&apos;d like to invest.
-                          You can send ergo or SigUSD on the sale date.{' '}
-                        </Typography>
-                        <TextField
-                          sx={{ mt: 1 }}
-                          InputProps={{ disableUnderline: true }}
-                          required
-                          fullWidth
-                          id="sigValue"
-                          label="How much would you like to invest in SigUSD value"
-                          name="sigValue"
-                          variant="filled"
-                          helperText={
-                            formErrors.sigValue &&
-                            `Please enter between 1 and ${whitelistData.individualCap} sigUSD`
-                          }
-                          onChange={handleChange}
-                          error={formErrors.sigValue}
-                        />
-                      </Grid>
+                      {!whitelistData.additionalDetails
+                        .staker_snapshot_whitelist && (
+                        <Grid item xs={12}>
+                          <Typography color="text.secondary">
+                            Enter how much in SigUSD you&apos;d like to invest.
+                            You can send ergo or SigUSD on the sale date.{' '}
+                          </Typography>
+                          <TextField
+                            sx={{ mt: 1 }}
+                            InputProps={{ disableUnderline: true }}
+                            required
+                            fullWidth
+                            id="sigValue"
+                            label="How much would you like to invest in SigUSD value"
+                            name="sigValue"
+                            variant="filled"
+                            helperText={
+                              formErrors.sigValue &&
+                              `Please enter between 1 and ${whitelistData.individualCap} sigUSD`
+                            }
+                            onChange={handleChange}
+                            error={formErrors.sigValue}
+                          />
+                        </Grid>
+                      )}
                       <Grid item xs={12}>
                         <Typography color="text.secondary">
                           Select your primary wallet address for whitelisting.
@@ -621,7 +640,7 @@ const Whitelist = () => {
                         severity="success"
                         sx={{ width: '100%' }}
                       >
-                        Saved
+                        {successMessage}
                       </Alert>
                     </Snackbar>
                   </Box>
