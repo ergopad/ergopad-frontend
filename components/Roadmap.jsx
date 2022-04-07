@@ -9,27 +9,24 @@ import Icon from '@mui/material/Icon'
 
 const timelineItems = [
     {
-        itemId: 0,
-        itemName: 'Test',
-        itemDescription: 'Staker',
+        itemName: 'Staker Whitelist',
+        itemDescription: 'Sign up for the staker whitelist to make sure your wallet is scanned when we do the snapshot. ',
         itemDate: 1649275200, 
     },
     {
-        itemId: 1,
-        itemName: 'Hello',
-        itemDescription: 'Stake 2',
+        itemName: 'Staker Snapshot',
+        itemDescription: 'All Ergopad stakers will be scanned on this date, and we will generate the staker whitelist. Once complete, tokens will be airdropped to everyone and you\'ll be able to contribute once the form is live. ',
         itemDate: 1649917200,
     },
 ]
 
 const Roadmap = () => {
 
-    
-
   return (
-    <>
-        <Timeline>
-            {timelineItems.map(({ itemId, itemName, itemDescription, itemDate, itemTime }, i) => (
+    <Timeline>
+        {timelineItems.map((item) => {
+            const itemTime = new Date(item?.itemDate * 1000).toISOString()
+            return (
                 <TimelineItem sx={{ 
                     '&::before': {
                         p: 0,
@@ -45,24 +42,20 @@ const Roadmap = () => {
                         <TimelineConnector />
                     </TimelineSeparator>
                     <TimelineContent sx={{ py: '12px', px: 2 }}>
-                        <Typography variant="h5">
-                            {itemName}
+                        <Typography variant="h5" sx={{ mt: '-3px' }}>
+                            {item?.itemName}
                         </Typography>
-                        <Typography variant="p">
-                        {
-                            new Date(itemDate * 1000)
-                                .toISOString()
-                                .slice(0, 10)
-                        }
+                        <Typography variant="p" sx={{ mb: 1 }}>
+                            {itemTime.slice(0, 10) + ', ' + itemTime.slice(11, 16) + ' UTC'}
                         </Typography>
-                        <Typography variant="p" sx={{ fontSize: '1rem' }}>
-                            {itemDescription}
+                        <Typography variant="p" sx={{ fontSize: '1rem', mb: 1 }}>
+                            {item?.itemDescription}
                         </Typography>
                     </TimelineContent>
                 </TimelineItem>
-            ))}
-        </Timeline>
-    </>
+            )
+        })}
+    </Timeline>
   );
 };
 
