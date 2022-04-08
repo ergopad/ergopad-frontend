@@ -33,7 +33,6 @@ import Team from '@components/projects/Team';
 import Tokenomics from '@components/projects/Tokenomics';
 import Distribution from '@components/projects/Distribution';
 import axios from 'axios';
-import theme from '@styles/theme';
 
 const navBarLinks = [
   {
@@ -221,8 +220,8 @@ const Project = () => {
                     }}
                   >
                     <Avatar
-                      src="/paideia-test-square.png"
-                      alt="Paideia"
+                      src={project.bannerImgUrl}
+                      alt={project.name}
                       sx={{ width: 200, height: 200, display: 'flex' }}
                     />
                   </Box>
@@ -333,34 +332,32 @@ const Project = () => {
                       )}
                     </CopyToClipboard>
                   </Box>
-                  {project.description && (
-                    <Box sx={{ mb: '2rem' }}>
-                      <Typography
-                        variant="h4"
-                        sx={{ mt: '2rem', fontWeight: '800' }}
-                      >
-                        Description
-                      </Typography>
-                      <MarkdownRender description={project.description} />
-                    </Box>
-                  )}
+                  <Box sx={{ mb: '2rem' }}>
+                    <Typography
+                      variant="h4"
+                      sx={{ mt: '2rem', fontWeight: '800' }}
+                    >
+                      Description
+                    </Typography>
+                    <MarkdownRender description={project.description} />
+                  </Box>
                   <Box sx={{ mb: '2rem' }}>
                     <Typography variant="h4" sx={headingStyle} id="roadmap">
                       Roadmap
                     </Typography>
-                    <Roadmap />
+                    <Roadmap data={project?.roadmap?.roadmap} />
                   </Box>
                   <Box sx={{ mb: '2rem' }}>
                     <Typography variant="h4" sx={headingStyle} id="team">
                       Team
                     </Typography>
-                    <Team />
+                    <Team data={project?.team?.team} />
                   </Box>
                   <Box sx={{ mb: '2rem' }}>
                     <Typography variant="h4" sx={headingStyle} id="tokenomics">
                       Tokenomics
                     </Typography>
-                    <Tokenomics />
+                    <Tokenomics data={project?.tokenomics?.tokenomics} />
                   </Box>
                   <Box>
                     <Typography
@@ -370,7 +367,12 @@ const Project = () => {
                     >
                       Distribution
                     </Typography>
-                    <Distribution />
+                    <Distribution
+                      data={project?.tokenomics?.tokenomics}
+                      name={project?.tokenomics?.tokenName}
+                      ticker={project?.tokenomics?.tokenTicker}
+                      total={project?.tokenomics?.totalTokens}
+                    />
                   </Box>
                 </Grid>
               </Grid>

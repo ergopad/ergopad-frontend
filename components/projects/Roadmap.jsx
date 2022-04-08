@@ -7,29 +7,19 @@ import TimelineDot from '@mui/lab/TimelineDot';
 import Typography from '@mui/material/Typography';
 import Icon from '@mui/material/Icon';
 
-const timelineItems = [
-  {
-    itemName: 'Staker Whitelist',
-    itemDescription:
-      'Sign up for the staker whitelist to make sure your wallet is scanned when we do the snapshot. ',
-    itemDate: 1649275200,
-  },
-  {
-    itemName: 'Staker Snapshot',
-    itemDescription:
-      "All Ergopad stakers will be scanned on this date, and we will generate the staker whitelist. Once complete, tokens will be airdropped to everyone and you'll be able to contribute once the form is live. ",
-    itemDate: 1649917200,
-  },
-];
-
-const Roadmap = () => {
+const Roadmap = ({ data }) => {
+  const timelineItems = data
+    ? data.map((roadmap) => {
+        return { ...roadmap, date: Date.parse(roadmap.date) };
+      })
+    : [];
   return (
     <Timeline>
       {timelineItems.map((item) => {
-        const itemTime = new Date(item?.itemDate * 1000).toISOString();
+        const itemTime = new Date(item?.date).toISOString();
         return (
           <TimelineItem
-            key={item?.itemName}
+            key={item?.name}
             sx={{
               '&::before': {
                 p: 0,
@@ -45,13 +35,13 @@ const Roadmap = () => {
             </TimelineSeparator>
             <TimelineContent sx={{ py: '12px', px: 2 }}>
               <Typography variant="h5" sx={{ mt: '-3px' }}>
-                {item?.itemName}
+                {item?.name}
               </Typography>
               <Typography variant="p" sx={{ mb: 1 }}>
                 {itemTime.slice(0, 10) + ', ' + itemTime.slice(11, 16) + ' UTC'}
               </Typography>
               <Typography variant="p" sx={{ fontSize: '1rem', mb: 1 }}>
-                {item?.itemDescription}
+                {item?.description}
               </Typography>
             </TimelineContent>
           </TimelineItem>

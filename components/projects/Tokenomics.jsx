@@ -3,21 +3,6 @@ import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import React from 'react';
 
-const tokenSections = [
-  {
-    name: 'Seed Round',
-    percent: 50,
-  },
-  {
-    name: 'Staker Round',
-    percent: 30,
-  },
-  {
-    name: 'Liquidity',
-    percent: 20,
-  },
-];
-
 function LinearProgressWithLabel(props) {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -33,7 +18,16 @@ function LinearProgressWithLabel(props) {
   );
 }
 
-const Distribution = () => {
+const Distribution = ({ data }) => {
+  const tokenomics = data ? data : [];
+  const total = tokenomics.reduce((a, data) => a + data.amount, 0);
+  const tokenSections = tokenomics.map((data) => {
+    return {
+      name: data.name,
+      percent: (data.amount * 100) / total,
+    };
+  });
+
   return (
     <Box width="90%" sx={{ mx: 'auto' }}>
       {tokenSections.map(({ name, percent }) => (

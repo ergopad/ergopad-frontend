@@ -24,42 +24,12 @@ const tokenomicsHeading = {
 const tokenomicsKeys = Object.keys(tokenomicsHeading);
 const tokenomicsHeadingValues = Object.values(tokenomicsHeading);
 
-const tokenomics = [
-  {
-    name: 'Seed Round',
-    amount: 50000000,
-    value: '$0.01',
-    tge: '10%',
-    freq: 'Monthly',
-    length: '24 Months',
-    lockup: '1 Month',
-  },
-  {
-    name: 'Strategic Round',
-    amount: 30000000,
-    value: '$0.02',
-    tge: '10%',
-    freq: 'Monthly',
-    length: '12 Months',
-    lockup: '1 Month',
-  },
-  {
-    name: 'Liquidity',
-    amount: 20000000,
-    value: '$0.03',
-    tge: '100%',
-    freq: '',
-    length: '',
-    lockup: '',
-  },
-];
-
-const totalTokens = 38000000;
-const tokenName = 'Paideia';
-const tokenTicker = 'PAI';
-
-const Distribution = () => {
+const Distribution = ({ data, total, name, ticker }) => {
   const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
+  const totalTokens = total ? total : 0;
+  const tokenName = name ? name : '';
+  const tokenTicker = ticker ? ticker : '';
+  const tokenomics = data ? data : [];
 
   const largeHeading = tokenomicsHeadingValues.map((value, i) => {
     return (
