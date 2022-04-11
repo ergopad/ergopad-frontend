@@ -6,15 +6,19 @@ import {
   FormControlLabel,
   Checkbox,
   Button,
+  CircularProgress,
 } from '@mui/material';
-import { forwardRef } from 'react';
-import { useEffect, useState } from 'react';
-import theme from '../../styles/theme';
-import CircularProgress from '@mui/material/CircularProgress';
-import axios from 'axios';
+import { forwardRef, useEffect, useState } from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-import FileUploadS3 from '../FileUploadS3';
+import FileUploadS3 from '@components/FileUploadS3';
+import {
+  RoadmapInput,
+  TokenomicsInput,
+  TeamInput,
+} from '@components/ListTextInput';
+import theme from '@styles/theme';
+import axios from 'axios';
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -27,16 +31,28 @@ const initialFormData = Object.freeze({
   shortDescription: '',
   description: '',
   fundsRaised: 0,
+  bannerImgUrl: '',
+  isLaunched: false,
   socials: {
     telegram: '',
     discord: '',
     github: '',
     twitter: '',
     website: '',
+    linkedin: '',
   },
-  bannerImgUrl: '',
-  isLaunched: false,
-  team: [],
+  roadmap: {
+    roadmap: [],
+  },
+  team: {
+    team: [],
+  },
+  tokenomics: {
+    tokenName: '',
+    totalTokens: 0,
+    tokenTicker: '',
+    tokenomics: [],
+  },
 });
 
 const initialFormErrors = Object.freeze({
@@ -126,6 +142,16 @@ const CreateProjectForm = () => {
           [e.target.name]: e.target.value,
         },
       });
+    } else if (
+      ['tokenName', 'totalTokens', 'tokenTicker'].includes(e.target.name)
+    ) {
+      updateFormData({
+        ...formData,
+        tokenomics: {
+          ...formData.tokenomics,
+          [e.target.name]: e.target.value,
+        },
+      });
     } else {
       updateFormData({
         ...formData,
@@ -194,10 +220,13 @@ const CreateProjectForm = () => {
   return (
     <>
       <Box component="form" onSubmit={handleSubmit}>
-        <Typography variant="h4" sx={{ mt: 10, mb: 4, fontWeight: '700' }}>
+        <Typography variant="h4" sx={{ mt: 10, mb: 2, fontWeight: '700' }}>
           Create Project
         </Typography>
         <Grid container spacing={2} />
+        <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: '700' }}>
+          Project Name and Description
+        </Typography>
         <Grid item xs={12}>
           <TextField
             InputProps={{ disableUnderline: true }}
@@ -286,7 +315,7 @@ const CreateProjectForm = () => {
             }
           />
         </Grid>
-        <Typography color="text.secondary" sx={{ mt: 2, mb: 1 }}>
+        <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: '700' }}>
           Socials
         </Typography>
         <Grid container item xs={12} sx={{ mb: 1 }}>
@@ -351,6 +380,107 @@ const CreateProjectForm = () => {
             />
           </Grid>
         </Grid>
+        <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: '700' }}>
+          Roadmap
+        </Typography>
+        <Grid item xs={12} sx={{ mt: 2 }}>
+          <Typography color="text.secondary" sx={{ mt: 1, mb: 1 }}>
+            Roadmap Items
+          </Typography>
+          <RoadmapInput
+            data={formData.roadmap.roadmap}
+            setData={(updatedData) => {
+              updateFormData({
+                ...formData,
+                roadmap: {
+                  ...formData.roadmap,
+                  roadmap: [...updatedData],
+                },
+              });
+            }}
+          />
+        </Grid>
+        <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: '700' }}>
+          Team
+        </Typography>
+        <Grid item xs={12} sx={{ mt: 2 }}>
+          <Typography color="text.secondary" sx={{ mt: 1, mb: 1 }}>
+            Add Team Member
+          </Typography>
+          <TeamInput
+            data={formData.team.team}
+            setData={(updatedData) => {
+              updateFormData({
+                ...formData,
+                team: {
+                  ...formData.team,
+                  team: [...updatedData],
+                },
+              });
+            }}
+          />
+        </Grid>
+        <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: '700' }}>
+          Tokenomics
+        </Typography>
+        <Grid container item xs={12} sx={{ mb: 1 }}>
+          <Grid item xs={12} sx={{ p: 0.5 }}>
+            <TextField
+              InputProps={{ disableUnderline: true }}
+              fullWidth
+              id="tokenName"
+              label="Token Name"
+              name="tokenName"
+              variant="filled"
+              value={formData.tokenomics.tokenName}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item md={6} xs={12} sx={{ p: 0.5 }}>
+            <TextField
+              InputProps={{ disableUnderline: true }}
+              fullWidth
+              id="totalTokens"
+              label="Total Tokens"
+              name="totalTokens"
+              variant="filled"
+              value={formData.tokenomics.totalTokens}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item md={6} xs={12} sx={{ p: 0.5 }}>
+            <TextField
+              InputProps={{ disableUnderline: true }}
+              fullWidth
+              id="tokenTicker"
+              label="Ticker"
+              name="tokenTicker"
+              variant="filled"
+              value={formData.tokenomics.tokenTicker}
+              onChange={handleChange}
+            />
+          </Grid>
+        </Grid>
+        <Grid item xs={12} sx={{ mt: 2 }}>
+          <Typography color="text.secondary" sx={{ mt: 1, mb: 1 }}>
+            Tokenomics Table Row
+          </Typography>
+          <TokenomicsInput
+            data={formData.tokenomics.tokenomics}
+            setData={(updatedData) => {
+              updateFormData({
+                ...formData,
+                tokenomics: {
+                  ...formData.tokenomics,
+                  tokenomics: [...updatedData],
+                },
+              });
+            }}
+          />
+        </Grid>
+        <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: '700' }}>
+          Additional Configuration
+        </Typography>
         <FormControlLabel
           control={
             <Checkbox

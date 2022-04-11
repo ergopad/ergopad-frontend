@@ -877,7 +877,7 @@ const Staking = () => {
                   }}
                   onClick={stake}
                 >
-                  Pay with dApp Wallet
+                  Pay with desktop wallet
                   {stakeLoading && (
                     <CircularProgress
                       sx={{ ml: 2, color: 'white' }}
@@ -910,7 +910,7 @@ const Staking = () => {
                   }}
                   onClick={stakeErgopay}
                 >
-                  Pay with Ergopay
+                  Pay with Mobile Wallet
                   {stakeErgopayLoading && (
                     <CircularProgress
                       sx={{ ml: 2, color: 'white' }}
@@ -947,11 +947,7 @@ const Staking = () => {
           ) : (
             <>
               <Typography variant="p" sx={{ fontSize: '1rem', mb: 2 }}>
-                Once you click submit you will be prompted by your wallet to
-                approve the transaction. There may be a penalty associated with
-                early unstaking. The final penalty will be calculated after
-                submitting this form. Please note the unstaking penalty before
-                approving the transaction in your wallet.
+                Please note the unstaking penalty before approving the transaction in your wallet.
               </Typography>
               <Grid
                 container
@@ -1020,7 +1016,7 @@ const Staking = () => {
                 <FormHelperText>
                   {unstakingFormErrors.wallet
                     ? 'Please connect wallet to proceed'
-                    : 'Submit to calculate unstaking penalty (if any)'}
+                    : ''}
                 </FormHelperText>
                 <Button
                   variant="contained"
@@ -1049,7 +1045,7 @@ const Staking = () => {
                   }}
                   onClick={unstake}
                 >
-                  Pay with dApp Wallet
+                  Pay with desktop wallet
                   {unstakeModalLoading && (
                     <CircularProgress
                       sx={{ ml: 2, color: 'white' }}
@@ -1082,7 +1078,7 @@ const Staking = () => {
                   }}
                   onClick={unstakeErgopay}
                 >
-                  Pay with Ergopay
+                  Pay with Mobile Wallet
                   {unstakeErgopayLoading && (
                     <CircularProgress
                       sx={{ ml: 2, color: 'white' }}
