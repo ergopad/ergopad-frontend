@@ -256,7 +256,7 @@ const TokenRedeemModal = ({ box, onClose }) => {
                     sx={{ mt: 3, color: '#fff', textTransform: 'none', mr: 1 }}
                     onClick={handleSubmit}
                   >
-                    Claim with dApp
+                    Claim with browser wallet
                     {loading && (
                       <CircularProgress
                         sx={{ ml: 2, color: 'white' }}
@@ -271,7 +271,7 @@ const TokenRedeemModal = ({ box, onClose }) => {
                     sx={{ mt: 3, color: '#fff', textTransform: 'none' }}
                     onClick={handleSubmitErgopay}
                   >
-                    Claim with Ergopay
+                    Claim with mobile wallet
                     {ergopayLoading && (
                       <CircularProgress
                         sx={{ ml: 2, color: 'white' }}

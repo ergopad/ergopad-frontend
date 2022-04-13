@@ -46,9 +46,9 @@ const AssetNameContainer = styled('div')(({ theme }) => ({
 }));
 const AssetAmountContainer = styled('div')(() => ({
   display: 'flex',
-  alignItems: 'center',
+  alignItems: 'right',
   flexDirection: 'column',
-  justifyContent: 'center',
+  justifyContent: 'right',
 }));
 
 const AssetItem = ({ asset, stableDenominator = 'USD', type, navigatorLanguage }) => {
@@ -85,7 +85,7 @@ const AssetItem = ({ asset, stableDenominator = 'USD', type, navigatorLanguage }
         </AssetNameContainer>
         {type != 'NFT' && (
           <AssetAmountContainer>
-            <Typography>{asset.amount?.toLocaleString(navigatorLanguage, { maximumFractionDigits: 2 })}</Typography>
+            <Typography sx={{ textAlign: 'right' }}>{asset.amount?.toLocaleString(navigatorLanguage, { maximumFractionDigits: 0 })}</Typography>
             {asset.amountUSD != 0 ? (
               <Typography variant="caption">
                 ${asset.id == SIGUSD_TOKEN_ID ? asset.amount?.toLocaleString(navigatorLanguage, { maximumFractionDigits: 2 }) : asset.amountUSD?.toLocaleString(navigatorLanguage, { maximumFractionDigits: 2 })}{' '}
@@ -100,6 +100,7 @@ const AssetItem = ({ asset, stableDenominator = 'USD', type, navigatorLanguage }
         open={showModal}
         handleClose={() => setShowModal(false)}
         asset={asset}
+        navigatorLanguage={navigatorLanguage}
       />
     </>
   );

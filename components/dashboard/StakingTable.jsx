@@ -81,7 +81,7 @@ const stakedHeading = {
 //   },
 // });
 
-const friendlyAddress = (addr, tot = 15) => {
+const friendlyAddress = (addr, tot = 9) => {
   if (addr === undefined || addr.slice === undefined) return '';
   if (addr.length < 30) return addr;
   return addr.slice(0, tot) + '...' + addr.slice(-tot);
@@ -134,7 +134,7 @@ const StakingTable = ({ data }) => {
             <Typography
               variant="span"
               color="text.secondary"
-              sx={{ textTransform: 'capitalize', fontWeight: '400' }}
+              sx={{ textTransform: 'capitalize', fontWeight: '400', wordWrap: 'break-word' }}
             >
               {checkSmall ? address : friendlyAddress(address)}
             </Typography>
@@ -179,10 +179,10 @@ const StakingTable = ({ data }) => {
                         {stake.boxId}
                       </TableCell>
                       <TableCell sx={{ color: theme.palette.text.secondary }}>
-                        {stake.stakeAmount}
+                        {stake.stakeAmount?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
                       </TableCell>
                       <TableCell sx={{ color: theme.palette.text.secondary }}>
-                        {stake.penaltyPct}
+                        {stake.penaltyPct}%
                       </TableCell>
                       <TableCell sx={{ color: theme.palette.text.secondary }}>
                         {new Date(stake.penaltyEndTime)
@@ -211,7 +211,7 @@ const StakingTable = ({ data }) => {
                         {stakedHeading.stakeAmount}
                       </TableCell>
                       <TableCell sx={{ border: 'none', p: 1, pt: 2 }}>
-                        {stake.stakeAmount}
+                        {stake.stakeAmount?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
                       </TableCell>
                     </TableRow>
                     <TableRow>
@@ -225,7 +225,7 @@ const StakingTable = ({ data }) => {
                         {stakedHeading.penaltyPct}
                       </TableCell>
                       <TableCell sx={{ border: 'none', p: 1 }}>
-                        {stake.penaltyPct}
+                        {stake.penaltyPct}%
                       </TableCell>
                     </TableRow>
                     <TableRow>
