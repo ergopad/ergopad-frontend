@@ -877,7 +877,7 @@ const Staking = () => {
                   }}
                   onClick={stake}
                 >
-                  Pay with desktop wallet
+                  Pay with Desktop Wallet
                   {stakeLoading && (
                     <CircularProgress
                       sx={{ ml: 2, color: 'white' }}
@@ -947,7 +947,8 @@ const Staking = () => {
           ) : (
             <>
               <Typography variant="p" sx={{ fontSize: '1rem', mb: 2 }}>
-                Please note the unstaking penalty before approving the transaction in your wallet.
+                Please note the unstaking penalty before approving the
+                transaction in your wallet.
               </Typography>
               <Grid
                 container
@@ -1045,7 +1046,7 @@ const Staking = () => {
                   }}
                   onClick={unstake}
                 >
-                  Pay with desktop wallet
+                  Pay with Desktop Wallet
                   {unstakeModalLoading && (
                     <CircularProgress
                       sx={{ ml: 2, color: 'white' }}

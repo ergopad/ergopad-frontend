@@ -54,7 +54,8 @@ const WHITELIST_TOKEN_ID =
 // const SIGUSD_TOKEN_ID =
 //   '03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04';
 // const PAIDEIA_TOKEN_ID = 'paideia_token_id';
-const PAIDEIA_CONVERSION_RATE = 0.008;
+const TOKEN_PRICE = 0.008;
+const TOKEN_DECIMALS = 10000;
 const NERG_FEES = 20 * 1000 * 1000;
 
 const initialFormData = Object.freeze({
@@ -142,7 +143,7 @@ const ContributeStrategicRound = () => {
         // const sigUSDBalance = await ergo.get_balance(SIGUSD_TOKEN_ID); // eslint-disable-line
         const ergBalance = await ergo.get_balance(); // eslint-disable-line
         setWalletBalance({
-          whitelist: whitelistBalance / 10000,
+          whitelist: whitelistBalance / TOKEN_DECIMALS,
           sigusd: 0, // sigusd validation is disabled
           ergs: ergBalance / (1000 * 1000 * 1000),
         });
@@ -157,7 +158,7 @@ const ContributeStrategicRound = () => {
         )[0];
         if (token) {
           setWalletBalance({
-            whitelist: token.amount / 10000,
+            whitelist: token.amount / TOKEN_DECIMALS,
             sigusd: 0,
             ergs: ergs,
           });
@@ -321,9 +322,7 @@ const ContributeStrategicRound = () => {
         const sigUSDAmount =
           formData.currency === 'erg'
             ? 0
-            : Math.round(
-                formData.vestingAmount * PAIDEIA_CONVERSION_RATE * 100
-              ) / 100;
+            : Math.round(formData.vestingAmount * TOKEN_PRICE * 100) / 100;
         // todo: get tokens and amounts from /vesting/requiredNergTokens and call ergo.get_utxos
         const tokens = await axios.post(
           `${process.env.API_URL}/vesting/requiredNergTokens`,
@@ -419,9 +418,7 @@ const ContributeStrategicRound = () => {
         const sigUSDAmount =
           formData.currency === 'erg'
             ? 0
-            : Math.round(
-                formData.vestingAmount * PAIDEIA_CONVERSION_RATE * 100
-              ) / 100;
+            : Math.round(formData.vestingAmount * TOKEN_PRICE * 100) / 100;
         const res = await axios.post(
           `${process.env.API_URL}/vesting/vestFromProxy`,
           {
@@ -524,7 +521,9 @@ const ContributeStrategicRound = () => {
             </Typography>
             <Typography variant="p" sx={{ mb: 1 }}>
               Tokens remaining to be distributed for this round:{' '}
-              {Math.round(roundDetails.remaining * 10000) / 10000}.
+              {Math.round(roundDetails.remaining * TOKEN_DECIMALS) /
+                TOKEN_DECIMALS}
+              .
             </Typography>
             <Typography variant="p" sx={{ mb: 3 }}>
               <b>Note:</b> If you are whitelisted for seed or strategic rounds,
@@ -575,7 +574,7 @@ const ContributeStrategicRound = () => {
                 <Grid item xs={12}>
                   <Typography variant="p" sx={{ fontSize: '1rem', mb: 1 }}>
                     Enter the number of Paideia tokens you would like. Rate for
-                    this round is ${PAIDEIA_CONVERSION_RATE} per token.
+                    this round is ${TOKEN_PRICE} per token.
                   </Typography>
                 </Grid>
                 <Grid item xs={10} md={11} sx={{ pr: 1 }}>
@@ -619,11 +618,8 @@ const ContributeStrategicRound = () => {
               <Grid item xs={12}>
                 <Typography variant="p" sx={{ fontSize: '1rem', mb: '1rem' }}>
                   You are receiving {formData.vestingAmount} Paideia tokens at $
-                  {PAIDEIA_CONVERSION_RATE} per token. Your total contribution
-                  value is $
-                  {Math.round(
-                    PAIDEIA_CONVERSION_RATE * formData.vestingAmount * 100
-                  ) / 100}
+                  {TOKEN_PRICE} per token. Your total contribution value is $
+                  {Math.round(TOKEN_PRICE * formData.vestingAmount * 100) / 100}
                   .
                 </Typography>
                 <Typography variant="p" sx={{ fontSize: '1rem', mb: 0 }}>
@@ -665,15 +661,14 @@ const ContributeStrategicRound = () => {
                       ? Math.max(
                           0,
                           Math.round(
-                            (PAIDEIA_CONVERSION_RATE *
+                            (TOKEN_PRICE *
                               formData.vestingAmount *
-                              10000) /
+                              TOKEN_DECIMALS) /
                               conversionRate
-                          ) / 10000
+                          ) / TOKEN_DECIMALS
                         )
-                      : Math.round(
-                          PAIDEIA_CONVERSION_RATE * formData.vestingAmount * 100
-                        ) / 100
+                      : Math.round(TOKEN_PRICE * formData.vestingAmount * 100) /
+                        100
                   }
                 />
               </Grid>

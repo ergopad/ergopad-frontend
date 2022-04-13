@@ -107,7 +107,7 @@ const Sidenav = () => {
           Whitelist Events
         </Typography>
         <List>
-        <ListItem
+          <ListItem
             button
             sx={{ ...listItemSx }}
             onClick={() => {
@@ -142,6 +142,40 @@ const Sidenav = () => {
             }}
           >
             <ListItemText primary="Delete Whitelist Events" />
+          </ListItem>
+        </List>
+      </Box>
+      <Box sx={{ mr: { md: 12, xs: 0 }, mt: { md: 0, xs: 4 } }}>
+        <Typography variant="h4" sx={{ fontWeight: '700', lineHeight: '1.2' }}>
+          Contribution Events
+        </Typography>
+        <List>
+          <ListItem
+            button
+            sx={{ ...listItemSx }}
+            onClick={() => {
+              router.push('/admin/create_contribution_event');
+            }}
+          >
+            <ListItemText primary="Create Contribution Events" />
+          </ListItem>
+          <ListItem
+            button
+            sx={{ ...listItemSx }}
+            onClick={() => {
+              router.push('/admin/edit_contribution_event');
+            }}
+          >
+            <ListItemText primary="Edit Contribution Events" />
+          </ListItem>
+          <ListItem
+            button
+            sx={{ mb: 2, ...listItemSx }}
+            onClick={() => {
+              router.push('/admin/delete_contribution_event');
+            }}
+          >
+            <ListItemText primary="Delete Contribution Events" />
           </ListItem>
         </List>
       </Box>
