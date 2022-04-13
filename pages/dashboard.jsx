@@ -214,7 +214,7 @@ const Dashboard = () => {
                 .slice(-4),
               token: initialAssetList[i].token,
               id: initialAssetList[i].id,
-              amount: initialAssetList[i].amount.toLocaleString(navigator.language, { maximumFractionDigits: 2 }),
+              amount: initialAssetList[i].amount,
               amountUSD: initialAssetList[i].amountUSD
                 ? initialAssetList[i].amountUSD
                 : '',
@@ -505,7 +505,7 @@ const Dashboard = () => {
                 {vestedTokens.length + Object.keys(vestedTokensNFT).length >
                   0 && (
                   <Grid
-                    item
+                    container
                     xs={12}
                     md={4}
                     sx={{
@@ -551,7 +551,7 @@ const Dashboard = () => {
                 </Grid>
                 {stakedTokens.totalStaked > 0 && (
                   <Grid
-                    item
+                    container
                     xs={12}
                     md={4}
                     sx={{
@@ -649,7 +649,7 @@ function assetListArray(data) {
     const amount = +parseFloat(
       (token.amount * Math.pow(10, -token.decimals)).toFixed(2)
     );
-    const price = (token.price * amount).toLocaleString(navigator.language, { maximumFractionDigits: 2 });
+    const price = (token.price * amount).toFixed(2);
     const obj = {
       token: token.name ? token.name.substring(0, 3).toUpperCase() : '',
       name: token.name ? token.name : '',
@@ -663,8 +663,8 @@ function assetListArray(data) {
     token: 'ERG',
     name: 'Ergo',
     id: 'ergid',
-    amount: data.balance.ERG.balance.toLocaleString(navigator.language, { maximumFractionDigits: 2 }),
-    amountUSD: (data.balance.ERG.price * data.balance.ERG.balance).toLocaleString(navigator.language, { maximumFractionDigits: 2 }),
+    amount: data.balance.ERG.balance.toFixed(3),
+    amountUSD: (data.balance.ERG.price * data.balance.ERG.balance).toFixed(2),
   };
   res.unshift(ergoValue);
   return res;

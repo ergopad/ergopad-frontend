@@ -85,7 +85,7 @@ const AssetItem = ({ asset, stableDenominator = 'USD', type }) => {
         {type != 'NFT' && (
           <AssetAmountContainer>
             <Typography>{asset.amount}</Typography>
-            {asset.amountUSD != 0 ? (
+            {asset.amountUSD > 0 ? (
               <Typography variant="caption">
                 ${asset.id == SIGUSD_TOKEN_ID ? asset.amount : asset.amountUSD}{' '}
                 {stableDenominator}

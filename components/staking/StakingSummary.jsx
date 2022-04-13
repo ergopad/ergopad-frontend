@@ -41,7 +41,7 @@ export const StakingItem = (item, md, loading = false) => {
           {item.title}
         </Typography>
         <Typography variant="h4" sx={{ fontWeight: '800', my: 1 }}>
-          {loading ? <CircularProgress sx={{ color: '#fff' }} /> : item.value.toLocaleString(navigator.language, { maximumFractionDigits: 0 })}
+          {loading ? <CircularProgress sx={{ color: '#fff' }} /> : item.value}
         </Typography>
       </Box>
     </Grid>
