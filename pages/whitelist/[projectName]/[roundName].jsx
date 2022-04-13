@@ -470,7 +470,7 @@ const Whitelist = () => {
                     </Typography>
                     <Typography color="text.secondary" sx={{ mb: 3 }}>
                       {whitelistData.additionalDetails.min_stake != 0
-                        ? `You must have atleast ${whitelistData.additionalDetails.min_stake} ErgoPad staked from the signup
+                        ? `You must have at least ${whitelistData.additionalDetails.min_stake} ErgoPad staked from the signup
                       address to get early access. `
                         : null}
                       You have {totalStaked} ergopad tokens staked from this

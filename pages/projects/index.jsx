@@ -240,13 +240,13 @@ const Projects = () => {
       </Container>
       <Container maxWidth="lg" sx={{ mt: 1 }}>
         <Typography variant="h4" sx={{ fontWeight: '800', mb: 4 }}>
-          Upcoming
+          Upcoming IDOs
         </Typography>
         <Grid container spacing={3} alignItems="stretch" sx={{ mb: 6 }}>
           {upcomingProjects?.map((project) => projectCard(project))}
         </Grid>
         <Typography variant="h4" sx={{ fontWeight: '800', mb: 4 }}>
-          Launched
+          Completed
         </Typography>
         <Grid container spacing={3} alignItems="stretch" sx={{ mb: 6 }}>
           {launchedProjects?.map((project) => projectCard(project))}
