@@ -51,7 +51,8 @@ const AssetAmountContainer = styled('div')(() => ({
   justifyContent: 'center',
 }));
 
-const AssetItem = ({ asset, stableDenominator = 'USD', type }) => {
+const AssetItem = ({ asset, stableDenominator = 'USD', type, navigatorLanguage }) => {
+
   const [showModal, setShowModal] = useState(false);
   const AssetImage = () => {
     if (asset?.r9) {
@@ -84,10 +85,10 @@ const AssetItem = ({ asset, stableDenominator = 'USD', type }) => {
         </AssetNameContainer>
         {type != 'NFT' && (
           <AssetAmountContainer>
-            <Typography>{asset.amount}</Typography>
-            {asset.amountUSD > 0 ? (
+            <Typography>{asset.amount?.toLocaleString(navigatorLanguage, { maximumFractionDigits: 2 })}</Typography>
+            {asset.amountUSD != 0 ? (
               <Typography variant="caption">
-                ${asset.id == SIGUSD_TOKEN_ID ? asset.amount : asset.amountUSD}{' '}
+                ${asset.id == SIGUSD_TOKEN_ID ? asset.amount?.toLocaleString(navigatorLanguage, { maximumFractionDigits: 2 }) : asset.amountUSD?.toLocaleString(navigatorLanguage, { maximumFractionDigits: 2 })}{' '}
                 {stableDenominator}
               </Typography>
             ) : null}
