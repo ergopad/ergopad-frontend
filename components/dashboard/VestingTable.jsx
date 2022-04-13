@@ -103,7 +103,7 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                         {vested.date}
                       </TableCell>
                       <TableCell sx={{ color: theme.palette.text.secondary }}>
-                        {vested.amount}
+                        {vested.amount?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
                       </TableCell>
                     </TableRow>
                   );
@@ -127,7 +127,7 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                         {vestedHeading.amount}
                       </TableCell>
                       <TableCell sx={{ border: 'none', p: 1, pt: 2 }}>
-                        {vested.amount}
+                        {vested.amount?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
                       </TableCell>
                     </TableRow>
                     <TableRow>
@@ -187,10 +187,10 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                 {vestedTokensWithNFT[vestedToken].map((box) => (
                   <TableRow key={box.boxId}>
                     <TableCell sx={{ color: theme.palette.text.secondary }}>
-                      {box['Remaining']}
+                      {box['Remaining'].toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
                     </TableCell>
                     <TableCell sx={{ color: theme.palette.text.secondary }}>
-                      {box['Redeemable']}
+                      {box['Redeemable'].toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
                     </TableCell>
                     <TableCell sx={{ color: theme.palette.text.secondary }}>
                       {box['Next unlock']}
@@ -223,7 +223,7 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                       {vestedWithNFTHeading.remaining}
                     </TableCell>
                     <TableCell sx={{ border: 'none', p: 1, pt: 2 }}>
-                      {box['Remaining']}
+                      {box['Remaining'].toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
                     </TableCell>
                   </TableRow>
                   <TableRow>
@@ -237,7 +237,7 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                       {vestedWithNFTHeading.redeemable}
                     </TableCell>
                     <TableCell sx={{ border: 'none', p: 1 }}>
-                      {box['Redeemable']}
+                      {box['Redeemable'].toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
                     </TableCell>
                   </TableRow>
                   <TableRow>

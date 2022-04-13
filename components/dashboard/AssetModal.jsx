@@ -61,7 +61,7 @@ const getAveragePrice = (amount, amountUSD) => {
   }
 };
 
-const AssetModal = ({ open, handleClose, asset }) => {
+const AssetModal = ({ open, handleClose, asset, navigatorLanguage }) => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('md'));
   const metadata = parseDescription(asset?.description);
@@ -91,12 +91,12 @@ const AssetModal = ({ open, handleClose, asset }) => {
             <strong>Token:</strong> {asset?.token}
           </pre>
           <pre>
-            <strong>Amount:</strong> {asset?.amount}
+            <strong>Amount:</strong> {asset?.amount?.toLocaleString(navigatorLanguage, { maximumFractionDigits: 0 })}
           </pre>
-          {asset?.amountUSD > 0 && (
+          {asset?.amountUSD != 0 && (
             <pre>
               <strong>Average Price:</strong> $
-              {getAveragePrice(asset?.amount, asset?.amountUSD)} USD
+              {getAveragePrice(asset?.amount, asset?.amountUSD).toLocaleString(navigatorLanguage, { maximumFractionDigits: 4 })} USD
             </pre>
           )}
           <Accordion>

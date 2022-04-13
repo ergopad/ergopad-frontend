@@ -20,39 +20,39 @@ const stakingHeading = {
 const stakingTiers = [
   {
     tier: '(A) Alpha',
-    value: '25000',
+    value: 25000,
     requirements: 'Twitter like, retweet',
-    weight: '10',
+    weight: 10,
   },
   {
     tier: '(B) Beta',
-    value: '50000',
+    value: 50000,
     requirements: 'Twitter like, retweet',
-    weight: '24',
+    weight: 24,
   },
   {
     tier: '(Γ) Gamma',
-    value: '100000',
+    value: 100000,
     requirements: 'Twitter like, retweet',
-    weight: '58',
+    weight: 58,
   },
   {
     tier: '(Ω) Omega',
-    value: '250000',
+    value: 250000,
     requirements: 'Twitter like',
-    weight: '175',
+    weight: 175,
   },
   {
     tier: '(Φ) Phi',
-    value: '500000',
+    value: 500000,
     requirements: 'Twitter like',
-    weight: '420',
+    weight: 420,
   },
   {
     tier: '(Σ) SIgma',
-    value: '1500000',
+    value: 1500000,
     requirements: 'none',
-    weight: '1500',
+    weight: 1500,
   },
 ];
 
@@ -96,8 +96,8 @@ const StakingTiers = () => {
                   >
                     {tier.tier}
                   </TableCell>
-                  <TableCell>{tier.value}</TableCell>
-                  <TableCell>{tier.weight}</TableCell>
+                  <TableCell>{tier.value?.toLocaleString(navigator.language, { maximumFractionDigits: 0 })}</TableCell>
+                  <TableCell>{tier.weight?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}</TableCell>
                 </TableRow>
               );
             })}
@@ -134,7 +134,7 @@ const StakingTiers = () => {
                     {stakingHeading.value}
                   </TableCell>
                   <TableCell sx={{ border: 'none', p: 1 }}>
-                    {tier.value}
+                    {tier.value?.toLocaleString(navigator.language, { maximumFractionDigits: 0 })}
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -149,7 +149,7 @@ const StakingTiers = () => {
                     {stakingHeading.weight}
                   </TableCell>
                   <TableCell sx={{ border: 'none', p: 1, pb: 2 }}>
-                    {tier.weight}
+                    {tier.weight?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
                   </TableCell>
                 </TableRow>
               </Fragment>
