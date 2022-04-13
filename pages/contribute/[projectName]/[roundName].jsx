@@ -162,8 +162,9 @@ const Contribute = () => {
   const readWallet = async () => {
     // todo: fix infinite promise
     try {
-      if (dAppWallet.connected && contributeData) {
-        const whitelistBalance = await ergo.get_balance(WHITELIST_TOKEN_ID); // eslint-disable-line
+      if (dAppWallet.connected) {
+        // prettier-ignore
+        const whitelistBalance = await ergo.get_balance(contributeData.whitelistTokenId); // eslint-disable-line
         // const sigUSDBalance = await ergo.get_balance(SIGUSD_TOKEN_ID); // eslint-disable-line
         const ergBalance = await ergo.get_balance(); // eslint-disable-line
         setWalletBalance({
@@ -172,7 +173,7 @@ const Contribute = () => {
           sigusd: 0, // sigusd validation is disabled
           ergs: ergBalance / (1000 * 1000 * 1000),
         });
-      } else if (wallet !== '' && contributeData) {
+      } else if (wallet !== '') {
         const res = await axios.get(
           `${process.env.API_URL}/asset/balance/${wallet}`,
           { ...defaultOptions }
@@ -616,7 +617,7 @@ const Contribute = () => {
                           />
                           <FormHelperText>
                             {formErrors.address &&
-                              'Please use the dapp connector to add a wallet address.'}
+                              'Please add a wallet address.'}
                           </FormHelperText>
                         </FormControl>
                       </Grid>
@@ -901,7 +902,7 @@ const Contribute = () => {
           ) : (
             <CenterTitle
               title="Oops..."
-              subtitle="Looks like the whitelist event you are looking for doesn't exist."
+              subtitle="Looks like the contribution event you are looking for doesn't exist."
               main={true}
             />
           )}

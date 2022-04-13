@@ -494,7 +494,7 @@ const CreateContributionEventForm = () => {
             variant="contained"
             sx={{ mt: 3, mb: 1 }}
           >
-            Create New Whitelist Event
+            Create New Contribution Event
           </Button>
           {isLoading && (
             <CircularProgress
