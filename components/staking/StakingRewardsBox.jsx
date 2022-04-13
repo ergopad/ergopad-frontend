@@ -39,7 +39,7 @@ const StakingRewardsBox = (props) => {
             {props.loading ? (
               <CircularProgress sx={{ mt: 2, color: '#fff' }} />
             ) : props.totalStaked ? (
-              props.totalStaked?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })
+              props.totalStaked?.toLocaleString(navigator.language, { maximumFractionDigits: 0 })
             ) : (
               '-'
             )}

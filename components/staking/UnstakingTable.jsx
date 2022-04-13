@@ -174,7 +174,7 @@ const UnstakingTable = ({ data, unstake }) => {
                       {stakedHeading.stakeAmount}
                     </TableCell>
                     <TableCell sx={{ border: 'none', p: 1, pt: 2 }}>
-                      {stake.stakeAmount}
+                      {stake.stakeAmount.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
                     </TableCell>
                   </TableRow>
                   <TableRow>

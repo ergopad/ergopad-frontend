@@ -179,7 +179,7 @@ const StakingTable = ({ data }) => {
                         {stake.boxId}
                       </TableCell>
                       <TableCell sx={{ color: theme.palette.text.secondary }}>
-                        {stake.stakeAmount}
+                        {stake.stakeAmount.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
                       </TableCell>
                       <TableCell sx={{ color: theme.palette.text.secondary }}>
                         {stake.penaltyPct}
@@ -211,7 +211,7 @@ const StakingTable = ({ data }) => {
                         {stakedHeading.stakeAmount}
                       </TableCell>
                       <TableCell sx={{ border: 'none', p: 1, pt: 2 }}>
-                        {stake.stakeAmount}
+                        {stake.stakeAmount.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
                       </TableCell>
                     </TableRow>
                     <TableRow>
