@@ -33,7 +33,7 @@ export const RoadmapInput = ({ data, setData }) => {
           <Grid item md={6} xs={12} sx={{ mt: 1, pr: 1 }}>
             <TextField
               name="date"
-              label="Date (yyyy-mm-dd)"
+              label="Date (yyyy-mm-ddTHH:MM:SS)"
               InputProps={{ disableUnderline: true }}
               fullWidth
               variant="filled"
@@ -75,7 +75,10 @@ export const RoadmapInput = ({ data, setData }) => {
       <Button
         sx={{ textTransform: 'none' }}
         onClick={() =>
-          setData([...data, { name: '', description: '', date: '' }])
+          setData([
+            ...data,
+            { name: '', description: '', date: new Date().toISOString() },
+          ])
         }
       >
         Add Row
@@ -107,7 +110,6 @@ export const TeamInput = ({ data, setData }) => {
   };
 
   const handleImageUpload = (res, index) => {
-    console.log(res);
     if (res.status === 'success') {
       handleChange(
         {

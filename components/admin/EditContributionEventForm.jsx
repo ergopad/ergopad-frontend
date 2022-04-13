@@ -4,11 +4,11 @@ import {
   Typography,
   TextField,
   Button,
+  FormControlLabel,
+  Checkbox,
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  FormControlLabel,
-  Checkbox,
 } from '@mui/material';
 import { forwardRef } from 'react';
 import { useEffect, useState } from 'react';
@@ -31,16 +31,17 @@ const initialFormData = Object.freeze({
   subtitle: '',
   details: '',
   checkBoxes: {
-    checkBoxText: [],
+    checkBoxes: [],
   },
+  tokenId: '',
+  tokenName: '',
+  tokenDecimals: 0,
+  tokenPrice: 0,
+  proxyNFTId: '',
+  whitelistTokenId: '',
   additionalDetails: {
-    min_stake: 0,
     add_to_footer: false,
-    staker_snapshot_whitelist: false,
   },
-  total_sigusd: 0,
-  buffer_sigusd: 0,
-  individualCap: 0,
   start_dtz: new Date().toISOString(),
   end_dtz: new Date().toISOString(),
 });
@@ -51,14 +52,17 @@ const initialFormErrors = Object.freeze({
   roundName: false,
   title: false,
   subtitle: false,
-  total_sigusd: false,
-  buffer_sigusd: false,
-  individualCap: false,
+  tokenId: false,
+  tokenName: false,
+  tokenDecimals: false,
+  tokenPrice: false,
+  proxyNFTId: false,
+  whitelistTokenId: false,
   start_dtz: false,
   end_dtz: false,
 });
 
-const EditWhitelistEventForm = () => {
+const EditContributionEventForm = () => {
   // table data
   const [tableData, setTableData] = useState([]);
   // form data is all strings
@@ -90,7 +94,9 @@ const EditWhitelistEventForm = () => {
     const getTableData = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${process.env.API_URL}/whitelist/events/`);
+        const res = await axios.get(
+          `${process.env.API_URL}/contribution/events/`
+        );
         res.data.sort((a, b) => a.id - b.id);
         setTableData(res.data);
       } catch (e) {
@@ -111,7 +117,7 @@ const EditWhitelistEventForm = () => {
       if (id) {
         const event = tableData.filter((event) => event.id === id)[0];
         const res = await axios.get(
-          `${process.env.API_URL}/whitelist/events/${event.projectName}/${event.roundName}`
+          `${process.env.API_URL}/contribution/events/${event.projectName}/${event.roundName}`
         );
         updateFormData({ ...res.data });
         setFormErrors(initialFormErrors);
@@ -158,9 +164,7 @@ const EditWhitelistEventForm = () => {
       });
     }
 
-    if (
-      ['total_sigusd', 'individualCap', 'buffer_sigusd'].includes(e.target.name)
-    ) {
+    if (['tokenDecimals', 'tokenPrice'].includes(e.target.name)) {
       const numCheck = Number(e.target.value);
       setFormErrors({
         ...formErrors,
@@ -176,12 +180,8 @@ const EditWhitelistEventForm = () => {
       });
     }
 
-    if (
-      ['min_stake', 'add_to_footer', 'staker_snapshot_whitelist'].includes(
-        e.target.name
-      )
-    ) {
-      if (['min_stake'].includes(e.target.name)) {
+    if (['add_to_footer'].includes(e.target.name)) {
+      if ([].includes(e.target.name)) {
         updateFormData({
           ...formData,
           additionalDetails: {
@@ -219,16 +219,12 @@ const EditWhitelistEventForm = () => {
           )}`,
         },
       };
-      const stakerRound = formData.additionalDetails.staker_snapshot_whitelist;
       const data = {
         ...formData,
-        // random buffer to allow signups
-        buffer_sigusd: stakerRound ? 0xc0ffee : formData.buffer_sigusd,
-        individualCap: stakerRound ? 0xc0ffee : formData.individualCap,
       };
       try {
         await axios.put(
-          `${process.env.API_URL}/whitelist/events/${formData.id}`,
+          `${process.env.API_URL}/contribution/events/${formData.id}`,
           data,
           defaultOptions
         );
@@ -261,7 +257,7 @@ const EditWhitelistEventForm = () => {
     <>
       <Box component="form" onSubmit={handleSubmit}>
         <Typography variant="h4" sx={{ mt: 10, mb: 4, fontWeight: '700' }}>
-          Edit Whitelist Event
+          Edit Contribution Event
         </Typography>
         <Grid container spacing={2} />
         <Typography variant="h6" sx={{ mt: 2, mb: 2, fontWeight: '700' }}>
@@ -269,14 +265,14 @@ const EditWhitelistEventForm = () => {
         </Typography>
         <Grid item xs={12}>
           <Typography color="text.secondary" sx={{ mt: 2, mb: 1 }}>
-            Enter whitelist id manually or select one from the table below.
+            Enter event id manually or select one from the table below.
           </Typography>
           <TextField
             InputProps={{ disableUnderline: true }}
             required
             fullWidth
             id="id"
-            label="Whitelist Event Id"
+            label="Contribution Event Id"
             name="id"
             variant="filled"
             value={formData.id}
@@ -284,7 +280,7 @@ const EditWhitelistEventForm = () => {
           />
           <Accordion sx={{ mt: 1 }}>
             <AccordionSummary>
-              <strong>Expand to see Whitelist Events</strong>
+              <strong>Expand to see Contribution Events</strong>
             </AccordionSummary>
             <AccordionDetails>
               <PaginatedTable
@@ -358,7 +354,7 @@ const EditWhitelistEventForm = () => {
           <Typography color="text.secondary" sx={{ mt: 1, mb: 1 }}>
             URL for the event will be{' '}
             <b>
-              https://ergopad.io/whitelist/
+              https://ergopad.io/contribute/
               {formData.projectName}/{formData.roundName}
             </b>
           </Typography>
@@ -421,59 +417,53 @@ const EditWhitelistEventForm = () => {
             Checkbox Text (Terms and Conditions)
           </Typography>
           <ListTextInput
-            label="CheckBox Text"
-            data={formData.checkBoxes.checkBoxText}
+            label="Checkbox Text"
+            data={formData.checkBoxes.checkBoxes}
             setData={(updatedData) => {
               updateFormData({
                 ...formData,
                 checkBoxes: {
                   ...formData.checkBoxes,
-                  checkBoxText: [...updatedData],
+                  checkBoxes: [...updatedData],
                 },
               });
             }}
           />
         </Grid>
         <Typography variant="h6" sx={{ mt: 4, mb: 1, fontWeight: '700' }}>
-          Financials
+          Token Details
         </Typography>
         <Grid container item>
           <Grid item xs={12} md={6} sx={{ mt: 1 }}>
             <TextField
               sx={{ p: 0.5 }}
               InputProps={{ disableUnderline: true }}
-              disabled={formData.additionalDetails.staker_snapshot_whitelist}
               required
               fullWidth
-              id="total_sigusd"
-              label="Whitelist SigUSD"
-              name="total_sigusd"
+              id="tokenId"
+              label="Project Token Id"
+              name="tokenId"
               variant="filled"
-              value={formData.total_sigusd}
+              value={formData.tokenId}
               onChange={handleChange}
-              error={formErrors.total_sigusd}
-              helperText={
-                formErrors.total_sigusd && 'SigUSD value must be a number'
-              }
+              error={formErrors.tokenId}
+              helperText={formErrors.tokenId && 'Token id is required'}
             />
           </Grid>
           <Grid item xs={12} md={6} sx={{ mt: 1 }}>
             <TextField
               sx={{ p: 0.5 }}
               InputProps={{ disableUnderline: true }}
-              disabled={formData.additionalDetails.staker_snapshot_whitelist}
               required
               fullWidth
-              id="buffer_sigusd"
-              label="Buffer SigUSD"
-              name="buffer_sigusd"
+              id="tokenName"
+              label="Project Token Name"
+              name="tokenName"
               variant="filled"
-              value={formData.buffer_sigusd}
+              value={formData.tokenName}
               onChange={handleChange}
-              error={formErrors.buffer_sigusd}
-              helperText={
-                formErrors.buffer_sigusd && 'SigUSD value must be a number'
-              }
+              error={formErrors.tokenName}
+              helperText={formErrors.tokenName && 'Token name is required'}
             />
           </Grid>
         </Grid>
@@ -482,18 +472,17 @@ const EditWhitelistEventForm = () => {
             <TextField
               sx={{ p: 0.5 }}
               InputProps={{ disableUnderline: true }}
-              disabled={formData.additionalDetails.staker_snapshot_whitelist}
               required
               fullWidth
-              id="individualCap"
-              label="Individual Cap"
-              name="individualCap"
+              id="tokenDecimals"
+              label="Token Decimals"
+              name="tokenDecimals"
               variant="filled"
-              value={formData.individualCap}
+              value={formData.tokenDecimals}
               onChange={handleChange}
-              error={formErrors.individualCap}
+              error={formErrors.tokenDecimals}
               helperText={
-                formErrors.individualCap && 'SigUSD value must be a number'
+                formErrors.tokenDecimals && 'Token decimals must be a number'
               }
             />
           </Grid>
@@ -501,28 +490,52 @@ const EditWhitelistEventForm = () => {
             <TextField
               sx={{ p: 0.5 }}
               InputProps={{ disableUnderline: true }}
-              disabled={formData.additionalDetails.staker_snapshot_whitelist}
+              required
               fullWidth
-              id="min_stake"
-              label="Minimum Stake (0 for default)"
-              name="min_stake"
+              id="tokenPrice"
+              label="Price per token in USD"
+              name="tokenPrice"
               variant="filled"
-              value={formData.additionalDetails.min_stake}
+              value={formData.tokenPrice}
               onChange={handleChange}
+              error={formErrors.tokenPrice}
+              helperText={
+                formErrors.tokenPrice && 'Token price must be a number'
+              }
             />
           </Grid>
-        </Grid>
-        <Grid container item>
           <Grid item xs={12} md={6} sx={{ mt: 1 }}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="staker_snapshot_whitelist"
-                  checked={formData.additionalDetails.staker_snapshot_whitelist}
-                  onChange={handleChange}
-                />
+            <TextField
+              sx={{ p: 0.5 }}
+              InputProps={{ disableUnderline: true }}
+              required
+              fullWidth
+              id="proxyNFTId"
+              label="Proxy NFT Id"
+              name="proxyNFTId"
+              variant="filled"
+              value={formData.proxyNFTId}
+              onChange={handleChange}
+              error={formErrors.proxyNFTId}
+              helperText={formErrors.proxyNFTId && 'Proxy NFT is required'}
+            />
+          </Grid>
+          <Grid item xs={12} md={6} sx={{ mt: 1 }}>
+            <TextField
+              sx={{ p: 0.5 }}
+              InputProps={{ disableUnderline: true }}
+              required
+              fullWidth
+              id="whitelistTokenId"
+              label="Whitelist Token Id"
+              name="whitelistTokenId"
+              variant="filled"
+              value={formData.whitelistTokenId}
+              onChange={handleChange}
+              error={formErrors.whitelistTokenId}
+              helperText={
+                formErrors.whitelistTokenId && 'Whitelist Token Id is required'
               }
-              label="Staker Snapshot Whitelist"
             />
           </Grid>
         </Grid>
@@ -587,7 +600,7 @@ const EditWhitelistEventForm = () => {
             variant="contained"
             sx={{ mt: 3, mb: 1 }}
           >
-            Update Whitelist Event
+            Update Contribution Event
           </Button>
           {isLoading && (
             <CircularProgress
@@ -633,4 +646,4 @@ const EditWhitelistEventForm = () => {
   );
 };
 
-export default EditWhitelistEventForm;
+export default EditContributionEventForm;
