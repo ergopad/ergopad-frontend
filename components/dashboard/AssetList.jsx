@@ -10,7 +10,7 @@ import AssetItem from './AssetItem';
   { token: 'XRP', name: 'XRP', amount: 200, amountUSD: '430' },
 ]; */
 
-const AssetList = ({ assets, title, type }) => {
+const AssetList = ({ assets, title, type, navigatorLanguage }) => {
   return (
     <Container sx={{ px: '0!important' }}>
       <Typography align='center' variant='h4'>
@@ -18,7 +18,7 @@ const AssetList = ({ assets, title, type }) => {
       </Typography>
 
       {assets.map((asset) => {
-        if (asset.name != '') return <AssetItem key={asset.id} asset={asset} type={type} />;
+        if (asset.name != '') return <AssetItem key={asset.id} asset={asset} type={type} navigatorLanguage={navigatorLanguage} />;
       })}
     </Container>
   );

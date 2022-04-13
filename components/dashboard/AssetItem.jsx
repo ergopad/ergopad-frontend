@@ -1,7 +1,7 @@
 import { Typography, SvgIcon } from '@mui/material';
 import { styled } from '@mui/system';
 import AssetModal from './AssetModal';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const SIGUSD_TOKEN_ID =
   '03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04';
@@ -51,7 +51,8 @@ const AssetAmountContainer = styled('div')(() => ({
   justifyContent: 'center',
 }));
 
-const AssetItem = ({ asset, stableDenominator = 'USD', type }) => {
+const AssetItem = ({ asset, stableDenominator = 'USD', type, navigatorLanguage }) => {
+
   const [showModal, setShowModal] = useState(false);
   const AssetImage = () => {
     if (asset?.r9) {
@@ -84,10 +85,10 @@ const AssetItem = ({ asset, stableDenominator = 'USD', type }) => {
         </AssetNameContainer>
         {type != 'NFT' && (
           <AssetAmountContainer>
-            <Typography>{asset.amount}</Typography>
+            <Typography>{asset.amount?.toLocaleString(navigatorLanguage, { maximumFractionDigits: 2 })}</Typography>
             {asset.amountUSD != 0 ? (
               <Typography variant="caption">
-                ${asset.id == SIGUSD_TOKEN_ID ? asset.amount : asset.amountUSD}{' '}
+                ${asset.id == SIGUSD_TOKEN_ID ? asset.amount?.toLocaleString(navigatorLanguage, { maximumFractionDigits: 2 }) : asset.amountUSD?.toLocaleString(navigatorLanguage, { maximumFractionDigits: 2 })}{' '}
                 {stableDenominator}
               </Typography>
             ) : null}

@@ -113,6 +113,11 @@ const Dashboard = () => {
   const [loadingVestingTable, setLoadingVestingTable] = useState(false);
   const [loadingStakingTable, setLoadingStakingTable] = useState(false);
   const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
+  const [navigatorLanguage, setNavigatorLanguage] = useState('en-US');
+  
+  useEffect(() => {
+    setNavigatorLanguage(navigator.language)
+  }, []);
 
   useEffect(() => {
     setHoldingData(wantedHoldingData); // Setting the data that we want to display
@@ -471,7 +476,7 @@ const Dashboard = () => {
             <>
               <Grid item xs={12} md={4}>
                 <Paper sx={paperStyle}>
-                  <AssetList assets={assetList} title="Assets" />
+                  <AssetList assets={assetList} title="Assets" navigatorLanguage={navigatorLanguage} />
                 </Paper>
               </Grid>
               <Grid item xs={12} md={4}>
@@ -480,6 +485,7 @@ const Dashboard = () => {
                     assets={imgNftList}
                     title="Image NFTs"
                     type="NFT"
+                    navigatorLanguage={navigatorLanguage}
                   />
                 </Paper>
               </Grid>
@@ -489,6 +495,7 @@ const Dashboard = () => {
                     assets={audNftList}
                     title="Audio NFTs"
                     type="NFT"
+                    navigatorLanguage={navigatorLanguage}
                   />
                 </Paper>
               </Grid>
@@ -649,7 +656,7 @@ function assetListArray(data) {
     const amount = +parseFloat(
       (token.amount * Math.pow(10, -token.decimals)).toFixed(2)
     );
-    const price = (token.price * amount).toLocaleString(navigator.language, { maximumFractionDigits: 2 });
+    const price = (token.price * amount);
     const obj = {
       token: token.name ? token.name.substring(0, 3).toUpperCase() : '',
       name: token.name ? token.name : '',
@@ -663,8 +670,8 @@ function assetListArray(data) {
     token: 'ERG',
     name: 'Ergo',
     id: 'ergid',
-    amount: data.balance.ERG.balance.toLocaleString(navigator.language, { maximumFractionDigits: 2 }),
-    amountUSD: (data.balance.ERG.price * data.balance.ERG.balance).toLocaleString(navigator.language, { maximumFractionDigits: 2 }),
+    amount: data.balance.ERG.balance,
+    amountUSD: (data.balance.ERG.price * data.balance.ERG.balance),
   };
   res.unshift(ergoValue);
   return res;

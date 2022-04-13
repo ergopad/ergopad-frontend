@@ -41,7 +41,7 @@ export const StakingItem = (item, md, loading = false) => {
           {item.title}
         </Typography>
         <Typography variant="h4" sx={{ fontWeight: '800', my: 1 }}>
-          {loading ? <CircularProgress sx={{ color: '#fff' }} /> : item.value.toLocaleString(navigator.language, { maximumFractionDigits: 0 })}
+          {loading ? <CircularProgress sx={{ color: '#fff' }} /> : item.value}
         </Typography>
       </Box>
     </Grid>
@@ -58,13 +58,13 @@ const StakingSummary = () => {
         const res = await axios.get(`${process.env.API_URL}/staking/status/`);
         const newState = JSON.parse(JSON.stringify(stakingItems));
         newState[0].value = res.data['Staking boxes']
-          ? res.data['Staking boxes']
+          ? res.data['Staking boxes'].toLocaleString(navigator.language, { maximumFractionDigits: 0 })
           : '-';
         newState[1].value = res.data['Total amount staked']
-          ? res.data['Total amount staked']
+          ? res.data['Total amount staked'].toLocaleString(navigator.language, { maximumFractionDigits: 0 })
           : '-';
         newState[2].value = res.data['APY']
-          ? Math.round(res.data['APY'] * 100) / 100
+          ? Math.round(res.data['APY'] * 100) / 100 + '%'
           : '-';
         setStatus(newState);
       } catch (e) {
