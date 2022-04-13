@@ -38,7 +38,6 @@ const PieChart = (props) => {
               text.length > 1 ? { top: 5, bottom: 5, left: 20, right: 20 } : 10
             }
             constrainToVisibleArea
-            renderInPortal={false}
           />
         }
         labels={(d) => d.datum.x + ': ' + toValueText(d.datum.y)}
