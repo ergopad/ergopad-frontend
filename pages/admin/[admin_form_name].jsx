@@ -20,6 +20,9 @@ import CreateWhitelistEventForm from '@components/admin/CreateWhitelistEventForm
 import EditWhitelistEventForm from '@components/admin/EditWhitelistEventForm';
 import DeleteWhitelistEventForm from '@components/admin/DeleteWhitelistEventForm';
 import GenerateWhitelistEventReportForm from '@components/admin/GenerateWhitelistEventReportForm';
+import CreateContributionEventForm from '@components/admin/CreateContributionEventForm';
+import EditContributionEventForm from '@components/admin/EditContributionEventForm';
+import DeleteContributionEventForm from '@components/admin/DeleteContributionEventForm';
 
 const AdminForm = () => {
   const JWT_TOKEN =
@@ -48,6 +51,9 @@ const AdminForm = () => {
     edit_whitelist_event: <EditWhitelistEventForm />,
     delete_whitelist_event: <DeleteWhitelistEventForm />,
     whitelist_event_summary: <GenerateWhitelistEventReportForm />,
+    create_contribution_event: <CreateContributionEventForm />,
+    edit_contribution_event: <EditContributionEventForm />,
+    delete_contribution_event: <DeleteContributionEventForm />,
   };
 
   useEffect(() => {

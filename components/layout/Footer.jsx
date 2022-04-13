@@ -23,15 +23,25 @@ const BackgroundSVG = styled('svg')(({ theme }) => ({
 }));
  */
 const Footer = () => {
-  const [dynamicFooters, setDynamicFooters] = useState([]);
+  const [dynamicWhitelistFooters, setDynamicWhitelistFooters] = useState([]);
+  const [dynamicContributionFooters, setDynamicContributionFooters] = useState(
+    []
+  );
 
   useEffect(() => {
     const getFooters = async () => {
       try {
-        const res = await axios.get(`${process.env.API_URL}/whitelist/events/`);
-        res.data.sort((a, b) => a.id - b.id);
-        setDynamicFooters(
-          res.data.filter((event) => event.additionalDetails.add_to_footer)
+        const res1 = await axios.get(
+          `${process.env.API_URL}/contribution/events`
+        );
+        res1.data.sort((a, b) => a.id - b.id);
+        const res2 = await axios.get(`${process.env.API_URL}/whitelist/events`);
+        res2.data.sort((a, b) => a.id - b.id);
+        setDynamicContributionFooters(
+          res1.data.filter((event) => event.additionalDetails.add_to_footer)
+        );
+        setDynamicWhitelistFooters(
+          res2.data.filter((event) => event.additionalDetails.add_to_footer)
         );
       } catch (e) {
         console.log(e);
@@ -262,16 +272,18 @@ const Footer = () => {
             DAPP
           </Typography>
           <List>
-            <ListItem disableGutters sx={listItemStyles}>
-              <Link
-                activeClassName="active"
-                href="/contribute/paideia/strategic"
-                sx={linkStyles}
-              >
-                Paideia Strategic Round
-              </Link>
-            </ListItem>
-            {dynamicFooters.map((event) => (
+            {dynamicContributionFooters.map((event) => (
+              <ListItem key={event.id} disableGutters sx={listItemStyles}>
+                <Link
+                  activeClassName="active"
+                  href={`/contribute/${event.projectName}/${event.roundName}`}
+                  sx={linkStyles}
+                >
+                  {event.title}
+                </Link>
+              </ListItem>
+            ))}
+            {dynamicWhitelistFooters.map((event) => (
               <ListItem key={event.id} disableGutters sx={listItemStyles}>
                 <Link
                   activeClassName="active"
