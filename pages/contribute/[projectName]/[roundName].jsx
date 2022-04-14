@@ -567,8 +567,10 @@ const Contribute = () => {
                     </Typography>
                     <Typography variant="p" sx={{ mb: 1 }}>
                       Tokens remaining to be distributed for this round:{' '}
-                      {Math.round(roundDetails.remaining * contributeData) /
-                        Math.pow(10, contributeData.tokenDecimals)}
+                      {Math.round(
+                        roundDetails.remaining *
+                          Math.pow(10, contributeData.tokenDecimals)
+                      ) / Math.pow(10, contributeData.tokenDecimals)}
                       .
                     </Typography>
                     <Typography variant="p" sx={{ mb: 3 }}>
@@ -799,7 +801,7 @@ const Contribute = () => {
                             !dAppWallet.connected
                           }
                           variant="contained"
-                          sx={{ mt: 3, mb: 3, textTransform: 'none' }}
+                          sx={{ mt: 3, mb: 3, textTransform: 'none', px: 0 }}
                           onClick={handleSubmit}
                         >
                           Pay with Desktop Wallet
@@ -811,7 +813,7 @@ const Contribute = () => {
                           fullWidth
                           disabled={buttonDisabled || formErrors.address}
                           variant="contained"
-                          sx={{ mt: 3, mb: 3, textTransform: 'none' }}
+                          sx={{ mt: 3, mb: 3, textTransform: 'none', px: 0 }}
                           onClick={handleSubmitErgopay}
                         >
                           Pay with Mobile Wallet
