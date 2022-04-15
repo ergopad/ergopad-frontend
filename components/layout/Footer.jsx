@@ -9,19 +9,21 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-/* const BackgroundContainer = styled('div')(({ theme }) => ({
-	zIndex: '-100',
-	pointerEvents: 'none'
-}));
+// const BackgroundContainer = styled('div')(({ theme }) => ({
+//   zIndex: '-100',
+//   pointerEvents: 'none',
+// }));
 
-const BackgroundSVG = styled('svg')(({ theme }) => ({
-	width: '800px',
-	height: '264px',
-	position: 'absolute',
-	bottom: '0',
-	left: '-400px',
-}));
- */
+// const BackgroundSVG = styled('svg')(({ theme }) => ({
+//   width: '800px',
+//   height: '264px',
+//   position: 'absolute',
+//   bottom: '0',
+//   left: '-400px',
+// }));
+
+const FOOTER_CACHE_KEY = 'events_footer_key';
+
 const Footer = () => {
   const [dynamicWhitelistFooters, setDynamicWhitelistFooters] = useState([]);
   const [dynamicContributionFooters, setDynamicContributionFooters] = useState(
@@ -31,18 +33,35 @@ const Footer = () => {
   useEffect(() => {
     const getFooters = async () => {
       try {
-        const res1 = await axios.get(
-          `${process.env.API_URL}/contribution/events`
-        );
-        res1.data.sort((a, b) => a.id - b.id);
-        const res2 = await axios.get(`${process.env.API_URL}/whitelist/events`);
-        res2.data.sort((a, b) => a.id - b.id);
-        setDynamicContributionFooters(
-          res1.data.filter((event) => event.additionalDetails.add_to_footer)
-        );
-        setDynamicWhitelistFooters(
-          res2.data.filter((event) => event.additionalDetails.add_to_footer)
-        );
+        if (localStorage.getItem(FOOTER_CACHE_KEY)) {
+          const events = JSON.parse(localStorage.getItem(FOOTER_CACHE_KEY));
+          setDynamicContributionFooters(events.contributionFooters);
+          setDynamicWhitelistFooters(events.whitelistFooters);
+        } else {
+          const res1 = await axios.get(
+            `${process.env.API_URL}/contribution/events`
+          );
+          res1.data.sort((a, b) => a.id - b.id);
+          const res2 = await axios.get(
+            `${process.env.API_URL}/whitelist/events`
+          );
+          res2.data.sort((a, b) => a.id - b.id);
+          const contributionFooters = res1.data.filter(
+            (event) => event.additionalDetails.add_to_footer
+          );
+          const whitelistFooters = res2.data.filter(
+            (event) => event.additionalDetails.add_to_footer
+          );
+          localStorage.setItem(
+            FOOTER_CACHE_KEY,
+            JSON.stringify({ whitelistFooters, contributionFooters })
+          );
+          setDynamicContributionFooters(contributionFooters);
+          setDynamicWhitelistFooters(whitelistFooters);
+        }
+        window.onbeforeunload = () => {
+          localStorage.removeItem(FOOTER_CACHE_KEY);
+        };
       } catch (e) {
         console.log(e);
       }
