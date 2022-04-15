@@ -148,6 +148,17 @@ export const TeamInput = ({ data, setData }) => {
               onChange={(e) => handleChange(e, index)}
             />
           </Grid>
+          <Grid item xs={12} sx={{ mt: 1 }}>
+            <TextField
+              name="description"
+              label="Role"
+              InputProps={{ disableUnderline: true }}
+              fullWidth
+              variant="filled"
+              value={member.description}
+              onChange={(e) => handleChange(e, index)}
+            />
+          </Grid>
           <Grid item md={10} xs={8} sx={{ mt: 1, pr: 1 }}>
             <TextField
               name="profileImgUrl"
@@ -194,7 +205,7 @@ export const TeamInput = ({ data, setData }) => {
             <Button
               sx={{ textTransform: 'none' }}
               onClick={() => {
-                const updatedData = data.filter((roadmap, i) => {
+                const updatedData = data.filter((member, i) => {
                   return index !== i;
                 });
                 setData(updatedData);
@@ -329,7 +340,7 @@ export const TokenomicsInput = ({ data, setData }) => {
             <Button
               sx={{ textTransform: 'none' }}
               onClick={() => {
-                const updatedData = data.filter((roadmap, i) => {
+                const updatedData = data.filter((data, i) => {
                   return index !== i;
                 });
                 setData(updatedData);
