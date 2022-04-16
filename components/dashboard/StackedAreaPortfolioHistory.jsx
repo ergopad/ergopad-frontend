@@ -23,7 +23,7 @@ const StackedAreaPortfolioHistory = (props) => {
 
   return (
     <VictoryChart
-      padding={{ top: 10, bottom: 60, left: 40, right: 40 }}
+      padding={{ top: 20, bottom: checkSmall ? 60 : 100, left: 40, right: 40 }}
       domainPadding={{ y: 20 }}
       containerComponent={
         <VictoryContainer
@@ -41,7 +41,7 @@ const StackedAreaPortfolioHistory = (props) => {
         colorScale="cool"
         itemsPerRow={3}
         x={40}
-        y={checkSmall ? -80 : -40}
+        y={-80}
         data={props.data.map((priceHistory, index) => {
           return {
             id: index,
