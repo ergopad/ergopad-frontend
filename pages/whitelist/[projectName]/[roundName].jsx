@@ -477,7 +477,7 @@ const Whitelist = () => {
                       address.
                     </Typography>
                     <Grid container spacing={2}>
-                      <Grid item xs={12}>
+                      {/* <Grid item xs={12}>
                         <TextField
                           sx={{ mt: 1 }}
                           InputProps={{ disableUnderline: true }}
@@ -493,7 +493,7 @@ const Whitelist = () => {
                           }
                           onChange={handleChange}
                         />
-                      </Grid>
+                      </Grid> */}
                       {!whitelistData.additionalDetails
                         .staker_snapshot_whitelist && (
                         <Grid item xs={12}>
@@ -613,9 +613,9 @@ const Whitelist = () => {
                     <Typography sx={{ color: theme.palette.text.secondary }}>
                       {whitelistState === NOT_STARTED &&
                         'This form is not yet active. The round will start at ' +
-                          new Date(
-                            Date.parse(whitelistData.start_dtz)
-                          ).toTimeString()}
+                        new Date(
+                          Date.parse(whitelistData.start_dtz)
+                        ).toLocaleString(navigator.language, {year: 'numeric', month: 'short', day: '2-digit', hour12: 'true', hour: '2-digit', minute: '2-digit', timeZoneName: 'long'})}
                     </Typography>
                     <Snackbar
                       open={openError}
