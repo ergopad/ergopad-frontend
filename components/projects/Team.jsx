@@ -13,7 +13,7 @@ const Team = ({ data }) => {
   return (
     <>
       <Grid container spacing={3} direction="row" justifyContent="center">
-        {teamMembers.map(({ name, profileImgUrl, socials }) => (
+        {teamMembers.map(({ name, description, profileImgUrl, socials }) => (
           <React.Fragment key={name}>
             <Grid item sx={{ width: '160px' }}>
               <Avatar
@@ -32,6 +32,17 @@ const Team = ({ data }) => {
                 sx={{ fontWeight: '500', textAlign: 'center', mb: '0.1rem' }}
               >
                 {name}
+              </Typography>
+              <Typography
+                color="text.secondary"
+                sx={{
+                  fontSize: '0.8rem',
+                  fontWeight: '300',
+                  textAlign: 'center',
+                  mb: '0.1rem',
+                }}
+              >
+                {description}
               </Typography>
               <Box sx={{ textAlign: 'center' }}>
                 {socials.twitter ? (

@@ -21,7 +21,7 @@ import PieChart from '@components/dashboard/PieChart';
 
 // CONFIG for portfolio history
 // step size
-const STEP_SIZE = 1;
+const STEP_SIZE = 2;
 const STEP_UNIT = 'w';
 
 // token
@@ -105,7 +105,8 @@ const Dashboard = () => {
   const [assetList, setAssetList] = useState(assetListArray(rawData2));
   const [imgNftList, setImgNftList] = useState([]);
   const [audNftList, setAudNftList] = useState([]);
-  const [priceData, setPriceData] = useState({});
+  const [priceDataErgopad, setPriceDataErgopad] = useState({});
+  const [priceDataVested, setPriceDataVested] = useState({});
   const [priceHistoryData, setPriceHistoryData] = useState([]);
   const [addVestingTableTokens, setAddVestingTable] = useState(true);
   const [addStakingTableTokens, setAddStakingTable] = useState(true);
@@ -259,7 +260,7 @@ const Dashboard = () => {
 
         try {
           const res = await axios.get(
-            `${process.env.API_URL}/asset/price/history/all?stepSize=${STEP_SIZE}&stepUnit=${STEP_UNIT}&limit=12`,
+            `${process.env.API_URL}/asset/price/history/all?stepSize=${STEP_SIZE}&stepUnit=${STEP_UNIT}&limit=26`,
             { ...defaultOptions }
           );
           const priceHistory = res.data;
@@ -275,7 +276,9 @@ const Dashboard = () => {
           const ergopadPrice = res.data
             .filter((pt) => pt.token === 'ergopad')
             .map((token) => token.history[0].price);
-          setPriceData({ ergopad: ergopadPrice.length ? ergopadPrice[0] : 0 });
+          setPriceDataErgopad({
+            ergopad: ergopadPrice.length ? ergopadPrice[0] : 0,
+          });
           setPriceHistoryData([...res.data]);
         } catch (e) {
           console.log('Error: building history', e);
@@ -327,6 +330,20 @@ const Dashboard = () => {
         });
 
       setVestedTokensNFT(vestedTokensNFTResponse.data);
+      const tokens = Object.keys(vestedTokensNFTResponse.data);
+      try {
+        const pricesObject = {};
+        const tokenPrices = await axios.post(
+          `${process.env.API_URL}/asset/prices`,
+          { tokens: tokens }
+        );
+        tokenPrices.data.forEach((price) => {
+          pricesObject[price.name] = price.price;
+        });
+        setPriceDataVested(pricesObject);
+      } catch (e) {
+        console.log(e);
+      }
       setLoadingVestingTable(false);
     };
 
@@ -370,17 +387,19 @@ const Dashboard = () => {
     const holdingState = JSON.parse(JSON.stringify(holdingData));
     const historyState = JSON.parse(JSON.stringify(historyData));
     // build new state
-    if (priceData.ergopad) {
-      if (addVestingTableTokens) {
+    if (addVestingTableTokens) {
+      if (priceDataErgopad.ergopad) {
         try {
+          // vesting ergopad
           const ergopadValueOpt = vestedTokens.filter(
             (token) => token.tokenId === ERGOPAD_TOKEN
           );
           if (ergopadValueOpt.length) {
             const ergopadValue =
-              ergopadValueOpt[0].totalVested * priceData.ergopad;
+              ergopadValueOpt[0].totalVested * priceDataErgopad.ergopad;
             holdingState.push({ x: 'ergopad (vesting)', y: ergopadValue });
           }
+          // vesting ergopad history
           const ergopadHistoryOpt = priceHistoryData.filter(
             (token) => token.token === 'ergopad'
           );
@@ -397,27 +416,36 @@ const Dashboard = () => {
           console.log(e);
         }
       }
-      if (addStakingTableTokens) {
-        try {
-          const ergopadValue = stakedTokens.totalStaked * priceData.ergopad;
-          if (ergopadValue) {
-            holdingState.push({ x: 'ergopad (staked)', y: ergopadValue });
-          }
-          const ergopadHistoryOpt = priceHistoryData.filter(
-            (token) => token.token === 'ergopad'
-          );
-          if (ergopadValue && ergopadHistoryOpt.length) {
-            const history = ergopadHistoryOpt[0].history.map((pt) => {
-              return {
-                timestamp: pt.timestamp,
-                value: pt.price * stakedTokens.totalStaked,
-              };
-            });
-            historyState.push({ token: 'ergopad (staked)', history: history });
-          }
-        } catch (e) {
-          console.log(e);
+      // vested with NFT
+      const reducedVestedNFT = reduceVestedNFT(vestedTokensNFT).map((price) => {
+        return {
+          x: price.name + ' (vesting)',
+          y: price.amount * (priceDataVested[price.name] ?? 0),
+        };
+      });
+      holdingState.push(...reducedVestedNFT);
+    }
+    if (addStakingTableTokens && priceDataErgopad.ergopad) {
+      try {
+        const ergopadValue =
+          stakedTokens.totalStaked * priceDataErgopad.ergopad;
+        if (ergopadValue) {
+          holdingState.push({ x: 'ergopad (staked)', y: ergopadValue });
         }
+        const ergopadHistoryOpt = priceHistoryData.filter(
+          (token) => token.token === 'ergopad'
+        );
+        if (ergopadValue && ergopadHistoryOpt.length) {
+          const history = ergopadHistoryOpt[0].history.map((pt) => {
+            return {
+              timestamp: pt.timestamp,
+              value: pt.price * stakedTokens.totalStaked,
+            };
+          });
+          historyState.push({ token: 'ergopad (staked)', history: history });
+        }
+      } catch (e) {
+        console.log(e);
       }
     }
     setHoldingDataAggregated(holdingState);
@@ -428,8 +456,10 @@ const Dashboard = () => {
     holdingData,
     historyData,
     vestedTokens,
+    vestedTokensNFT,
     stakedTokens,
-    priceData,
+    priceDataErgopad,
+    priceDataVested,
     priceHistoryData,
   ]);
 
@@ -458,13 +488,18 @@ const Dashboard = () => {
           </Grid>
           <Grid item xs={12} md={6}>
             <Paper sx={paperStyle}>
-              <Typography variant="h4">Portfolio History</Typography>
+              <Typography variant="h4" sx={{ mb: loading ? '1rem' : 0 }}>
+                Portfolio History {!loading && '*'}
+              </Typography>
               {loading ? (
                 <>
                   <CircularProgress color="inherit" />
                 </>
               ) : (
                 <>
+                  <Typography variant="p">
+                    Not all tokens are shown in this chart
+                  </Typography>
                   <StackedAreaPortfolioHistory data={historyDataAggregated} />
                 </>
               )}
@@ -789,6 +824,17 @@ const reduceVested = (vestedData) => {
   });
   const vested = Object.values(vestedMap);
   return vested;
+};
+
+const reduceVestedNFT = (vestedData) => {
+  return Object.keys(vestedData).map((token) => {
+    return {
+      name: token,
+      amount: vestedData[token]
+        .map((box) => box.Remaining)
+        .reduce((a, c) => a + c, 0),
+    };
+  });
 };
 
 export default Dashboard;

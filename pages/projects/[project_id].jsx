@@ -115,6 +115,12 @@ const Project = () => {
   const navBarList = (
     <List>
       {navBarLinks.map(({ icon, name, link }, i) => (
+        ((name == 'Description')
+        || (name == 'Team' && project?.team?.team && project.team.team.length) 
+        || (name == 'Roadmap' && project?.roadmap?.roadmap && project.roadmap.roadmap.length)
+        || (name == 'Tokenomics' && project?.tokenomics?.tokenomics && project?.tokenomics?.tokenomics.length)
+        || (name == 'Distribution' && project?.tokenomics?.tokenName))
+        ? (
         <ListItem
           key={i}
           button
@@ -128,6 +134,7 @@ const Project = () => {
           </ListItemIcon>
           <ListItemText primary={name} />
         </ListItem>
+      ) : null
       ))}
     </List>
   );
@@ -332,48 +339,64 @@ const Project = () => {
                       )}
                     </CopyToClipboard>
                   </Box>
-                  <Box sx={{ mb: '2rem' }}>
-                    <Typography
-                      variant="h4"
-                      sx={{ mt: '2rem', fontWeight: '800' }}
-                    >
-                      Description
-                    </Typography>
-                    <MarkdownRender description={project.description} />
-                  </Box>
-                  <Box sx={{ mb: '2rem' }}>
-                    <Typography variant="h4" sx={headingStyle} id="roadmap">
-                      Roadmap
-                    </Typography>
-                    <Roadmap data={project?.roadmap?.roadmap} />
-                  </Box>
-                  <Box sx={{ mb: '2rem' }}>
-                    <Typography variant="h4" sx={headingStyle} id="team">
-                      Team
-                    </Typography>
-                    <Team data={project?.team?.team} />
-                  </Box>
-                  <Box sx={{ mb: '2rem' }}>
-                    <Typography variant="h4" sx={headingStyle} id="tokenomics">
-                      Tokenomics
-                    </Typography>
-                    <Tokenomics data={project?.tokenomics?.tokenomics} />
-                  </Box>
-                  <Box>
-                    <Typography
-                      variant="h4"
-                      sx={headingStyle}
-                      id="distribution"
-                    >
-                      Distribution
-                    </Typography>
-                    <Distribution
-                      data={project?.tokenomics?.tokenomics}
-                      name={project?.tokenomics?.tokenName}
-                      ticker={project?.tokenomics?.tokenTicker}
-                      total={project?.tokenomics?.totalTokens}
-                    />
-                  </Box>
+                  {project.description ? (
+                    <Box sx={{ mb: '2rem' }}>
+                      <Typography
+                        variant="h4"
+                        sx={{ mt: '2rem', fontWeight: '800' }}
+                      >
+                        Description
+                      </Typography>
+                      <MarkdownRender description={project.description} />
+                    </Box>
+                  ) : null}
+                  {project?.roadmap?.roadmap &&
+                  project.roadmap.roadmap.length ? (
+                    <Box sx={{ mb: '2rem' }}>
+                      <Typography variant="h4" sx={headingStyle} id="roadmap">
+                        Roadmap
+                      </Typography>
+                      <Roadmap data={project?.roadmap?.roadmap} />
+                    </Box>
+                  ) : null}
+                  {project?.team?.team && project.team.team.length ? (
+                    <Box sx={{ mb: '2rem' }}>
+                      <Typography variant="h4" sx={headingStyle} id="team">
+                        Team
+                      </Typography>
+                      <Team data={project?.team?.team} />
+                    </Box>
+                  ) : null}
+                  {project?.tokenomics?.tokenomics &&
+                  project?.tokenomics?.tokenomics.length ? (
+                    <Box sx={{ mb: '2rem' }}>
+                      <Typography
+                        variant="h4"
+                        sx={headingStyle}
+                        id="tokenomics"
+                      >
+                        Tokenomics
+                      </Typography>
+                      <Tokenomics data={project?.tokenomics?.tokenomics} />
+                    </Box>
+                  ) : null}
+                  {project?.tokenomics?.tokenName && (
+                    <Box>
+                      <Typography
+                        variant="h4"
+                        sx={headingStyle}
+                        id="distribution"
+                      >
+                        Distribution
+                      </Typography>
+                      <Distribution
+                        data={project?.tokenomics?.tokenomics}
+                        name={project?.tokenomics?.tokenName}
+                        ticker={project?.tokenomics?.tokenTicker}
+                        total={project?.tokenomics?.totalTokens}
+                      />
+                    </Box>
+                  )}
                 </Grid>
               </Grid>
             </Container>
