@@ -363,25 +363,8 @@ const Contribute = () => {
                 formData.vestingAmount * contributeData.tokenPrice * 100
               ) / 100;
         // todo: get tokens and amounts from /vesting/requiredNergTokens and call ergo.get_utxos
-        const tokens = await axios.post(
-          `${process.env.API_URL}/vesting/requiredNergTokens`,
-          {
-            proxyNFT: contributeData.proxyNFTId,
-            vestingAmount: formData.vestingAmount,
-            sigUSDAmount: sigUSDAmount,
-          },
-          defaultOptions
-        );
-        const nergs = tokens.data.nErgRequired + NERG_FEES;
-        // prettier-ignore
-        const utxos = await ergo.get_utxos(nergs.toString()); // eslint-disable-line
-        tokens.data.tokens.forEach(async (token) => {
-          // prettier-ignore
-          const _utxos = await ergo.get_utxos(token.amount.toString(), token.tokenId); // eslint-disable-line
-          utxos.concat(_utxos);
-        });
-        const filteredUtxos = Array.from(
-          new Set([...utxos].map((x) => x.boxId))
+        const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
+          (x, i, a) => a.indexOf(x) == i && x
         );
 
         // todo: get unsigned transaction from /vesting/vestFromProxy
@@ -392,7 +375,7 @@ const Contribute = () => {
             vestingAmount: formData.vestingAmount,
             sigUSDAmount: sigUSDAmount,
             address: formData.address,
-            utxos: [...filteredUtxos], // replace with filteredUtxos
+            addresses: [...walletAddresses], // replace with filteredUtxos
           },
           defaultOptions
         );
