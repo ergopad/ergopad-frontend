@@ -115,6 +115,12 @@ const Project = () => {
   const navBarList = (
     <List>
       {navBarLinks.map(({ icon, name, link }, i) => (
+        ((name == 'Description')
+        || (name == 'Team' && project?.team?.team && project.team.team.length) 
+        || (name == 'Roadmap' && project?.roadmap?.roadmap && project.roadmap.roadmap.length)
+        || (name == 'Tokenomics' && project?.tokenomics?.tokenomics && project?.tokenomics?.tokenomics.length)
+        || (name == 'Distribution' && project?.tokenomics?.tokenName))
+        ? (
         <ListItem
           key={i}
           button
@@ -128,6 +134,7 @@ const Project = () => {
           </ListItemIcon>
           <ListItemText primary={name} />
         </ListItem>
+      ) : null
       ))}
     </List>
   );
