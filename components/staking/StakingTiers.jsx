@@ -19,6 +19,12 @@ const stakingHeading = {
 
 const stakingTiers = [
   {
+    tier: '(M) Mini',
+    value: 12500,
+    requirements: 'Twitter like, retweet',
+    weight: 4,
+  },
+  {
     tier: '(A) Alpha',
     value: 25000,
     requirements: 'Twitter like, retweet',
