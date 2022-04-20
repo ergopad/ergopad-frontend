@@ -19,6 +19,12 @@ const PieChart = (props) => {
   const totalValue = props.holdingData
     .map((data) => data.y)
     .reduce((a, c) => a + c, 0);
+
+  const holdingData =
+    totalValue === 0
+      ? props.holdingData
+      : props.holdingData.filter((data) => (data.y * 100) / totalValue > 1);
+
   return (
     <svg viewBox="0 0 400 400">
       <VictoryPie
@@ -28,7 +34,7 @@ const PieChart = (props) => {
         height={400}
         innerRadius={100}
         padAngle={2}
-        data={props.holdingData}
+        data={holdingData}
         colorScale="cool"
         style={{ labels: { fill: 'white' } }}
         labelComponent={

@@ -253,6 +253,7 @@ const Contribute = () => {
       ...formData,
       address: wallet,
     });
+    setWalletBalance(initialWalletBalance);
 
     if (contributeData) {
       if (wallet !== '') {
@@ -263,7 +264,6 @@ const Contribute = () => {
           address: false,
         });
       } else {
-        setWalletBalance(initialWalletBalance);
         setFormErrors({
           ...formErrors,
           address: true,
@@ -567,10 +567,12 @@ const Contribute = () => {
                     </Typography>
                     <Typography variant="p" sx={{ mb: 1 }}>
                       Tokens remaining to be distributed for this round:{' '}
-                      {Math.round(
-                        roundDetails.remaining *
-                          Math.pow(10, contributeData.tokenDecimals)
-                      ) / Math.pow(10, contributeData.tokenDecimals)}
+                      {roundDetails.remaining.toLocaleString(
+                        navigator.language,
+                        {
+                          maximumFractionDigits: contributeData.tokenDecimals,
+                        }
+                      )}
                       .
                     </Typography>
                     <Typography variant="p" sx={{ mb: 3 }}>
@@ -584,7 +586,14 @@ const Contribute = () => {
                           variant="p"
                           sx={{ fontSize: '1rem', mb: 1 }}
                         >
-                          Your wallet currently has {walletBalance.whitelist}{' '}
+                          Your wallet currently has{' '}
+                          {walletBalance.whitelist.toLocaleString(
+                            navigator.language,
+                            {
+                              maximumFractionDigits:
+                                contributeData.tokenDecimals,
+                            }
+                          )}{' '}
                           whitelist tokens. Reconnect your wallet with the dapp
                           connector to hard refresh this value.
                         </Typography>
@@ -677,15 +686,22 @@ const Contribute = () => {
                           variant="p"
                           sx={{ fontSize: '1rem', mb: '1rem' }}
                         >
-                          You are receiving {formData.vestingAmount}{' '}
+                          You are receiving{' '}
+                          {formData.vestingAmount.toLocaleString(
+                            navigator.language,
+                            {
+                              maximumFractionDigits:
+                                contributeData.tokenDecimals,
+                            }
+                          )}{' '}
                           {contributeData.tokenName} tokens at $
                           {contributeData.tokenPrice} per token. Your total
                           contribution value is $
-                          {Math.round(
-                            contributeData.tokenPrice *
-                              formData.vestingAmount *
-                              100
-                          ) / 100}
+                          {(
+                            contributeData.tokenPrice * formData.vestingAmount
+                          ).toLocaleString(navigator.language, {
+                            maximumFractionDigits: 2,
+                          })}
                           .
                         </Typography>
                         <Typography
