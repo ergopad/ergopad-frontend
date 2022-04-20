@@ -13,7 +13,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import axios from 'axios';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-import theme from '../../styles/theme';
+import theme from '@styles/theme';
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -75,7 +75,7 @@ const EditUserForm = () => {
     };
 
     setUserData();
-  }, []);
+  }, []); // eslint-disable-line
 
   useEffect(() => {
     if (isLoading) {
@@ -139,7 +139,7 @@ const EditUserForm = () => {
       const data = { ...formData };
       try {
         await axios.put(
-          `${process.env.API_URL}/users/${formData.id}`,
+          `${process.env.API_URL}/users/${formData.id}/password`,
           data,
           defaultOptions
         );
@@ -172,7 +172,7 @@ const EditUserForm = () => {
     <>
       <Box component="form" onSubmit={handleSubmit}>
         <Typography variant="h4" sx={{ mt: 10, mb: 4, fontWeight: '700' }}>
-          Edit User
+          Change Password
         </Typography>
         <Grid container spacing={2} />
         <Grid item xs={12} sx={{ mb: 1 }}>
