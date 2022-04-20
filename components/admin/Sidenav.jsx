@@ -43,28 +43,19 @@ const Sidenav = () => {
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/create_user');
+              router.push('/admin/edit_user');
             }}
           >
-            <ListItemText primary="Create Users" />
+            <ListItemText primary="Change Password" />
           </ListItem>
           <ListItem
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/edit_user');
+              router.push('/admin/manage_user');
             }}
           >
-            <ListItemText primary="Edit User" />
-          </ListItem>
-          <ListItem
-            button
-            sx={{ mb: 2, ...listItemSx }}
-            onClick={() => {
-              router.push('/admin/delete_user');
-            }}
-          >
-            <ListItemText primary="Delete Users" />
+            <ListItemText primary="Manage Users" />
           </ListItem>
         </List>
       </Box>
