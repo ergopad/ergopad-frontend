@@ -9,6 +9,7 @@ const Layout = ({ children }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const router = useRouter();
+
   return (
     <>
       <Header />
@@ -19,16 +20,10 @@ const Layout = ({ children }) => {
           flexDirection: 'column',
           pt: theme.spacing(8),
           minHeight: '100vh',
+          overflowX: router.pathname === '/' ? 'hidden' : 'visible',
         }}
       >
-        <Box
-          sx={{
-            flexGrow: 1,
-            overflowX: router.pathname === '/' ? 'hidden' : 'visible',
-          }}
-        >
-          {children}
-        </Box>
+        <Box sx={{ flexGrow: 1 }}>{children}</Box>
         <Container
           maxWidth="lg"
           sx={{
