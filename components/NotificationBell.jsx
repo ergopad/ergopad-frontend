@@ -15,6 +15,7 @@ import DoneAllIcon from '@mui/icons-material/DoneAll';
 import DoneIcon from '@mui/icons-material/Done';
 import ReplayIcon from '@mui/icons-material/Replay';
 import PublicIcon from '@mui/icons-material/Public';
+import PriorityHigh from '@mui/icons-material/PriorityHigh';
 import { useWallet } from 'utils/WalletContext';
 import axios from 'axios';
 
@@ -51,7 +52,8 @@ const NOTIFICATION_TTL = 5 * 60 * 1000; // 5 min
 const iconMap = {
   confirmed: <DoneAllIcon />,
   submitted: <DoneIcon />,
-  failed: <ReplayIcon />,
+  refund: <ReplayIcon />,
+  failed: <PriorityHigh />,
   default: <PublicIcon />,
 };
 
@@ -95,11 +97,13 @@ const NotificationBell = () => {
           `${process.env.API_URL}/notifications/getNotifications`,
           [...walletAddresses]
         );
-        const nt = res.data.map((notification) => {
+        const nt = res.data.slice(0, 6).map((notification) => {
           return {
             id: notification.id,
             icon: notification.transactionStatus
-              ? notification.transactionStatus
+              ? notification.additionalText.includes('Unfortunately') // handle refund
+                ? 'refund'
+                : notification.transactionStatus
               : 'default',
             href: notification.transactionId
               ? `https://explorer.ergoplatform.com/en/transactions/${notification.transactionId}`
