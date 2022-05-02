@@ -1,12 +1,20 @@
-import { AppBar, Toolbar, Box, IconButton, useScrollTrigger, Button } from '@mui/material';
+import {
+  AppBar,
+  Toolbar,
+  Box,
+  IconButton,
+  useScrollTrigger,
+  Button,
+} from '@mui/material';
 import MuiNextLink from '@components/MuiNextLink';
 import Navbar from '@components/navigation/Navbar';
-import theme from '../../styles/theme';
+import theme from '@styles/theme';
 import { cloneElement } from 'react';
-import { useAddWallet } from 'utils/AddWalletContext'
+import { useAddWallet } from 'utils/AddWalletContext';
 import { useWallet } from 'utils/WalletContext';
 import AddWallet from '@components/AddWallet';
-import Image from 'next/image'
+import Image from 'next/image';
+import NotificationBell from '@components/NotificationBell';
 
 export const navLinks = [
   { title: `About`, path: `/about` },
@@ -21,48 +29,63 @@ function ElevationScroll(props) {
 
   const trigger = useScrollTrigger({
     disableHysteresis: true,
-    threshold: 0
+    threshold: 0,
   });
 
   return cloneElement(children, {
     elevation: trigger ? 4 : 0,
-    color: trigger ? 'background' : 'transparent'
+    color: trigger ? 'background' : 'transparent',
   });
 }
 
 const Header = () => {
-  const { wallet } = useWallet()
-  const { setAddWalletOpen } = useAddWallet()
+  const { wallet } = useWallet();
+  const { setAddWalletOpen } = useAddWallet();
 
-  const walletButtonText = wallet ? wallet : 'Connect Wallet'
+  const walletButtonText = wallet ? wallet : 'Connect Wallet';
 
-  const handleClickOpen = (() => {
-    setAddWalletOpen(true)
-  })
+  const handleClickOpen = () => {
+    setAddWalletOpen(true);
+  };
 
   return (
     <>
-    <AddWallet />
+      <AddWallet />
       <ElevationScroll>
-        <AppBar color="transparent" enableColorOnDark sx={{ 
-          p: 0, 
-          display: 'flex', 
-          alignItems: 'center', 
-          // background: theme.palette.background.default
-        }}>
-          <Toolbar sx={{ 
-            maxWidth: 'lg', 
-            alignItems: 'center', 
-            justifyContent: 'space-between',
-            width: '100%',
-            // backgroundColor: theme.palette.background.default 
-          }}>
-
+        <AppBar
+          color="transparent"
+          enableColorOnDark
+          sx={{
+            p: 0,
+            display: 'flex',
+            alignItems: 'center',
+            // background: theme.palette.background.default
+          }}
+        >
+          <Toolbar
+            sx={{
+              maxWidth: 'lg',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+              // backgroundColor: theme.palette.background.default
+            }}
+          >
             <Box sx={{ display: 'flex', flexGrow: 1 }}>
-              <Box sx={{ display: 'inline-flex' }} >
-                <MuiNextLink activeClassName='active' href='/' sx={{ pr: '2rem' }}>
+              <Box sx={{ display: 'inline-flex' }}>
+                <MuiNextLink
+                  activeClassName="active"
+                  href="/"
+                  sx={{ pr: '2rem' }}
+                >
                   <IconButton>
-                    <Image priority src="/favicon-32x32.png" alt="Ergopad Logo" width="32" height="32" />
+                    <Image
+                      priority
+                      src="/favicon-32x32.png"
+                      alt="Ergopad Logo"
+                      width="32"
+                      height="32"
+                    />
                     {/* <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
                       <linearGradient id="b" x2="32" y1="8" y2="8" gradientUnits="userSpaceOnUse">
                         <stop stopColor={theme.palette.primary.main} offset=".2813"/>
@@ -78,13 +101,15 @@ const Header = () => {
                   </IconButton>
                 </MuiNextLink>
               </Box>
-              <Box sx={{ display: 'inline-flex' }} >
+              <Box sx={{ display: 'inline-flex' }}>
                 <Navbar navLinks={navLinks} />
               </Box>
             </Box>
-
+            <Box sx={{ display: 'flex', px: 1 }}>
+              <NotificationBell />
+            </Box>
             <Box sx={{ display: 'flex' }}>
-              <Button 
+              <Button
                 variant="contained"
                 id="walletButton"
                 sx={walletButtonSx}
@@ -93,8 +118,7 @@ const Header = () => {
                 {walletButtonText}
               </Button>
             </Box>
-
-              {/* {isMobile && <SideDrawer navLinks={navLinks} />} */}
+            {/* {isMobile && <SideDrawer navLinks={navLinks} />} */}
           </Toolbar>
         </AppBar>
       </ElevationScroll>
@@ -111,14 +135,14 @@ const walletButtonSx = {
   textTransform: 'none',
   backgroundColor: theme.palette.primary.main,
   '&:hover': {
-      backgroundColor: theme.palette.primary.hover,
-      boxShadow: 'none',
+    backgroundColor: theme.palette.primary.hover,
+    boxShadow: 'none',
   },
   '&:active': {
-      backgroundColor: theme.palette.primary.active,
+    backgroundColor: theme.palette.primary.active,
   },
   textOverflow: 'ellipsis',
   maxWidth: '10em',
   overflow: 'hidden',
   whiteSpace: 'nowrap',
-}
+};
