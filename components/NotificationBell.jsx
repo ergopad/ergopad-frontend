@@ -47,7 +47,7 @@ import axios from 'axios';
 
 const NOTIFICATION_STORAGE_KEY = 'notification_storage_758321';
 const NOTIFICATION_BADGE_DOT = 'notification_badge_dot_217936';
-const NOTIFICATION_TTL = 5 * 60 * 1000; // 5 min
+const NOTIFICATION_TTL = 10 * 1000; // 10 sec
 
 const iconMap = {
   confirmed: <DoneAllIcon />,
