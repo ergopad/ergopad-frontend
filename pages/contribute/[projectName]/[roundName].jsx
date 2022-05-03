@@ -59,7 +59,7 @@ const modalStyle = {
 // const PAIDEIA_TOKEN_ID = 'paideia_token_id';
 // const TOKEN_PRICE = 0.008;
 // const TOKEN_DECIMALS = 10000;
-const NERG_FEES = 20 * 1000 * 1000;
+// const NERG_FEES = 20 * 1000 * 1000;
 
 const initialFormData = Object.freeze({
   vestingAmount: 0,
@@ -362,37 +362,19 @@ const Contribute = () => {
             : Math.round(
                 formData.vestingAmount * contributeData.tokenPrice * 100
               ) / 100;
-        // todo: get tokens and amounts from /vesting/requiredNergTokens and call ergo.get_utxos
-        const tokens = await axios.post(
-          `${process.env.API_URL}/vesting/requiredNergTokens`,
-          {
-            proxyNFT: contributeData.proxyNFTId,
-            vestingAmount: formData.vestingAmount,
-            sigUSDAmount: sigUSDAmount,
-          },
-          defaultOptions
+        const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
+          (x, i, a) => a.indexOf(x) == i && x
         );
-        const nergs = tokens.data.nErgRequired + NERG_FEES;
-        // prettier-ignore
-        const utxos = await ergo.get_utxos(nergs.toString()); // eslint-disable-line
-        tokens.data.tokens.forEach(async (token) => {
-          // prettier-ignore
-          const _utxos = await ergo.get_utxos(token.amount.toString(), token.tokenId); // eslint-disable-line
-          utxos.concat(_utxos);
-        });
-        const filteredUtxos = Array.from(
-          new Set([...utxos].map((x) => x.boxId))
-        );
-
-        // todo: get unsigned transaction from /vesting/vestFromProxy
         const res = await axios.post(
-          `${process.env.API_URL}/vesting/vestFromProxy`,
+          `${process.env.API_URL}/vesting/contribute`,
           {
             proxyNFT: contributeData.proxyNFTId,
             vestingAmount: formData.vestingAmount,
             sigUSDAmount: sigUSDAmount,
             address: formData.address,
-            utxos: [...filteredUtxos], // replace with filteredUtxos
+            utxos: [],
+            addresses: [...walletAddresses],
+            txFormat: 'eip-12',
           },
           defaultOptions
         );
@@ -461,7 +443,7 @@ const Contribute = () => {
                 formData.vestingAmount * contributeData.tokenPrice * 100
               ) / 100;
         const res = await axios.post(
-          `${process.env.API_URL}/vesting/vestFromProxy`,
+          `${process.env.API_URL}/vesting/contribute`,
           {
             proxyNFT: contributeData.proxyNFTId,
             vestingAmount: formData.vestingAmount,
