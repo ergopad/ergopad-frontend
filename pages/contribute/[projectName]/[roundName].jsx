@@ -31,6 +31,7 @@ import ErgopayModalBody from '@components/ErgopayModalBody';
 import MarkdownRender from '@components/MarkdownRender';
 import theme from '@styles/theme';
 import axios from 'axios';
+import MuiNextLink from '@components/MuiNextLink'
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -779,14 +780,16 @@ const Contribute = () => {
                       variant="p"
                       sx={{ fontSize: '1rem', mb: '1rem' }}
                     >
-                      It can take time to retrieve the oracle value and generate
-                      the transaction. Please be patient, and try again if you
-                      get an oracle error. Once you sign the transcation, check
-                      the explorer link and give it a few minutes to confirm on
-                      the blockchain.
+                      Your funds will be sent to the blockchain and off-chain fulfillment bots will pick them up from the queue and complete the transaction. You will receive a Vesting Key which represents your tokens locked in vesting contracts. View the <MuiNextLink href="/dashboard">dashboard</MuiNextLink> to redeem them after the IDO date. 
+                    </Typography>
+                    <Typography
+                      variant="p"
+                      sx={{ fontSize: '1rem', mb: '1rem' }}
+                    >
+                      If there's any issue, the transaction will be automatically refunded. If that happens, please try submitting again. 
                     </Typography>
                     <Typography variant="p" sx={{ fontWeight: 'bold', mb: 0 }}>
-                      YOROI IS NOT SUPPORTED.
+                      NOTE: YOROI IS NOT SUPPORTED.
                     </Typography>
                     <Grid container>
                       <Grid item xs={6} sx={{ pr: 0.5 }}>
