@@ -11,12 +11,16 @@ import {
   CircularProgress,
   FormControlLabel,
   Checkbox,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { useEffect, useState, forwardRef } from 'react';
 import FileUploadS3 from '@components/FileUploadS3';
 import AutoCompleteSelect from '@components/AutoCompleteSelect';
+import PaginatedTable from '@components/PaginatedTable';
 import axios from 'axios';
 
 const Alert = forwardRef(function Alert(props, ref) {
@@ -26,6 +30,7 @@ const Alert = forwardRef(function Alert(props, ref) {
 const linkTypes = ['YouTube', 'Medium', 'Others'];
 
 const initialFormData = Object.freeze({
+  id: '',
   title: '',
   shortDescription: '',
   description: '',
@@ -42,7 +47,9 @@ const initialFormErrors = Object.freeze({
   title: false,
 });
 
-const CreateTutorialForm = () => {
+const EditTutorialForm = () => {
+  // tutorial data
+  const [tutorialData, setTutorialData] = useState([]);
   // form data is all strings
   const [formData, updateFormData] = useState(initialFormData);
   // form error object, all booleans
@@ -63,6 +70,18 @@ const CreateTutorialForm = () => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
+    const getTableData = async () => {
+      setLoading(true);
+      try {
+        const res = await axios.get(`${process.env.API_URL}/tutorials/`);
+        res.data.sort((a, b) => a.id - b.id);
+        setTutorialData(res.data);
+      } catch (e) {
+        console.log(e);
+      }
+      setLoading(false);
+    };
+
     const getCategories = async () => {
       try {
         const res = await axios.get(
@@ -75,6 +94,7 @@ const CreateTutorialForm = () => {
     };
 
     getCategories();
+    getTableData();
   }, [openSuccess]);
 
   useEffect(() => {
@@ -99,6 +119,23 @@ const CreateTutorialForm = () => {
       return;
     }
     setOpenSuccess(false);
+  };
+
+  const fetchDetails = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setOpenError(false);
+    const id = formData.id;
+    const res = tutorialData.filter((tutorial) => tutorial.id === id);
+    if (id && res.length) {
+      const data = res[0];
+      updateFormData({ ...data });
+      setFormErrors(initialFormErrors);
+    } else {
+      setErrorMessage('Tutorial not found');
+      setOpenError(true);
+    }
+    setLoading(false);
   };
 
   const handleChange = (e) => {
@@ -160,8 +197,8 @@ const CreateTutorialForm = () => {
         category: formData.category ? formData.category : 'default',
       };
       try {
-        await axios.post(
-          `${process.env.API_URL}/tutorials/`,
+        await axios.put(
+          `${process.env.API_URL}/tutorials/${formData.id}`,
           data,
           defaultOptions
         );
@@ -194,9 +231,60 @@ const CreateTutorialForm = () => {
     <>
       <Box component="form" onSubmit={handleSubmit}>
         <Typography variant="h4" sx={{ mt: 10, mb: 4, fontWeight: '700' }}>
-          Add Tutorial
+          Edit Tutorial
         </Typography>
         <Grid container spacing={2} />
+        <Grid item xs={12}>
+          <Typography color="text.secondary" sx={{ mt: 2, mb: 1 }}>
+            Enter Tutorial id manually or select one from the table below.
+          </Typography>
+          <TextField
+            InputProps={{ disableUnderline: true }}
+            required
+            fullWidth
+            id="id"
+            label="Tutorial Id"
+            name="id"
+            variant="filled"
+            value={formData.id}
+            onChange={handleChange}
+          />
+          <Accordion sx={{ mt: 1 }}>
+            <AccordionSummary>
+              <strong>Expand to see Tutorials</strong>
+            </AccordionSummary>
+            <AccordionDetails>
+              <PaginatedTable
+                rows={tutorialData}
+                onClick={(id) => {
+                  updateFormData({ ...formData, id: id });
+                }}
+              />
+            </AccordionDetails>
+          </Accordion>
+        </Grid>
+        <Box sx={{ position: 'relative', mb: 2 }}>
+          <Button
+            onClick={fetchDetails}
+            disabled={buttonDisabled}
+            variant="contained"
+            sx={{ mt: 1, mb: 2 }}
+          >
+            Fetch Tutorial Details
+          </Button>
+          {isLoading && (
+            <CircularProgress
+              size={24}
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                marginTop: '-9px',
+                marginLeft: '-12px',
+              }}
+            />
+          )}
+        </Box>
         <Grid item xs={12}>
           <TextField
             InputProps={{ disableUnderline: true }}
@@ -341,7 +429,7 @@ const CreateTutorialForm = () => {
             variant="contained"
             sx={{ mt: 3, mb: 1 }}
           >
-            Submit
+            Update Tutorial
           </Button>
           {isLoading && (
             <CircularProgress
@@ -387,4 +475,4 @@ const CreateTutorialForm = () => {
   );
 };
 
-export default CreateTutorialForm;
+export default EditTutorialForm;

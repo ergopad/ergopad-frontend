@@ -1,32 +1,26 @@
 import TextField from '@mui/material/TextField';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
-import { useEffect, useState } from 'react';
 import { ListItem } from '@mui/material';
 
 const filter = createFilterOptions();
 
-const AutoCompleteSelect = ({ label, options, onChange }) => {
-  const [val, setVal] = useState(null);
-
-  useEffect(() => {
-    onChange(val ? val.title : 'default');
-  }, [val]); // eslint-disable-line
+const AutoCompleteSelect = ({ label, options, value, setValue }) => {
 
   return (
     <Autocomplete
-      value={val}
+      value={value}
       onChange={(e, newValue) => {
         if (typeof newValue === 'string') {
-          setVal({
+          setValue({
             title: newValue,
           });
         } else if (newValue && newValue.inputValue) {
           // Create a new value from the user input
-          setVal({
+          setValue({
             title: newValue.inputValue,
           });
         } else {
-          setVal(newValue);
+          setValue(newValue);
         }
       }}
       filterOptions={(options, params) => {
