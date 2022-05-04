@@ -250,18 +250,15 @@ const Staking = () => {
     if (emptyCheck && errorCheck) {
       try {
         const tokenAmount = Math.round(stakingForm.tokenAmount * 100);
-        // prettier-ignore
-        const tokens = await ergo.get_utxos(tokenAmount.toString(), STAKE_TOKEN_ID); // eslint-disable-line
-        // prettier-ignore
-        const fees = await ergo.get_utxos('280000000'); // eslint-disable-line
-        const utxos = Array.from(
-          new Set([...fees, ...tokens].map((x) => x.boxId))
+        const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
+          (x, i, a) => a.indexOf(x) == i && x
         );
         const request = {
           wallet: stakingForm.wallet,
           amount: tokenAmount / 100,
-          utxos: utxos,
+          utxos: [],
           txFormat: 'eip-12',
+          addresses: [...walletAddresses],
         };
         const res = await axios.post(
           `${process.env.API_URL}/staking/stake/`,
@@ -385,20 +382,16 @@ const Staking = () => {
     if (emptyCheck && errorCheck) {
       try {
         const tokenAmount = unstakingForm.tokenAmount * 100;
-        const stakeKey = unstakeModalData.stakeKeyId;
-        // prettier-ignore
-        const tokens = await ergo.get_utxos('1', stakeKey); // eslint-disable-line
-        // prettier-ignore
-        const fees = await ergo.get_utxos('20000000'); // eslint-disable-line
-        const utxos = Array.from(
-          new Set([...tokens, ...fees].map((x) => x.boxId))
+        const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
+          (x, i, a) => a.indexOf(x) == i && x
         );
         const request = {
           stakeBox: unstakeModalData.boxId,
           amount: tokenAmount / 100,
           address: wallet,
-          utxos: utxos,
+          utxos: [],
           txFormat: 'eip-12',
+          addresses: [...walletAddresses],
         };
         const res = await axios.post(
           `${process.env.API_URL}/staking/unstake/`,
