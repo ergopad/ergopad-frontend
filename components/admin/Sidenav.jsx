@@ -206,6 +206,40 @@ const Sidenav = () => {
       </Box>
       <Box sx={{ mr: { md: 12, xs: 0 }, mt: { md: 0, xs: 4 } }}>
         <Typography variant="h4" sx={{ fontWeight: '700', lineHeight: '1.2' }}>
+          Tutorials
+        </Typography>
+        <List>
+          <ListItem
+            button
+            sx={{ ...listItemSx }}
+            onClick={() => {
+              router.push('/admin/create_tutorial');
+            }}
+          >
+            <ListItemText primary="Add Tutorials" />
+          </ListItem>
+          <ListItem
+            button
+            sx={{ ...listItemSx }}
+            onClick={() => {
+              router.push('/admin/edit_tutorial');
+            }}
+          >
+            <ListItemText primary="Edit Tutorials" />
+          </ListItem>
+          <ListItem
+            button
+            sx={{ mb: 2, ...listItemSx }}
+            onClick={() => {
+              router.push('/admin/delete_tutorial');
+            }}
+          >
+            <ListItemText primary="Delete Tutorials" />
+          </ListItem>
+        </List>
+      </Box>
+      <Box sx={{ mr: { md: 12, xs: 0 }, mt: { md: 0, xs: 4 } }}>
+        <Typography variant="h4" sx={{ fontWeight: '700', lineHeight: '1.2' }}>
           Job Listings
         </Typography>
         <List>
