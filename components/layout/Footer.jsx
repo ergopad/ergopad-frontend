@@ -22,7 +22,8 @@ import axios from 'axios';
 //   left: '-400px',
 // }));
 
-const FOOTER_CACHE_KEY = 'events_footer_key';
+const FOOTER_CACHE_KEY = 'events_footer_key_325891';
+const FORCE_INVALIDATE_TTL = 30 * 60 * 1000; // 30 min
 
 const Footer = () => {
   const [dynamicWhitelistFooters, setDynamicWhitelistFooters] = useState([]);
@@ -33,7 +34,10 @@ const Footer = () => {
   useEffect(() => {
     const getFooters = async () => {
       try {
-        if (localStorage.getItem(FOOTER_CACHE_KEY)) {
+        if (
+          localStorage.getItem(FOOTER_CACHE_KEY) &&
+          JSON.parse(localStorage.getItem(FOOTER_CACHE_KEY)).expiry > Date.now()
+        ) {
           const events = JSON.parse(localStorage.getItem(FOOTER_CACHE_KEY));
           setDynamicContributionFooters(events.contributionFooters);
           setDynamicWhitelistFooters(events.whitelistFooters);
@@ -54,7 +58,11 @@ const Footer = () => {
           );
           localStorage.setItem(
             FOOTER_CACHE_KEY,
-            JSON.stringify({ whitelistFooters, contributionFooters })
+            JSON.stringify({
+              expiry: Date.now() + FORCE_INVALIDATE_TTL,
+              whitelistFooters,
+              contributionFooters,
+            })
           );
           setDynamicContributionFooters(contributionFooters);
           setDynamicWhitelistFooters(whitelistFooters);
