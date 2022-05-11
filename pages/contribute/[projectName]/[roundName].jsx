@@ -805,7 +805,7 @@ const Contribute = () => {
                           sx={{ mt: 3, mb: 3, textTransform: 'none', px: 0 }}
                           onClick={handleSubmit}
                         >
-                          Pay with Desktop Wallet
+                          Send with Desktop Wallet
                         </Button>
                       </Grid>
                       <Grid item xs={6} sx={{ pl: 0.5 }}>
@@ -817,7 +817,7 @@ const Contribute = () => {
                           sx={{ mt: 3, mb: 3, textTransform: 'none', px: 0 }}
                           onClick={handleSubmitErgopay}
                         >
-                          Pay with Mobile Wallet
+                          Send with Mobile Wallet
                         </Button>
                       </Grid>
                     </Grid>
