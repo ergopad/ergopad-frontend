@@ -175,6 +175,11 @@ const Footer = () => {
                 Staking
               </Link>
             </ListItem>
+            <ListItem disableGutters sx={listItemStyles}>
+              <Link activeClassName="active" href="/dashboard" sx={linkStyles}>
+                Dashboard
+              </Link>
+            </ListItem>
           </List>
         </Grid>
         <Grid item xs={6} md={2}>

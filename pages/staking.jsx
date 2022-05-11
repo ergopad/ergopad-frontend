@@ -877,7 +877,7 @@ const Staking = () => {
                   }}
                   onClick={stake}
                 >
-                  Pay with Desktop Wallet
+                  Stake with Desktop Wallet
                   {stakeLoading && (
                     <CircularProgress
                       sx={{ ml: 2, color: 'white' }}
@@ -910,7 +910,7 @@ const Staking = () => {
                   }}
                   onClick={stakeErgopay}
                 >
-                  Pay with Mobile Wallet
+                  Stake with Mobile Wallet
                   {stakeErgopayLoading && (
                     <CircularProgress
                       sx={{ ml: 2, color: 'white' }}
@@ -1046,7 +1046,7 @@ const Staking = () => {
                   }}
                   onClick={unstake}
                 >
-                  Pay with Desktop Wallet
+                  Unstake with Desktop Wallet
                   {unstakeModalLoading && (
                     <CircularProgress
                       sx={{ ml: 2, color: 'white' }}
@@ -1079,7 +1079,7 @@ const Staking = () => {
                   }}
                   onClick={unstakeErgopay}
                 >
-                  Pay with Mobile Wallet
+                  Unstake with Mobile Wallet
                   {unstakeErgopayLoading && (
                     <CircularProgress
                       sx={{ ml: 2, color: 'white' }}
