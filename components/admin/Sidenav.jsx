@@ -172,6 +172,40 @@ const Sidenav = () => {
       </Box>
       <Box sx={{ mr: { md: 12, xs: 0 }, mt: { md: 0, xs: 4 } }}>
         <Typography variant="h4" sx={{ fontWeight: '700', lineHeight: '1.2' }}>
+          Staking Configuration
+        </Typography>
+        <List>
+          <ListItem
+            button
+            sx={{ ...listItemSx }}
+            onClick={() => {
+              router.push('/admin/create_staking_config');
+            }}
+          >
+            <ListItemText primary="Create Staking Config" />
+          </ListItem>
+          <ListItem
+            button
+            sx={{ ...listItemSx }}
+            onClick={() => {
+              router.push('/admin/edit_staking_config');
+            }}
+          >
+            <ListItemText primary="Edit Staking Config" />
+          </ListItem>
+          <ListItem
+            button
+            sx={{ mb: 2, ...listItemSx }}
+            onClick={() => {
+              router.push('/admin/delete_staking_config');
+            }}
+          >
+            <ListItemText primary="Delete Staking Config" />
+          </ListItem>
+        </List>
+      </Box>
+      <Box sx={{ mr: { md: 12, xs: 0 }, mt: { md: 0, xs: 4 } }}>
+        <Typography variant="h4" sx={{ fontWeight: '700', lineHeight: '1.2' }}>
           Projects
         </Typography>
         <List>
