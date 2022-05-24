@@ -26,6 +26,9 @@ import DeleteContributionEventForm from '@components/admin/DeleteContributionEve
 import CreateTutorialForm from '@components/admin/CreateTutorialForm';
 import EditTutorialForm from '@components/admin/EditTutorialForm';
 import DeleteTutorialForm from '@components/admin/DeleteTutorialForm';
+import CreateStakingConfigForm from '@components/admin/CreateStakingConfigForm';
+import EditStakingConfigForm from '@components/admin/EditStakingConfigForm';
+import DeleteStakingConfigForm from '@components/admin/DeleteStakingConfigForm';
 
 const AdminForm = () => {
   const JWT_TOKEN =
@@ -60,6 +63,9 @@ const AdminForm = () => {
     create_tutorial: <CreateTutorialForm />,
     edit_tutorial: <EditTutorialForm />,
     delete_tutorial: <DeleteTutorialForm />,
+    create_staking_config: <CreateStakingConfigForm />,
+    edit_staking_config: <EditStakingConfigForm />,
+    delete_staking_config: <DeleteStakingConfigForm />,
   };
 
   useEffect(() => {
