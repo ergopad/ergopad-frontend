@@ -403,7 +403,7 @@ const Whitepaper = () => {
               Introduction
             </Typography>
             <Typography variant="p">
-              ErgoPad is a project incubator offering token IDOs which provide funding for new projects within the Ergo ecosystem. Ergopad released its own native token through an IDO (Initial Dex Offering), and users are be able to stake Ergopad tokens through smart contracts on-chain.
+              ErgoPad is a project incubator offering token IDOs which provide funding for new projects within the Ergo ecosystem. Ergopad released its own native token through an IDO (Initial Dex Offering), and users are now able to stake Ergopad tokens through smart contracts on-chain.
             </Typography>
             <Typography variant="p">
               If you stake ErgoPad tokens and reach one of the tiers outlined in the staking section, you'll be given an opportunity to contribute to the DAOs of projects launched through the Ergopad platform, before they go live on any dex. These seed rounds will often be lower than the price the tokens list at during the IDO, allowing you to partcipate in the DAOs of various projects. 
