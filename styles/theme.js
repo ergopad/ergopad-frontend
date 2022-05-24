@@ -184,7 +184,7 @@ theme.typography.subtitle1 = {
 theme.typography.p = {
   color: theme.palette.text.secondary,
   fontSize: '1.125rem',
-  marginBottom: '2rem',
+  marginBottom: '1rem',
   display: 'block'
 }
     

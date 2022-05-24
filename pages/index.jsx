@@ -30,7 +30,7 @@ const Homepage = () => {
       <Container maxWidth="lg">
         <Hero
           title="Welcome to ErgoPad"
-          subtitle="We are a token launch platform for Ergo giving you an opportunity to get in on the ground floor with Ergo token IDOs. We help projects navigate Ergoscript to build safe apps for you to invest in."
+          subtitle="We are a token launch platform for Ergo giving you an opportunity to get in on the ground floor with Ergo token IDOs. We help projects navigate Ergoscript to build safe apps for all."
         />
         <Divider sx={{ mb: 10 }} />
         <Features />

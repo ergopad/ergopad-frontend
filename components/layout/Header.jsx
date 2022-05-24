@@ -9,7 +9,7 @@ import AddWallet from '@components/AddWallet';
 import Image from 'next/image'
 
 export const navLinks = [
-  { title: `About`, path: `/about` },
+  { title: `Whitepaper`, path: `/whitepaper` },
   { title: `Dashboard`, path: `/dashboard` },
   { title: `Projects`, path: `/projects` },
   { title: `Token`, path: `/token` },
