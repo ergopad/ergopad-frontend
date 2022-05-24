@@ -18,10 +18,9 @@ import { useState, useEffect } from 'react';
 import MuiNextLink from '@components/MuiNextLink';
 
 const drawerLinks = [
-  { title: 'About', path: '/about' },
+  { title: 'Whitepaper', path: '/whitepaper' },
   { title: 'Projects', path: '/projects' },
   { title: 'Apply for IDO', path: '/apply' },
-  { title: 'Documentation', path: 'https://github.com/ergo-pad/ergopad/blob/dev/docs/README.md' },
   { title: 'Tutorials', path: '/guides' },
   { title: 'FAQ', path: '/faq' },
 ];

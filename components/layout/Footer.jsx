@@ -164,8 +164,8 @@ const Footer = () => {
           </Typography>
           <List>
             <ListItem disableGutters sx={listItemStyles}>
-              <Link activeClassName="active" href="/about" sx={linkStyles}>
-                About
+              <Link activeClassName="active" href="/whitepaper" sx={linkStyles}>
+                Whitepaper
               </Link>
             </ListItem>
             <ListItem disableGutters sx={listItemStyles}>
@@ -195,17 +195,6 @@ const Footer = () => {
             SUPPORT
           </Typography>
           <List>
-            <ListItem disableGutters sx={listItemStyles}>
-              <Link
-                activeClassName="active"
-                href="https://github.com/ergo-pad/ergopad/blob/dev/docs/README.md"
-                target="_blank"
-                rel="noreferrer"
-                sx={linkStyles}
-              >
-                Documentation
-              </Link>
-            </ListItem>
             <ListItem disableGutters sx={listItemStyles}>
               <Link activeClassName="active" href="/guides" sx={linkStyles}>
                 Tutorials & Guides
