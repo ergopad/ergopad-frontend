@@ -329,7 +329,7 @@ const Whitepaper = () => {
             Read the Ergopad Whitepaper to get up to speed on how the project works
           </Typography>
           <Divider sx={{ width: '2rem', mb: '1.5rem' }} />
-          <Box sx={{ display: 'flex', justifyContent: 'left' }}>
+          {/* <Box sx={{ display: 'flex', justifyContent: 'left' }}>
             <Link
               href=""
               aria-label="discord"
@@ -394,7 +394,7 @@ const Whitepaper = () => {
                 </IconButton>
               )}
             </CopyToClipboard>
-          </Box>
+          </Box> */}
           <Box sx={{ mb: '2rem' }}>
             <Typography
               variant="h4"
