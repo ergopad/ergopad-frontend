@@ -40,11 +40,7 @@ import { useRouter } from 'next/router';
 const STAKE_TOKEN_ID =
   'd71693c49a84fbbecd4908c94813b46514b18b67a99952dc1e6e4791556de413';
 
-const STAKING_TOKEN_OPTIONS = [
-  { title: 'ErgoPad', project: 'default' },
-  { title: 'EGIO', project: 'egio' },
-  { title: 'Paideia', project: 'paideia' },
-];
+const STAKING_TOKEN_OPTIONS = [{ title: 'ErgoPad', project: 'default' }];
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -133,9 +129,12 @@ const ProjectStaking = () => {
   // nav
   const router = useRouter();
   const { project_id } = router.query;
+  const [pageLoading, setPageLoading] = useState(true);
   const [tokenChoice, setTokenChoice] = useState('Loading...');
+  const [tokenChoiceList, setTokenChoiceList] = useState(STAKING_TOKEN_OPTIONS);
   // wallet
   const { wallet, dAppWallet } = useWallet();
+  const [aggregateWallet, setAggregateWallet] = useState(true);
   // stake modal
   const [tokenBalance, setTokenBalance] = useState(0);
   const [openModal, setOpenModal] = useState(false);
@@ -178,8 +177,26 @@ const ProjectStaking = () => {
   };
 
   useEffect(() => {
-    // todo: load stuff from API
-    setTokenChoice(project_id);
+    const getTokenOptions = async () => {
+      setPageLoading(true);
+      try {
+        const res = await axios.get(`${process.env.API_URL}/staking/config`);
+        setTokenChoiceList([
+          ...STAKING_TOKEN_OPTIONS,
+          ...res.data.map((option) => {
+            return { project: option.project, title: option.title };
+          }),
+        ]);
+      } catch (e) {
+        console.log(e);
+      }
+      setPageLoading(false);
+    };
+
+    if (project_id) {
+      setTokenChoice(project_id);
+      getTokenOptions();
+    }
   }, [project_id]);
 
   useEffect(() => {
@@ -187,8 +204,11 @@ const ProjectStaking = () => {
     const getStaked = async () => {
       setUnstakeTableLoading(true);
       try {
+        const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
+          (x, i, a) => a.indexOf(x) == i && x
+        );
         const request = {
-          addresses: [wallet],
+          addresses: aggregateWallet ? [...walletAddresses] : [wallet],
         };
         const res = await axios.post(
           `${process.env.API_URL}/staking/staked/`,
@@ -207,7 +227,7 @@ const ProjectStaking = () => {
     } else {
       setStakedData(initStaked);
     }
-  }, [wallet]);
+  }, [wallet, dAppWallet.addresses, aggregateWallet]);
 
   useEffect(() => {
     // reset staking Form on wallet change
@@ -265,18 +285,15 @@ const ProjectStaking = () => {
     if (emptyCheck && errorCheck) {
       try {
         const tokenAmount = Math.round(stakingForm.tokenAmount * 100);
-        // prettier-ignore
-        const tokens = await ergo.get_utxos(tokenAmount.toString(), STAKE_TOKEN_ID); // eslint-disable-line
-        // prettier-ignore
-        const fees = await ergo.get_utxos('280000000'); // eslint-disable-line
-        const utxos = Array.from(
-          new Set([...fees, ...tokens].map((x) => x.boxId))
+        const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
+          (x, i, a) => a.indexOf(x) == i && x
         );
         const request = {
           wallet: stakingForm.wallet,
           amount: tokenAmount / 100,
-          utxos: utxos,
+          utxos: [],
           txFormat: 'eip-12',
+          addresses: [...walletAddresses],
         };
         const res = await axios.post(
           `${process.env.API_URL}/staking/stake/`,
@@ -400,20 +417,16 @@ const ProjectStaking = () => {
     if (emptyCheck && errorCheck) {
       try {
         const tokenAmount = unstakingForm.tokenAmount * 100;
-        const stakeKey = unstakeModalData.stakeKeyId;
-        // prettier-ignore
-        const tokens = await ergo.get_utxos('1', stakeKey); // eslint-disable-line
-        // prettier-ignore
-        const fees = await ergo.get_utxos('20000000'); // eslint-disable-line
-        const utxos = Array.from(
-          new Set([...tokens, ...fees].map((x) => x.boxId))
+        const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
+          (x, i, a) => a.indexOf(x) == i && x
         );
         const request = {
           stakeBox: unstakeModalData.boxId,
           amount: tokenAmount / 100,
           address: wallet,
-          utxos: utxos,
+          utxos: [],
           txFormat: 'eip-12',
+          addresses: [...walletAddresses],
         };
         const res = await axios.post(
           `${process.env.API_URL}/staking/unstake/`,
@@ -601,537 +614,577 @@ const ProjectStaking = () => {
   };
 
   const projectName =
-    STAKING_TOKEN_OPTIONS.filter((option) => option.project === project_id)[0]
+    tokenChoiceList.filter((option) => option.project === project_id)[0]
       ?.title ?? '';
 
   return (
     <>
-      <Container sx={{ mb: 3 }}>
-        <CenterTitle
-          title={`Stake Your ${projectName} Tokens`}
-          subtitle="Connect your wallet and stake your tokens to receive staking rewards"
-          main={true}
-        />
-      </Container>
-      <Container maxWidth="lg">
-        <StakingNavigationDropdown
-          tokenChoice={tokenChoice}
-          stakingTokenOptions={STAKING_TOKEN_OPTIONS}
-          handleTokenChoiceChange={handleTokenChoiceChange}
-        />
-        <StakingSummary />
-        <Grid
-          container
-          spacing={3}
-          sx={{
-            mt: 4,
-            justifyContent: 'space-between',
-            flexDirection: { xs: 'column-reverse', md: 'row' },
-          }}
-        >
-          <Grid item xs={12} md={8} sx={{ pr: { lg: 1, xs: 0 } }}>
-            <Box sx={{ width: '100%' }}>
-              <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs
-                  value={tabValue}
-                  onChange={handleTabChange}
-                  aria-label="basic tabs example"
-                >
-                  <Tab label="Stake" {...a11yProps(0)} />
-                  <Tab label="Unstake" {...a11yProps(1)} />
-                </Tabs>
-              </Box>
-              <TabPanel value={tabValue} index={0}>
-                <Typography variant="p">
-                  Note: Please stake a minimum of 10 tokens, fewer will not
-                  work.
-                </Typography>
-                <Typography variant="h4">Terms &amp; Conditions</Typography>
-                <Typography variant="p">
-                  By using this website to stake tokens on the Ergo blockchain,
-                  you accept that you are interacting with a smart contract that
-                  this website has no control over. The operators of this
-                  website accept no liability whatsoever in relation to your use
-                  of these smart contracts. By using this website to stake, you
-                  also have read and agree to the{' '}
-                  <MuiNextLink href="/terms">Terms and Conditions</MuiNextLink>.
-                </Typography>
-                <FormGroup
-                  sx={{
-                    marginBottom: '1rem',
-                    mt: '-1rem',
-                    color: theme.palette.text.secondary,
-                  }}
-                >
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        color="primary"
-                        checked={checkBox}
-                        onChange={(e, checked) => setCheckBox(checked)}
-                      />
-                    }
-                    sx={{ label: { fontSize: '1.125rem' } }}
-                    label="I have read and accept the terms described above. "
-                  />
-                </FormGroup>
-                <Box
-                  sx={{
-                    width: '100%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Button
-                    variant="contained"
-                    disabled={!stakeButtonEnabled}
-                    sx={{
-                      color: '#fff',
-                      fontSize: '1rem',
-                      py: '0.6rem',
-                      px: '1.2rem',
-                      textTransform: 'none',
-                      background: theme.palette.primary.main,
-                      '&:hover': {
-                        background: theme.palette.primary.hover,
-                        boxShadow: 'none',
-                      },
-                      '&:active': {
-                        background: theme.palette.primary.active,
-                      },
-                    }}
-                    onClick={() => {
-                      setOpenModal(true);
-                      setTransactionSubmitted(null);
-                    }}
-                  >
-                    Stake Now
-                  </Button>
-                </Box>
-              </TabPanel>
-              <TabPanel value={tabValue} index={1} id="withdraw">
-                <Paper sx={{ p: { xs: 2, sm: 4 }, borderRadius: 3 }}>
-                  <Typography variant="h5" sx={{ fontWeight: '700' }}>
-                    Withdraw
-                  </Typography>
-                  {unstakeTableLoading ? (
-                    <CircularProgress color="inherit" />
-                  ) : (
-                    <UnstakingTable
-                      data={stakedData}
-                      unstake={(boxId, stakeKeyId, stakeAmount, penaltyPct) => {
-                        initUnstake();
-                        setOpenUnstakeModal(true);
-                        setUnstakeModalData({
-                          boxId,
-                          stakeKeyId,
-                          stakeAmount,
-                          penaltyPct,
-                        });
-                      }}
-                    />
-                  )}
-                </Paper>
-              </TabPanel>
-            </Box>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <StakingRewardsBox
-              loading={unstakeTableLoading}
-              totalStaked={stakedData.totalStaked}
-              setTabValue={setTabValue}
+      {projectName ? (
+        <>
+          <Container sx={{ mb: 3 }}>
+            <CenterTitle
+              title={`Stake Your ${projectName} Tokens`}
+              subtitle="Connect your wallet and stake your tokens to receive staking rewards"
+              main={true}
             />
-          </Grid>
-        </Grid>
-      </Container>
-      <Modal
-        open={openModal}
-        onClose={() => {
-          setOpenModal(false);
-          setTransactionSubmitted(null);
-          setErgopayUrl(null);
-          setStakingFormErrors(initStakingFormErrors);
-        }}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={checkSmall ? modalStyle : { ...modalStyle, width: '85vw' }}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Stake Tokens
-          </Typography>
-          {transactionSubmitted || ergopayUrl ? (
-            transactionSubmitted ? (
-              <TransactionSubmitted transactionId={transactionSubmitted} />
-            ) : (
-              <ErgopayModalBody ergopayUrl={ergopayUrl} />
-            )
-          ) : (
-            <>
-              <Typography variant="p" sx={{ fontSize: '1rem', mb: 2 }}>
-                Once you click submit you will be prompted by your wallet to
-                approve the transaction. Make sure you verify token amounts
-                before approving it.
-              </Typography>
-              <Box>
-                <Typography color="text.secondary" sx={{ mb: 1 }}>
-                  You have {tokenBalance} {tokenChoice} tokens.
-                </Typography>
-                <Grid
-                  container
-                  spacing={1}
-                  alignItems="stretch"
-                  justifyContent="center"
-                  sx={{ flexGrow: 1 }}
-                >
-                  <Grid item md={10} xs={8}>
-                    <TextField
-                      InputProps={{ disableUnderline: true }}
-                      required
-                      fullWidth
-                      id="stakingAmount"
-                      label={`Enter the token amount you are staking`}
-                      name="stakingAmount"
-                      variant="filled"
-                      sx={{ mb: 2 }}
-                      onChange={handleStakingFormChange}
-                      value={stakingForm.tokenAmount}
-                      error={stakingFormErrors.tokenAmount}
-                      helperText={
-                        stakingFormErrors.tokenAmount &&
-                        'Enter a valid token amount'
-                      }
-                    />
-                  </Grid>
-                  <Grid item md={2} xs={4}>
-                    <Button
-                      onClick={() => {
-                        handleStakingFormChange({
-                          target: {
-                            name: 'stakingAmount',
-                            value: tokenBalance,
+          </Container>
+          <Container maxWidth="lg">
+            <StakingNavigationDropdown
+              tokenChoice={tokenChoice}
+              stakingTokenOptions={tokenChoiceList}
+              handleTokenChoiceChange={handleTokenChoiceChange}
+            />
+            <StakingSummary />
+            <Grid
+              container
+              spacing={3}
+              sx={{
+                mt: 4,
+                justifyContent: 'space-between',
+                flexDirection: { xs: 'column-reverse', md: 'row' },
+              }}
+            >
+              <Grid item xs={12} md={8} sx={{ pr: { lg: 1, xs: 0 } }}>
+                <Box sx={{ width: '100%' }}>
+                  <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <Tabs
+                      value={tabValue}
+                      onChange={handleTabChange}
+                      aria-label="basic tabs example"
+                    >
+                      <Tab label="Stake" {...a11yProps(0)} />
+                      <Tab label="Unstake" {...a11yProps(1)} />
+                    </Tabs>
+                  </Box>
+                  <TabPanel value={tabValue} index={0}>
+                    <Typography variant="p">
+                      Note: Please stake a minimum of 10 tokens, fewer will not
+                      work.
+                    </Typography>
+                    <Typography variant="h4">Terms &amp; Conditions</Typography>
+                    <Typography variant="p">
+                      By using this website to stake tokens on the Ergo
+                      blockchain, you accept that you are interacting with a
+                      smart contract that this website has no control over. The
+                      operators of this website accept no liability whatsoever
+                      in relation to your use of these smart contracts. By using
+                      this website to stake, you also have read and agree to the{' '}
+                      <MuiNextLink href="/terms">
+                        Terms and Conditions
+                      </MuiNextLink>
+                      .
+                    </Typography>
+                    <FormGroup
+                      sx={{
+                        marginBottom: '1rem',
+                        mt: '-1rem',
+                        color: theme.palette.text.secondary,
+                      }}
+                    >
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            color="primary"
+                            checked={checkBox}
+                            onChange={(e, checked) => setCheckBox(checked)}
+                          />
+                        }
+                        sx={{ label: { fontSize: '1.125rem' } }}
+                        label="I have read and accept the terms described above. "
+                      />
+                    </FormGroup>
+                    <Box
+                      sx={{
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Button
+                        variant="contained"
+                        disabled={!stakeButtonEnabled}
+                        sx={{
+                          color: '#fff',
+                          fontSize: '1rem',
+                          py: '0.6rem',
+                          px: '1.2rem',
+                          textTransform: 'none',
+                          background: theme.palette.primary.main,
+                          '&:hover': {
+                            background: theme.palette.primary.hover,
+                            boxShadow: 'none',
                           },
-                        });
-                      }}
-                    >
-                      Max Amount
-                    </Button>
-                  </Grid>
-                </Grid>
-                <FormControl
-                  variant="filled"
-                  fullWidth
-                  required
-                  name="wallet"
-                  error={stakingFormErrors.wallet}
-                >
-                  <InputLabel
-                    htmlFor="ergoAddress"
-                    sx={{ '&.Mui-focused': { color: 'text.secondary' } }}
-                  >
-                    Primary Ergo Wallet Address
-                  </InputLabel>
-                  <FilledInput
-                    id="ergoAddress"
-                    value={stakingForm.wallet}
-                    disabled
-                    disableUnderline={true}
-                    name="wallet"
-                    type="ergoAddress"
-                    sx={{
-                      width: '100%',
-                      border: '1px solid rgba(82,82,90,1)',
-                      borderRadius: '4px',
-                    }}
-                  />
-                  <FormHelperText>
-                    {stakingFormErrors.wallet &&
-                      'Please connect wallet to proceed'}
-                  </FormHelperText>
-                </FormControl>
-                <Grid container justifyContent="center">
-                  <Grid item>
-                    <Button
-                      variant="contained"
-                      disabled={
-                        stakeErgopayLoading ||
-                        stakeLoading ||
-                        stakingFormErrors.wallet ||
-                        !dAppWallet.connected
-                      }
-                      sx={{
-                        color: '#fff',
-                        fontSize: '1rem',
-                        mt: 2,
-                        mr: 1,
-                        py: '0.6rem',
-                        px: '1.2rem',
-                        textTransform: 'none',
-                        background: theme.palette.tertiary.main,
-                        '&:hover': {
-                          background: theme.palette.tertiary.hover,
-                          boxShadow: 'none',
-                        },
-                        '&:active': {
-                          background: theme.palette.tertiary.active,
-                        },
-                      }}
-                      onClick={stake}
-                    >
-                      Stake with Desktop Wallet
-                      {stakeLoading && (
-                        <CircularProgress
-                          sx={{ ml: 2, color: 'white' }}
-                          size={'1.2rem'}
+                          '&:active': {
+                            background: theme.palette.primary.active,
+                          },
+                        }}
+                        onClick={() => {
+                          setOpenModal(true);
+                          setTransactionSubmitted(null);
+                        }}
+                      >
+                        Stake Now
+                      </Button>
+                    </Box>
+                  </TabPanel>
+                  <TabPanel value={tabValue} index={1} id="withdraw">
+                    <Paper sx={{ p: { xs: 2, sm: 4 }, borderRadius: 3 }}>
+                      <Typography variant="h5" sx={{ fontWeight: '700' }}>
+                        Withdraw
+                      </Typography>
+                      {unstakeTableLoading ? (
+                        <CircularProgress color="inherit" />
+                      ) : (
+                        <UnstakingTable
+                          data={stakedData}
+                          unstake={(
+                            boxId,
+                            stakeKeyId,
+                            stakeAmount,
+                            penaltyPct
+                          ) => {
+                            initUnstake();
+                            setOpenUnstakeModal(true);
+                            setUnstakeModalData({
+                              boxId,
+                              stakeKeyId,
+                              stakeAmount,
+                              penaltyPct,
+                            });
+                          }}
                         />
                       )}
-                    </Button>
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      variant="contained"
-                      disabled={
-                        stakeErgopayLoading ||
-                        stakeLoading ||
-                        stakingFormErrors.wallet
-                      }
-                      sx={{
-                        color: '#fff',
-                        fontSize: '1rem',
-                        mt: 2,
-                        py: '0.6rem',
-                        px: '1.2rem',
-                        textTransform: 'none',
-                        background: theme.palette.tertiary.main,
-                        '&:hover': {
-                          background: theme.palette.tertiary.hover,
-                          boxShadow: 'none',
-                        },
-                        '&:active': {
-                          background: theme.palette.tertiary.active,
-                        },
-                      }}
-                      onClick={stakeErgopay}
-                    >
-                      Stake with Mobile Wallet
-                      {stakeErgopayLoading && (
-                        <CircularProgress
-                          sx={{ ml: 2, color: 'white' }}
-                          size={'1.2rem'}
-                        />
-                      )}
-                    </Button>
-                  </Grid>
-                </Grid>
-              </Box>
-            </>
-          )}
-        </Box>
-      </Modal>
-      <Modal
-        open={openUnstakeModal}
-        onClose={() => {
-          setOpenUnstakeModal(false);
-          setTransactionSubmitted(null);
-          setErgopayUrl(null);
-          setUnstakingFormErrors(initUnstakingFormErrors);
-        }}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={checkSmall ? modalStyle : { ...modalStyle, width: '85vw' }}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Unstake Tokens
-          </Typography>
-          {transactionSubmitted || ergopayUrl ? (
-            transactionSubmitted ? (
-              <TransactionSubmitted transactionId={transactionSubmitted} />
-            ) : (
-              <ErgopayModalBody ergopayUrl={ergopayUrl} />
-            )
-          ) : (
-            <>
-              <Typography variant="p" sx={{ fontSize: '1rem', mb: 2 }}>
-                Please note the unstaking penalty before approving the
-                transaction in your wallet.
-              </Typography>
-              <Grid
-                container
-                spacing={checkSmall ? 3 : 1}
-                alignItems="stretch"
-                justifyContent="center"
-                sx={{ flexGrow: 1, mb: 3 }}
-              >
-                {[
-                  {
-                    title: 'Staked in Box',
-                    value: unstakeModalData.stakeAmount,
-                    background: theme.palette.background.default,
-                  },
-                  {
-                    title: 'Penalty',
-                    value: unstakePenalty === -1 ? '-' : unstakePenalty,
-                    background: theme.palette.background.default,
-                  },
-                ].map((item) => {
-                  if (checkSmall) {
-                    return StakingItem(item, 6);
-                  } else {
-                    return StakingItem(item, 6, true);
-                  }
-                })}
+                    </Paper>
+                  </TabPanel>
+                </Box>
               </Grid>
-              <Box>
-                <Grid
-                  container
-                  spacing={3}
-                  alignItems="stretch"
-                  justifyContent="center"
-                  sx={{ flexGrow: 1 }}
-                >
-                  <Grid item md={10} xs={9}>
-                    <TextField
-                      InputProps={{ disableUnderline: true }}
-                      required
-                      fullWidth
-                      id="unstakingAmount"
-                      label={`Enter the token amount you are unstaking`}
-                      name="unstakingAmount"
+              <Grid item xs={12} md={4}>
+                <StakingRewardsBox
+                  loading={unstakeTableLoading}
+                  totalStaked={stakedData.totalStaked}
+                  aggregateWallet={aggregateWallet}
+                  handleSwitchChange={(state) => setAggregateWallet(state)}
+                />
+              </Grid>
+            </Grid>
+          </Container>
+          <Modal
+            open={openModal}
+            onClose={() => {
+              setOpenModal(false);
+              setTransactionSubmitted(null);
+              setErgopayUrl(null);
+              setStakingFormErrors(initStakingFormErrors);
+            }}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box
+              sx={checkSmall ? modalStyle : { ...modalStyle, width: '85vw' }}
+            >
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Stake Tokens
+              </Typography>
+              {transactionSubmitted || ergopayUrl ? (
+                transactionSubmitted ? (
+                  <TransactionSubmitted transactionId={transactionSubmitted} />
+                ) : (
+                  <ErgopayModalBody ergopayUrl={ergopayUrl} />
+                )
+              ) : (
+                <>
+                  <Typography variant="p" sx={{ fontSize: '1rem', mb: 2 }}>
+                    Once you click submit you will be prompted by your wallet to
+                    approve the transaction. Make sure you verify token amounts
+                    before approving it.
+                  </Typography>
+                  <Box>
+                    <Typography color="text.secondary" sx={{ mb: 1 }}>
+                      You have {tokenBalance} {tokenChoice} tokens.
+                    </Typography>
+                    <Grid
+                      container
+                      spacing={1}
+                      alignItems="stretch"
+                      justifyContent="center"
+                      sx={{ flexGrow: 1 }}
+                    >
+                      <Grid item md={10} xs={8}>
+                        <TextField
+                          InputProps={{ disableUnderline: true }}
+                          required
+                          fullWidth
+                          id="stakingAmount"
+                          label={`Enter the token amount you are staking`}
+                          name="stakingAmount"
+                          variant="filled"
+                          sx={{ mb: 2 }}
+                          onChange={handleStakingFormChange}
+                          value={stakingForm.tokenAmount}
+                          error={stakingFormErrors.tokenAmount}
+                          helperText={
+                            stakingFormErrors.tokenAmount &&
+                            'Enter a valid token amount'
+                          }
+                        />
+                      </Grid>
+                      <Grid item md={2} xs={4}>
+                        <Button
+                          onClick={() => {
+                            handleStakingFormChange({
+                              target: {
+                                name: 'stakingAmount',
+                                value: tokenBalance,
+                              },
+                            });
+                          }}
+                        >
+                          Max Amount
+                        </Button>
+                      </Grid>
+                    </Grid>
+                    <FormControl
                       variant="filled"
-                      sx={{ mb: 2 }}
-                      onChange={handleUnstakingFormChange}
-                      value={unstakingForm.tokenAmount}
-                      error={unstakingFormErrors.tokenAmount}
-                      helperText={
-                        unstakingFormErrors.tokenAmount &&
-                        'Enter a valid token amount'
-                      }
-                    />
-                  </Grid>
-                  <Grid item md={2} xs={3}>
-                    <Button
-                      onClick={() => {
-                        handleUnstakingFormChange({
-                          target: {
-                            name: 'unstakingAmount',
-                            value: unstakeModalData.stakeAmount,
-                          },
-                        });
-                      }}
+                      fullWidth
+                      required
+                      name="wallet"
+                      error={stakingFormErrors.wallet}
                     >
-                      Max Amount
-                    </Button>
-                  </Grid>
-                </Grid>
-                <FormHelperText>
-                  {unstakingFormErrors.wallet
-                    ? 'Please connect wallet to proceed'
-                    : ''}
-                </FormHelperText>
-                <Grid container justifyContent="center">
-                  <Grid item>
-                    <Button
-                      variant="contained"
-                      disabled={
-                        unstakeModalLoading ||
-                        unstakeErgopayLoading ||
-                        unstakingFormErrors.wallet ||
-                        !dAppWallet.connected
+                      <InputLabel
+                        htmlFor="ergoAddress"
+                        sx={{ '&.Mui-focused': { color: 'text.secondary' } }}
+                      >
+                        Primary Ergo Wallet Address
+                      </InputLabel>
+                      <FilledInput
+                        id="ergoAddress"
+                        value={stakingForm.wallet}
+                        disabled
+                        disableUnderline={true}
+                        name="wallet"
+                        type="ergoAddress"
+                        sx={{
+                          width: '100%',
+                          border: '1px solid rgba(82,82,90,1)',
+                          borderRadius: '4px',
+                        }}
+                      />
+                      <FormHelperText>
+                        {stakingFormErrors.wallet &&
+                          'Please connect wallet to proceed'}
+                      </FormHelperText>
+                    </FormControl>
+                    <Grid container justifyContent="center">
+                      <Grid item>
+                        <Button
+                          variant="contained"
+                          disabled={
+                            stakeErgopayLoading ||
+                            stakeLoading ||
+                            stakingFormErrors.wallet ||
+                            !dAppWallet.connected
+                          }
+                          sx={{
+                            color: '#fff',
+                            fontSize: '1rem',
+                            mt: 2,
+                            mr: 1,
+                            py: '0.6rem',
+                            px: '1.2rem',
+                            textTransform: 'none',
+                            background: theme.palette.tertiary.main,
+                            '&:hover': {
+                              background: theme.palette.tertiary.hover,
+                              boxShadow: 'none',
+                            },
+                            '&:active': {
+                              background: theme.palette.tertiary.active,
+                            },
+                          }}
+                          onClick={stake}
+                        >
+                          Stake with Desktop Wallet
+                          {stakeLoading && (
+                            <CircularProgress
+                              sx={{ ml: 2, color: 'white' }}
+                              size={'1.2rem'}
+                            />
+                          )}
+                        </Button>
+                      </Grid>
+                      <Grid item>
+                        <Button
+                          variant="contained"
+                          disabled={
+                            stakeErgopayLoading ||
+                            stakeLoading ||
+                            stakingFormErrors.wallet
+                          }
+                          sx={{
+                            color: '#fff',
+                            fontSize: '1rem',
+                            mt: 2,
+                            py: '0.6rem',
+                            px: '1.2rem',
+                            textTransform: 'none',
+                            background: theme.palette.tertiary.main,
+                            '&:hover': {
+                              background: theme.palette.tertiary.hover,
+                              boxShadow: 'none',
+                            },
+                            '&:active': {
+                              background: theme.palette.tertiary.active,
+                            },
+                          }}
+                          onClick={stakeErgopay}
+                        >
+                          Stake with Mobile Wallet
+                          {stakeErgopayLoading && (
+                            <CircularProgress
+                              sx={{ ml: 2, color: 'white' }}
+                              size={'1.2rem'}
+                            />
+                          )}
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </>
+              )}
+            </Box>
+          </Modal>
+          <Modal
+            open={openUnstakeModal}
+            onClose={() => {
+              setOpenUnstakeModal(false);
+              setTransactionSubmitted(null);
+              setErgopayUrl(null);
+              setUnstakingFormErrors(initUnstakingFormErrors);
+            }}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box
+              sx={checkSmall ? modalStyle : { ...modalStyle, width: '85vw' }}
+            >
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Unstake Tokens
+              </Typography>
+              {transactionSubmitted || ergopayUrl ? (
+                transactionSubmitted ? (
+                  <TransactionSubmitted transactionId={transactionSubmitted} />
+                ) : (
+                  <ErgopayModalBody ergopayUrl={ergopayUrl} />
+                )
+              ) : (
+                <>
+                  <Typography variant="p" sx={{ fontSize: '1rem', mb: 2 }}>
+                    Please note the unstaking penalty before approving the
+                    transaction in your wallet.
+                  </Typography>
+                  <Grid
+                    container
+                    spacing={checkSmall ? 3 : 1}
+                    alignItems="stretch"
+                    justifyContent="center"
+                    sx={{ flexGrow: 1, mb: 3 }}
+                  >
+                    {[
+                      {
+                        title: 'Staked in Box',
+                        value: unstakeModalData.stakeAmount,
+                        background: theme.palette.background.default,
+                      },
+                      {
+                        title: 'Penalty',
+                        value: unstakePenalty === -1 ? '-' : unstakePenalty,
+                        background: theme.palette.background.default,
+                      },
+                    ].map((item) => {
+                      if (checkSmall) {
+                        return StakingItem(item, 6);
+                      } else {
+                        return StakingItem(item, 6, true);
                       }
-                      sx={{
-                        color: '#fff',
-                        fontSize: '1rem',
-                        mt: 2,
-                        mr: 1,
-                        py: '0.6rem',
-                        px: '1.2rem',
-                        textTransform: 'none',
-                        background: theme.palette.secondary.main,
-                        '&:hover': {
-                          background: theme.palette.secondary.hover,
-                          boxShadow: 'none',
-                        },
-                        '&:active': {
-                          background: theme.palette.secondary.active,
-                        },
-                      }}
-                      onClick={unstake}
+                    })}
+                  </Grid>
+                  <Box>
+                    <Grid
+                      container
+                      spacing={3}
+                      alignItems="stretch"
+                      justifyContent="center"
+                      sx={{ flexGrow: 1 }}
                     >
-                      Unstake with Desktop Wallet
-                      {unstakeModalLoading && (
-                        <CircularProgress
-                          sx={{ ml: 2, color: 'white' }}
-                          size={'1.2rem'}
+                      <Grid item md={10} xs={9}>
+                        <TextField
+                          InputProps={{ disableUnderline: true }}
+                          required
+                          fullWidth
+                          id="unstakingAmount"
+                          label={`Enter the token amount you are unstaking`}
+                          name="unstakingAmount"
+                          variant="filled"
+                          sx={{ mb: 2 }}
+                          onChange={handleUnstakingFormChange}
+                          value={unstakingForm.tokenAmount}
+                          error={unstakingFormErrors.tokenAmount}
+                          helperText={
+                            unstakingFormErrors.tokenAmount &&
+                            'Enter a valid token amount'
+                          }
                         />
-                      )}
-                    </Button>
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      variant="contained"
-                      disabled={
-                        unstakeModalLoading ||
-                        unstakeErgopayLoading ||
-                        unstakingFormErrors.wallet
-                      }
-                      sx={{
-                        color: '#fff',
-                        fontSize: '1rem',
-                        mt: 2,
-                        py: '0.6rem',
-                        px: '1.2rem',
-                        textTransform: 'none',
-                        background: theme.palette.secondary.main,
-                        '&:hover': {
-                          background: theme.palette.secondary.hover,
-                          boxShadow: 'none',
-                        },
-                        '&:active': {
-                          background: theme.palette.secondary.active,
-                        },
-                      }}
-                      onClick={unstakeErgopay}
-                    >
-                      Unstake with Mobile Wallet
-                      {unstakeErgopayLoading && (
-                        <CircularProgress
-                          sx={{ ml: 2, color: 'white' }}
-                          size={'1.2rem'}
-                        />
-                      )}
-                    </Button>
-                  </Grid>
-                </Grid>
-              </Box>
-            </>
+                      </Grid>
+                      <Grid item md={2} xs={3}>
+                        <Button
+                          onClick={() => {
+                            handleUnstakingFormChange({
+                              target: {
+                                name: 'unstakingAmount',
+                                value: unstakeModalData.stakeAmount,
+                              },
+                            });
+                          }}
+                        >
+                          Max Amount
+                        </Button>
+                      </Grid>
+                    </Grid>
+                    <FormHelperText>
+                      {unstakingFormErrors.wallet
+                        ? 'Please connect wallet to proceed'
+                        : ''}
+                    </FormHelperText>
+                    <Grid container justifyContent="center">
+                      <Grid item>
+                        <Button
+                          variant="contained"
+                          disabled={
+                            unstakeModalLoading ||
+                            unstakeErgopayLoading ||
+                            unstakingFormErrors.wallet ||
+                            !dAppWallet.connected
+                          }
+                          sx={{
+                            color: '#fff',
+                            fontSize: '1rem',
+                            mt: 2,
+                            mr: 1,
+                            py: '0.6rem',
+                            px: '1.2rem',
+                            textTransform: 'none',
+                            background: theme.palette.secondary.main,
+                            '&:hover': {
+                              background: theme.palette.secondary.hover,
+                              boxShadow: 'none',
+                            },
+                            '&:active': {
+                              background: theme.palette.secondary.active,
+                            },
+                          }}
+                          onClick={unstake}
+                        >
+                          Unstake with Desktop Wallet
+                          {unstakeModalLoading && (
+                            <CircularProgress
+                              sx={{ ml: 2, color: 'white' }}
+                              size={'1.2rem'}
+                            />
+                          )}
+                        </Button>
+                      </Grid>
+                      <Grid item>
+                        <Button
+                          variant="contained"
+                          disabled={
+                            unstakeModalLoading ||
+                            unstakeErgopayLoading ||
+                            unstakingFormErrors.wallet
+                          }
+                          sx={{
+                            color: '#fff',
+                            fontSize: '1rem',
+                            mt: 2,
+                            py: '0.6rem',
+                            px: '1.2rem',
+                            textTransform: 'none',
+                            background: theme.palette.secondary.main,
+                            '&:hover': {
+                              background: theme.palette.secondary.hover,
+                              boxShadow: 'none',
+                            },
+                            '&:active': {
+                              background: theme.palette.secondary.active,
+                            },
+                          }}
+                          onClick={unstakeErgopay}
+                        >
+                          Unstake with Mobile Wallet
+                          {unstakeErgopayLoading && (
+                            <CircularProgress
+                              sx={{ ml: 2, color: 'white' }}
+                              size={'1.2rem'}
+                            />
+                          )}
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </>
+              )}
+            </Box>
+          </Modal>
+          <Snackbar
+            open={openError}
+            autoHideDuration={4500}
+            onClose={handleCloseError}
+          >
+            <Alert
+              onClose={handleCloseError}
+              severity="error"
+              sx={{ width: '100%' }}
+            >
+              {errorMessage}
+            </Alert>
+          </Snackbar>
+          <Snackbar
+            open={openSuccessSnackbar}
+            autoHideDuration={10000}
+            onClose={handleCloseSuccessSnackbar}
+          >
+            <Alert
+              onClose={handleCloseSuccessSnackbar}
+              severity="success"
+              sx={{ width: '100%' }}
+            >
+              {successMessageSnackbar}
+            </Alert>
+          </Snackbar>
+        </>
+      ) : (
+        <>
+          {pageLoading ? (
+            <Container sx={{ mb: '3rem' }}>
+              <CircularProgress
+                size={24}
+                sx={{
+                  position: 'relative',
+                  left: '50%',
+                  marginLeft: '-12px',
+                  marginTop: '250px',
+                  marginBottom: '100px',
+                }}
+              />
+            </Container>
+          ) : (
+            <CenterTitle
+              title="Oops..."
+              subtitle="Looks like the page you are looking for doesn't exist."
+              main={true}
+            />
           )}
-        </Box>
-      </Modal>
-      <Snackbar
-        open={openError}
-        autoHideDuration={4500}
-        onClose={handleCloseError}
-      >
-        <Alert
-          onClose={handleCloseError}
-          severity="error"
-          sx={{ width: '100%' }}
-        >
-          {errorMessage}
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={openSuccessSnackbar}
-        autoHideDuration={10000}
-        onClose={handleCloseSuccessSnackbar}
-      >
-        <Alert
-          onClose={handleCloseSuccessSnackbar}
-          severity="success"
-          sx={{ width: '100%' }}
-        >
-          {successMessageSnackbar}
-        </Alert>
-      </Snackbar>
+        </>
+      )}
     </>
   );
 };

@@ -2,9 +2,7 @@ import {
   Box,
   Button,
   Table,
-  TableBody,
   TableCell,
-  TableHead,
   TableRow,
   Typography,
   useMediaQuery,
@@ -117,7 +115,10 @@ const UnstakingTable = ({ data, unstake }) => {
     <>
       <Box>
         <Typography variant="h6" color="text.primary" sx={{ mb: 1, pl: 1 }}>
-          Total Staked Tokens: {stakeObject.totalStaked?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
+          Total Staked Tokens:{' '}
+          {stakeObject.totalStaked?.toLocaleString(navigator.language, {
+            maximumFractionDigits: 2,
+          })}
         </Typography>
         <Typography
           variant="p"
@@ -139,7 +140,11 @@ const UnstakingTable = ({ data, unstake }) => {
             <Typography
               variant="span"
               color="text.secondary"
-              sx={{ textTransform: 'capitalize', fontWeight: '400', overflowWrap: 'anywhere' }}
+              sx={{
+                textTransform: 'capitalize',
+                fontWeight: '400',
+                overflowWrap: 'anywhere',
+              }}
             >
               {checkSmall ? address : friendlyAddress(address)}
             </Typography>
@@ -155,7 +160,10 @@ const UnstakingTable = ({ data, unstake }) => {
               color="text.secondary"
               sx={{ textTransform: 'capitalize', fontWeight: '400' }}
             >
-              {stakeObject.addresses[address].totalStaked?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
+              {stakeObject.addresses[address].totalStaked?.toLocaleString(
+                navigator.language,
+                { maximumFractionDigits: 2 }
+              )}
             </Typography>
           </Typography>
           <Table sx={{ p: 0 }}>
@@ -174,7 +182,9 @@ const UnstakingTable = ({ data, unstake }) => {
                       {stakedHeading.stakeAmount}
                     </TableCell>
                     <TableCell sx={{ border: 'none', p: 1, pt: 2 }}>
-                      {stake.stakeAmount?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
+                      {stake.stakeAmount?.toLocaleString(navigator.language, {
+                        maximumFractionDigits: 2,
+                      })}
                     </TableCell>
                   </TableRow>
                   <TableRow>
@@ -221,7 +231,13 @@ const UnstakingTable = ({ data, unstake }) => {
                       }}
                       colSpan={2}
                     >
-                      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                      <Box
+                        sx={{
+                          width: '100%',
+                          display: 'flex',
+                          justifyContent: 'center',
+                        }}
+                      >
                         <Button
                           variant="contained"
                           size="small"

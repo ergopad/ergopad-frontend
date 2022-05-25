@@ -24,7 +24,12 @@ const gridBox = {
   maxWidth: '380px',
 };
 
-const StakingRewardsBox = (props) => {
+const StakingRewardsBox = ({
+  loading,
+  totalStaked,
+  aggregateWallet,
+  handleSwitchChange,
+}) => {
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
   const handleTooltipClose = () => {
@@ -52,10 +57,10 @@ const StakingRewardsBox = (props) => {
         <Box sx={gridBox}>
           <Typography>Tokens Staked</Typography>
           <Typography variant="h3" sx={{ mb: 0 }}>
-            {props.loading ? (
+            {loading ? (
               <CircularProgress sx={{ mt: 2, color: '#fff' }} />
-            ) : props.totalStaked ? (
-              props.totalStaked?.toLocaleString(navigator.language, {
+            ) : totalStaked ? (
+              totalStaked?.toLocaleString(navigator.language, {
                 maximumFractionDigits: 2,
               })
             ) : (
@@ -93,7 +98,11 @@ const StakingRewardsBox = (props) => {
               </IconButton>
             </Tooltip>
           </ClickAwayListener>
-          <Switch defaultChecked />
+          <Switch
+            disabled={loading}
+            checked={aggregateWallet}
+            onChange={(e) => handleSwitchChange(e.target.checked)}
+          />
         </Stack>
       </Box>
     </>
