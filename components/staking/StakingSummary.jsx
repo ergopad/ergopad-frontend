@@ -72,14 +72,18 @@ export const StakingItem = (item, md, ifSmall, loading = false) => {
   }
 };
 
-const StakingSummary = () => {
+const StakingSummary = ({ project_id }) => {
   const [status, setStatus] = useState(stakingItems);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const getStatus = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${process.env.API_URL}/staking/status/`);
+        const res = await axios.get(
+          project_id
+            ? `${process.env.API_URL}/staking/${project_id}/status/`
+            : `${process.env.API_URL}/staking/status/`
+        );
         const newState = JSON.parse(JSON.stringify(stakingItems));
         newState[0].value = res.data['Staking boxes']
           ? res.data['Staking boxes'].toLocaleString(navigator.language, {
@@ -101,7 +105,7 @@ const StakingSummary = () => {
       setLoading(false);
     };
     getStatus();
-  }, []);
+  }, [project_id]);
 
   return (
     <>

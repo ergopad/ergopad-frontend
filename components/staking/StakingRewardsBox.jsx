@@ -25,6 +25,7 @@ const gridBox = {
 };
 
 const StakingRewardsBox = ({
+  tokenName,
   loading,
   totalStaked,
   aggregateWallet,
@@ -55,7 +56,7 @@ const StakingRewardsBox = ({
       </Box>
       <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
         <Box sx={gridBox}>
-          <Typography>Tokens Staked</Typography>
+          <Typography>{tokenName} Tokens Staked</Typography>
           <Typography variant="h3" sx={{ mb: 0 }}>
             {loading ? (
               <CircularProgress sx={{ mt: 2, color: '#fff' }} />

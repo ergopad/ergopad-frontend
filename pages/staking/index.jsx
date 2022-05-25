@@ -39,23 +39,9 @@ import { forwardRef, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 
-/**
- * Notes:
- *
- * 1. Add functionality to the sum toggle switch, API call.
- * 2. New add stake section required in tabs panel. Only for
- *    other projects. Not for ErgoPad token.
- * 3. Add appropriate API calls for /api/staking
- * 4. TESTING:
- *    a. stake
- *    b. add stake
- *    c. partial unstake
- *    d. full unstake
- */
-
 const STAKE_TOKEN_ID =
   'd71693c49a84fbbecd4908c94813b46514b18b67a99952dc1e6e4791556de413';
-
+const STAKE_TOKEN_DECIMALS = 2;
 const STAKING_TOKEN_OPTIONS = [{ title: 'ErgoPad', project: 'default' }];
 
 const Alert = forwardRef(function Alert(props, ref) {
@@ -257,7 +243,7 @@ const Staking = () => {
       try {
         if (dAppWallet.connected) {
           const balance = await ergo.get_balance(STAKE_TOKEN_ID); // eslint-disable-line
-          setTokenBalance(balance / 100);
+          setTokenBalance(balance / Math.pow(10, STAKE_TOKEN_DECIMALS));
         } else if (wallet !== '') {
           const res = await axios.get(
             `${process.env.API_URL}/asset/balance/${wallet}`,
@@ -267,7 +253,7 @@ const Staking = () => {
             (token) => token.tokenId === STAKE_TOKEN_ID
           )[0];
           if (token) {
-            setTokenBalance(token.amount / 100);
+            setTokenBalance(token.amount / Math.pow(10, STAKE_TOKEN_DECIMALS));
           }
         } else {
           setTokenBalance(0);
@@ -293,13 +279,15 @@ const Staking = () => {
     );
     if (emptyCheck && errorCheck) {
       try {
-        const tokenAmount = Math.round(stakingForm.tokenAmount * 100);
+        const tokenAmount = Math.round(
+          stakingForm.tokenAmount * Math.pow(10, STAKE_TOKEN_DECIMALS)
+        );
         const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
           (x, i, a) => a.indexOf(x) == i && x
         );
         const request = {
           wallet: stakingForm.wallet,
-          amount: tokenAmount / 100,
+          amount: tokenAmount / Math.pow(10, STAKE_TOKEN_DECIMALS),
           utxos: [],
           txFormat: 'eip-12',
           addresses: [...walletAddresses],
@@ -357,10 +345,12 @@ const Staking = () => {
     );
     if (emptyCheck && errorCheck) {
       try {
-        const tokenAmount = Math.round(stakingForm.tokenAmount * 100);
+        const tokenAmount = Math.round(
+          stakingForm.tokenAmount * Math.pow(10, STAKE_TOKEN_DECIMALS)
+        );
         const request = {
           wallet: stakingForm.wallet,
-          amount: tokenAmount / 100,
+          amount: tokenAmount / Math.pow(10, STAKE_TOKEN_DECIMALS),
           utxos: [],
           txFormat: 'ergo_pay',
         };
@@ -425,13 +415,14 @@ const Staking = () => {
     );
     if (emptyCheck && errorCheck) {
       try {
-        const tokenAmount = unstakingForm.tokenAmount * 100;
+        const tokenAmount =
+          unstakingForm.tokenAmount * Math.pow(10, STAKE_TOKEN_DECIMALS);
         const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
           (x, i, a) => a.indexOf(x) == i && x
         );
         const request = {
           stakeBox: unstakeModalData.boxId,
-          amount: tokenAmount / 100,
+          amount: tokenAmount / Math.pow(10, STAKE_TOKEN_DECIMALS),
           address: wallet,
           utxos: [],
           txFormat: 'eip-12',
@@ -493,10 +484,11 @@ const Staking = () => {
     );
     if (emptyCheck && errorCheck) {
       try {
-        const tokenAmount = unstakingForm.tokenAmount * 100;
+        const tokenAmount =
+          unstakingForm.tokenAmount * Math.pow(10, STAKE_TOKEN_DECIMALS);
         const request = {
           stakeBox: unstakeModalData.boxId,
-          amount: tokenAmount / 100,
+          amount: tokenAmount / Math.pow(10, STAKE_TOKEN_DECIMALS),
           address: wallet,
           utxos: [],
           txFormat: 'ergo_pay',
@@ -786,6 +778,7 @@ const Staking = () => {
           </Grid>
           <Grid item xs={12} md={4}>
             <StakingRewardsBox
+              tokenName={'ErgoPad'}
               loading={unstakeTableLoading}
               totalStaked={stakedData.totalStaked}
               aggregateWallet={aggregateWallet}

@@ -23,6 +23,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import PropTypes from 'prop-types';
 import CenterTitle from '@components/CenterTitle';
+import MarkdownRender from '@components/MarkdownRender';
 import { StakingItem } from '@components/staking/StakingSummary';
 import StakingNavigationDropdown from '@components/staking/StakingNavigationDropdown';
 import StakingSummary from '@components/staking/StakingSummary';
@@ -37,8 +38,7 @@ import { forwardRef, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 
-const STAKE_TOKEN_ID =
-  'd71693c49a84fbbecd4908c94813b46514b18b67a99952dc1e6e4791556de413';
+const TOKEN_DECIMALS = 4;
 
 const STAKING_TOKEN_OPTIONS = [{ title: 'ErgoPad', project: 'default' }];
 
@@ -57,6 +57,14 @@ const modalStyle = {
   boxShadow: 24,
   p: 4,
 };
+
+const defaultStakingConfig = Object.freeze({
+  project: 'ergopad',
+  title: 'ErgoPad',
+  tokenId: '0xtest',
+  tokenDecimals: 0,
+  stakingInfo: '',
+});
 
 const initStakingForm = Object.freeze({
   wallet: '',
@@ -132,6 +140,7 @@ const ProjectStaking = () => {
   const [pageLoading, setPageLoading] = useState(true);
   const [tokenChoice, setTokenChoice] = useState('Loading...');
   const [tokenChoiceList, setTokenChoiceList] = useState(STAKING_TOKEN_OPTIONS);
+  const [stakingConfig, setStakingConfig] = useState(defaultStakingConfig);
   // wallet
   const { wallet, dAppWallet } = useWallet();
   const [aggregateWallet, setAggregateWallet] = useState(true);
@@ -177,7 +186,7 @@ const ProjectStaking = () => {
   };
 
   useEffect(() => {
-    const getTokenOptions = async () => {
+    const getPageConfig = async () => {
       setPageLoading(true);
       try {
         const res = await axios.get(`${process.env.API_URL}/staking/config`);
@@ -187,6 +196,10 @@ const ProjectStaking = () => {
             return { project: option.project, title: option.title };
           }),
         ]);
+        const config = res.data.filter(
+          (config) => config.project === project_id
+        )[0];
+        setStakingConfig(config ?? defaultStakingConfig);
       } catch (e) {
         console.log(e);
       }
@@ -195,7 +208,7 @@ const ProjectStaking = () => {
 
     if (project_id) {
       setTokenChoice(project_id);
-      getTokenOptions();
+      getPageConfig();
     }
   }, [project_id]);
 
@@ -211,7 +224,7 @@ const ProjectStaking = () => {
           addresses: aggregateWallet ? [...walletAddresses] : [wallet],
         };
         const res = await axios.post(
-          `${process.env.API_URL}/staking/staked/`,
+          `${process.env.API_URL}/staking/${project_id}/staked/`,
           request,
           { ...defaultOptions }
         );
@@ -222,12 +235,13 @@ const ProjectStaking = () => {
       setUnstakeTableLoading(false);
     };
 
-    if (wallet !== '') {
+    if (project_id && wallet !== '') {
       getStaked();
     } else {
+      setStakingConfig(defaultStakingConfig);
       setStakedData(initStaked);
     }
-  }, [wallet, dAppWallet.addresses, aggregateWallet]);
+  }, [wallet, dAppWallet.addresses, aggregateWallet, project_id]);
 
   useEffect(() => {
     // reset staking Form on wallet change
@@ -247,18 +261,18 @@ const ProjectStaking = () => {
     const getTokenBalance = async () => {
       try {
         if (dAppWallet.connected) {
-          const balance = await ergo.get_balance(STAKE_TOKEN_ID); // eslint-disable-line
-          setTokenBalance(balance / 100);
+          const balance = await ergo.get_balance(stakingConfig.tokenId); // eslint-disable-line
+          setTokenBalance(balance / Math.pow(10, TOKEN_DECIMALS));
         } else if (wallet !== '') {
           const res = await axios.get(
             `${process.env.API_URL}/asset/balance/${wallet}`,
             { ...defaultOptions }
           );
           const token = res.data.balance.ERG.tokens.filter(
-            (token) => token.tokenId === STAKE_TOKEN_ID
+            (token) => token.tokenId === stakingConfig.tokenId
           )[0];
           if (token) {
-            setTokenBalance(token.amount / 100);
+            setTokenBalance(token.amount / Math.pow(10, TOKEN_DECIMALS));
           }
         } else {
           setTokenBalance(0);
@@ -271,7 +285,7 @@ const ProjectStaking = () => {
     if (openModal) {
       getTokenBalance();
     }
-  }, [dAppWallet.connected, openModal, wallet]);
+  }, [dAppWallet.connected, openModal, wallet, stakingConfig]);
 
   const stake = async (e) => {
     e.preventDefault();
@@ -284,19 +298,21 @@ const ProjectStaking = () => {
     );
     if (emptyCheck && errorCheck) {
       try {
-        const tokenAmount = Math.round(stakingForm.tokenAmount * 100);
+        const tokenAmount = Math.round(
+          stakingForm.tokenAmount * Math.pow(10, TOKEN_DECIMALS)
+        );
         const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
           (x, i, a) => a.indexOf(x) == i && x
         );
         const request = {
           wallet: stakingForm.wallet,
-          amount: tokenAmount / 100,
+          amount: tokenAmount / Math.pow(10, TOKEN_DECIMALS),
           utxos: [],
           txFormat: 'eip-12',
           addresses: [...walletAddresses],
         };
         const res = await axios.post(
-          `${process.env.API_URL}/staking/stake/`,
+          `${process.env.API_URL}/staking/${project_id}/stake/`,
           request,
           { ...defaultOptions }
         );
@@ -348,15 +364,18 @@ const ProjectStaking = () => {
     );
     if (emptyCheck && errorCheck) {
       try {
-        const tokenAmount = Math.round(stakingForm.tokenAmount * 100);
+        const tokenAmount = Math.round(
+          stakingForm.tokenAmount * Math.pow(10, TOKEN_DECIMALS)
+        );
         const request = {
           wallet: stakingForm.wallet,
-          amount: tokenAmount / 100,
+          amount: tokenAmount / Math.pow(10, TOKEN_DECIMALS),
           utxos: [],
           txFormat: 'ergo_pay',
+          addresses: [stakingForm.wallet],
         };
         const res = await axios.post(
-          `${process.env.API_URL}/staking/stake/`,
+          `${process.env.API_URL}/staking/${project_id}/stake/`,
           request,
           { ...defaultOptions }
         );
@@ -416,24 +435,25 @@ const ProjectStaking = () => {
     );
     if (emptyCheck && errorCheck) {
       try {
-        const tokenAmount = unstakingForm.tokenAmount * 100;
+        const tokenAmount =
+          unstakingForm.tokenAmount * Math.pow(10, TOKEN_DECIMALS);
         const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
           (x, i, a) => a.indexOf(x) == i && x
         );
         const request = {
           stakeBox: unstakeModalData.boxId,
-          amount: tokenAmount / 100,
+          amount: tokenAmount / Math.pow(10, TOKEN_DECIMALS),
           address: wallet,
           utxos: [],
           txFormat: 'eip-12',
           addresses: [...walletAddresses],
         };
         const res = await axios.post(
-          `${process.env.API_URL}/staking/unstake/`,
+          `${process.env.API_URL}/staking/${project_id}/unstake/`,
           request,
           { ...defaultOptions }
         );
-        const penalty = res.data.penalty;
+        const penalty = res.data.penalty ?? 0;
         setUnstakePenalty(penalty);
         const unsignedtx = res.data.unsignedTX;
         const signedtx = await ergo.sign_tx(unsignedtx); // eslint-disable-line
@@ -484,20 +504,22 @@ const ProjectStaking = () => {
     );
     if (emptyCheck && errorCheck) {
       try {
-        const tokenAmount = unstakingForm.tokenAmount * 100;
+        const tokenAmount =
+          unstakingForm.tokenAmount * Math.pow(10, TOKEN_DECIMALS);
         const request = {
           stakeBox: unstakeModalData.boxId,
-          amount: tokenAmount / 100,
+          amount: tokenAmount / Math.pow(10, TOKEN_DECIMALS),
           address: wallet,
           utxos: [],
+          addresses: [wallet],
           txFormat: 'ergo_pay',
         };
         const res = await axios.post(
-          `${process.env.API_URL}/staking/unstake/`,
+          `${process.env.API_URL}/staking/${project_id}/unstake/`,
           request,
           { ...defaultOptions }
         );
-        const penalty = res.data.penalty;
+        const penalty = res.data.penalty ?? 0;
         setUnstakePenalty(penalty);
         setErgopayUrl(res.data.url);
         setSuccessMessageSnackbar('Form Submitted');
@@ -623,7 +645,7 @@ const ProjectStaking = () => {
         <>
           <Container sx={{ mb: 3 }}>
             <CenterTitle
-              title={`Stake Your ${projectName} Tokens`}
+              title={`Stake Your ${stakingConfig.title} Tokens`}
               subtitle="Connect your wallet and stake your tokens to receive staking rewards"
               main={true}
             />
@@ -634,7 +656,7 @@ const ProjectStaking = () => {
               stakingTokenOptions={tokenChoiceList}
               handleTokenChoiceChange={handleTokenChoiceChange}
             />
-            <StakingSummary />
+            <StakingSummary project_id={project_id} />
             <Grid
               container
               spacing={3}
@@ -657,6 +679,10 @@ const ProjectStaking = () => {
                     </Tabs>
                   </Box>
                   <TabPanel value={tabValue} index={0}>
+                    <Typography variant="h4">Staking Info</Typography>
+                    <MarkdownRender
+                      description={stakingConfig.stakingInfo ?? ''}
+                    />
                     <Typography variant="p">
                       Note: Please stake a minimum of 10 tokens, fewer will not
                       work.
@@ -760,6 +786,7 @@ const ProjectStaking = () => {
               </Grid>
               <Grid item xs={12} md={4}>
                 <StakingRewardsBox
+                  tokenName={stakingConfig.title}
                   loading={unstakeTableLoading}
                   totalStaked={stakedData.totalStaked}
                   aggregateWallet={aggregateWallet}
@@ -800,7 +827,7 @@ const ProjectStaking = () => {
                   </Typography>
                   <Box>
                     <Typography color="text.secondary" sx={{ mb: 1 }}>
-                      You have {tokenBalance} {tokenChoice} tokens.
+                      You have {tokenBalance} {stakingConfig.title} tokens.
                     </Typography>
                     <Grid
                       container
