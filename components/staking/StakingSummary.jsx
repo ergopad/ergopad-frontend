@@ -10,7 +10,7 @@ const stakingItems = [
     background: theme.palette.primary.main,
   },
   {
-    title: 'ErgoPad Tokens Staked',
+    title: 'Tokens Staked',
     value: '-',
     background: theme.palette.secondary.main,
   },
@@ -21,7 +21,7 @@ const stakingItems = [
   },
 ];
 
-export const StakingItem = (item, md, loading = false) => {
+export const StakingItem = (item, md, ifSmall, loading = false) => {
   const extraStyles = {
     background: item.background,
     display: 'flex',
@@ -34,34 +34,66 @@ export const StakingItem = (item, md, loading = false) => {
     '&:hover': {},
   };
 
-  return (
-    <Grid item md={md} xs={12} sx={{ maxWidth: '380px' }} key={item.title}>
-      <Box sx={extraStyles}>
-        <Typography variant="h5" sx={{ fontWeight: '700', my: 1 }}>
-          {item.title}
+  if (!ifSmall) {
+    return (
+      <Grid item md={md} xs={12} sx={{ maxWidth: '380px' }} key={item.title}>
+        <Box sx={extraStyles}>
+          <Typography variant="h5" sx={{ fontWeight: '700', my: 1 }}>
+            {item.title}
+          </Typography>
+          <Typography variant="h4" sx={{ fontWeight: '800', my: 1 }}>
+            {loading ? <CircularProgress sx={{ color: '#fff' }} /> : item.value}
+          </Typography>
+        </Box>
+      </Grid>
+    );
+  } else {
+    return (
+      <Grid item xs={12} sx={{ maxWidth: '380px' }} key={item.title}>
+        <Typography
+          variant="p"
+          sx={{
+            mb: 1,
+            fontWeight: '700',
+            fontSize: '0.9rem',
+            color: theme.palette.text.primary,
+          }}
+        >
+          {item.title}:{' '}
+          <Typography
+            variant="span"
+            sx={{ fontWeight: '500', color: theme.palette.text.secondary }}
+          >
+            {loading ? <CircularProgress sx={{ color: '#fff' }} /> : item.value}
+          </Typography>
         </Typography>
-        <Typography variant="h4" sx={{ fontWeight: '800', my: 1 }}>
-          {loading ? <CircularProgress sx={{ color: '#fff' }} /> : item.value}
-        </Typography>
-      </Box>
-    </Grid>
-  );
+      </Grid>
+    );
+  }
 };
 
-const StakingSummary = () => {
+const StakingSummary = ({ project_id }) => {
   const [status, setStatus] = useState(stakingItems);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const getStatus = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${process.env.API_URL}/staking/status/`);
+        const res = await axios.get(
+          project_id
+            ? `${process.env.API_URL}/staking/${project_id}/status/`
+            : `${process.env.API_URL}/staking/status/`
+        );
         const newState = JSON.parse(JSON.stringify(stakingItems));
         newState[0].value = res.data['Staking boxes']
-          ? res.data['Staking boxes'].toLocaleString(navigator.language, { maximumFractionDigits: 0 })
+          ? res.data['Staking boxes'].toLocaleString(navigator.language, {
+              maximumFractionDigits: 0,
+            })
           : '-';
         newState[1].value = res.data['Total amount staked']
-          ? res.data['Total amount staked'].toLocaleString(navigator.language, { maximumFractionDigits: 0 })
+          ? res.data['Total amount staked'].toLocaleString(navigator.language, {
+              maximumFractionDigits: 0,
+            })
           : '-';
         newState[2].value = res.data['APY']
           ? Math.round(res.data['APY'] * 100) / 100 + '%'
@@ -73,7 +105,7 @@ const StakingSummary = () => {
       setLoading(false);
     };
     getStatus();
-  }, []);
+  }, [project_id]);
 
   return (
     <>
@@ -85,7 +117,7 @@ const StakingSummary = () => {
         sx={{ flexGrow: 1, mb: 3 }}
       >
         {status.map((item) => {
-          return StakingItem(item, 4, loading);
+          return StakingItem(item, 4, false, loading);
         })}
       </Grid>
     </>

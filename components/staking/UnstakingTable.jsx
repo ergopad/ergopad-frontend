@@ -2,9 +2,7 @@ import {
   Box,
   Button,
   Table,
-  TableBody,
   TableCell,
-  TableHead,
   TableRow,
   Typography,
   useMediaQuery,
@@ -20,78 +18,13 @@ const stakedHeading = {
   unstake: '',
 };
 
-// const sampleData = Object.freeze({
-//   totalStaked: 14140410,
-//   addresses: {
-//     '9eZ77otC8nncPcph58K4wDTuaebnRT5ahLMFdXFWtCQyqkvnkrC': {
-//       totalStaked: 14140410,
-//       stakeBoxes: [
-//         {
-//           boxId:
-//             'fc4f69c99fb13fd43d23529bd1aeea678a16ba16061fdfd1a67be2d892939255',
-//           stakeKeyId:
-//             'ab14a7caa142ceb5a71026ae9b0f83157e0fba9ec584fe5c1972895704879ccb',
-//           stakeAmount: 1000,
-//           penaltyPct: 25,
-//           penaltyEndTime: 1649856211862,
-//         },
-//         {
-//           boxId:
-//             '290a2656634835820f68938914875973a91fbb63edbc3c3e8fd35c58fbb27c55',
-//           stakeKeyId:
-//             '984c24667bba40d090cd133b7f7096f4095d31f5e1f70f6e8e8196246f6ff7f7',
-//           stakeAmount: 14134566,
-//           penaltyPct: 25,
-//           penaltyEndTime: 1649763635216,
-//         },
-//         {
-//           boxId:
-//             'faa88b752725c61bcb1c8de9c95422ea9d940270ea8f5b21e6c91335404ddd55',
-//           stakeKeyId:
-//             '97b58c64ae6ebc1f5efd8d2e2bbce1274ec2c5530d023ca7fe32eda7dcd92677',
-//           stakeAmount: 1211,
-//           penaltyPct: 25,
-//           penaltyEndTime: 1649795587634,
-//         },
-//         {
-//           boxId:
-//             '63886183bc439a42136267c59142c2a07dc4352b0c792e32ea2d8861edcf8d07',
-//           stakeKeyId:
-//             'e8c46216d87ffdb16d60676a32e893fa70059f41ead869a690ee711210e909ee',
-//           stakeAmount: 1211,
-//           penaltyPct: 25,
-//           penaltyEndTime: 1649796900027,
-//         },
-//         {
-//           boxId:
-//             '8629d1de7c65955143773f6ac72bbf532f5a5d61b69419a9a27c77ba642adc08',
-//           stakeKeyId:
-//             '81dcd6114092f799d26d973c39d781b89e096f65ec6ff35058567805f6c9fd7e',
-//           stakeAmount: 1211,
-//           penaltyPct: 25,
-//           penaltyEndTime: 1649797138402,
-//         },
-//         {
-//           boxId:
-//             '84b73fd5bf5cd83d3a075857e07995f63b8fd8ffc5a28e4418cbfbb82d3468fa',
-//           stakeKeyId:
-//             '8f70a6d96fc957e343506800459118f3665fd8ae226af69292107f2171f458cd',
-//           stakeAmount: 1211,
-//           penaltyPct: 25,
-//           penaltyEndTime: 1649834685912,
-//         },
-//       ],
-//     },
-//   },
-// });
-
 const friendlyAddress = (addr, tot = 8) => {
   if (addr === undefined || addr.slice === undefined) return '';
   if (addr.length < 30) return addr;
   return addr.slice(0, tot) + '...' + addr.slice(-tot);
 };
 
-const UnstakingTable = ({ data, unstake }) => {
+const UnstakingTable = ({ data, unstake, addstake }) => {
   const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
   const stakeObject = { ...data };
 
@@ -106,7 +39,8 @@ const UnstakingTable = ({ data, unstake }) => {
           >
             Looks like you do not have any staked tokens associated with your
             this address. This page only shows tokens for the selected address.
-            For overall wallet summary visit the dashboard.
+            For overall wallet summary visit the dashboard. The values in the
+            table may take some time to reflect new changes.
           </Typography>
         </Box>
       </>
@@ -117,7 +51,10 @@ const UnstakingTable = ({ data, unstake }) => {
     <>
       <Box>
         <Typography variant="h6" color="text.primary" sx={{ mb: 1, pl: 1 }}>
-          Total Staked Tokens: {stakeObject.totalStaked?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
+          Total Staked Tokens:{' '}
+          {stakeObject.totalStaked?.toLocaleString(navigator.language, {
+            maximumFractionDigits: 2,
+          })}
         </Typography>
         <Typography
           variant="p"
@@ -125,7 +62,8 @@ const UnstakingTable = ({ data, unstake }) => {
         >
           Note: You may have staked tokens associated with other addresses in
           your wallet. This page only shows tokens for the selected address. For
-          overall wallet summary visit the dashboard.
+          overall wallet summary visit the dashboard. The values in the table
+          may take some time to reflect new changes.
         </Typography>
       </Box>
       {Object.keys(stakeObject.addresses).map((address) => (
@@ -139,7 +77,11 @@ const UnstakingTable = ({ data, unstake }) => {
             <Typography
               variant="span"
               color="text.secondary"
-              sx={{ textTransform: 'capitalize', fontWeight: '400', overflowWrap: 'anywhere' }}
+              sx={{
+                textTransform: 'capitalize',
+                fontWeight: '400',
+                overflowWrap: 'anywhere',
+              }}
             >
               {checkSmall ? address : friendlyAddress(address)}
             </Typography>
@@ -155,7 +97,10 @@ const UnstakingTable = ({ data, unstake }) => {
               color="text.secondary"
               sx={{ textTransform: 'capitalize', fontWeight: '400' }}
             >
-              {stakeObject.addresses[address].totalStaked?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
+              {stakeObject.addresses[address].totalStaked?.toLocaleString(
+                navigator.language,
+                { maximumFractionDigits: 2 }
+              )}
             </Typography>
           </Typography>
           <Table sx={{ p: 0 }}>
@@ -174,7 +119,9 @@ const UnstakingTable = ({ data, unstake }) => {
                       {stakedHeading.stakeAmount}
                     </TableCell>
                     <TableCell sx={{ border: 'none', p: 1, pt: 2 }}>
-                      {stake.stakeAmount?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
+                      {stake.stakeAmount?.toLocaleString(navigator.language, {
+                        maximumFractionDigits: 2,
+                      })}
                     </TableCell>
                   </TableRow>
                   <TableRow>
@@ -188,7 +135,7 @@ const UnstakingTable = ({ data, unstake }) => {
                       {stakedHeading.penaltyPct}
                     </TableCell>
                     <TableCell sx={{ border: 'none', p: 1 }}>
-                      {stake.penaltyPct}
+                      {stake.penaltyPct ?? 0}
                     </TableCell>
                   </TableRow>
                   <TableRow>
@@ -202,9 +149,11 @@ const UnstakingTable = ({ data, unstake }) => {
                       {stakedHeading.penaltyEndTime}
                     </TableCell>
                     <TableCell sx={{ border: 'none', p: 1 }}>
-                      {new Date(stake.penaltyEndTime)
-                        .toISOString()
-                        .slice(0, 10)}
+                      {stake.penaltyEndTime
+                        ? new Date(stake.penaltyEndTime)
+                            .toISOString()
+                            .slice(0, 10)
+                        : '-'}
                     </TableCell>
                   </TableRow>
                   <TableRow>
@@ -221,7 +170,42 @@ const UnstakingTable = ({ data, unstake }) => {
                       }}
                       colSpan={2}
                     >
-                      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                      <Box
+                        sx={{
+                          width: '100%',
+                          display: 'flex',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        {typeof addstake !== 'undefined' && (
+                          <Button
+                            variant="contained"
+                            size="small"
+                            sx={{
+                              mr: 3,
+                              color: '#fff',
+                              textTransform: 'none',
+                              backgroundColor: theme.palette.primary.main,
+                              '&:hover': {
+                                backgroundColor: theme.palette.primary.hover,
+                                boxShadow: 'none',
+                              },
+                              '&:active': {
+                                backgroundColor: theme.palette.primary.active,
+                              },
+                            }}
+                            onClick={() =>
+                              addstake(
+                                stake.boxId,
+                                stake.stakeKeyId,
+                                stake.stakeAmount,
+                                stake.penaltyPct ?? 0
+                              )
+                            }
+                          >
+                            Add Stake
+                          </Button>
+                        )}
                         <Button
                           variant="contained"
                           size="small"
@@ -242,7 +226,7 @@ const UnstakingTable = ({ data, unstake }) => {
                               stake.boxId,
                               stake.stakeKeyId,
                               stake.stakeAmount,
-                              stake.penaltyPct
+                              stake.penaltyPct ?? 0
                             )
                           }
                         >
