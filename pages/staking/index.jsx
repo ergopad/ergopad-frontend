@@ -818,7 +818,7 @@ const Staking = () => {
               </Typography>
               <Box>
                 <Typography color="text.secondary" sx={{ mb: 1 }}>
-                  You have {tokenBalance} {tokenChoice} tokens.
+                  You have {tokenBalance} ErgoPad tokens.
                 </Typography>
                 <Grid
                   container

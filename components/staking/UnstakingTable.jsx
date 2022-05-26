@@ -24,7 +24,7 @@ const friendlyAddress = (addr, tot = 8) => {
   return addr.slice(0, tot) + '...' + addr.slice(-tot);
 };
 
-const UnstakingTable = ({ data, unstake }) => {
+const UnstakingTable = ({ data, unstake, addstake }) => {
   const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
   const stakeObject = { ...data };
 
@@ -177,6 +177,35 @@ const UnstakingTable = ({ data, unstake }) => {
                           justifyContent: 'center',
                         }}
                       >
+                        {typeof addstake !== 'undefined' && (
+                          <Button
+                            variant="contained"
+                            size="small"
+                            sx={{
+                              mr: 3,
+                              color: '#fff',
+                              textTransform: 'none',
+                              backgroundColor: theme.palette.primary.main,
+                              '&:hover': {
+                                backgroundColor: theme.palette.primary.hover,
+                                boxShadow: 'none',
+                              },
+                              '&:active': {
+                                backgroundColor: theme.palette.primary.active,
+                              },
+                            }}
+                            onClick={() =>
+                              addstake(
+                                stake.boxId,
+                                stake.stakeKeyId,
+                                stake.stakeAmount,
+                                stake.penaltyPct ?? 0
+                              )
+                            }
+                          >
+                            Add Stake
+                          </Button>
+                        )}
                         <Button
                           variant="contained"
                           size="small"
