@@ -38,8 +38,6 @@ import { forwardRef, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 
-const TOKEN_DECIMALS = 4;
-
 const STAKING_TOKEN_OPTIONS = [{ title: 'ErgoPad', project: 'default' }];
 
 const Alert = forwardRef(function Alert(props, ref) {
@@ -290,7 +288,7 @@ const ProjectStaking = () => {
       try {
         if (dAppWallet.connected) {
           const balance = await ergo.get_balance(stakingConfig.tokenId); // eslint-disable-line
-          setTokenBalance(balance / Math.pow(10, TOKEN_DECIMALS));
+          setTokenBalance(balance / Math.pow(10, stakingConfig.tokenDecimals));
         } else if (wallet !== '') {
           const res = await axios.get(
             `${process.env.API_URL}/asset/balance/${wallet}`,
@@ -300,7 +298,9 @@ const ProjectStaking = () => {
             (token) => token.tokenId === stakingConfig.tokenId
           )[0];
           if (token) {
-            setTokenBalance(token.amount / Math.pow(10, TOKEN_DECIMALS));
+            setTokenBalance(
+              token.amount / Math.pow(10, stakingConfig.tokenDecimals)
+            );
           }
         } else {
           setTokenBalance(0);
@@ -313,7 +313,13 @@ const ProjectStaking = () => {
     if (openModal || openAddstakeModal) {
       getTokenBalance();
     }
-  }, [openModal, openAddstakeModal, wallet, dAppWallet.connected, stakingConfig]);
+  }, [
+    openModal,
+    openAddstakeModal,
+    wallet,
+    dAppWallet.connected,
+    stakingConfig,
+  ]);
 
   const stake = async (e) => {
     e.preventDefault();
@@ -327,14 +333,14 @@ const ProjectStaking = () => {
     if (emptyCheck && errorCheck) {
       try {
         const tokenAmount = Math.round(
-          stakingForm.tokenAmount * Math.pow(10, TOKEN_DECIMALS)
+          stakingForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals)
         );
         const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
           (x, i, a) => a.indexOf(x) == i && x
         );
         const request = {
           wallet: stakingForm.wallet,
-          amount: tokenAmount / Math.pow(10, TOKEN_DECIMALS),
+          amount: tokenAmount / Math.pow(10, stakingConfig.tokenDecimals),
           utxos: [],
           txFormat: 'eip-12',
           addresses: [...walletAddresses],
@@ -393,11 +399,11 @@ const ProjectStaking = () => {
     if (emptyCheck && errorCheck) {
       try {
         const tokenAmount = Math.round(
-          stakingForm.tokenAmount * Math.pow(10, TOKEN_DECIMALS)
+          stakingForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals)
         );
         const request = {
           wallet: stakingForm.wallet,
-          amount: tokenAmount / Math.pow(10, TOKEN_DECIMALS),
+          amount: tokenAmount / Math.pow(10, stakingConfig.tokenDecimals),
           utxos: [],
           txFormat: 'ergo_pay',
           addresses: [stakingForm.wallet],
@@ -464,13 +470,13 @@ const ProjectStaking = () => {
     if (emptyCheck && errorCheck) {
       try {
         const tokenAmount =
-          unstakingForm.tokenAmount * Math.pow(10, TOKEN_DECIMALS);
+          unstakingForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals);
         const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
           (x, i, a) => a.indexOf(x) == i && x
         );
         const request = {
           stakeBox: unstakeModalData.boxId,
-          amount: tokenAmount / Math.pow(10, TOKEN_DECIMALS),
+          amount: tokenAmount / Math.pow(10, stakingConfig.tokenDecimals),
           address: wallet,
           utxos: [],
           txFormat: 'eip-12',
@@ -533,10 +539,10 @@ const ProjectStaking = () => {
     if (emptyCheck && errorCheck) {
       try {
         const tokenAmount =
-          unstakingForm.tokenAmount * Math.pow(10, TOKEN_DECIMALS);
+          unstakingForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals);
         const request = {
           stakeBox: unstakeModalData.boxId,
-          amount: tokenAmount / Math.pow(10, TOKEN_DECIMALS),
+          amount: tokenAmount / Math.pow(10, stakingConfig.tokenDecimals),
           address: wallet,
           utxos: [],
           addresses: [wallet],
@@ -606,13 +612,13 @@ const ProjectStaking = () => {
     if (emptyCheck && errorCheck) {
       try {
         const tokenAmount =
-          addstakeForm.tokenAmount * Math.pow(10, TOKEN_DECIMALS);
+          addstakeForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals);
         const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
           (x, i, a) => a.indexOf(x) == i && x
         );
         const request = {
           stakeBox: addstakeModalData.boxId,
-          amount: tokenAmount / Math.pow(10, TOKEN_DECIMALS),
+          amount: tokenAmount / Math.pow(10, stakingConfig.tokenDecimals),
           address: wallet,
           utxos: [],
           txFormat: 'eip-12',
@@ -673,10 +679,10 @@ const ProjectStaking = () => {
     if (emptyCheck && errorCheck) {
       try {
         const tokenAmount =
-          addstakeForm.tokenAmount * Math.pow(10, TOKEN_DECIMALS);
+          addstakeForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals);
         const request = {
           stakeBox: addstakeModalData.boxId,
-          amount: tokenAmount / Math.pow(10, TOKEN_DECIMALS),
+          amount: tokenAmount / Math.pow(10, stakingConfig.tokenDecimals),
           address: wallet,
           utxos: [],
           addresses: [wallet],
