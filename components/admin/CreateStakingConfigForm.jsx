@@ -19,6 +19,7 @@ const initialFormData = Object.freeze({
   project: '',
   title: '',
   tokenId: '',
+  tokenDecimals: 0,
   stakingInfo: '',
   terms: '', // not used yet
   additionalDetails: {},
@@ -28,6 +29,7 @@ const initialFormErrors = Object.freeze({
   project: false,
   title: false,
   tokenId: false,
+  tokenDecimals: false,
 });
 
 const CreateStakingConfigForm = () => {
@@ -74,7 +76,7 @@ const CreateStakingConfigForm = () => {
 
   const handleChange = (e) => {
     if (
-      e.target.value == '' &&
+      e.target.value === '' &&
       Object.hasOwnProperty.call(formErrors, e.target.name)
     ) {
       setFormErrors({
@@ -82,6 +84,18 @@ const CreateStakingConfigForm = () => {
         [e.target.name]: true,
       });
     } else if (Object.hasOwnProperty.call(formErrors, e.target.name)) {
+      setFormErrors({
+        ...formErrors,
+        [e.target.name]: false,
+      });
+    }
+
+    if (e.target.name === 'tokenDecimals' && isNaN(e.target.value)) {
+      setFormErrors({
+        ...formErrors,
+        [e.target.name]: true,
+      });
+    } else {
       setFormErrors({
         ...formErrors,
         [e.target.name]: false,
@@ -102,7 +116,8 @@ const CreateStakingConfigForm = () => {
     const emptyCheck =
       formData.project !== '' &&
       formData.title !== '' &&
-      formData.tokenId !== '';
+      formData.tokenId !== '' &&
+      !isNaN(formData.tokenDecimals);
     if (errorCheck && emptyCheck) {
       const defaultOptions = {
         headers: {
@@ -189,6 +204,9 @@ const CreateStakingConfigForm = () => {
           />
         </Grid>
         <Grid item xs={12} sx={{ mt: 2 }}>
+          <Typography color="text.secondary" sx={{ mt: 2, mb: 1 }}>
+            Token details
+          </Typography>
           <TextField
             InputProps={{ disableUnderline: true }}
             required
@@ -201,6 +219,24 @@ const CreateStakingConfigForm = () => {
             onChange={handleChange}
             error={formErrors.tokenId}
             helperText={formErrors.tokenId && 'Stake token id is required'}
+          />
+        </Grid>
+        <Grid item xs={12} sx={{ mt: 2 }}>
+          <TextField
+            InputProps={{ disableUnderline: true }}
+            required
+            fullWidth
+            id="tokenDecimals"
+            label="Stake Token Decimals"
+            name="tokenDecimals"
+            variant="filled"
+            value={formData.tokenDecimals}
+            onChange={handleChange}
+            error={formErrors.tokenDecimals}
+            helperText={
+              formErrors.tokenDecimals &&
+              'Stake token decimals should be a number'
+            }
           />
         </Grid>
         <Grid item xs={12}>
