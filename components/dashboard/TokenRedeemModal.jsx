@@ -35,7 +35,7 @@ const modalStyle = {
   p: 4,
 };
 
-const NERG_FEES = 20 * 1000 * 1000;
+// const NERG_FEES = 20 * 1000 * 1000;
 
 const initFormData = Object.freeze({
   address: '',
@@ -100,20 +100,17 @@ const TokenRedeemModal = ({ box, onClose }) => {
     const errorCheck = Object.values(formErrors).every((v) => v === false);
     if (emptyCheck && errorCheck) {
       try {
-        const nergs = NERG_FEES;
-        // prettier-ignore
-        const fees = await ergo.get_utxos(nergs.toString()); // eslint-disable-line
-        // prettier-ignore
-        const nft = await ergo.get_utxos('1', box["Vesting Key Id"]); // eslint-disable-line
-        const utxos = Array.from(
-          new Set([...fees, ...nft].map((x) => x.boxId))
+        const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
+          (x, i, a) => a.indexOf(x) == i && x
         );
         const res = await axios.post(
           `${process.env.API_URL}/vesting/redeemWithNFT`,
           {
             boxId: box.boxId,
             address: formData.address,
-            utxos: [...utxos],
+            utxos: [],
+            txFormat: 'eip-12',
+            addresses: [...walletAddresses],
           },
           defaultOptions
         );
