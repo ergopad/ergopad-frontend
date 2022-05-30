@@ -96,6 +96,7 @@ const Dashboard = () => {
   const [vestedTokens, setVestedTokens] = useState([]);
   const [vestedTokensNFT, setVestedTokensNFT] = useState({});
   const [stakedTokens, setStakedTokens] = useState(initStakedData);
+  const [stakedTokensV2, setStakedTokensV2] = useState([]);
   const [holdingData, setHoldingData] = useState(defaultHoldingData);
   const [holdingDataAggregated, setHoldingDataAggregated] =
     useState(defaultHoldingData);
@@ -107,6 +108,7 @@ const Dashboard = () => {
   const [audNftList, setAudNftList] = useState([]);
   const [priceDataErgopad, setPriceDataErgopad] = useState({});
   const [priceDataVested, setPriceDataVested] = useState({});
+  const [priceDataStaked, setPriceDataStaked] = useState({});
   const [priceHistoryData, setPriceHistoryData] = useState([]);
   const [addVestingTableTokens, setAddVestingTable] = useState(true);
   const [addStakingTableTokens, setAddStakingTable] = useState(true);
@@ -115,9 +117,9 @@ const Dashboard = () => {
   const [loadingStakingTable, setLoadingStakingTable] = useState(false);
   const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
   const [navigatorLanguage, setNavigatorLanguage] = useState('en-US');
-  
+
   useEffect(() => {
-    setNavigatorLanguage(navigator.language)
+    setNavigatorLanguage(navigator.language);
   }, []);
 
   useEffect(() => {
@@ -138,6 +140,7 @@ const Dashboard = () => {
     setHoldingData(noAssetArray);
     setHistoryData(initHistoryData);
     setStakedTokens(initStakedData);
+    setStakedTokensV2([]);
     setVestedTokens([]);
     setVestedTokensNFT({});
   };
@@ -349,12 +352,12 @@ const Dashboard = () => {
 
     const getStakedTokenData = async (addresses) => {
       setLoadingStakingTable(true);
+      const defaultOptions = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
       try {
-        const defaultOptions = {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        };
         const request = {
           addresses: addresses,
         };
@@ -367,6 +370,36 @@ const Dashboard = () => {
       } catch (e) {
         console.log('ERROR FETCHING', e);
       }
+
+      const stakedv2Response = await axios
+        .post(
+          `${process.env.API_URL}/staking/staked-v2/`,
+          { addresses: [...addresses] },
+          { ...defaultOptions }
+        )
+        .catch((e) => {
+          console.log('ERROR FETCHING', e);
+          return {
+            data: [],
+          };
+        });
+
+      setStakedTokensV2(stakedv2Response.data);
+      const tokens = stakedv2Response.data.map((token) => token.tokenName);
+      try {
+        const pricesObject = {};
+        const tokenPrices = await axios.post(
+          `${process.env.API_URL}/asset/prices`,
+          { tokens: tokens }
+        );
+        tokenPrices.data.forEach((price) => {
+          pricesObject[price.name] = price.price;
+        });
+        setPriceDataStaked(pricesObject);
+      } catch (e) {
+        console.log(e);
+      }
+
       setLoadingStakingTable(false);
     };
 
@@ -425,28 +458,38 @@ const Dashboard = () => {
       });
       holdingState.push(...reducedVestedNFT);
     }
-    if (addStakingTableTokens && priceDataErgopad.ergopad) {
-      try {
-        const ergopadValue =
-          stakedTokens.totalStaked * priceDataErgopad.ergopad;
-        if (ergopadValue) {
-          holdingState.push({ x: 'ergopad (staked)', y: ergopadValue });
+    if (addStakingTableTokens) {
+      if (priceDataErgopad.ergopad) {
+        try {
+          const ergopadValue =
+            stakedTokens.totalStaked * priceDataErgopad.ergopad;
+          if (ergopadValue) {
+            holdingState.push({ x: 'ergopad (staked)', y: ergopadValue });
+          }
+          const ergopadHistoryOpt = priceHistoryData.filter(
+            (token) => token.token === 'ergopad'
+          );
+          if (ergopadValue && ergopadHistoryOpt.length) {
+            const history = ergopadHistoryOpt[0].history.map((pt) => {
+              return {
+                timestamp: pt.timestamp,
+                value: pt.price * stakedTokens.totalStaked,
+              };
+            });
+            historyState.push({ token: 'ergopad (staked)', history: history });
+          }
+        } catch (e) {
+          console.log(e);
         }
-        const ergopadHistoryOpt = priceHistoryData.filter(
-          (token) => token.token === 'ergopad'
-        );
-        if (ergopadValue && ergopadHistoryOpt.length) {
-          const history = ergopadHistoryOpt[0].history.map((pt) => {
-            return {
-              timestamp: pt.timestamp,
-              value: pt.price * stakedTokens.totalStaked,
-            };
-          });
-          historyState.push({ token: 'ergopad (staked)', history: history });
-        }
-      } catch (e) {
-        console.log(e);
       }
+      // staked v2
+      const reducedStaked = reduceStaked(stakedTokensV2).map((price) => {
+        return {
+          x: price.name + ' (staked)',
+          y: price.amount * (priceDataStaked[price.name] ?? 0),
+        };
+      });
+      holdingState.push(...reducedStaked);
     }
     setHoldingDataAggregated(holdingState);
     setHistoryDataAggregated(historyState);
@@ -458,8 +501,10 @@ const Dashboard = () => {
     vestedTokens,
     vestedTokensNFT,
     stakedTokens,
+    stakedTokensV2,
     priceDataErgopad,
     priceDataVested,
+    priceDataStaked,
     priceHistoryData,
   ]);
 
@@ -511,7 +556,11 @@ const Dashboard = () => {
             <>
               <Grid item xs={12} md={4}>
                 <Paper sx={paperStyle}>
-                  <AssetList assets={assetList} title="Assets" navigatorLanguage={navigatorLanguage} />
+                  <AssetList
+                    assets={assetList}
+                    title="Assets"
+                    navigatorLanguage={navigatorLanguage}
+                  />
                 </Paper>
               </Grid>
               <Grid item xs={12} md={4}>
@@ -622,7 +671,7 @@ const Dashboard = () => {
               {loadingStakingTable ? (
                 <CircularProgress color="inherit" />
               ) : (
-                <StakingTable data={stakedTokens} />
+                <StakingTable data={stakedTokens} datav2={stakedTokensV2} />
               )}
             </Paper>
           </Grid>
@@ -688,10 +737,8 @@ function assetListArray(data) {
   const res = [];
   for (let i = 0; i < keys.length; i++) {
     const token = tokenObject[keys[i]];
-    const amount = +parseFloat(
-      (token.amount * Math.pow(10, -token.decimals))
-    );
-    const price = (token.price * amount);
+    const amount = +parseFloat(token.amount * Math.pow(10, -token.decimals));
+    const price = token.price * amount;
     const obj = {
       token: token.name ? token.name.substring(0, 3).toUpperCase() : '',
       name: token.name ? token.name : '',
@@ -706,7 +753,7 @@ function assetListArray(data) {
     name: 'Ergo',
     id: 'ergid',
     amount: data.balance.ERG.balance,
-    amountUSD: (data.balance.ERG.price * data.balance.ERG.balance),
+    amountUSD: data.balance.ERG.price * data.balance.ERG.balance,
   };
   res.unshift(ergoValue);
   return res;
@@ -833,6 +880,15 @@ const reduceVestedNFT = (vestedData) => {
       amount: vestedData[token]
         .map((box) => box.Remaining)
         .reduce((a, c) => a + c, 0),
+    };
+  });
+};
+
+const reduceStaked = (stakedData) => {
+  return stakedData.map((data) => {
+    return {
+      name: data.tokenName,
+      amount: data.totalStaked,
     };
   });
 };
