@@ -87,11 +87,12 @@ const friendlyAddress = (addr, tot = 9) => {
   return addr.slice(0, tot) + '...' + addr.slice(-tot);
 };
 
-const StakingTable = ({ data }) => {
+const StakingTable = ({ data, datav2 }) => {
   const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
   const stakeObject = { ...data };
+  const stakedV2 = [...datav2];
 
-  if (stakeObject.totalStaked === 0) {
+  if (stakeObject.totalStaked === 0 && stakedV2.length === 0) {
     return (
       <>
         <Box>
@@ -108,148 +109,178 @@ const StakingTable = ({ data }) => {
     );
   }
 
+  const stakedData = [{ ...stakeObject, tokenName: 'ErgoPad' }, ...stakedV2];
+
   return (
     <>
-      <Box sx={{ mt: 4 }}>
-        <Typography variant="h5" color="text.primary" sx={{ mb: 1, pl: 1 }}>
-          Total Staked Tokens: {stakeObject.totalStaked?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
-        </Typography>
-        <Typography
-          variant="p"
-          sx={{ fontWeight: '400', fontSize: '1rem', mb: 1, pl: 1 }}
-        >
-          Total staked aggregates all your wallet address and may not clearly
-          reflect your staking tier per address. Visit the staking page for more
-          details.
-        </Typography>
-      </Box>
-      {Object.keys(stakeObject.addresses).map((address) => (
-        <Box sx={{ mt: 4 }} key={address}>
-          <Typography
-            variant="p"
-            color="text.primary"
-            sx={{ fontWeight: '600', fontSize: '1rem', mb: 1, pl: 1 }}
-          >
-            Address:{' '}
-            <Typography
-              variant="span"
-              color="text.secondary"
-              sx={{ textTransform: 'capitalize', fontWeight: '400', wordWrap: 'break-word' }}
-            >
-              {checkSmall ? address : friendlyAddress(address)}
+      {stakedData.map((stakeObject) => (
+        <>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="h5" color="text.primary" sx={{ mb: 1, pl: 1 }}>
+              Total Staked {stakeObject.tokenName} Tokens:{' '}
+              {stakeObject.totalStaked?.toLocaleString(navigator.language, {
+                maximumFractionDigits: 2,
+              })}
             </Typography>
-          </Typography>
-          <Typography
-            variant="p"
-            color="text.primary"
-            sx={{ fontWeight: '600', fontSize: '1rem', mb: 1, pl: 1 }}
-          >
-            Total Staked:{' '}
-            <Typography
-              variant="span"
-              color="text.secondary"
-              sx={{ textTransform: 'capitalize', fontWeight: '400' }}
-            >
-              {stakeObject.addresses[address].totalStaked?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
-            </Typography>
-          </Typography>
-          {checkSmall ? (
-            <Table sx={{ mb: 3 }} size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: '600' }}>
-                    {stakedHeading.boxId}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600' }}>
-                    {stakedHeading.stakeAmount}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600' }}>
-                    {stakedHeading.penaltyPct}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: '600' }}>
-                    {stakedHeading.penaltyEndTime}
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {stakeObject.addresses[address].stakeBoxes.map((stake) => {
-                  return (
-                    <TableRow key={stake.boxId}>
-                      <TableCell sx={{ color: theme.palette.text.secondary }}>
-                        {stake.boxId}
+          </Box>
+          {Object.keys(stakeObject.addresses).map((address) => (
+            <Box sx={{ mt: 2 }} key={address}>
+              <Typography
+                variant="p"
+                color="text.primary"
+                sx={{ fontWeight: '600', fontSize: '1rem', mb: 1, pl: 1 }}
+              >
+                Address:{' '}
+                <Typography
+                  variant="span"
+                  color="text.secondary"
+                  sx={{
+                    textTransform: 'capitalize',
+                    fontWeight: '400',
+                    wordWrap: 'break-word',
+                  }}
+                >
+                  {checkSmall ? address : friendlyAddress(address)}
+                </Typography>
+              </Typography>
+              <Typography
+                variant="p"
+                color="text.primary"
+                sx={{ fontWeight: '600', fontSize: '1rem', mb: 1, pl: 1 }}
+              >
+                Total Staked:{' '}
+                <Typography
+                  variant="span"
+                  color="text.secondary"
+                  sx={{ textTransform: 'capitalize', fontWeight: '400' }}
+                >
+                  {stakeObject.addresses[address].totalStaked?.toLocaleString(
+                    navigator.language,
+                    { maximumFractionDigits: 2 }
+                  )}
+                </Typography>
+              </Typography>
+              {checkSmall ? (
+                <Table sx={{ mb: 3 }} size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: '600' }}>
+                        {stakedHeading.boxId}
                       </TableCell>
-                      <TableCell sx={{ color: theme.palette.text.secondary }}>
-                        {stake.stakeAmount?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
-                      </TableCell>
-                      <TableCell sx={{ color: theme.palette.text.secondary }}>
-                        {stake.penaltyPct}%
-                      </TableCell>
-                      <TableCell sx={{ color: theme.palette.text.secondary }}>
-                        {new Date(stake.penaltyEndTime)
-                          .toISOString()
-                          .slice(0, 10)}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          ) : (
-            <Table sx={{ p: 0 }}>
-              {stakeObject.addresses[address].stakeBoxes.map((stake) => {
-                return (
-                  <>
-                    <TableRow sx={{ borderTop: `1px solid #444` }}>
-                      <TableCell
-                        sx={{
-                          color: theme.palette.text.secondary,
-                          border: 'none',
-                          p: 1,
-                          pt: 2,
-                        }}
-                      >
+                      <TableCell sx={{ fontWeight: '600' }}>
                         {stakedHeading.stakeAmount}
                       </TableCell>
-                      <TableCell sx={{ border: 'none', p: 1, pt: 2 }}>
-                        {stake.stakeAmount?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell
-                        sx={{
-                          color: theme.palette.text.secondary,
-                          border: 'none',
-                          p: 1,
-                        }}
-                      >
+                      <TableCell sx={{ fontWeight: '600' }}>
                         {stakedHeading.penaltyPct}
                       </TableCell>
-                      <TableCell sx={{ border: 'none', p: 1 }}>
-                        {stake.penaltyPct}%
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell
-                        sx={{
-                          color: theme.palette.text.secondary,
-                          border: 'none',
-                          p: 1,
-                        }}
-                      >
+                      <TableCell sx={{ fontWeight: '600' }}>
                         {stakedHeading.penaltyEndTime}
                       </TableCell>
-                      <TableCell sx={{ border: 'none', p: 1 }}>
-                        {new Date(stake.penaltyEndTime)
-                          .toISOString()
-                          .slice(0, 10)}
-                      </TableCell>
                     </TableRow>
-                  </>
-                );
-              })}
-            </Table>
-          )}
-        </Box>
+                  </TableHead>
+                  <TableBody>
+                    {stakeObject.addresses[address].stakeBoxes.map((stake) => {
+                      return (
+                        <TableRow key={stake.boxId}>
+                          <TableCell
+                            sx={{ color: theme.palette.text.secondary }}
+                          >
+                            {stake.boxId}
+                          </TableCell>
+                          <TableCell
+                            sx={{ color: theme.palette.text.secondary }}
+                          >
+                            {stake.stakeAmount?.toLocaleString(
+                              navigator.language,
+                              {
+                                maximumFractionDigits: 2,
+                              }
+                            )}
+                          </TableCell>
+                          <TableCell
+                            sx={{ color: theme.palette.text.secondary }}
+                          >
+                            {stake.penaltyPct ?? 0}%
+                          </TableCell>
+                          <TableCell
+                            sx={{ color: theme.palette.text.secondary }}
+                          >
+                            {stake.penaltyEndTime
+                              ? new Date(stake.penaltyEndTime)
+                                  .toISOString()
+                                  .slice(0, 10)
+                              : '-'}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              ) : (
+                <Table sx={{ p: 0 }}>
+                  {stakeObject.addresses[address].stakeBoxes.map((stake) => {
+                    return (
+                      <>
+                        <TableRow sx={{ borderTop: `1px solid #444` }}>
+                          <TableCell
+                            sx={{
+                              color: theme.palette.text.secondary,
+                              border: 'none',
+                              p: 1,
+                              pt: 2,
+                            }}
+                          >
+                            {stakedHeading.stakeAmount}
+                          </TableCell>
+                          <TableCell sx={{ border: 'none', p: 1, pt: 2 }}>
+                            {stake.stakeAmount?.toLocaleString(
+                              navigator.language,
+                              {
+                                maximumFractionDigits: 2,
+                              }
+                            )}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell
+                            sx={{
+                              color: theme.palette.text.secondary,
+                              border: 'none',
+                              p: 1,
+                            }}
+                          >
+                            {stakedHeading.penaltyPct}
+                          </TableCell>
+                          <TableCell sx={{ border: 'none', p: 1 }}>
+                            {stake.penaltyPct ?? 0}%
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell
+                            sx={{
+                              color: theme.palette.text.secondary,
+                              border: 'none',
+                              p: 1,
+                            }}
+                          >
+                            {stakedHeading.penaltyEndTime}
+                          </TableCell>
+                          <TableCell sx={{ border: 'none', p: 1 }}>
+                            {stake.penaltyEndTime
+                              ? new Date(stake.penaltyEndTime)
+                                  .toISOString()
+                                  .slice(0, 10)
+                              : '-'}
+                          </TableCell>
+                        </TableRow>
+                      </>
+                    );
+                  })}
+                </Table>
+              )}
+            </Box>
+          ))}
+        </>
       ))}
     </>
   );
