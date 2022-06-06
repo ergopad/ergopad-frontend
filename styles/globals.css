@@ -27,11 +27,11 @@ ref: https://stackoverflow.com/questions/68362273/remove-smooth-scroll-animation
 */
 a:link {
   scroll-behavior: auto !important;
-  text-decoration: none !important;
+  text-decoration: none;
 }
 
 a:hover {
-  text-decoration: underline !important;
+  text-decoration: underline;
 }
 
 a {

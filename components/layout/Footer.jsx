@@ -516,6 +516,12 @@ const socialStyles = {
   p: 0,
   background: (theme) => theme.palette.background.paper,
   borderRadius: '15px',
+  '.MuiSvgIcon-root': { transition: '100ms ease-in-out', },
+  '&:hover .MuiSvgIcon-root': {
+    color: (theme) => theme.palette.primary.hover,
+    transform: 'scale(1.2, 1.2)',
+    
+  },
 };
 
 /* 
