@@ -32,36 +32,45 @@ const RelatedLinkItem = ({ link }) => {
         color: '#fff',
         borderRadius: 2,
         textDecoration: 'none',
+        transition: '1s ease-in-out',
+        '.MuiIcon-root.arrow': {
+            transition: '200ms ease-in-out',
+            transform: 'rotate(-45deg)'
+        },
         '&:hover': {
-            
+            '.MuiIcon-root.arrow': {
+                transition: '200ms ease-in-out',
+                transform: 'rotate(0deg)'
+            }
         }
     }
-  
-  return (
-    
+
+    return (
+
         <Grid item md={4} xs={12} sx={{ maxWidth: '320px' }}>
-            <MuiNextLink href={link.href} sx={{ textDecoration: 'none' }}> 
+            <MuiNextLink href={link.href} sx={{ '&:hover': {
+            textDecoration: 'none',}}}>
                 <Box sx={extraStyles}>
-                    
-                        <Icon fontSize="large" >
-                            {link.icon}
-                        </Icon>
-                    
-                        <Typography variant="h4" sx={{ }}>
-                            {link.title}
-                        </Typography>
-                    
-                    <Typography>
+
+                    <Icon fontSize="large" >
+                        {link.icon}
+                    </Icon>
+
+                    <Typography variant="h4" sx={{ mb: '0px', }}>
+                        {link.title}
+                    </Typography>
+
+                    <Typography sx={{ mb: '8px', }}>
                         {link.caption}
                     </Typography>
-                    
-                        <Icon>
-                            east
-                        </Icon>
-                    
+
+                    <Icon className="arrow">
+                        east
+                    </Icon>
+
                 </Box>
             </MuiNextLink> 
-        </Grid>
+        </Grid >
     
   );
 };

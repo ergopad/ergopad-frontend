@@ -21,7 +21,7 @@ const relatedLinkList = [
     title: 'Documentation',
     caption: 'Read about how Ergopad Works',
     icon: 'auto_stories',
-    href: 'https://github.com/ergo-pad/ergopad/blob/main/docs/README.md',
+    href: '/whitepaper',
     background: theme.palette.primary.main,
   },
   {
