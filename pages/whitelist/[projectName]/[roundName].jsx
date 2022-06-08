@@ -104,6 +104,15 @@ const Whitelist = () => {
             return { text: text, check: false };
           })
         );
+        const startTime = Date.parse(res.data.start_dtz)
+        const endTime = Date.parse(res.data.end_dtz)
+        if (Date.now() < startTime) {
+          setWhitelistState(NOT_STARTED);
+        } else if (Date.now() > endTime) {
+          setWhitelistState(ROUND_END);
+        } else {
+          setWhitelistState(PUBLIC);
+        }
       } catch (e) {
         console.log(e);
       }
@@ -112,29 +121,6 @@ const Whitelist = () => {
 
     if (projectName && roundName) getWhitelistData();
   }, [projectName, roundName]);
-
-  useEffect(() => {
-    const apiCheck = async () => {
-      try {
-        const res = await axios.get(
-          `${process.env.API_URL}/whitelist/info/${whitelistData.eventName}`
-        );
-        if (res.data.isBeforeSignup) {
-          setWhitelistState(NOT_STARTED);
-        } else if (res.data.isAfterSignup || res.data.isFundingComplete) {
-          setWhitelistState(ROUND_END);
-        } else {
-          setWhitelistState(PUBLIC);
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    };
-
-    if (whitelistData) {
-      apiCheck();
-    }
-  }, [whitelistData]);
 
   useEffect(() => {
     const getErgoPadStaked = async () => {
