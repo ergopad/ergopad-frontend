@@ -159,7 +159,7 @@ export const TeamInput = ({ data, setData }) => {
               onChange={(e) => handleChange(e, index)}
             />
           </Grid>
-          <Grid item md={10} xs={8} sx={{ mt: 1, pr: 1 }}>
+          <Grid item md={11} xs={10} sx={{ mt: 1, pr: 1 }}>
             <TextField
               name="profileImgUrl"
               label="Profile Image"
@@ -171,7 +171,30 @@ export const TeamInput = ({ data, setData }) => {
               onChange={(e) => handleChange(e, index)}
             />
           </Grid>
-          <Grid item md={2} sx={{ mt: 1, pt: 1 }}>
+          <Grid
+            item
+            md={1}
+            xs={2}
+            sx={{ mt: 1, display: 'flex', justifyContent: 'center' }}
+          >
+            <Button
+              sx={{ textTransform: 'none' }}
+              onClick={() =>
+                handleChange(
+                  {
+                    target: {
+                      name: 'profileImgUrl',
+                      value: '',
+                    },
+                  },
+                  index
+                )
+              }
+            >
+              Clear
+            </Button>
+          </Grid>
+          <Grid item md={12} sx={{ mt: 1 }}>
             <FileUploadS3 onUpload={(res) => handleImageUpload(res, index)} />
           </Grid>
           <Grid item md={6} xs={12} sx={{ mt: 1, pr: 1 }}>
