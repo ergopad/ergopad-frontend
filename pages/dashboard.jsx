@@ -146,6 +146,7 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
+    /*
     async function getWalletData(addresses) {
       const defaultOptions = {
         headers: {
@@ -177,9 +178,6 @@ const Dashboard = () => {
         const newAudNftList = [];
         const newAssetList = [];
 
-        /**
-         * Collect promises from ergoplatform and resolve them asynchronously
-         */
         const assetListPromises = [];
         const indexMapper = {};
         for (let i = 0; i < initialAssetList.length; i++) {
@@ -295,6 +293,7 @@ const Dashboard = () => {
 
       setLoading(false);
     }
+    */
 
     const getVestedTokenData = async (addresses) => {
       setLoadingVestingTable(true);
@@ -407,7 +406,7 @@ const Dashboard = () => {
       (x, i, a) => a.indexOf(x) == i && x
     );
     if (walletAddresses.length) {
-      getWalletData(walletAddresses);
+      // getWalletData(walletAddresses);
       getVestedTokenData(walletAddresses);
       getStakedTokenData(walletAddresses);
     } else {
@@ -512,12 +511,12 @@ const Dashboard = () => {
     <>
       <CenterTitle
         title="Dashboard"
-        subtitle="Connect wallet above to see all your ergo assets"
+        subtitle="Optimization in progress, dashboard will return soon!"
         main="true"
       />
       <Container maxWidth="lg" sx={{ mx: 'auto' }}>
         <Grid container spacing={3} alignItems="stretch" sx={{ pt: 4 }}>
-          <Grid item xs={12} md={6}>
+{/*           <Grid item xs={12} md={6}>
             <Paper sx={paperStyle}>
               <Typography variant="h4">Wallet Holdings</Typography>
               {loading ? (
@@ -584,7 +583,7 @@ const Dashboard = () => {
                 </Paper>
               </Grid>
             </>
-          )}
+          )} */}
           <Grid item xs={12}>
             <Paper sx={paperStyle}>
               <Grid container>

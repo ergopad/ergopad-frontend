@@ -5,6 +5,7 @@ import {
   CardContent,
   Grid,
   Typography,
+  Skeleton
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -14,15 +15,18 @@ import theme from '@styles/theme';
 const Projects = () => {
   const router = useRouter();
   const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const getProjects = async () => {
+      setLoading(true);
       try {
         const res = await axios.get(`${process.env.API_URL}/projects/`);
         setProjects(res.data);
       } catch (e) {
         console.error(e);
       }
+      setLoading(false);
     };
 
     getProjects();
@@ -50,10 +54,10 @@ const Projects = () => {
             onClick={() => {
               router.push(
                 '/projects/' +
-                  project.name
-                    .toLowerCase()
-                    .replaceAll(' ', '')
-                    .replaceAll(/[^a-zA-Z0-9]/g, '')
+                project.name
+                  .toLowerCase()
+                  .replaceAll(' ', '')
+                  .replaceAll(/[^a-zA-Z0-9]/g, '')
               );
             }}
           >
@@ -90,6 +94,14 @@ const Projects = () => {
     );
   };
 
+  const SkeletonCard = () => {
+    return (
+      <Grid item xs={12} sm={6} md={4}>
+        <Skeleton variant="rectangular" height={400} />
+      </Grid>
+    )
+  }
+
   return (
     <>
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -103,7 +115,17 @@ const Projects = () => {
         </Box>
       </Box>
       <Grid container spacing={3} alignItems="stretch" sx={{ mb: 6, mt: 3 }}>
-        {upcomingProjects?.map((project) => projectCard(project))}
+        {loading ? (
+          <>
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+          </>
+        ) : (
+          <>
+            {upcomingProjects?.map((project) => projectCard(project))}
+          </>
+        )}
       </Grid>
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
         <Box
