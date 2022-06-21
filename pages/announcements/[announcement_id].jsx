@@ -56,7 +56,7 @@ const Announcement = () => {
       setLoading(false);
     };
 
-    if (announcement_id !== '') {
+    if (announcement_id && announcement_id !== '') {
       getData();
     }
   }, [announcement_id]);
