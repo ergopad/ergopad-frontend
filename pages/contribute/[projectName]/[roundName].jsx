@@ -236,7 +236,7 @@ const Contribute = () => {
         const round = res.data.activeRounds.filter(
           (round) => round.proxyNFT === contributeData.proxyNFTId
         )[0];
-        setRoundDetails(round ? round : initialRoundDetails);
+        setRoundDetails(round ? (round - 3500000) : initialRoundDetails);
       } catch (e) {
         console.log(e);
       }
