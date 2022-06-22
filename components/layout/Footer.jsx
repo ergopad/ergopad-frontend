@@ -193,6 +193,7 @@ const Footer = () => {
             </ListItem>
           </List>
         </Grid>
+        {/*
         <Grid item xs={6} md={2}>
           <Typography variant="inherit" sx={titleStyles}>
             SUPPORT
@@ -219,7 +220,7 @@ const Footer = () => {
               </Link>
             </ListItem>
           </List>
-        </Grid>
+        </Grid>*/}
         <Grid item xs={6} md={2}>
           <Typography variant="inherit" sx={titleStyles}>
             SOCIAL

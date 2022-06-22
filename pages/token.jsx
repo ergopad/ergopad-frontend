@@ -102,6 +102,7 @@ const paperStyle = {
 };
 
 const Token = () => {
+    /*
     const [expanded, setExpanded] = useState(false);
     const [initialErgopadSupply, setInitialErgopadSupply] = useState('Loading...');
     const [currentErgopadSupply, setCurrentErgopadSupply] = useState('Loading...');
@@ -350,6 +351,20 @@ const Token = () => {
         <RelatedLinks title="Learn More" subtitle="" links={relatedLinkList} />
     </>
   );
+  */
+ return (
+        <>
+            <Container maxWidth="lg" sx={{ mb: '3rem' }}>
+                <CenterTitle 
+                    title="Tokenomics"
+                    subtitle="For Ergo projects, are tokenomics called Ergonomics? "
+                    main={true}
+                />
+
+                Page will return soon, API is receiving maintenance. 
+            </Container>
+            </>
+ )
 };
 
 export default Token;
