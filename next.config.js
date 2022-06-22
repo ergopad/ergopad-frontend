@@ -4,9 +4,12 @@ const securityHeaders = [
       value: 'max-age=63072000; includeSubDomains; preload'
     }
   ]
-  
-  module.exports = withExportImages({
-    reactStrictMode: true,
+
+/**
+ * @type {import('next').NextConfig}
+ */
+const nextConfig = {
+  reactStrictMode: true,
     env: {
       API_URL: 'https://ergopad.io/api',
       FORM_EMAIL: 'ergopad.marketing@gmail.com',
@@ -20,4 +23,6 @@ const securityHeaders = [
         },
       ]
     },
-  })
+}
+
+module.exports = nextConfig
