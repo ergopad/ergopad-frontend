@@ -75,6 +75,8 @@ export const StakingItem = (item, md, ifSmall, loading = false) => {
 const StakingSummary = ({ project_id }) => {
   const [status, setStatus] = useState(stakingItems);
   const [loading, setLoading] = useState(false);
+  
+  /*
   useEffect(() => {
     const getStatus = async () => {
       setLoading(true);
@@ -107,6 +109,8 @@ const StakingSummary = ({ project_id }) => {
     getStatus();
   }, [project_id]);
 
+  */
+
   return (
     <>
       <Grid
@@ -114,7 +118,7 @@ const StakingSummary = ({ project_id }) => {
         spacing={3}
         alignItems="stretch"
         justifyContent="center"
-        sx={{ flexGrow: 1, mb: 3 }}
+        sx={{ flexGrow: 1, mb: 3, display: 'none' }}
       >
         {status.map((item) => {
           return StakingItem(item, 4, false, loading);
