@@ -1,5 +1,3 @@
-const withExportImages = require('next-export-optimize-images')
-
 const securityHeaders = [
     {
       key: 'Strict-Transport-Security',
