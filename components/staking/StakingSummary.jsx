@@ -76,7 +76,7 @@ const StakingSummary = ({ project_id }) => {
   const [status, setStatus] = useState(stakingItems);
   const [loading, setLoading] = useState(false);
   
-  /*
+  
   useEffect(() => {
     const getStatus = async () => {
       setLoading(true);
@@ -109,7 +109,7 @@ const StakingSummary = ({ project_id }) => {
     getStatus();
   }, [project_id]);
 
-  */
+  
 
   return (
     <>
@@ -118,7 +118,7 @@ const StakingSummary = ({ project_id }) => {
         spacing={3}
         alignItems="stretch"
         justifyContent="center"
-        sx={{ flexGrow: 1, mb: 3, display: 'none' }}
+        sx={{ flexGrow: 1, mb: 3 }}
       >
         {status.map((item) => {
           return StakingItem(item, 4, false, loading);
