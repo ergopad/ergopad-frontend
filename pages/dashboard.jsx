@@ -67,10 +67,7 @@ const initHistoryData = [
   },
 ];
 
-const initStakedData = {
-  totalStaked: 0,
-  addresses: {},
-};
+const initStakedData = [];
 
 const wantedHoldingData = tokenDataArray(rawData2);
 
@@ -96,7 +93,6 @@ const Dashboard = () => {
   const [vestedTokens, setVestedTokens] = useState([]);
   const [vestedTokensNFT, setVestedTokensNFT] = useState({});
   const [stakedTokens, setStakedTokens] = useState(initStakedData);
-  const [stakedTokensV2, setStakedTokensV2] = useState([]);
   const [holdingData, setHoldingData] = useState(defaultHoldingData);
   const [holdingDataAggregated, setHoldingDataAggregated] =
     useState(defaultHoldingData);
@@ -140,7 +136,6 @@ const Dashboard = () => {
     setHoldingData(noAssetArray);
     setHistoryData(initHistoryData);
     setStakedTokens(initStakedData);
-    setStakedTokensV2([]);
     setVestedTokens([]);
     setVestedTokensNFT({});
   };
@@ -357,23 +352,10 @@ const Dashboard = () => {
           'Content-Type': 'application/json',
         },
       };
-      try {
-        const request = {
-          addresses: addresses,
-        };
-        const res = await axios.post(
-          `${process.env.API_URL}/staking/staked/`,
-          request,
-          { ...defaultOptions }
-        );
-        setStakedTokens(res.data);
-      } catch (e) {
-        console.log('ERROR FETCHING', e);
-      }
 
-      const stakedv2Response = await axios
+      const stakedTokens = await axios
         .post(
-          `${process.env.API_URL}/staking/staked-v2/`,
+          `${process.env.API_URL}/staking/staked-all/`,
           { addresses: [...addresses] },
           { ...defaultOptions }
         )
@@ -384,8 +366,8 @@ const Dashboard = () => {
           };
         });
 
-      setStakedTokensV2(stakedv2Response.data);
-      const tokens = stakedv2Response.data.map((token) => token.tokenName);
+      setStakedTokens(stakedTokens.data);
+      const tokens = stakedTokens.data.map((token) => token.tokenName);
       try {
         const pricesObject = {};
         const tokenPrices = await axios.post(
@@ -459,31 +441,8 @@ const Dashboard = () => {
       holdingState.push(...reducedVestedNFT);
     }
     if (addStakingTableTokens) {
-      if (priceDataErgopad.ergopad) {
-        try {
-          const ergopadValue =
-            stakedTokens.totalStaked * priceDataErgopad.ergopad;
-          if (ergopadValue) {
-            holdingState.push({ x: 'ergopad (staked)', y: ergopadValue });
-          }
-          const ergopadHistoryOpt = priceHistoryData.filter(
-            (token) => token.token === 'ergopad'
-          );
-          if (ergopadValue && ergopadHistoryOpt.length) {
-            const history = ergopadHistoryOpt[0].history.map((pt) => {
-              return {
-                timestamp: pt.timestamp,
-                value: pt.price * stakedTokens.totalStaked,
-              };
-            });
-            historyState.push({ token: 'ergopad (staked)', history: history });
-          }
-        } catch (e) {
-          console.log(e);
-        }
-      }
-      // staked v2
-      const reducedStaked = reduceStaked(stakedTokensV2).map((price) => {
+      // staked
+      const reducedStaked = reduceStaked(stakedTokens).map((price) => {
         return {
           x: price.name + ' (staked)',
           y: price.amount * (priceDataStaked[price.name] ?? 0),
@@ -501,7 +460,6 @@ const Dashboard = () => {
     vestedTokens,
     vestedTokensNFT,
     stakedTokens,
-    stakedTokensV2,
     priceDataErgopad,
     priceDataVested,
     priceDataStaked,
@@ -671,7 +629,7 @@ const Dashboard = () => {
               {loadingStakingTable ? (
                 <CircularProgress color="inherit" />
               ) : (
-                <StakingTable data={stakedTokens} datav2={stakedTokensV2} />
+                <StakingTable data={stakedTokens} />
               )}
             </Paper>
           </Grid>
