@@ -39,7 +39,7 @@ const Dashboard = () => {
           <Typography variant="p">Other features include:</Typography>
           <List
             sx={{
-              mt: -4,
+              mt: -2,
               pt: 0,
               ml: 6,
               mb: 3,

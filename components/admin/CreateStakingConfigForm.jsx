@@ -5,6 +5,8 @@ import {
   TextField,
   Button,
   CircularProgress,
+  FormControlLabel,
+  Checkbox,
 } from '@mui/material';
 import { forwardRef, useEffect, useState } from 'react';
 import Snackbar from '@mui/material/Snackbar';
@@ -22,7 +24,9 @@ const initialFormData = Object.freeze({
   tokenDecimals: 0,
   stakingInfo: '',
   terms: '', // not used yet
-  additionalDetails: {},
+  additionalDetails: {
+    stakingV1: false,
+  },
 });
 
 const initialFormErrors = Object.freeze({
@@ -102,10 +106,20 @@ const CreateStakingConfigForm = () => {
       });
     }
 
-    updateFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    if (['stakingV1'].includes(e.target.name)) {
+      updateFormData({
+        ...formData,
+        additionalDetails: {
+          ...formData.additionalDetails,
+          [e.target.name]: e.target.checked,
+        },
+      });
+    } else {
+      updateFormData({
+        ...formData,
+        [e.target.name]: e.target.value,
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -254,6 +268,23 @@ const CreateStakingConfigForm = () => {
             value={formData.stakingInfo}
             onChange={handleChange}
             rows={6}
+          />
+        </Grid>
+        <Grid item xs={12} sx={{ mt: 1 }}>
+          <Typography color="text.secondary" sx={{ mt: 2 }}>
+            Staking v1 config allows for staking penalties and is similar to how
+            ErgoPad staking works. Staking v2 is similar to Paideia staking with
+            no penalties.
+          </Typography>
+          <FormControlLabel
+            control={
+              <Checkbox
+                name="stakingV1"
+                checked={formData.additionalDetails.stakingV1}
+                onChange={handleChange}
+              />
+            }
+            label="Staking Version 1"
           />
         </Grid>
         <Box sx={{ position: 'relative', mt: 3 }}>
