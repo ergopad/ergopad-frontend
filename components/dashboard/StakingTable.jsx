@@ -87,12 +87,11 @@ const friendlyAddress = (addr, tot = 9) => {
   return addr.slice(0, tot) + '...' + addr.slice(-tot);
 };
 
-const StakingTable = ({ data, datav2 }) => {
+const StakingTable = ({ data }) => {
   const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
-  const stakeObject = { ...data };
-  const stakedV2 = [...datav2];
+  const stakedData = [...data];
 
-  if (stakeObject.totalStaked === 0 && stakedV2.length === 0) {
+  if (stakedData.length === 0) {
     return (
       <>
         <Box>
@@ -108,8 +107,6 @@ const StakingTable = ({ data, datav2 }) => {
       </>
     );
   }
-
-  const stakedData = [{ ...stakeObject, tokenName: 'ErgoPad' }, ...stakedV2];
 
   return (
     <>
