@@ -1,7 +1,7 @@
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Link from '@components/MuiNextLink';
-import { List, ListItem, SvgIcon, IconButton, Divider, Skeleton } from '@mui/material';
+import { List, ListItem, SvgIcon, IconButton, Divider } from '@mui/material';
 // import { styled } from '@mui/system';
 // import theme from 'styles/theme';
 import MuiNextLink from '@components/MuiNextLink';
@@ -30,11 +30,9 @@ const Footer = () => {
   const [dynamicContributionFooters, setDynamicContributionFooters] = useState(
     []
   );
-  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const getFooters = async () => {
-      setLoading(true);
       try {
         if (
           localStorage.getItem(FOOTER_CACHE_KEY) &&
@@ -75,7 +73,6 @@ const Footer = () => {
       } catch (e) {
         console.log(e);
       }
-      setLoading(false);
     };
 
     getFooters();
@@ -193,7 +190,6 @@ const Footer = () => {
             </ListItem>
           </List>
         </Grid>
-        {/*
         <Grid item xs={6} md={2}>
           <Typography variant="inherit" sx={titleStyles}>
             SUPPORT
@@ -220,7 +216,7 @@ const Footer = () => {
               </Link>
             </ListItem>
           </List>
-        </Grid>*/}
+        </Grid>
         <Grid item xs={6} md={2}>
           <Typography variant="inherit" sx={titleStyles}>
             SOCIAL
@@ -297,11 +293,7 @@ const Footer = () => {
             DAPP
           </Typography>
           <List>
-            {loading ? (
-              <Skeleton variant="text" />
-            ) : (
-              <>
-              {dynamicContributionFooters.map((event) => (
+            {dynamicContributionFooters.map((event) => (
               <ListItem key={event.id} disableGutters sx={listItemStyles}>
                 <Link
                   activeClassName="active"
@@ -323,9 +315,6 @@ const Footer = () => {
                 </Link>
               </ListItem>
             ))}
-            </>
-            )}
-            
             {/* <ListItem disableGutters sx={listItemStyles}>
               <Link activeClassName="active" href="/exchange" sx={linkStyles}>
                 Exchange
@@ -347,7 +336,7 @@ const Footer = () => {
           sx={{ textAlign: { xs: 'center', md: 'left' } }}
         >
           <Typography variant="inherit" sx={textStyles}>
-            © 2022 ErgoPad. All rights reserved.
+            © 2021 ErgoPad. All rights reserved.
           </Typography>
         </Grid>
         <Grid
