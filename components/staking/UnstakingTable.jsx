@@ -61,7 +61,7 @@ const UnstakingTable = ({ data, unstake, addstake }) => {
           sx={{ fontWeight: '400', fontSize: '1rem', mb: 1, pl: 1 }}
         >
           Note: You may have staked tokens associated with other addresses in
-          your wallet. This page only shows tokens for the selected address. For
+          your wallet. This page only shows tokens for the selected addresses. For
           overall wallet summary visit the dashboard. The values in the table
           may take some time to reflect new changes.
         </Typography>
@@ -177,7 +177,7 @@ const UnstakingTable = ({ data, unstake, addstake }) => {
                           justifyContent: 'center',
                         }}
                       >
-                        {typeof addstake !== 'undefined' && (
+                        {typeof addstake !== 'undefined' && addstake && (
                           <Button
                             variant="contained"
                             size="small"

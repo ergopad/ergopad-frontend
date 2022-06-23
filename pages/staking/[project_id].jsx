@@ -28,6 +28,7 @@ import { StakingItem } from '@components/staking/StakingSummary';
 import StakingNavigationDropdown from '@components/staking/StakingNavigationDropdown';
 import StakingSummary from '@components/staking/StakingSummary';
 import StakingRewardsBox from '@components/staking/StakingRewardsBox';
+import UnstakingFeesTable from '@components/staking/UnstakingFeesTable';
 import UnstakingTable from '@components/staking/UnstakingTable';
 import TransactionSubmitted from '@components/TransactionSubmitted';
 import ErgopayModalBody from '@components/ErgopayModalBody';
@@ -62,6 +63,9 @@ const defaultStakingConfig = Object.freeze({
   tokenId: '0xtest',
   tokenDecimals: 0,
   stakingInfo: '',
+  additionalDetails: {
+    stakingV1: false,
+  },
 });
 
 const initStakingForm = Object.freeze({
@@ -872,7 +876,14 @@ const ProjectStaking = () => {
                       aria-label="basic tabs example"
                     >
                       <Tab label="Stake" {...a11yProps(0)} />
-                      <Tab label="Manage Stake" {...a11yProps(1)} />
+                      <Tab
+                        label={
+                          stakingConfig.additionalDetails.stakingV1
+                            ? 'Unstake'
+                            : 'Manage Stake'
+                        }
+                        {...a11yProps(1)}
+                      />
                     </Tabs>
                   </Box>
                   <TabPanel value={tabValue} index={0}>
@@ -953,7 +964,9 @@ const ProjectStaking = () => {
                   <TabPanel value={tabValue} index={1} id="manage">
                     <Paper sx={{ p: { xs: 2, sm: 4 }, borderRadius: 3 }}>
                       <Typography variant="h5" sx={{ fontWeight: '700' }}>
-                        Manage Stake Boxes
+                        {stakingConfig.additionalDetails.stakingV1
+                          ? 'Withdraw'
+                          : 'Manage Stake Boxes'}
                       </Typography>
                       {unstakeTableLoading ? (
                         <CircularProgress color="inherit" />
@@ -975,15 +988,19 @@ const ProjectStaking = () => {
                               penaltyPct,
                             });
                           }}
-                          addstake={(boxId, stakeKeyId, stakeAmount) => {
-                            initAddstake();
-                            setOpenAddstakeModal(true);
-                            setAddstakeModalData({
-                              boxId,
-                              stakeKeyId,
-                              stakeAmount,
-                            });
-                          }}
+                          addstake={
+                            stakingConfig.additionalDetails.stakingV1
+                              ? null
+                              : (boxId, stakeKeyId, stakeAmount) => {
+                                  initAddstake();
+                                  setOpenAddstakeModal(true);
+                                  setAddstakeModalData({
+                                    boxId,
+                                    stakeKeyId,
+                                    stakeAmount,
+                                  });
+                                }
+                          }
                         />
                       )}
                     </Paper>
@@ -998,6 +1015,9 @@ const ProjectStaking = () => {
                   aggregateWallet={aggregateWallet}
                   handleSwitchChange={(state) => setAggregateWallet(state)}
                 />
+                {stakingConfig.additionalDetails.stakingV1 && (
+                  <UnstakingFeesTable />
+                )}
               </Grid>
             </Grid>
           </Container>
