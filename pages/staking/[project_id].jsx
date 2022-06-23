@@ -264,7 +264,7 @@ const ProjectStaking = () => {
     if (project_id && wallet !== '') {
       getStaked();
     } else {
-      setStakingConfig(defaultStakingConfig);
+      if (!project_id) setStakingConfig(defaultStakingConfig);
       setStakedData(initStaked);
     }
   }, [wallet, dAppWallet.addresses, aggregateWallet, project_id]);
@@ -491,9 +491,12 @@ const ProjectStaking = () => {
           request,
           { ...defaultOptions }
         );
+        // staked v1 has a response different format
         const penalty = res.data.penalty ?? 0;
         setUnstakePenalty(penalty);
-        const unsignedtx = res.data;
+        const unsignedtx = stakingConfig.additionalDetails.stakingV1
+          ? res.data.unsignedTX
+          : res.data;
         const signedtx = await ergo.sign_tx(unsignedtx); // eslint-disable-line
         const ok = await ergo.submit_tx(signedtx); // eslint-disable-line
         setSuccessMessageSnackbar('Transaction Submitted: ' + ok);
