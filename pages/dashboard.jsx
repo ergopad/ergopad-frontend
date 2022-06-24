@@ -449,6 +449,22 @@ const Dashboard = () => {
         };
       });
       holdingState.push(...reducedStaked);
+      // staked ergopad history
+      const ergopadHistoryOpt = priceHistoryData.filter(
+        (token) => token.token === 'ergopad'
+      );
+      const ergopadValueOpt = reduceStaked(stakedTokens).filter(
+        (price) => price.name.toLowerCase().includes('ergopad')
+      );
+      if (ergopadValueOpt.length && ergopadHistoryOpt.length) {
+        const history = ergopadHistoryOpt[0].history.map((pt) => {
+          return {
+            timestamp: pt.timestamp,
+            value: pt.price * ergopadValueOpt[0].amount,
+          };
+        });
+        historyState.push({ token: ergopadValueOpt[0].name +  ' (staked)', history: history });
+      }
     }
     setHoldingDataAggregated(holdingState);
     setHistoryDataAggregated(historyState);
@@ -598,7 +614,7 @@ const Dashboard = () => {
                     Tokens Locked in Staking Contracts
                   </Typography>
                 </Grid>
-                {stakedTokens.totalStaked > 0 && (
+                {stakedTokens.length > 0 && (
                   <Grid
                     item
                     xs={12}
