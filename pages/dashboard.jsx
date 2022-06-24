@@ -598,7 +598,7 @@ const Dashboard = () => {
                     Tokens Locked in Staking Contracts
                   </Typography>
                 </Grid>
-                {stakedTokens.totalStaked > 0 && (
+                {stakedTokens.length > 0 && (
                   <Grid
                     item
                     xs={12}
