@@ -24,7 +24,7 @@ const friendlyAddress = (addr, tot = 8) => {
   return addr.slice(0, tot) + '...' + addr.slice(-tot);
 };
 
-const UnstakingTable = ({ data, unstake, addstake }) => {
+const UnstakingTable = ({ data, unstake, addstake, disableUnstaking }) => {
   const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
   const stakeObject = { ...data };
 
@@ -61,9 +61,9 @@ const UnstakingTable = ({ data, unstake, addstake }) => {
           sx={{ fontWeight: '400', fontSize: '1rem', mb: 1, pl: 1 }}
         >
           Note: You may have staked tokens associated with other addresses in
-          your wallet. This page only shows tokens for the selected addresses. For
-          overall wallet summary visit the dashboard. The values in the table
-          may take some time to reflect new changes.
+          your wallet. This page only shows tokens for the selected addresses.
+          For overall wallet summary visit the dashboard. The values in the
+          table may take some time to reflect new changes.
         </Typography>
       </Box>
       {Object.keys(stakeObject.addresses).map((address) => (
@@ -207,6 +207,7 @@ const UnstakingTable = ({ data, unstake, addstake }) => {
                           </Button>
                         )}
                         <Button
+                          disabled={disableUnstaking}
                           variant="contained"
                           size="small"
                           sx={{
@@ -241,6 +242,11 @@ const UnstakingTable = ({ data, unstake, addstake }) => {
           </Table>
         </Box>
       ))}
+      {disableUnstaking && (
+        <Typography variant="p" sx={{ mt: 1, fontSize: '1rem' }}>
+          NOTE: Unstaking is currently disabled.
+        </Typography>
+      )}
     </>
   );
 };

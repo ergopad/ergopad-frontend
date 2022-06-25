@@ -31,6 +31,8 @@ const initialFormData = Object.freeze({
   terms: '', // not used yet
   additionalDetails: {
     stakingV1: false,
+    disableStaking: false,
+    disableUnstaking: false,
   },
 });
 
@@ -130,7 +132,11 @@ const EditStakingConfigForm = () => {
       });
     }
 
-    if (['stakingV1'].includes(e.target.name)) {
+    if (
+      ['stakingV1', 'disableStaking', 'disableUnstaking'].includes(
+        e.target.name
+      )
+    ) {
       updateFormData({
         ...formData,
         additionalDetails: {
@@ -389,6 +395,37 @@ const EditStakingConfigForm = () => {
             }
             label="Staking Version 1"
           />
+        </Grid>
+        <Grid container item xs={12} sx={{ mt: 1 }}>
+          <Grid item xs={12}>
+            <Typography color="text.secondary">
+              Disable/Enable Form Buttons
+            </Typography>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="disableStaking"
+                  checked={formData.additionalDetails.disableStaking}
+                  onChange={handleChange}
+                />
+              }
+              label="Disable Staking"
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="disableUnstaking"
+                  checked={formData.additionalDetails.disableUnstaking}
+                  onChange={handleChange}
+                />
+              }
+              label="Disable Unstaking"
+            />
+          </Grid>
         </Grid>
         <Box sx={{ position: 'relative', mt: 3 }}>
           <Button
