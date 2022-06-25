@@ -75,6 +75,8 @@ export const StakingItem = (item, md, ifSmall, loading = false) => {
 const StakingSummary = ({ project_id }) => {
   const [status, setStatus] = useState(stakingItems);
   const [loading, setLoading] = useState(false);
+  
+  
   useEffect(() => {
     const getStatus = async () => {
       setLoading(true);
@@ -106,6 +108,8 @@ const StakingSummary = ({ project_id }) => {
     };
     getStatus();
   }, [project_id]);
+
+  
 
   return (
     <>
