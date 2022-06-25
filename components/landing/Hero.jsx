@@ -85,34 +85,6 @@ const Hero = ({ title, subtitle }) => {
               </Button>
             </a>
             <a
-              href="https://jq.qq.com/?_wv=1027&k=PoOW9H0T"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <Button
-                startIcon={<QqIcon />}
-                variant="contained"
-                sx={{
-                  color: '#fff',
-                  fontSize: '1rem',
-                  py: '0.6rem',
-                  px: '1.2rem',
-                  m: '0.7rem',
-                  textTransform: 'none',
-                  backgroundColor: theme.palette.tertiary.main,
-                  '&:hover': {
-                    backgroundColor: theme.palette.tertiary.hover,
-                    boxShadow: 'none',
-                  },
-                  '&:active': {
-                    backgroundColor: theme.palette.tertiary.active,
-                  },
-                }}
-              >
-                中文 QQ
-              </Button>
-            </a>
-            <a
               href="https://t.me/+yN8QD_adXQ9mNTk1"
               target="_blank"
               rel="noreferrer"
