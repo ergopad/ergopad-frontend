@@ -200,7 +200,7 @@ const ProjectStaking = () => {
   const [successMessageSnackbar, setSuccessMessageSnackbar] =
     useState('Form submitted');
   const [checkBox, setCheckBox] = useState(false);
-  const stakeButtonEnabled = checkBox && true; // use other conditions to enable this
+  const stakeButtonEnabled = checkBox; // use other conditions to enable this
   // transaction submitted
   const [transactionSubmitted, setTransactionSubmitted] = useState(null);
   const [ergopayUrl, setErgopayUrl] = useState(null);
@@ -939,7 +939,10 @@ const ProjectStaking = () => {
                     >
                       <Button
                         variant="contained"
-                        disabled={!stakeButtonEnabled}
+                        disabled={
+                          !stakeButtonEnabled ||
+                          stakingConfig.additionalDetails.disableStaking
+                        }
                         sx={{
                           color: '#fff',
                           fontSize: '1rem',
@@ -963,6 +966,11 @@ const ProjectStaking = () => {
                         Stake Now
                       </Button>
                     </Box>
+                    {stakingConfig.additionalDetails.disableStaking && (
+                      <Typography variant="p" sx={{ mt: 1, fontSize: '1rem' }}>
+                        NOTE: Staking is currently disabled.
+                      </Typography>
+                    )}
                   </TabPanel>
                   <TabPanel value={tabValue} index={1} id="manage">
                     <Paper sx={{ p: { xs: 2, sm: 4 }, borderRadius: 3 }}>
@@ -992,7 +1000,8 @@ const ProjectStaking = () => {
                             });
                           }}
                           addstake={
-                            stakingConfig.additionalDetails.stakingV1
+                            stakingConfig.additionalDetails.stakingV1 ||
+                            stakingConfig.additionalDetails.disableStaking
                               ? null
                               : (boxId, stakeKeyId, stakeAmount) => {
                                   initAddstake();
@@ -1003,6 +1012,9 @@ const ProjectStaking = () => {
                                     stakeAmount,
                                   });
                                 }
+                          }
+                          disableUnstaking={
+                            stakingConfig.additionalDetails.disableUnstaking
                           }
                         />
                       )}

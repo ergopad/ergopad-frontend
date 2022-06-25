@@ -165,7 +165,7 @@ const Staking = () => {
   const [successMessageSnackbar, setSuccessMessageSnackbar] =
     useState('Form submitted');
   const [checkBox, setCheckBox] = useState(false);
-  const stakeButtonEnabled = checkBox && true; // use other conditions to enable this
+  const stakeButtonEnabled = checkBox; // use other conditions to enable this
   // transaction submitted
   const [transactionSubmitted, setTransactionSubmitted] = useState(null);
   const [ergopayUrl, setErgopayUrl] = useState(null);
