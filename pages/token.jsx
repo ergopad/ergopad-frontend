@@ -19,7 +19,7 @@ import { useState, useEffect } from 'react';
 import { VictoryContainer, VictoryPie } from 'victory';
 import CenterTitle from '@components/CenterTitle';
 import RelatedLinks from '@components/RelatedLinks/RelatedLinks';
-import theme from '../styles/theme';
+import theme from '@styles/theme';
 import MuiNextLink from '@components/MuiNextLink';
 import PriceChart from '@components/token/PriceChart';
 import axios from 'axios';
@@ -114,25 +114,21 @@ const Token = () => {
     };
 
     useEffect(() => {
-        const initialSupply = 400000000.0
-
-        axios.get(`${process.env.API_URL}/blockchain/totalSupply/${TOKEN_ID}`)
-            .then((res) => {
-                setCurrentErgopadSupply((res.data).toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }))
-                setErgopadBurned((initialSupply - res.data).toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }))
-            });
-          
-        axios.get(`${process.env.API_URL}/blockchain/ergopadInCirculation`)
-            .then((res) => {
-                setErgopadInCirculation((res.data).toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }))
-                let ergInCirc = res.data
-                axios.get(`${process.env.API_URL}/asset/price/ergopad`)
-                .then((res) => {
-                    setMarketCap('$' + (res.data.price * ergInCirc).toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }))
-                });
-            });
-
-        setInitialErgopadSupply(initialSupply.toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }))
+        const getTokenomics = async () => {
+            try {
+                const initialSupply = 400000000.0;
+                setInitialErgopadSupply(initialSupply.toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }));
+                const res = await axios.get(`${process.env.API_URL}/blockchain/tokenomics/${TOKEN_ID}`);
+                setCurrentErgopadSupply((res.data.current_total_supply).toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }));
+                setErgopadBurned(res.data.burned.toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }));
+                setErgopadInCirculation((res.data.in_circulation).toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }));
+                setMarketCap('$' + (res.data.market_cap).toLocaleString(window.navigator.language, { maximumFractionDigits: 0 }));
+            } catch (e) {
+                console.log(e);
+            }
+        };
+        
+        getTokenomics();
     }, [])
 
     const tokenCards = [
