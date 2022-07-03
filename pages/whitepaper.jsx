@@ -489,7 +489,7 @@ const Whitepaper = () => {
               Staking
             </Typography>
             <Typography variant="p">
-              Staking provides a few utilites. Staking your ErgoPad tokens will generate new tokens based on the number you have staked and the emission schdule. If you reach one of the staking tiers, you'll get pool allocation which gives you an opportunity to contribute to new projects launched on ErgoPad at staker and seed round rates not available to everyone.
+              Staking provides a few utilities. Staking your ErgoPad tokens will generate new tokens based on the number you have staked and the emission schedule. If you reach one of the staking tiers, you'll get pool allocation which gives you an opportunity to contribute to new projects launched on ErgoPad at staker and seed round rates not available to everyone.
             </Typography>
             <Typography variant="p">
               Staking went live  on January 26th.
