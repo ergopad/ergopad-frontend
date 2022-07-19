@@ -1,7 +1,8 @@
 import { Typography, SvgIcon } from '@mui/material';
 import { styled } from '@mui/system';
 import AssetModal from './AssetModal';
-import { useState } from 'react';
+import { getNautilusAddressMapper, ASSET_URL } from '../../utils/LogoMapper';
+import { useEffect, useState } from 'react';
 
 const SIGUSD_TOKEN_ID =
   '03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04';
@@ -22,13 +23,19 @@ const StyledAsset = styled('div')(({ theme }) => ({
 
 const AssetIcon = styled('img')(() => ({
   width: '50px',
-  height: 'auto',
+  height: '50px',
+  borderRadius: '12px',
+}));
+
+const TokenIcon = styled('img')(() => ({
+  width: '40px',
+  height: '40px',
   borderRadius: '12px',
 }));
 
 const IconWrapper = styled('div')(() => ({
-  width: '50px',
-  height: 'auto',
+  width: '40px',
+  height: '40px',
   borderRadius: '12px',
   background: 'rgba(102, 102, 102, 0.3)',
 }));
@@ -51,16 +58,33 @@ const AssetAmountContainer = styled('div')(() => ({
   justifyContent: 'right',
 }));
 
-const AssetItem = ({ asset, stableDenominator = 'USD', type, navigatorLanguage }) => {
-
+const AssetItem = ({
+  asset,
+  stableDenominator = 'USD',
+  type,
+  navigatorLanguage,
+}) => {
   const [showModal, setShowModal] = useState(false);
+  const [assetMapper, setAssetMapper] = useState({});
+
+  useEffect(() => {
+    const loadMapper = async () => {
+      const mapper = await getNautilusAddressMapper();
+      setAssetMapper(mapper);
+    };
+
+    loadMapper();
+  }, []);
+
   const AssetImage = () => {
     if (asset?.r9) {
       return <AssetIcon src={asset?.r9} />;
     } else {
-      return (
+      return assetMapper[asset.id] ? (
+        <TokenIcon src={ASSET_URL + '/' + assetMapper[asset.id]} />
+      ) : (
         <IconWrapper>
-          <SvgIcon fontSize="large"></SvgIcon>
+          <SvgIcon fontSize="large" />
         </IconWrapper>
       );
     }
@@ -85,10 +109,21 @@ const AssetItem = ({ asset, stableDenominator = 'USD', type, navigatorLanguage }
         </AssetNameContainer>
         {type != 'NFT' && (
           <AssetAmountContainer>
-            <Typography sx={{ textAlign: 'right' }}>{asset.amount?.toLocaleString(navigatorLanguage, { maximumFractionDigits: 0 })}</Typography>
+            <Typography sx={{ textAlign: 'right' }}>
+              {asset.amount?.toLocaleString(navigatorLanguage, {
+                maximumFractionDigits: 0,
+              })}
+            </Typography>
             {asset.amountUSD != 0 ? (
               <Typography variant="caption">
-                ${asset.id == SIGUSD_TOKEN_ID ? asset.amount?.toLocaleString(navigatorLanguage, { maximumFractionDigits: 2 }) : asset.amountUSD?.toLocaleString(navigatorLanguage, { maximumFractionDigits: 2 })}{' '}
+                $
+                {asset.id == SIGUSD_TOKEN_ID
+                  ? asset.amount?.toLocaleString(navigatorLanguage, {
+                      maximumFractionDigits: 2,
+                    })
+                  : asset.amountUSD?.toLocaleString(navigatorLanguage, {
+                      maximumFractionDigits: 2,
+                    })}{' '}
                 {stableDenominator}
               </Typography>
             ) : null}
