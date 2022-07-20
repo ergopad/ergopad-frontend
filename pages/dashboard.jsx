@@ -30,24 +30,17 @@ const ERGOPAD_TOKEN =
 
 // placeholder data
 const rawData2 = {
-  address: 'No assets',
-  balance: {
-    ERG: {
-      blockchain: 'ergo',
-      balance: 0,
-      unconfirmed: 0,
-      tokens: [
-        {
-          tokenId: 'abcdefg',
-          amount: 1,
-          decimals: 0,
-          name: 'No assets',
-          price: 1,
-        },
-      ],
+  balance: 0,
+  tokens: [
+    {
+      tokenId: '0xdead',
+      amount: 1,
+      decimals: 0,
+      name: 'No assets',
       price: 1,
     },
-  },
+  ],
+  price: 1,
 };
 
 const initHistoryData = [
@@ -68,11 +61,8 @@ const initHistoryData = [
 ];
 
 const initStakedData = [];
-
 const wantedHoldingData = tokenDataArray(rawData2);
-
 const portfolioValue = sumTotals(wantedHoldingData);
-
 const defaultHoldingData = wantedHoldingData.map((item) => {
   const container = {};
   container.x = item.x;
@@ -150,18 +140,17 @@ const Dashboard = () => {
       };
 
       setLoading(true);
-      const balancePromises = addresses.map((address) =>
-        axios
-          .get(`${process.env.API_URL}/asset/balance/${address}`, {
-            ...defaultOptions,
-          })
-          .catch((err) => {
-            console.log('ERROR FETCHING: ', err);
-          })
-      );
-      const resolvedBalances = await Promise.all(balancePromises);
-      const balances = resolvedBalances.map((res) => res?.data);
-      const balance = reduceBalances(balances);
+      const balances = await axios
+        .post(`${process.env.API_URL}/asset/balances/`, {
+          addresses: addresses,
+        })
+        .catch((err) => {
+          console.log('ERROR FETCHING: ', err);
+          return {
+            data: {},
+          };
+        });
+      const balance = reduceBalances(balances.data);
 
       if (balance) {
         const victoryData = tokenDataArray(balance);
@@ -299,24 +288,29 @@ const Dashboard = () => {
         },
       };
 
-      const vestedPromises = addresses.map((address) =>
-        axios
-          .get(`${process.env.API_URL}/vesting/vested/${address}`, {
-            ...defaultOptions,
-          })
-          .catch((e) => {
-            console.log('ERROR FETCHING', e);
-          })
-      );
-      const resolvedVested = await Promise.all(vestedPromises);
-      const vested = resolvedVested
-        .map((res) => (res?.data?.status === 'success' ? res.data.vested : []))
-        .filter((vested) => vested.length);
-      setVestedTokens(reduceVested(vested));
+      /**
+       * V1 vested ergopad
+       */
+      const vested = await axios
+        .post(
+          `${process.env.API_URL}/vesting/v1/`,
+          { addresses: [...addresses] },
+          { ...defaultOptions }
+        )
+        .catch((e) => {
+          console.log('ERROR FETCHING', e);
+          return {
+            data: {},
+          };
+        });
+      setVestedTokens(reduceVested(vested.data));
 
+      /**
+       * V2 vested with NFT
+       */
       const vestedTokensNFTResponse = await axios
         .post(
-          `${process.env.API_URL}/vesting/vestedWithNFT/`,
+          `${process.env.API_URL}/vesting/v2/`,
           { addresses: [...addresses] },
           { ...defaultOptions }
         )
@@ -326,8 +320,8 @@ const Dashboard = () => {
             data: [],
           };
         });
-
       setVestedTokensNFT(vestedTokensNFTResponse.data);
+
       const tokens = Object.keys(vestedTokensNFTResponse.data);
       try {
         const pricesObject = {};
@@ -453,8 +447,8 @@ const Dashboard = () => {
       const ergopadHistoryOpt = priceHistoryData.filter(
         (token) => token.token === 'ergopad'
       );
-      const ergopadValueOpt = reduceStaked(stakedTokens).filter(
-        (price) => price.name.toLowerCase().includes('ergopad')
+      const ergopadValueOpt = reduceStaked(stakedTokens).filter((price) =>
+        price.name.toLowerCase().includes('ergopad')
       );
       if (ergopadValueOpt.length && ergopadHistoryOpt.length) {
         const history = ergopadHistoryOpt[0].history.map((pt) => {
@@ -463,7 +457,10 @@ const Dashboard = () => {
             value: pt.price * ergopadValueOpt[0].amount,
           };
         });
-        historyState.push({ token: ergopadValueOpt[0].name +  ' (staked)', history: history });
+        historyState.push({
+          token: ergopadValueOpt[0].name + ' (staked)',
+          history: history,
+        });
       }
     }
     setHoldingDataAggregated(holdingState);
@@ -656,7 +653,7 @@ const Dashboard = () => {
 };
 
 function tokenDataArray(data) {
-  const tokenObject = data.balance.ERG.tokens;
+  const tokenObject = data.tokens;
   const keys = Object.keys(tokenObject);
   const res = [];
   for (let i = 0; i < keys.length; i++) {
@@ -669,27 +666,27 @@ function tokenDataArray(data) {
   }
   const ergoValue = {
     x: 'Ergo',
-    y: data.balance.ERG.price * data.balance.ERG.balance,
+    y: data.price * data.balance,
   };
   if (ergoValue.y > 0) res.unshift(ergoValue);
   return res;
 }
 
 const historyDataOrdering = (data) => {
-  const tokenObject = data.balance.ERG.tokens;
+  const tokenObject = data.tokens;
   const keys = Object.keys(tokenObject);
   const res = {};
   for (let i = 0; i < keys.length; i++) {
     const token = tokenObject[keys[i]];
     if (token.price > 0) res[token.name.toLowerCase()] = i;
   }
-  const ergoValue = data.balance.ERG.balance;
+  const ergoValue = data.balance;
   if (ergoValue > 0) res['ergo'] = -1;
   return res;
 };
 
 const historyDataArray = (data) => {
-  const tokenObject = data.balance.ERG.tokens;
+  const tokenObject = data.tokens;
   const keys = Object.keys(tokenObject);
   const res = {};
   for (let i = 0; i < keys.length; i++) {
@@ -700,13 +697,13 @@ const historyDataArray = (data) => {
         amount: token.amount * Math.pow(10, -token.decimals),
       };
   }
-  const ergoValue = data.balance.ERG.balance;
+  const ergoValue = data.balance;
   if (ergoValue > 0) res['ergo'] = { name: 'Ergo', amount: ergoValue };
   return res;
 };
 
 function assetListArray(data) {
-  const tokenObject = data.balance.ERG.tokens;
+  const tokenObject = data.tokens;
   const keys = Object.keys(tokenObject);
   const res = [];
   for (let i = 0; i < keys.length; i++) {
@@ -726,15 +723,15 @@ function assetListArray(data) {
     token: 'ERG',
     name: 'Ergo',
     id: 'ergid',
-    amount: data.balance.ERG.balance,
-    amountUSD: data.balance.ERG.price * data.balance.ERG.balance,
+    amount: data.balance,
+    amountUSD: data.price * data.balance,
   };
   res.unshift(ergoValue);
   return res;
 }
 
 function sumTotals(data) {
-  const value = data.map((item) => item.y).reduce((a, b) => a + b);
+  const value = data.map((item) => item.y).reduce((a, b) => a + b, 0);
   return value;
 }
 
@@ -779,72 +776,57 @@ const calculateHistoricTotal = (priceHistory, amountData, orderingData) => {
 };
 
 const reduceBalances = (balances) => {
-  if (balances.length === 0) {
+  try {
+    if (Object.keys(balances).length === 0) {
+      return null;
+    }
+    const ret = {
+      balance: 0,
+      tokens: [],
+      price: 1,
+    };
+    // aggregate
+    const ergo = Object.keys(balances.addresses)
+      .map((address) => balances.addresses[address].balance ?? 0.0)
+      .reduce((a, c) => a + c, 0);
+    ret.balance = ergo;
+    ret.price = balances.price;
+    // aggregate tokens
+    const tokenMap = {};
+    Object.keys(balances.addresses).forEach((address) => {
+      const tokens = balances.addresses[address].tokens ?? [];
+      tokens.forEach((token) => {
+        if (tokenMap[token.tokenId]) {
+          tokenMap[token.tokenId].amount += token.amount;
+        } else {
+          tokenMap[token.tokenId] = token;
+        }
+      });
+    });
+    const tokens = Object.values(tokenMap);
+    ret.tokens = tokens;
+    return ret;
+  } catch (e) {
+    console.log(e);
     return null;
   }
-  // deep copy
-  const ret = JSON.parse(JSON.stringify(balances[0]));
-  // aggregate
-  const ergo = balances
-    .map((balance) => balance.balance.ERG.balance)
-    .reduce((a, c) => a + c, 0);
-  ret.balance.ERG.balance = ergo;
-  // aggregate tokens
-  const tokenMap = {};
-  balances.forEach((balance) => {
-    const tokens = balance.balance.ERG.tokens;
-    tokens.forEach((token) => {
-      if (tokenMap[token.tokenId]) {
-        tokenMap[token.tokenId].amount += token.amount;
-      } else {
-        tokenMap[token.tokenId] = token;
-      }
-    });
-  });
-  const tokens = Object.values(tokenMap);
-  ret.balance.ERG.tokens = tokens;
-  return ret;
 };
 
 const reduceVested = (vestedData) => {
-  const vestedArray = JSON.parse(JSON.stringify(vestedData));
-  if (vestedArray.length === 0) {
-    return [];
-  }
-
-  const addOutstanding = (a, b) => {
-    const outMap = {};
-    a.outstanding.forEach((pt) => {
-      outMap[pt.date] = pt;
-    });
-    b.outstanding.forEach((pt) => {
-      if (outMap[pt.date]) {
-        outMap[pt.date].amount += pt.amount;
-      } else {
-        outMap[pt.date] = pt;
-      }
-    });
-    const compute = Object.values(outMap);
-    compute.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
-    const ret = JSON.parse(JSON.stringify(a));
-    ret.totalVested += b.totalVested;
-    ret.outstanding = compute;
-    return ret;
-  };
-
-  const vestedMap = {};
-  vestedArray.forEach((vestedList) => {
-    vestedList.forEach((vested) => {
-      const tokenId = vested.tokenId;
-      if (vestedMap[tokenId]) {
-        vestedMap[tokenId] = addOutstanding(vestedMap[tokenId], vested);
-      } else {
-        vestedMap[tokenId] = vested;
-      }
-    });
+  const vested = JSON.parse(JSON.stringify(vestedData));
+  const vestedList = Object.keys(vested).map((tokenId) => {
+    return {
+      tokenId: tokenId,
+      ...vested[tokenId],
+      outstanding: Object.keys(vested[tokenId].outstanding).map((date) => {
+        return {
+          date: date,
+          amount: vested[tokenId].outstanding[date].amount,
+        };
+      }),
+    };
   });
-  const vested = Object.values(vestedMap);
-  return vested;
+  return vestedList;
 };
 
 const reduceVestedNFT = (vestedData) => {
