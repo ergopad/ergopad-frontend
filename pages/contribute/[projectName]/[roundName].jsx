@@ -31,7 +31,7 @@ import ErgopayModalBody from '@components/ErgopayModalBody';
 import MarkdownRender from '@components/MarkdownRender';
 import theme from '@styles/theme';
 import axios from 'axios';
-import MuiNextLink from '@components/MuiNextLink'
+import MuiNextLink from '@components/MuiNextLink';
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -175,12 +175,13 @@ const Contribute = () => {
           ergs: ergBalance / (1000 * 1000 * 1000),
         });
       } else if (wallet !== '') {
-        const res = await axios.get(
-          `${process.env.API_URL}/asset/balance/${wallet}`,
+        const res = await axios.post(
+          `${process.env.API_URL}/asset/balances/`,
+          { addresses: [wallet] },
           { ...defaultOptions }
         );
-        const ergs = res.data.balance.ERG.balance;
-        const token = res.data.balance.ERG.tokens.filter(
+        const ergs = res.data.addresses[wallet].balance;
+        const token = res.data.addresses[wallet].tokens.filter(
           (token) => token.tokenId === contributeData.whitelistTokenId
         )[0];
         if (token) {
@@ -784,13 +785,21 @@ const Contribute = () => {
                       variant="p"
                       sx={{ fontSize: '1rem', mb: '1rem' }}
                     >
-                      Your funds will be sent to the blockchain and off-chain fulfillment bots will pick them up from the queue and complete the transaction. You will receive a Vesting Key which represents your tokens locked in vesting contracts. View the <MuiNextLink href="/dashboard">dashboard</MuiNextLink> to redeem them after the IDO date. 
+                      Your funds will be sent to the blockchain and off-chain
+                      fulfillment bots will pick them up from the queue and
+                      complete the transaction. You will receive a Vesting Key
+                      which represents your tokens locked in vesting contracts.
+                      View the{' '}
+                      <MuiNextLink href="/dashboard">dashboard</MuiNextLink> to
+                      redeem them after the IDO date.
                     </Typography>
                     <Typography
                       variant="p"
                       sx={{ fontSize: '1rem', mb: '1rem' }}
                     >
-                      If there's any issue, the transaction will be automatically refunded. If that happens, please try submitting again. 
+                      If there's any issue, the transaction will be
+                      automatically refunded. If that happens, please try
+                      submitting again.
                     </Typography>
                     <Typography variant="p" sx={{ fontWeight: 'bold', mb: 0 }}>
                       NOTE: YOROI IS NOT SUPPORTED.

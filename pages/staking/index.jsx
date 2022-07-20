@@ -245,11 +245,12 @@ const Staking = () => {
           const balance = await ergo.get_balance(STAKE_TOKEN_ID); // eslint-disable-line
           setTokenBalance(balance / Math.pow(10, STAKE_TOKEN_DECIMALS));
         } else if (wallet !== '') {
-          const res = await axios.get(
-            `${process.env.API_URL}/asset/balance/${wallet}`,
+          const res = await axios.post(
+            `${process.env.API_URL}/asset/balances/`,
+            { addresses: [wallet] },
             { ...defaultOptions }
           );
-          const token = res.data.balance.ERG.tokens.filter(
+          const token = res.data.addresses[wallet].tokens.filter(
             (token) => token.tokenId === STAKE_TOKEN_ID
           )[0];
           if (token) {
