@@ -44,10 +44,10 @@ const Homepage = () => {
         */}
         <Divider sx={{ mb: 10 }} />
         <Projects />
-        {/*
+        
         <Divider sx={{ mb: 10 }} />
         <Dashboard />
-        */}
+        
       </Container>
     </>
   );
