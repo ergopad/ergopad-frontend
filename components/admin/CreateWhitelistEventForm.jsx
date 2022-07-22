@@ -180,7 +180,7 @@ const CreateWhitelistEventForm = () => {
       };
       try {
         await axios.post(
-          `${process.env.API_URL}/whitelist/events/`,
+          `${process.env.API_URL}/whitelist/events`,
           data,
           defaultOptions
         );

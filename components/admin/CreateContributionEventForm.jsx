@@ -174,7 +174,7 @@ const CreateContributionEventForm = () => {
       };
       try {
         await axios.post(
-          `${process.env.API_URL}/contribution/events/`,
+          `${process.env.API_URL}/contribution/events`,
           data,
           defaultOptions
         );
