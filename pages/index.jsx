@@ -34,20 +34,16 @@ const Homepage = () => {
         />
         <Divider sx={{ mb: 10 }} />
         <Features />
-        {/*
         <Divider sx={{ mb: 10 }} />
         <Announcements />
-        */}
         {/* 
         <Divider sx={{ mb: 10 }} />
         <Social /> 
         */}
         <Divider sx={{ mb: 10 }} />
         <Projects />
-        
         <Divider sx={{ mb: 10 }} />
         <Dashboard />
-        
       </Container>
     </>
   );
