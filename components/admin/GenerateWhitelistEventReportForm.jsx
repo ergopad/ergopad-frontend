@@ -63,7 +63,7 @@ const GenerateWhitelistEventReportForm = () => {
     const getTableData = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${process.env.API_URL}/whitelist/events/`);
+        const res = await axios.get(`${process.env.API_URL}/whitelist/events`);
         res.data.sort((a, b) => a.id - b.id);
         setTableData(res.data);
       } catch (e) {
@@ -131,7 +131,7 @@ const GenerateWhitelistEventReportForm = () => {
       };
       try {
         const res = await axios.get(
-          `${process.env.API_URL}/whitelist/events/${event.projectName}/${event.roundName}/`,
+          `${process.env.API_URL}/whitelist/events/${event.projectName}/${event.roundName}`,
           defaultOptions
         );
         const eventName = res.data.eventName;
