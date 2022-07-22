@@ -147,25 +147,25 @@ const NotificationBell = () => {
       }
     };
 
-    if (wallet && walletAddresses && walletAddresses.length) {
-      if (localStorage.getItem(NOTIFICATION_STORAGE_KEY)) {
-        const nt = JSON.parse(localStorage.getItem(NOTIFICATION_STORAGE_KEY));
-        if (
-          nt.expiry < Date.now() ||
-          JSON.stringify(nt.addresses) !== JSON.stringify(walletAddresses)
-        ) {
-          updateNotifications();
-        } else {
-          setNotifications(nt.notifications);
-        }
-      } else {
-        updateNotifications();
-      }
-    } else {
-      setDot(false);
-      localStorage.setItem(NOTIFICATION_BADGE_DOT, 'false');
-      setNotifications([]);
-    }
+    // if (wallet && walletAddresses && walletAddresses.length) {
+    //   if (localStorage.getItem(NOTIFICATION_STORAGE_KEY)) {
+    //     const nt = JSON.parse(localStorage.getItem(NOTIFICATION_STORAGE_KEY));
+    //     if (
+    //       nt.expiry < Date.now() ||
+    //       JSON.stringify(nt.addresses) !== JSON.stringify(walletAddresses)
+    //     ) {
+    //       updateNotifications();
+    //     } else {
+    //       setNotifications(nt.notifications);
+    //     }
+    //   } else {
+    //     updateNotifications();
+    //   }
+    // } else {
+    //   setDot(false);
+    //   localStorage.setItem(NOTIFICATION_BADGE_DOT, 'false');
+    //   setNotifications([]);
+    // }
   }, [wallet, dAppWallet.addresses]); // eslint-disable-line
 
   return (
