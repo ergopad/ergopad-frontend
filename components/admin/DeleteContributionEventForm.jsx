@@ -61,7 +61,7 @@ const DeleteContributionEventForm = () => {
       setLoading(true);
       try {
         const res = await axios.get(
-          `${process.env.API_URL}/contribution/events/`
+          `${process.env.API_URL}/contribution/events`
         );
         res.data.sort((a, b) => a.id - b.id);
         setTableData(res.data);
