@@ -406,13 +406,13 @@ const Whitepaper = () => {
               ErgoPad is a project incubator offering token IDOs which provide funding for new projects within the Ergo ecosystem. Ergopad released its own native token through an IDO (Initial Dex Offering), and users are now able to stake Ergopad tokens through smart contracts on-chain.
             </Typography>
             <Typography variant="p">
-              If you stake ErgoPad tokens and reach one of the tiers outlined in the staking section, you'll be given an opportunity to contribute to the DAOs of projects launched through the Ergopad platform, before they go live on any dex. These seed rounds will often be lower than the price the tokens list at during the IDO, allowing you to partcipate in the DAOs of various projects. 
+              If you stake ErgoPad tokens and reach one of the staking tiers, you'll be given an opportunity to contribute to the DAOs of projects launched through the Ergopad platform, before they go live on any dex. Seed round contributors will receive governance tokens at a lower value than what they'll launch at on the dex and allow participation in the governance of the DAOs of various projects.
             </Typography>
             <Typography variant="p">
               SigUSD and Erg raised by DAOs in the early contribution rounds will be used, as voted by DAO members, to build projects on the Ergo platform.
             </Typography>
             <Typography variant="p">
-              Ergopad is not an investing platform, we are here to bring people together and create DAOs which organize people&apos;s goals to build blockchain solutions on Ergo and in other related ecosystems. 
+              Ergopad is not an investing platform, we are here to bring people together and create DAOs which organize people&apos;s goals to build blockchain solutions on Ergo and in other related ecosystems.
             </Typography>
           </Box>
           <Box sx={{ mb: '2rem' }}>
@@ -526,7 +526,7 @@ const Whitepaper = () => {
               Early Unstaking Fees
             </Typography>
             <Typography variant="p">
-              There are fees for unstaking early, in order to prevent people from staking the day before a snapshot, then unstaking the day after. Staking Ergopad tokens should be an indication that you are interested in contributing to project development over a long-term time-frame. The intention behind this project is to group together and help build the Ergo blockchain. 
+              There are fees for unstaking early, in order to prevent people from staking the day before a snapshot, then unstaking the day after. Staking Ergopad tokens should be an indication that you are interested in contributing to project development over a long-term time-frame. The intention behind this project is to group together and help build the Ergo blockchain.
             </Typography>
             <DataTable data={earlyUnstakingTable} />
           </Box>
