@@ -551,7 +551,7 @@ const Contribute = () => {
                     </Typography>
                     <Typography variant="p" sx={{ mb: 1 }}>
                       Tokens remaining to be distributed for this round:{' '}
-                      {(roundDetails.remaining > 0) ? (roundDetails.remaining - 3500000).toLocaleString(
+                      {(roundDetails.remaining > 0) ? (roundDetails.remaining).toLocaleString(
                         navigator.language,
                         {
                           maximumFractionDigits: contributeData.tokenDecimals,
