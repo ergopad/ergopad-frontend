@@ -1,5 +1,5 @@
-import { useEffect, useState, Fragment } from 'react';
-import { useRouter } from 'next/router';
+import { useEffect, useState, Fragment, useMemo } from "react";
+import { useRouter } from "next/router";
 import {
   Container,
   Typography,
@@ -16,56 +16,59 @@ import {
   SwipeableDrawer,
   useMediaQuery,
   Avatar,
-} from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
-import Link from '@components/MuiNextLink';
-import CenterTitle from '@components/CenterTitle';
-import TelegramIcon from '@mui/icons-material/Telegram';
-import TwitterIcon from '@mui/icons-material/Twitter';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import PublicIcon from '@mui/icons-material/Public';
-import ShareIcon from '@mui/icons-material/Share';
-import MenuIcon from '@mui/icons-material/Menu';
-import CopyToClipboard from '@components/CopyToClipboard';
-import MarkdownRender from '@components/MarkdownRender';
-import Roadmap from '@components/projects/Roadmap';
-import Team from '@components/projects/Team';
-import Tokenomics from '@components/projects/Tokenomics';
-import Distribution from '@components/projects/Distribution';
-import axios from 'axios';
+  ListItemButton,
+} from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
+import Link from "@components/MuiNextLink";
+import CenterTitle from "@components/CenterTitle";
+import TelegramIcon from "@mui/icons-material/Telegram";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import PublicIcon from "@mui/icons-material/Public";
+import ShareIcon from "@mui/icons-material/Share";
+import MenuIcon from "@mui/icons-material/Menu";
+import CopyToClipboard from "@components/CopyToClipboard";
+import MarkdownRender from "@components/MarkdownRender";
+import Roadmap from "@components/projects/Roadmap";
+import Team from "@components/projects/Team";
+import Tokenomics from "@components/projects/Tokenomics";
+import Distribution from "@components/projects/Distribution";
+import axios from "axios";
+import { useWhitelistProjects } from "../../hooks/useWhitelistProjects";
+import { useContributionProjects } from "../../hooks/useContributionProjects";
 
 const navBarLinks = [
   {
-    name: 'Description',
-    icon: 'info',
-    link: '#',
+    name: "Description",
+    icon: "info",
+    link: "#",
   },
   {
-    name: 'Roadmap',
-    icon: 'signpost',
-    link: '#roadmap',
+    name: "Roadmap",
+    icon: "signpost",
+    link: "#roadmap",
   },
   {
-    name: 'Team',
-    icon: 'people',
-    link: '#team',
+    name: "Team",
+    icon: "people",
+    link: "#team",
   },
   {
-    name: 'Tokenomics',
-    icon: 'data_usage',
-    link: '#tokenomics',
+    name: "Tokenomics",
+    icon: "data_usage",
+    link: "#tokenomics",
   },
   {
-    name: 'Distribution',
-    icon: 'toc',
-    link: '#distribution',
+    name: "Distribution",
+    icon: "toc",
+    link: "#distribution",
   },
 ];
 
 const headingStyle = {
-  fontWeight: '800',
-  mt: { xs: '-100px', sm: '-110px', md: '-70px' },
-  pt: { xs: '100px', sm: '110px', md: '70px' },
+  fontWeight: "800",
+  mt: { xs: "-100px", sm: "-110px", md: "-70px" },
+  pt: { xs: "100px", sm: "110px", md: "70px" },
 };
 
 const Project = () => {
@@ -75,14 +78,35 @@ const Project = () => {
   const [project, setProject] = useState({});
   const [mobileMenu, setMobileMenu] = useState(false);
 
-  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
+  const { whiteListProjectsActive, isLoading: whiteListProjectsIsLoading } = useWhitelistProjects();
+  const { contributionProjectsActive, isLoading: contributionProjectsIsLoading } = useContributionProjects();
+
+  const activeRound = useMemo(() => {
+    const whiteListActive = whiteListProjectsActive?.find((project) => project.projectName === project_id);
+    if (whiteListActive) {
+      return {
+        title: `${whiteListActive.roundName[0].toUpperCase()}${whiteListActive.roundName.slice(1).toLowerCase()} round`,
+        link: `/whitelist/${whiteListActive.projectName}/${whiteListActive.roundName}`,
+      };
+    }
+
+    const contributionActive = contributionProjectsActive?.find((project) => project.projectName === project_id);
+    if (contributionActive) {
+      return {
+        title: `${contributionActive.roundName[0].toUpperCase()}${contributionActive.roundName
+          .slice(1)
+          .toLowerCase()} round`,
+        link: `/contribute/${contributionActive.projectName}/${contributionActive.roundName}`,
+      };
+    }
+
+    return null;
+  }, [whiteListProjectsActive, contributionProjectsActive]);
+
+  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up("md"));
 
   const toggleDrawer = (anchor, open) => (event) => {
-    if (
-      event &&
-      event.type === 'keydown' &&
-      (event.key === 'Tab' || event.key === 'Shift')
-    ) {
+    if (event && event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
       return;
     }
 
@@ -92,9 +116,7 @@ const Project = () => {
   useEffect(() => {
     const getProject = async () => {
       try {
-        const res = await axios.get(
-          `${process.env.API_URL}/projects/${project_id}`
-        );
+        const res = await axios.get(`${process.env.API_URL}/projects/${project_id}`);
         setProject(res.data);
       } catch {
         setProject(null);
@@ -106,42 +128,60 @@ const Project = () => {
   }, [project_id]);
 
   const listItemSx = {
-    borderRadius: '5px',
-    '&:hover': {
-      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: "5px",
+    "&:hover": {
+      backgroundColor: "rgba(255, 255, 255, 0.1)",
+    },
+  };
+  const listItemButtonSx = {
+    borderRadius: "5px",
+    "&:hover": {
+      backgroundColor: "#3abab4",
     },
   };
 
   const navBarList = (
     <List>
-      {navBarLinks.map(({ icon, name, link }, i) => (
-        ((name == 'Description')
-        || (name == 'Team' && project?.team?.team && project.team.team.length) 
-        || (name == 'Roadmap' && project?.roadmap?.roadmap && project.roadmap.roadmap.length)
-        || (name == 'Tokenomics' && project?.tokenomics?.tokenomics && project?.tokenomics?.tokenomics.length)
-        || (name == 'Distribution' && project?.tokenomics?.tokenName))
-        ? (
-        <ListItem
-          key={i}
-          button
-          sx={{ ...listItemSx }}
+      {activeRound ? (
+        <ListItemButton
+          sx={{ ...listItemButtonSx, backgroundColor: "#3abab4" }}
           onClick={() => {
-            router.push(`/projects/${project_id}/${link}`);
+            router.push(activeRound.link);
           }}
         >
           <ListItemIcon>
-            <Icon>{icon}</Icon>
+            <Icon>layers</Icon>
           </ListItemIcon>
-          <ListItemText primary={name} />
-        </ListItem>
-      ) : null
-      ))}
+          <ListItemText primary={activeRound.title} />
+        </ListItemButton>
+      ) : null}
+      {navBarLinks.map(({ icon, name, link }, i) =>
+        name == "Description" ||
+        (name == "Team" && project?.team?.team && project.team.team.length) ||
+        (name == "Roadmap" && project?.roadmap?.roadmap && project.roadmap.roadmap.length) ||
+        (name == "Tokenomics" && project?.tokenomics?.tokenomics && project?.tokenomics?.tokenomics.length) ||
+        (name == "Distribution" && project?.tokenomics?.tokenName) ? (
+          <ListItem
+            key={i}
+            button
+            sx={{ ...listItemSx }}
+            onClick={() => {
+              router.push(`/projects/${project_id}/${link}`);
+            }}
+          >
+            <ListItemIcon>
+              <Icon>{icon}</Icon>
+            </ListItemIcon>
+            <ListItemText primary={name} />
+          </ListItem>
+        ) : null
+      )}
     </List>
   );
 
   const list = (anchor) => (
     <Box
-      sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
+      sx={{ width: anchor === "top" || anchor === "bottom" ? "auto" : 250 }}
       role="presentation"
       onClick={toggleDrawer(anchor, false)}
       onKeyDown={toggleDrawer(anchor, false)}
@@ -155,14 +195,14 @@ const Project = () => {
       {project ? (
         <>
           {isLoading && (
-            <Container sx={{ mb: '3rem' }}>
+            <Container sx={{ mb: "3rem" }}>
               <CircularProgress
                 size={24}
                 sx={{
-                  position: 'relative',
-                  left: '50%',
-                  marginLeft: '-12px',
-                  marginTop: '400px',
+                  position: "relative",
+                  left: "50%",
+                  marginLeft: "-12px",
+                  marginTop: "400px",
                 }}
               />
             </Container>
@@ -170,11 +210,11 @@ const Project = () => {
           {!isLoading && (
             <Container maxWidth="lg">
               {!checkSmall
-                ? ['top'].map((anchor) => (
+                ? ["top"].map((anchor) => (
                     <Box
                       key={anchor}
                       sx={{
-                        position: 'sticky',
+                        position: "sticky",
                         top: 65,
                         bottom: 20,
                         // paddingTop: '40px',
@@ -185,10 +225,10 @@ const Project = () => {
                       <Fragment key={anchor}>
                         <Button
                           sx={{
-                            width: '100vw',
-                            ml: { xs: '-16px', sm: '-24px' },
-                            mt: { xs: '-9px', sm: '-1px' },
-                            borderRadius: '0',
+                            width: "100vw",
+                            ml: { xs: "-16px", sm: "-24px" },
+                            mt: { xs: "-9px", sm: "-1px" },
+                            borderRadius: "0",
                           }}
                           fullWidth
                           variant="contained"
@@ -213,28 +253,28 @@ const Project = () => {
                 spacing={6}
                 sx={{
                   mt: 1,
-                  justifyContent: 'space-between',
+                  justifyContent: "space-between",
                   // flexDirection: { xs: 'column', md: 'row' },
                 }}
               >
                 <Grid item xs={12} md={3}>
                   <Box
                     sx={{
-                      width: '100%',
-                      display: 'flex',
-                      justifyContent: 'center',
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "center",
                       mb: 2,
                     }}
                   >
                     <Avatar
                       src={project.bannerImgUrl}
                       alt={project.name}
-                      sx={{ width: 200, height: 200, display: 'flex' }}
+                      sx={{ width: 200, height: 200, display: "flex" }}
                     />
                   </Box>
                   <Box
                     sx={{
-                      position: 'sticky',
+                      position: "sticky",
                       top: 80,
                       // bottom: 20,
                       // paddingTop: '40px',
@@ -247,14 +287,12 @@ const Project = () => {
                 </Grid>
                 <Grid item xs={12} md={9}>
                   <Typography variant="h2">{project.name}</Typography>
-                  <Typography variant="p">
-                    {project.shortDescription}
-                  </Typography>
-                  <Divider sx={{ width: '2rem', mb: '1.5rem' }} />
-                  <Box sx={{ display: 'flex', justifyContent: 'left' }}>
+                  <Typography variant="p">{project.shortDescription}</Typography>
+                  <Divider sx={{ width: "2rem", mb: "1.5rem" }} />
+                  <Box sx={{ display: "flex", justifyContent: "left" }}>
                     {project?.socials?.website ? (
                       <Link
-                        sx={{ display: 'flex', justifyContent: 'center' }}
+                        sx={{ display: "flex", justifyContent: "center" }}
                         href={project.socials.website}
                         aria-label="website"
                         title="Web"
@@ -315,7 +353,7 @@ const Project = () => {
                     ) : null}
                     {project?.socials?.twitter ? (
                       <Link
-                        sx={{ display: 'flex', justifyContent: 'center' }}
+                        sx={{ display: "flex", justifyContent: "center" }}
                         href={project.socials.twitter}
                         aria-label="twitter"
                         title="Twitter"
@@ -329,30 +367,22 @@ const Project = () => {
                     ) : null}
                     <CopyToClipboard>
                       {({ copy }) => (
-                        <IconButton
-                          aria-label="share"
-                          onClick={() => copy(window.location)}
-                          size="large"
-                        >
+                        <IconButton aria-label="share" onClick={() => copy(window.location)} size="large">
                           <ShareIcon fontSize="inherit" />
                         </IconButton>
                       )}
                     </CopyToClipboard>
                   </Box>
                   {project.description ? (
-                    <Box sx={{ mb: '2rem' }}>
-                      <Typography
-                        variant="h4"
-                        sx={{ mt: '2rem', fontWeight: '800' }}
-                      >
+                    <Box sx={{ mb: "2rem" }}>
+                      <Typography variant="h4" sx={{ mt: "2rem", fontWeight: "800" }}>
                         Description
                       </Typography>
                       <MarkdownRender description={project.description} />
                     </Box>
                   ) : null}
-                  {project?.roadmap?.roadmap &&
-                  project.roadmap.roadmap.length ? (
-                    <Box sx={{ mb: '2rem' }}>
+                  {project?.roadmap?.roadmap && project.roadmap.roadmap.length ? (
+                    <Box sx={{ mb: "2rem" }}>
                       <Typography variant="h4" sx={headingStyle} id="roadmap">
                         Roadmap
                       </Typography>
@@ -360,21 +390,16 @@ const Project = () => {
                     </Box>
                   ) : null}
                   {project?.team?.team && project.team.team.length ? (
-                    <Box sx={{ mb: '2rem' }}>
+                    <Box sx={{ mb: "2rem" }}>
                       <Typography variant="h4" sx={headingStyle} id="team">
                         Team
                       </Typography>
                       <Team data={project?.team?.team} />
                     </Box>
                   ) : null}
-                  {project?.tokenomics?.tokenomics &&
-                  project?.tokenomics?.tokenomics.length ? (
-                    <Box sx={{ mb: '2rem' }}>
-                      <Typography
-                        variant="h4"
-                        sx={headingStyle}
-                        id="tokenomics"
-                      >
+                  {project?.tokenomics?.tokenomics && project?.tokenomics?.tokenomics.length ? (
+                    <Box sx={{ mb: "2rem" }}>
+                      <Typography variant="h4" sx={headingStyle} id="tokenomics">
                         Tokenomics
                       </Typography>
                       <Tokenomics data={project?.tokenomics?.tokenomics} />
@@ -382,11 +407,7 @@ const Project = () => {
                   ) : null}
                   {project?.tokenomics?.tokenName && (
                     <Box>
-                      <Typography
-                        variant="h4"
-                        sx={headingStyle}
-                        id="distribution"
-                      >
+                      <Typography variant="h4" sx={headingStyle} id="distribution">
                         Distribution
                       </Typography>
                       <Distribution
@@ -403,11 +424,7 @@ const Project = () => {
           )}
         </>
       ) : (
-        <CenterTitle
-          title="Oops..."
-          subtitle="Looks like the project you are looking for doesn't exist."
-          main={true}
-        />
+        <CenterTitle title="Oops..." subtitle="Looks like the project you are looking for doesn't exist." main={true} />
       )}
     </>
   );
