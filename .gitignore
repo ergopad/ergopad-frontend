@@ -1,8 +1,6 @@
 node_modules
 .next
 out
-yarn.lock
-package-lock.json
 next.config.js
 pages/whitelist.json
 pages/dashboardrechart.jsx
