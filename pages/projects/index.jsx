@@ -74,7 +74,7 @@ const Projects = () => {
     contributionProjectsActive,
     isLoading: contributionProjectsIsLoading,
   } = useContributionProjects();
-  console.log(contributionProjectsActive);
+
   return (
     <>
       <Container sx={{ mb: "3rem" }}>
