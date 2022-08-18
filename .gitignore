@@ -9,3 +9,4 @@ pages/dashboardrechart.jsx
 /.pnp
 .pnp.js
 .eslintrc.json
+.vscode
