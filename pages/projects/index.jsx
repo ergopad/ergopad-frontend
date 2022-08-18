@@ -99,16 +99,8 @@ const Projects = () => {
         </Box>
       </Container>
       <Container maxWidth="lg" sx={{ mt: 1 }}>
-        <Typography variant="h4" sx={{ fontWeight: "800", mb: 4 }}>
-          Upcoming IDOs
-        </Typography>
-        <Grid container spacing={3} alignItems="stretch" sx={{ mb: 6 }}>
-          {upcomingProjects?.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </Grid>
-        {contributionProjectsActive?.length !== 0 ||
-        whiteListProjectsActive?.length !== 0 ? (
+      {contributionProjectsActive?.length !== 0 ||
+          whiteListProjectsActive?.length !== 0 ? (
           <>
             <Typography variant="h4" sx={{ fontWeight: "800", mb: 4 }}>
               Active Rounds
@@ -131,6 +123,14 @@ const Projects = () => {
             </Grid>
           </>
         ) : null}
+        <Typography variant="h4" sx={{ fontWeight: "800", mb: 4 }}>
+          Upcoming IDOs
+        </Typography>
+        <Grid container spacing={3} alignItems="stretch" sx={{ mb: 6 }}>
+          {upcomingProjects?.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </Grid>
         <Typography variant="h4" sx={{ fontWeight: "800", mb: 4 }}>
           Completed
         </Typography>

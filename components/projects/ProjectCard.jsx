@@ -26,6 +26,7 @@ export const ProjectCard = ({ project }) => {
           height: "100%",
           flexDirection: "column",
           justifyContent: "space-between",
+          borderRadius: '8px',
         }}
       >
         <CardActionArea
@@ -39,9 +40,9 @@ export const ProjectCard = ({ project }) => {
             );
           }}
         >
-          <CardMedia component="img" alt="" height="180" image={project.bannerImgUrl} />
+          <CardMedia component="img" alt="" height="368" image={project.bannerImgUrl} />
           <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
+            <Typography gutterBottom variant="h4" component="div">
               {project.name}
             </Typography>
             <Typography variant="body2" color="text.secondary">
