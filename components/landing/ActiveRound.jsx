@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Grid,
   Typography,
@@ -11,10 +11,13 @@ import { useContributionProjects } from "@hooks/useContributionProjects";
 import Image from 'next/image';
 import { ProjectCard } from "@components/projects/ProjectCard"
 
-const ActiveRound: FC = () => {
+var months = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+const ActiveRound = () => {
   const [isLoading, setLoading] = useState(true);
-  const [projects, setProjects] = useState<any>([]);
-  const [included, setIncluded] = useState<any>([]);
+  const [projects, setProjects] = useState([]);
+  const [included, setIncluded] = useState([]);
   const { whiteListProjectsActive, isLoading: whiteListProjectsIsLoading } =
     useWhitelistProjects();
   const {
@@ -56,16 +59,44 @@ const ActiveRound: FC = () => {
           key={project.id}
           direction="row"
         >
+          <Grid item md={6} xs={12}>
 
-          <ProjectCard key={project.id} project={project} />
 
-          <Grid item md={8}>
-            <Button>
-              Hello
-            </Button>
+            <Typography gutterBottom variant="h4" component="div">
+              {project.name}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {project.shortDescription}
+            </Typography>
+
+          </Grid>
+          <Grid item md={6} xs={12}>
+
+
+            {project.roadmap.roadmap.map((item, i) => (
+              <Grid container key={i} sx={{ mb: '24px' }}>
+                <Grid item xs={1} md={2}>
+                  <Typography sx={{ fontSize: '.875rem' }}>
+                    {months[parseInt(item.date.slice(5, 7))]}
+                  </Typography>
+                  <Typography sx={{ fontSize: '2.25rem', lineHeight: 0.7 }}>
+                    {item.date.slice(8, 10)}
+                  </Typography>
+                </Grid>
+                <Grid item xs={11} md={10}>
+                  {item.name}
+                </Grid>
+              </Grid>
+            ))}
+
+
+
+
+
           </Grid>
         </Grid>
-      ))}
+      ))
+      }
       <Divider sx={{ mb: 10 }} />
     </>
   );
