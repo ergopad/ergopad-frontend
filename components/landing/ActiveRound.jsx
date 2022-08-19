@@ -3,13 +3,12 @@ import {
   Grid,
   Typography,
   Divider,
-  Button
+  Button,
+  CircularProgress
 } from '@mui/material';
 import axios from 'axios';
 import { useWhitelistProjects } from "@hooks/useWhitelistProjects";
 import { useContributionProjects } from "@hooks/useContributionProjects";
-import Image from 'next/image';
-import { ProjectCard } from "@components/projects/ProjectCard"
 
 var months = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -18,6 +17,7 @@ const ActiveRound = () => {
   const [isLoading, setLoading] = useState(true);
   const [projects, setProjects] = useState([]);
   const [included, setIncluded] = useState([]);
+  const [filteredProjects, setFilteredProjects] = useState([]);
   const { whiteListProjectsActive, isLoading: whiteListProjectsIsLoading } =
     useWhitelistProjects();
   const {
@@ -27,32 +27,50 @@ const ActiveRound = () => {
   useEffect(() => {
     const getProjects = async () => {
       try {
-        const res = await axios.get(`${process.env.API_URL}/projects/`);
-        contributionProjectsActive?.map((project) => (
-          setIncluded(previous => [...previous, project.projectName.toLowerCase()])
-        ))
-        whiteListProjectsActive?.map((project) => (
-          setIncluded(previous => [...previous, project.projectName.toLowerCase()])
-        ))
+        const res = await axios.get(`${process.env.API_URL}/projects/`)
         setProjects(res.data);
+        // console.log('projects fired')
       } catch (e) {
         console.error(e);
       }
-      setLoading(false);
-    };
-
+      setLoading(false)
+    }
     getProjects();
-
   }, []);
 
   const checkProject = (project) => {
     return included.includes(project.name.toLowerCase())
   }
 
-  const filteredProjects = projects?.filter(project => checkProject(project))
+  useEffect(() => {
+    contributionProjectsActive?.map((project) => (
+      setIncluded(previous => [...previous, project.projectName.toLowerCase()])
+    ))
+    whiteListProjectsActive?.map((project) => (
+      setIncluded(previous => [...previous, project.projectName.toLowerCase()])
+    ))
+    // console.log('projects changed')
+  }, [projects]);
+
+  useEffect(() => {
+    setFilteredProjects(projects?.filter(project => checkProject(project)))
+  }, [included]);
 
   return (
     <>
+      {isLoading && (
+        <>
+          <Typography>Hello</Typography>
+          <CircularProgress
+            size={24}
+            sx={{
+              position: "absolute",
+              left: "50%",
+              marginLeft: "-12px",
+              marginTop: "72px",
+            }}
+          /></>
+      )}
       {filteredProjects.map((project) => (
         <Grid
           container
@@ -88,11 +106,6 @@ const ActiveRound = () => {
                 </Grid>
               </Grid>
             ))}
-
-
-
-
-
           </Grid>
         </Grid>
       ))
