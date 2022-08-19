@@ -13,9 +13,9 @@ import { useContributionProjects } from "@hooks/useContributionProjects";
 var months = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-const ActiveRound = () => {
-  const [isLoading, setLoading] = useState(true);
-  const [projects, setProjects] = useState([]);
+const ActiveRound = ({ projects, isLoading }) => {
+  // const [isLoading, setLoading] = useState(true);
+  // const [projects, setProjects] = useState([]);
   const [included, setIncluded] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
   const { whiteListProjectsActive, isLoading: whiteListProjectsIsLoading } =
@@ -24,36 +24,41 @@ const ActiveRound = () => {
     contributionProjectsActive, isLoading: contributionProjectsIsLoading,
   } = useContributionProjects();
 
-  useEffect(() => {
-    const getProjects = async () => {
-      try {
-        const res = await axios.get(`${process.env.API_URL}/projects/`)
-        setProjects(res.data);
-        // console.log('projects fired')
-      } catch (e) {
-        console.error(e);
-      }
-      setLoading(false)
-    }
-    getProjects();
-  }, []);
+  // useEffect(() => {
+  //   const getProjects = async () => {
+  //     try {
+  //       const res = await axios.get(`${process.env.API_URL}/projects/`)
+  //       setProjects(res.data);
+  //       // console.log('projects fired')
+  //     } catch (e) {
+  //       console.error(e);
+  //     }
+  //     setLoading(false)
+  //   }
+  //   getProjects();
+  // }, []);
 
   const checkProject = (project) => {
-    return included.includes(project.name.toLowerCase())
+    return included.includes(project.name?.toLowerCase())
   }
 
   useEffect(() => {
-    contributionProjectsActive?.map((project) => (
-      setIncluded(previous => [...previous, project.projectName.toLowerCase()])
-    ))
-    whiteListProjectsActive?.map((project) => (
-      setIncluded(previous => [...previous, project.projectName.toLowerCase()])
-    ))
-    // console.log('projects changed')
+    if (projects?.length !== 0) {
+      contributionProjectsActive?.map((project) => (
+        setIncluded(previous => [...previous, project.projectName.toLowerCase()])
+      ))
+      whiteListProjectsActive?.map((project) => (
+        setIncluded(previous => [...previous, project.projectName.toLowerCase()])
+      ))
+      // console.log('projects changed')
+    }
   }, [projects]);
 
   useEffect(() => {
-    setFilteredProjects(projects?.filter(project => checkProject(project)))
+    if (projects?.length !== 0) {
+      console.log(projects)
+      setFilteredProjects(projects?.filter(project => checkProject(project)))
+    }
   }, [included]);
 
   return (
