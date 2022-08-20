@@ -4,18 +4,122 @@ import {
   Typography,
   Divider,
   Button,
-  CircularProgress
+  CircularProgress,
+  Box
 } from '@mui/material';
-import axios from 'axios';
 import { useWhitelistProjects } from "@hooks/useWhitelistProjects";
 import { useContributionProjects } from "@hooks/useContributionProjects";
+import Image from 'next/image';
 
 var months = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+// PROJECT SCHEMA
+// {
+//   "name": "string",
+//   "shortDescription": "string",
+//   "description": "string",
+//   "fundsRaised": 0,
+//   "bannerImgUrl": "string",
+//   "isLaunched": true,
+//   "socials": {
+//     "telegram": "string",
+//     "twitter": "string",
+//     "discord": "string",
+//     "github": "string",
+//     "website": "string",
+//     "linkedin": "string"
+//   },
+//   "roadmap": {
+//     "roadmap": [
+//       {
+//         "name": "string",
+//         "description": "string",
+//         "date": "string"
+//       }
+//     ]
+//   },
+//   "team": {
+//     "team": [
+//       {
+//         "name": "string",
+//         "description": "string",
+//         "profileImgUrl": "string",
+//         "socials": {
+//           "telegram": "string",
+//           "twitter": "string",
+//           "discord": "string",
+//           "github": "string",
+//           "website": "string",
+//           "linkedin": "string"
+//         }
+//       }
+//     ]
+//   },
+//   "tokenomics": {
+//     "tokenName": "string",
+//     "totalTokens": 0,
+//     "tokenTicker": "string",
+//     "tokenomics": [
+//       {
+//         "name": "string",
+//         "amount": 0,
+//         "value": "string",
+//         "tge": "string",
+//         "freq": "string",
+//         "length": "string",
+//         "lockup": "string"
+//       }
+//     ]
+//   },
+//   "id": 0
+// }
+//
+// WHITELIST EVENT SCHEMA
+// {
+//   "projectName": "",
+//   "roundName": "",
+//   "title": "",
+//   "details": "",
+//   "additionalDetails": {
+//     "min_stake": 0,
+//     "add_to_footer": false,
+//     "staker_snapshot_whitelist": true
+//   },
+//   "id": 20,
+//   "eventId": 42,
+//   "subtitle": "Sign up for the ErgoPOS staker round whitelist",
+//   "checkBoxes": {
+//     "checkBoxText": []
+//   }
+// },
+//
+// CONTRIBUTION EVENT SCHEMA
+// {
+//   "id": 0,
+//   "eventId": 0,
+//   "subtitle": "",
+//   "checkBoxes": {
+//     "checkBoxes": [
+//      "",
+//     ]
+//   },
+//   "tokenName": "",
+//   "tokenPrice": 0,
+//   "whitelistTokenId": "",
+//   "title": "",
+//   "projectName": "",
+//   "roundName": "",
+//   "details": "",
+//   "tokenId": "",
+//   "tokenDecimals": 0,
+//   "proxyNFTId": "",
+//   "additionalDetails": {
+//     "add_to_footer": false
+//   }
+// },
+
 const ActiveRound = ({ projects, isLoading }) => {
-  // const [isLoading, setLoading] = useState(true);
-  // const [projects, setProjects] = useState([]);
   const [included, setIncluded] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
   const { whiteListProjectsActive, isLoading: whiteListProjectsIsLoading } =
@@ -23,20 +127,6 @@ const ActiveRound = ({ projects, isLoading }) => {
   const {
     contributionProjectsActive, isLoading: contributionProjectsIsLoading,
   } = useContributionProjects();
-
-  // useEffect(() => {
-  //   const getProjects = async () => {
-  //     try {
-  //       const res = await axios.get(`${process.env.API_URL}/projects/`)
-  //       setProjects(res.data);
-  //       // console.log('projects fired')
-  //     } catch (e) {
-  //       console.error(e);
-  //     }
-  //     setLoading(false)
-  //   }
-  //   getProjects();
-  // }, []);
 
   const checkProject = (project) => {
     return included.includes(project.name?.toLowerCase())
@@ -50,7 +140,6 @@ const ActiveRound = ({ projects, isLoading }) => {
       whiteListProjectsActive?.map((project) => (
         setIncluded(previous => [...previous, project.projectName.toLowerCase()])
       ))
-      // console.log('projects changed')
     }
   }, [projects]);
 
@@ -65,7 +154,6 @@ const ActiveRound = ({ projects, isLoading }) => {
     <>
       {isLoading && (
         <>
-          <Typography>Hello</Typography>
           <CircularProgress
             size={24}
             sx={{
@@ -83,8 +171,13 @@ const ActiveRound = ({ projects, isLoading }) => {
           direction="row"
         >
           <Grid item md={6} xs={12}>
-
-
+        <Box sx={{
+          width: '100px',
+          height: '100px',
+        }}
+        >
+            <Image src={project.bannerImgUrl} layout="responsive" width={512} height={512} />
+            </Box>
             <Typography gutterBottom variant="h4" component="div">
               {project.name}
             </Typography>
