@@ -26,7 +26,7 @@ const Dashboard = () => {
             layout="fixed"
             width={matches ? '500' : '320'}
             height={matches ? '500' : '320'}
-            priority={true}
+            // priority={true}
           />
         </Grid>
         <Grid item xs={12} md={6} sx={{ mb: 10 }}>
