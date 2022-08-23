@@ -12,29 +12,15 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import theme from '@styles/theme';
 
-const Projects = () => {
+const Projects = ({ projects, isLoading }) => {
   const router = useRouter();
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(false)
+  const [upcomingProjects, setUpcomingProjects] = useState([]);
 
   useEffect(() => {
-    const getProjects = async () => {
-      setLoading(true);
-      try {
-        const res = await axios.get(`${process.env.API_URL}/projects/`);
-        setProjects(res.data);
-      } catch (e) {
-        console.error(e);
-      }
-      setLoading(false);
-    };
-
-    getProjects();
-  }, []);
-
-  const upcomingProjects = projects
-    .filter((project) => !project.isLaunched)
-    .slice(0, 3);
+    if (projects?.length !== 0) {
+      setUpcomingProjects(projects?.filter((project) => !project.isLaunched).slice(0, 3))
+    }
+  }, [projects]);
 
   const projectCard = (project) => {
     return (
@@ -115,7 +101,7 @@ const Projects = () => {
         </Box>
       </Box>
       <Grid container spacing={3} alignItems="stretch" sx={{ mb: 6, mt: 3 }}>
-        {loading ? (
+        {isLoading ? (
           <>
             <SkeletonCard />
             <SkeletonCard />
