@@ -295,7 +295,6 @@ const ActiveRound = ({ projects, isLoading }) => {
         setIncluded(previous => [...previous, project.projectName.toLowerCase()])
         setActiveRounds(previous => [...previous, project])
       })
-      console.log(activeRounds)
     }
   }, [projects]);
 
@@ -363,7 +362,7 @@ const ActiveRound = ({ projects, isLoading }) => {
                               height: '80px',
                             }}
                             >
-                              <Image src={project.bannerImgUrl} layout="responsive" width={512} height={512} />
+                              <Image src={project.bannerImgUrl} alt="" layout="responsive" width={512} height={512} />
                             </Box>
                           </Grid>
                           <Grid item>

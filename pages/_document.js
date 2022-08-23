@@ -8,8 +8,6 @@ class MyDocument extends Document {
     return (
       <Html lang="en">
         <Head>
-          {/* <!-- Global site tag (gtag.js) - Google Analytics --> */}
-          <script async src="https://www.googletagmanager.com/gtag/js?id=G-XBTFK9GRMF"></script>
           <script
           async
           dangerouslySetInnerHTML={{
