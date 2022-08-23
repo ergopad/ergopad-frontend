@@ -246,7 +246,7 @@ export const AddWallet = () => {
             >
               {dAppWallet.connected
                 ? 'dApp Connected'
-                : 'Connect with Nautilus or SAFEW'}
+                : 'Connect with Nautilus'}
               {loading && (
                 <CircularProgress
                   sx={{ ml: 2, color: 'white' }}
