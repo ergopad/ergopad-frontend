@@ -5,11 +5,13 @@ import {
   Divider,
   Button,
   CircularProgress,
-  Box
+  Box,
+  Paper
 } from '@mui/material';
 import { useWhitelistProjects } from "@hooks/useWhitelistProjects";
 import { useContributionProjects } from "@hooks/useContributionProjects";
 import Image from 'next/image';
+import Link from 'next/link';
 
 var months = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -74,7 +76,7 @@ var months = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
 //   },
 //   "id": 0
 // }
-//
+
 // WHITELIST EVENT SCHEMA
 // {
 //   "projectName": "",
@@ -86,14 +88,14 @@ var months = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
 //     "add_to_footer": false,
 //     "staker_snapshot_whitelist": true
 //   },
-//   "id": 20,
-//   "eventId": 42,
-//   "subtitle": "Sign up for the ErgoPOS staker round whitelist",
+//   "id": 0,
+//   "eventId": 0,
+//   "subtitle": "",
 //   "checkBoxes": {
 //     "checkBoxText": []
 //   }
 // },
-//
+
 // CONTRIBUTION EVENT SCHEMA
 // {
 //   "id": 0,
@@ -119,9 +121,160 @@ var months = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
 //   }
 // },
 
+const buttonStyles = {
+  height: '60px',
+  width: '100%',
+  justifyContent: 'flex-start'
+  
+}
+
+const ButtonNextLink = ({ roundType, roundName, itemName, projectName, link, disabled }) => {
+  if (disabled) return (
+    <Button variant="contained" disabled sx={buttonStyles}>
+      {itemName}
+    </Button>
+  )
+  else if (link) return (
+    <Button href={link} variant="contained" target="_blank" sx={buttonStyles}>
+      {itemName}
+    </Button>
+  )
+  else return (
+    <Link
+      href={"/" + roundType + "/" + projectName + "/" + roundName + "/"}
+      passHref
+    >
+      <Button variant="contained" sx={buttonStyles}>
+        {itemName}
+      </Button>
+    </Link>
+  )
+}
+
+const CheckButtonType = ({ name, activeRounds, project }) => {
+  if (
+    name.toLowerCase().includes('whitelist') &&
+    name.toLowerCase().includes('seed') &&
+    activeRounds.some(attr => (
+      attr.projectName.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") ===
+      project.name.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") &&
+      attr.roundName.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") === "seed") &&
+      attr.title.toLowerCase().includes('whitelist' || 'white list' || 'white-list')
+    )
+  ) {
+    return <ButtonNextLink roundName="seed" roundType="whitelist" itemName={name} projectName={project.name.toLowerCase()
+      .replaceAll(" ", "")
+      .replaceAll(/[^a-zA-Z0-9]/g, "")} />
+  }
+  else if (name.toLowerCase().includes('contribution')
+    && name.toLowerCase().includes('seed')
+    && activeRounds.some(attr => (
+      attr.projectName.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") ===
+      project.name.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") &&
+      attr.roundName.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") === "seed") &&
+      attr.title.toLowerCase().includes('contribution')
+    )) {
+    return <ButtonNextLink roundName="seed" roundType="contribute" itemName={name} projectName={project.name.toLowerCase()
+      .replaceAll(" ", "")
+      .replaceAll(/[^a-zA-Z0-9]/g, "")} />
+  }
+  else if (name.toLowerCase().includes('whitelist')
+    && name.toLowerCase().includes('staker')
+    && activeRounds.some(attr => (
+      attr.projectName.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") ===
+      project.name.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") &&
+      attr.roundName.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") === "staker") &&
+      attr.title.toLowerCase().includes('whitelist' || 'white list' || 'white-list')
+    )) return (
+      <ButtonNextLink roundName="staker" roundType="whitelist" itemName={name} projectName={project.name.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "")} />
+    )
+  else if (name.toLowerCase().includes('contribution')
+    && name.toLowerCase().includes('staker')
+    && activeRounds.some(attr => (
+      attr.projectName.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") ===
+      project.name.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") &&
+      attr.roundName.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") === "staker") &&
+      attr.title.toLowerCase().includes('contribution')
+    )) return (
+      <ButtonNextLink roundName="staker" roundType="contribute" itemName={name} projectName={project.name.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "")} />
+    )
+  else if (name.toLowerCase().includes('whitelist')
+    && name.toLowerCase().includes('strategic')
+    && activeRounds.some(attr => (
+      attr.projectName.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") ===
+      project.name.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") &&
+      attr.roundName.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") === "strategic") &&
+      attr.title.toLowerCase().includes('whitelist' || 'white list' || 'white-list')
+    ))
+    return (
+      <ButtonNextLink roundName="strategic" roundType="whitelist" itemName={name} projectName={project.name.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "")} />
+    )
+  else if (name.toLowerCase().includes('contribution')
+    && name.toLowerCase().includes('strategic')
+    && activeRounds.some(attr => (
+      attr.projectName.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") ===
+      project.name.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") &&
+      attr.roundName.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") === "strategic") &&
+      attr.title.toLowerCase().includes('contribution')
+    )) return (
+      <ButtonNextLink roundName="strategic" roundType="contribute" itemName={name} projectName={project.name.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "")} />
+    )
+  else if (name.toLowerCase().includes('ido')) return (
+    <ButtonNextLink roundName="" roundType="" itemName={name} projectName="" link="https://app.spectrum.fi/ergo/swap" />
+  )
+  else return (
+    <ButtonNextLink roundName="" roundType="" itemName={name} projectName="" disabled />
+  )
+}
+
 const ActiveRound = ({ projects, isLoading }) => {
   const [included, setIncluded] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
+  const [activeRounds, setActiveRounds] = useState([]);
   const { whiteListProjectsActive, isLoading: whiteListProjectsIsLoading } =
     useWhitelistProjects();
   const {
@@ -134,24 +287,27 @@ const ActiveRound = ({ projects, isLoading }) => {
 
   useEffect(() => {
     if (projects?.length !== 0) {
-      contributionProjectsActive?.map((project) => (
+      contributionProjectsActive?.map((project) => {
         setIncluded(previous => [...previous, project.projectName.toLowerCase()])
-      ))
-      whiteListProjectsActive?.map((project) => (
+        setActiveRounds(previous => [...previous, project])
+      })
+      whiteListProjectsActive?.map((project) => {
         setIncluded(previous => [...previous, project.projectName.toLowerCase()])
-      ))
+        setActiveRounds(previous => [...previous, project])
+      })
+      console.log(activeRounds)
     }
   }, [projects]);
 
   useEffect(() => {
     if (projects?.length !== 0) {
-      console.log(projects)
       setFilteredProjects(projects?.filter(project => checkProject(project)))
     }
   }, [included]);
 
   return (
     <>
+    <Typography variant="h2" sx={{ mt: 0, mb: '48px', textAlign: 'center' }}>Active IDOs</Typography>
       {isLoading && (
         <>
           <CircularProgress
@@ -164,49 +320,102 @@ const ActiveRound = ({ projects, isLoading }) => {
             }}
           /></>
       )}
-      {filteredProjects.map((project) => (
-        <Grid
-          container
-          key={project.id}
-          direction="row"
-        >
-          <Grid item md={6} xs={12}>
-        <Box sx={{
-          width: '100px',
-          height: '100px',
-        }}
-        >
-            <Image src={project.bannerImgUrl} layout="responsive" width={512} height={512} />
-            </Box>
-            <Typography gutterBottom variant="h4" component="div">
-              {project.name}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {project.shortDescription}
-            </Typography>
+      {filteredProjects.map((project) => {
 
-          </Grid>
-          <Grid item md={6} xs={12}>
+        return (
+          <Grid
+            container
+            key={project.id}
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+            spacing={6}
+            sx={{
+              mb: '80px',
+            }}
+          >
+            <Grid item md={6} xs={12}>
+              <Paper
+                sx={{
+                  p: '24px',
+                 // height: '100%',
+                }}
+              >
+                <Grid
+                  container
+                  direction="column"
+                  justifyContent="space-between"
+                  sx={{ height: '100%' }}
+                >
+                  <Grid item>
+                    <Grid
+                      container
+                      direction="row"
+                      justifyContent="flex-start"
+                      alignItems="center"
+                      spacing={2}
+                      sx={{ mb: '24px', }}
+                    >
+                      <Grid item>
+                        <Box sx={{
+                          width: '80px',
+                          height: '80px',
+                        }}
+                        >
+                          <Image src={project.bannerImgUrl} layout="responsive" width={512} height={512} />
+                        </Box>
+                      </Grid>
+                      <Grid item>
+                        <Typography gutterBottom variant="h3" component="span">
+                          {project.name}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                    <Divider sx={{ mb: '24px' }} />
 
 
-            {project.roadmap.roadmap.map((item, i) => (
-              <Grid container key={i} sx={{ mb: '24px' }}>
-                <Grid item xs={1} md={2}>
-                  <Typography sx={{ fontSize: '.875rem' }}>
-                    {months[parseInt(item.date.slice(5, 7))]}
-                  </Typography>
-                  <Typography sx={{ fontSize: '2.25rem', lineHeight: 0.7 }}>
-                    {item.date.slice(8, 10)}
-                  </Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: '24px' }}>
+                      {project.shortDescription}
+                    </Typography>
+                    <Link
+                      href={"/projects/" +
+                        project.name
+                          .toLowerCase()
+                          .replaceAll(" ", "")
+                          .replaceAll(/[^a-zA-Z0-9]/g, "")}
+                      passHref>
+                      <Button sx={{ float: 'right' }}>
+                        Learn More
+                      </Button>
+                    </Link>
+                  </Grid>
                 </Grid>
-                <Grid item xs={11} md={10}>
-                  {item.name}
+              </Paper>
+            </Grid>
+            <Grid item md={6} xs={12}>
+
+
+              {project.roadmap.roadmap.map((item, i) => (
+                <Grid container key={i} sx={{ mb: '24px' }}>
+                  <Grid item xs={2}>
+                    <Typography sx={{ fontSize: '.875rem' }}>
+                      {months[parseInt(item.date.slice(5, 7))]}
+                    </Typography>
+                    <Typography sx={{ fontSize: '2.25rem', lineHeight: 0.7 }}>
+                      {item.date.slice(8, 10)}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={10}>
+                    <CheckButtonType name={item.name} activeRounds={activeRounds} project={project} />
+                  </Grid>
                 </Grid>
-              </Grid>
-            ))}
+              ))}
+            </Grid>
           </Grid>
-        </Grid>
-      ))
+        )
+      })
       }
       <Divider sx={{ mb: 10 }} />
     </>
