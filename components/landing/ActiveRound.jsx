@@ -125,7 +125,7 @@ const buttonStyles = {
   height: '60px',
   width: '100%',
   justifyContent: 'flex-start'
-  
+
 }
 
 const ButtonNextLink = ({ roundType, roundName, itemName, projectName, link, disabled }) => {
@@ -307,117 +307,120 @@ const ActiveRound = ({ projects, isLoading }) => {
 
   return (
     <>
-    <Typography variant="h2" sx={{ mt: 0, mb: '48px', textAlign: 'center' }}>Active IDOs</Typography>
-      {isLoading && (
+      {filteredProjects.length !== 0 && (
         <>
-          <CircularProgress
-            size={24}
-            sx={{
-              position: "absolute",
-              left: "50%",
-              marginLeft: "-12px",
-              marginTop: "72px",
-            }}
-          /></>
-      )}
-      {filteredProjects.map((project) => {
-
-        return (
-          <Grid
-            container
-            key={project.id}
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-            spacing={6}
-            sx={{
-              mb: '80px',
-            }}
-          >
-            <Grid item md={6} xs={12}>
-              <Paper
+          <Typography variant="h2" sx={{ mt: 0, mb: '48px', textAlign: 'center' }}>Active IDOs</Typography>
+          {isLoading && (
+            <>
+              <CircularProgress
+                size={24}
                 sx={{
-                  p: '24px',
-                 // height: '100%',
+                  position: "absolute",
+                  left: "50%",
+                  marginLeft: "-12px",
+                  marginTop: "72px",
+                }}
+              /></>
+          )}
+          {filteredProjects.map((project) => {
+            return (
+              <Grid
+                container
+                key={project.id}
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+                spacing={6}
+                sx={{
+                  mb: '80px',
                 }}
               >
-                <Grid
-                  container
-                  direction="column"
-                  justifyContent="space-between"
-                  sx={{ height: '100%' }}
-                >
-                  <Grid item>
+                <Grid item md={6} xs={12}>
+                  <Paper
+                    sx={{
+                      p: '24px',
+                      // height: '100%',
+                    }}
+                  >
                     <Grid
                       container
-                      direction="row"
-                      justifyContent="flex-start"
-                      alignItems="center"
-                      spacing={2}
-                      sx={{ mb: '24px', }}
+                      direction="column"
+                      justifyContent="space-between"
+                      sx={{ height: '100%' }}
                     >
                       <Grid item>
-                        <Box sx={{
-                          width: '80px',
-                          height: '80px',
-                        }}
+                        <Grid
+                          container
+                          direction="row"
+                          justifyContent="flex-start"
+                          alignItems="center"
+                          spacing={2}
+                          sx={{ mb: '24px', }}
                         >
-                          <Image src={project.bannerImgUrl} layout="responsive" width={512} height={512} />
-                        </Box>
+                          <Grid item>
+                            <Box sx={{
+                              width: '80px',
+                              height: '80px',
+                            }}
+                            >
+                              <Image src={project.bannerImgUrl} layout="responsive" width={512} height={512} />
+                            </Box>
+                          </Grid>
+                          <Grid item>
+                            <Typography gutterBottom variant="h3" component="span">
+                              {project.name}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                        <Divider sx={{ mb: '24px' }} />
+
+
                       </Grid>
                       <Grid item>
-                        <Typography gutterBottom variant="h3" component="span">
-                          {project.name}
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: '24px' }}>
+                          {project.shortDescription}
                         </Typography>
+                        <Link
+                          href={"/projects/" +
+                            project.name
+                              .toLowerCase()
+                              .replaceAll(" ", "")
+                              .replaceAll(/[^a-zA-Z0-9]/g, "")}
+                          passHref>
+                          <Button sx={{ float: 'right' }}>
+                            Learn More
+                          </Button>
+                        </Link>
                       </Grid>
                     </Grid>
-                    <Divider sx={{ mb: '24px' }} />
-
-
-                  </Grid>
-                  <Grid item>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: '24px' }}>
-                      {project.shortDescription}
-                    </Typography>
-                    <Link
-                      href={"/projects/" +
-                        project.name
-                          .toLowerCase()
-                          .replaceAll(" ", "")
-                          .replaceAll(/[^a-zA-Z0-9]/g, "")}
-                      passHref>
-                      <Button sx={{ float: 'right' }}>
-                        Learn More
-                      </Button>
-                    </Link>
-                  </Grid>
+                  </Paper>
                 </Grid>
-              </Paper>
-            </Grid>
-            <Grid item md={6} xs={12}>
+                <Grid item md={6} xs={12}>
 
 
-              {project.roadmap.roadmap.map((item, i) => (
-                <Grid container key={i} sx={{ mb: '24px' }}>
-                  <Grid item xs={2}>
-                    <Typography sx={{ fontSize: '.875rem' }}>
-                      {months[parseInt(item.date.slice(5, 7))]}
-                    </Typography>
-                    <Typography sx={{ fontSize: '2.25rem', lineHeight: 0.7 }}>
-                      {item.date.slice(8, 10)}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={10}>
-                    <CheckButtonType name={item.name} activeRounds={activeRounds} project={project} />
-                  </Grid>
+                  {project.roadmap.roadmap.map((item, i) => (
+                    <Grid container key={i} sx={{ mb: '24px' }}>
+                      <Grid item xs={2}>
+                        <Typography sx={{ fontSize: '.875rem' }}>
+                          {months[parseInt(item.date.slice(5, 7))]}
+                        </Typography>
+                        <Typography sx={{ fontSize: '2.25rem', lineHeight: 0.7 }}>
+                          {item.date.slice(8, 10)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={10}>
+                        <CheckButtonType name={item.name} activeRounds={activeRounds} project={project} />
+                      </Grid>
+                    </Grid>
+                  ))}
                 </Grid>
-              ))}
-            </Grid>
-          </Grid>
-        )
-      })
-      }
-      <Divider sx={{ mb: 10 }} />
+              </Grid>
+            )
+          })
+          }
+          <Divider sx={{ mb: 10 }} />
+        </>
+      )}
     </>
   );
 };
