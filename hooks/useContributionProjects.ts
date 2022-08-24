@@ -9,6 +9,8 @@ export const useContributionProjects = () => {
         if (data) {
             return data.filter(project => project.additionalDetails.add_to_footer)
                 .sort(((a, b) => a.id - b.id))
+        } else {
+            return [];
         }
     }, [data])
 
