@@ -306,7 +306,7 @@ const ActiveRound = ({ projects, isLoading }) => {
 
   return (
     <>
-      {filteredProjects.length !== 0 && (
+      {filteredProjects && filteredProjects.length !== 0 && (
         <>
           <Typography variant="h2" sx={{ mt: 0, mb: '48px', textAlign: 'center' }}>Active IDOs</Typography>
           {isLoading && (
