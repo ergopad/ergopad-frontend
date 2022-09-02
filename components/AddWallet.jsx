@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import {
   Button,
   Dialog,
   TextField,
+  Typography,
   DialogActions,
   DialogContent,
   DialogContentText,
@@ -20,12 +22,13 @@ import { useAddWallet } from 'utils/AddWalletContext';
 import { Address } from 'utils/Address';
 import theme from '@styles/theme';
 
-const WALLET_ADDRESS = 'wallet_address';
-const WALLET_ADDRESS_LIST = 'wallet_address_list';
-const DAPP_CONNECTED = 'dapp_connected';
+const WALLET_ADDRESS = 'wallet_address_7621';
+const WALLET_ADDRESS_LIST = 'wallet_address_list_1283';
+const DAPP_CONNECTED = 'dapp_connected_6329';
+const DAPP_NAME = 'dapp_name_8930';
 
 /**
- * Note on es-lint disable line:
+ * Note on es-lint disable lines:
  *
  * Ergo dApp injector uses global variables injected from the browser,
  * es-lint will complain if we reference un defined varaibles.
@@ -34,8 +37,10 @@ const DAPP_CONNECTED = 'dapp_connected';
  * - ergo
  * - window.ergo_check_read_access
  * - window.ergo_request_read_access
+ * - window.ergoConnector
  */
 export const AddWallet = () => {
+  const router = useRouter();
   const [walletInput, setWalletInput] = useState('');
   const { addWalletOpen, setAddWalletOpen } = useAddWallet();
   const { wallet, setWallet, dAppWallet, setDAppWallet } = useWallet();
@@ -62,23 +67,29 @@ export const AddWallet = () => {
     // load dApp state
     if (
       localStorage.getItem(DAPP_CONNECTED) &&
+      localStorage.getItem(DAPP_NAME) &&
       localStorage.getItem(WALLET_ADDRESS_LIST)
     ) {
       setDAppWallet({
         connected:
           localStorage.getItem(DAPP_CONNECTED) === 'true' ? true : false,
+        name: localStorage.getItem(DAPP_NAME),
         addresses: JSON.parse(localStorage.getItem(WALLET_ADDRESS_LIST)),
       });
     }
     // refresh connection
     try {
       if (localStorage.getItem(DAPP_CONNECTED) === 'true') {
-        window.ergo_check_read_access().then((res) => {
-          if (!res)
-            window.ergo_request_read_access().then((res) => {
-              if (!res) clearWallet();
-            });
-        });
+        window.ergoConnector[localStorage.getItem(DAPP_NAME)]
+          .isConnected()
+          .then((res) => {
+            if (!res)
+              window.ergoConnector[localStorage.getItem(DAPP_NAME)]
+                .connect()
+                .then((res) => {
+                  if (!res) clearWallet();
+                });
+          });
       }
     } catch (e) {
       console.log(e);
@@ -92,6 +103,7 @@ export const AddWallet = () => {
   useEffect(() => {
     if (init) {
       localStorage.setItem(DAPP_CONNECTED, dAppWallet.connected);
+      localStorage.setItem(DAPP_NAME, dAppWallet.name);
       localStorage.setItem(
         WALLET_ADDRESS_LIST,
         JSON.stringify(dAppWallet.addresses)
@@ -118,11 +130,12 @@ export const AddWallet = () => {
     setDAppError(false);
     setDAppWallet({
       connected: false,
+      name: '',
       addresses: [],
     });
   };
 
-  const clearWallet = () => {
+  const clearWallet = (hardRefresh = false) => {
     // clear state and local storage
     setWalletInput('');
     setWallet('');
@@ -130,8 +143,10 @@ export const AddWallet = () => {
     setDAppError(false);
     setDAppWallet({
       connected: false,
+      name: '',
       addresses: [],
     });
+    if (hardRefresh) router.reload();
   };
 
   const handleWalletFormChange = (e) => {
@@ -141,15 +156,19 @@ export const AddWallet = () => {
   /**
    * dapp connector
    */
-  const dAppConnect = async () => {
+  const dAppConnect = async (wallet) => {
+    const walletMapper = {
+      nautilus: window.ergoConnector?.nautilus,
+      safew: window.ergoConnector?.safew,
+    };
     setLoading(true);
     try {
-      if (await window.ergo_check_read_access()) {
-        await dAppLoad();
+      if (await walletMapper[wallet].isConnected()) {
+        await dAppLoad(wallet);
         setLoading(false);
         return;
-      } else if (await window.ergo_request_read_access()) {
-        await dAppLoad();
+      } else if (await walletMapper[wallet].connect()) {
+        await dAppLoad(wallet);
         setLoading(false);
         return;
       }
@@ -161,7 +180,7 @@ export const AddWallet = () => {
     setLoading(false);
   };
 
-  const dAppLoad = async () => {
+  const dAppLoad = async (wallet) => {
     try {
       const address_used = await ergo.get_used_addresses(); // eslint-disable-line
       const address_unused = await ergo.get_unused_addresses(); // eslint-disable-line
@@ -173,6 +192,7 @@ export const AddWallet = () => {
       // update dApp state
       setDAppWallet({
         connected: true,
+        name: wallet,
         addresses: addresses,
       });
       setDAppError(false);
@@ -181,6 +201,7 @@ export const AddWallet = () => {
       // update dApp state
       setDAppWallet({
         connected: false,
+        name: '',
         addresses: [],
       });
       setDAppError(true);
@@ -212,92 +233,153 @@ export const AddWallet = () => {
     setLoading(false);
   };
 
+  const [mobileAdd, setMobileAdd] = useState(false)
+
   return (
     <>
       <Dialog open={addWalletOpen} onClose={handleClose}>
-        <DialogTitle>Connect Wallet</DialogTitle>
+        <DialogTitle sx={{ textAlign: 'center', mb: 0, pb: 0, fontWeight: '800', fontSize: '32px' }}>{dAppWallet.connected ? 'DApp Connected' : 'Connect Wallet'}</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Enter your Ergo wallet public key. This will be used to interact
-            with smart contracts and display assets on the dashboard. Your
-            public key will never be stored on our server. If you are using a
-            dapp wallet please make sure only one wallet is enabled. Enabling
-            multiple wallet extensions will cause undefined behaviour.
+          <DialogContentText sx={{ textAlign: 'center', mb: '24px' }}>
+            Your wallet info will never be stored on our server.
           </DialogContentText>
-          <Grid sx={{ py: 2 }}>
-            <Button
-              disabled={loading}
-              onClick={dAppConnect}
-              sx={{
-                color: '#fff',
-                fontSize: '1rem',
-                py: '0.6rem',
-                px: '1.6rem',
-                textTransform: 'none',
-                backgroundColor: theme.palette.secondary.main,
-                '&:hover': {
-                  backgroundColor: theme.palette.secondary.hover,
-                  boxShadow: 'none',
-                },
-                '&:active': {
-                  backgroundColor: theme.palette.secondary.active,
-                },
-              }}
-            >
-              {dAppWallet.connected
-                ? 'dApp Connected'
-                : 'Connect with Nautilus'}
-              {loading && (
-                <CircularProgress
-                  sx={{ ml: 2, color: 'white' }}
-                  size={'1.2rem'}
-                />
-              )}
-            </Button>
-            <FormHelperText error={true}>
-              {dAppError ? 'Failed to connect to wallet. Please retry.' : ''}
-            </FormHelperText>
-            {dAppWallet.connected && (
-              <Accordion sx={{ mt: 1 }}>
-                <AccordionSummary onClick={loadAddresses}>
-                  <strong>Change Address</strong>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <PaginatedTable
-                    rows={dAppAddressTableData}
-                    onClick={(index) =>
-                      changeWalletAddress(dAppAddressTableData[index].name)
-                    }
-                  />
-                </AccordionDetails>
-              </Accordion>
-            )}
-          </Grid>
-          <TextField
-            disabled={dAppWallet.connected}
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Wallet address"
-            type="wallet"
-            fullWidth
-            variant="standard"
-            value={walletInput}
-            onChange={handleWalletFormChange}
-            error={!isAddressValid(walletInput)}
-          />
+          {!dAppWallet.connected && (
+            <Grid container spacing={2} sx={{ py: 2, }}>
+              <Grid item xs={4}>
+                <Button
+                  // disabled={loading || wallet}
+                  onClick={() => dAppConnect('nautilus')}
+                  sx={{
+                    color: '#fff',
+                    textTransform: 'none',
+                    backgroundColor: theme.palette.primary.main,
+                    '&:hover': {
+                      backgroundColor: theme.palette.primary.hover,
+                      boxShadow: 'none',
+                    },
+                    '&:active': {
+                      backgroundColor: theme.palette.primary.active,
+                    },
+                    width: '100%',
+                  }}
+                >
+                  Nautilus
+                  {loading && (
+                    <CircularProgress
+                      sx={{ ml: 2, color: 'white' }}
+                      size={'1.2rem'}
+                    />
+                  )}
+                </Button>
+              </Grid>
+              <Grid item xs={4}>
+                <Button
+                  // disabled={loading || wallet}
+                  onClick={() => dAppConnect('safew')}
+                  sx={{
+                    color: '#fff',
+                    textTransform: 'none',
+                    backgroundColor: theme.palette.secondary.main,
+                    '&:hover': {
+                      backgroundColor: theme.palette.secondary.hover,
+                      boxShadow: 'none',
+                    },
+                    '&:active': {
+                      backgroundColor: theme.palette.secondary.active,
+                    },
+                    width: '100%',
+                  }}
+                >
+                  SafeW
+                  {loading && (
+                    <CircularProgress
+                      sx={{ ml: 2, color: 'white' }}
+                      size={'1.2rem'}
+                    />
+                  )}
+                </Button>
+              </Grid>
+              <Grid item xs={4}>
+                <Button
+                  onClick={() => setMobileAdd(!mobileAdd)}
+                  sx={{
+                    color: '#fff',
+                    textTransform: 'none',
+                    backgroundColor: theme.palette.tertiary.main,
+                    '&:hover': {
+                      backgroundColor: theme.palette.tertiary.hover,
+                      boxShadow: 'none',
+                    },
+                    '&:active': {
+                      backgroundColor: theme.palette.tertiary.active,
+                    },
+                    width: '100%',
+                  }}
+                >
+                  Mobile
+                </Button>
+              </Grid>
+            </Grid>
+          )}
           <FormHelperText error={true}>
-            {!isAddressValid(walletInput) ? 'Invalid ergo address.' : ''}
+            {dAppError
+              ? 'Failed to connect to wallet. Please retry after refreshing page.'
+              : ''}
           </FormHelperText>
+          {dAppWallet.connected && (
+            <Accordion sx={{ mt: 1 }}>
+              <AccordionSummary onClick={loadAddresses}>
+                <strong>Change Address</strong>
+              </AccordionSummary>
+              <AccordionDetails>
+                <PaginatedTable
+                  rows={dAppAddressTableData}
+                  onClick={(index) =>
+                    changeWalletAddress(dAppAddressTableData[index].name)
+                  }
+                />
+              </AccordionDetails>
+            </Accordion>
+          )}
+
+          {mobileAdd && (
+            <>
+              <TextField
+                disabled={dAppWallet.connected}
+                autoFocus
+                margin="dense"
+                id="name"
+                label="Wallet address"
+                type="wallet"
+                fullWidth
+                variant="outlined"
+                value={walletInput}
+                onChange={handleWalletFormChange}
+                error={!isAddressValid(walletInput)}
+                sx={{
+                  '& .MuiOutlinedInput-input:-webkit-autofill': {
+                    boxShadow: '0 0 0 100px rgba(35, 35, 39, 1) inset'
+                  }
+                }}
+              />
+              <FormHelperText error={true}>
+                {!isAddressValid(walletInput) ? 'Invalid ergo address.' : ''}
+              </FormHelperText>
+            </>
+          )}
+
+
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'space-between' }}>
-          <Button onClick={() => clearWallet()}>Remove wallet</Button>
           <Button onClick={handleClose}>Close Window</Button>
+          <Button disabled={!wallet} onClick={() => clearWallet(true)}>
+            Remove Wallet
+          </Button>
           <Button
             onClick={handleSubmitWallet}
             disabled={!isAddressValid(walletInput) || dAppWallet.connected}
           >
-            Connect Read Only Wallet
+            Connect
           </Button>
         </DialogActions>
       </Dialog>

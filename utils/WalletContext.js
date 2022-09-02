@@ -8,6 +8,7 @@ const WalletProvider = ({ children }) => {
   const [wallet, setWallet] = useState(''); // primary address
   const [dAppWallet, setDAppWallet] = useState({
     connected: false,
+    name: '',
     addresses: [],
   }); // dApp only
 
