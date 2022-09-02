@@ -4,7 +4,7 @@ import {
   Button,
   Dialog,
   TextField,
-  Typography,
+  Collapse,
   DialogActions,
   DialogContent,
   DialogContentText,
@@ -342,31 +342,30 @@ export const AddWallet = () => {
             </Accordion>
           )}
 
-          {mobileAdd && (
-            <>
-              <TextField
-                disabled={dAppWallet.connected}
-                autoFocus
-                margin="dense"
-                id="name"
-                label="Wallet address"
-                type="wallet"
-                fullWidth
-                variant="outlined"
-                value={walletInput}
-                onChange={handleWalletFormChange}
-                error={!isAddressValid(walletInput)}
-                sx={{
-                  '& .MuiOutlinedInput-input:-webkit-autofill': {
-                    boxShadow: '0 0 0 100px rgba(35, 35, 39, 1) inset'
-                  }
-                }}
-              />
-              <FormHelperText error={true}>
-                {!isAddressValid(walletInput) ? 'Invalid ergo address.' : ''}
-              </FormHelperText>
-            </>
-          )}
+          <Collapse in={mobileAdd}>
+            <TextField
+              disabled={dAppWallet.connected}
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Wallet address"
+              type="wallet"
+              fullWidth
+              variant="outlined"
+              value={walletInput}
+              onChange={handleWalletFormChange}
+              error={!isAddressValid(walletInput)}
+              sx={{
+                '& .MuiOutlinedInput-input:-webkit-autofill': {
+                  boxShadow: '0 0 0 100px rgba(35, 35, 39, 1) inset'
+                }
+              }}
+            />
+            <FormHelperText error={true}>
+              {!isAddressValid(walletInput) ? 'Invalid ergo address.' : ''}
+            </FormHelperText>
+          </Collapse>
+
 
 
         </DialogContent>
