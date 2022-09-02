@@ -342,7 +342,7 @@ export const AddWallet = () => {
             </Accordion>
           )}
 
-          <Collapse in={mobileAdd}>
+          <Collapse in={mobileAdd || dAppWallet.connected}>
             <TextField
               disabled={dAppWallet.connected}
               autoFocus
