@@ -68,12 +68,13 @@ const AssetItem = ({
   const [assetMapper, setAssetMapper] = useState({});
 
   useEffect(() => {
+    let isMounted = true; 
     const loadMapper = async () => {
       const mapper = await getNautilusAddressMapper();
-      setAssetMapper(mapper);
+      if (isMounted) setAssetMapper(mapper);
     };
-
     loadMapper();
+    return () => { isMounted = false };
   }, []);
 
   const AssetImage = () => {

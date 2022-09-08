@@ -10,7 +10,7 @@ import {
   FormHelperText,
   FormGroup,
 } from '@mui/material';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { useWallet } from 'utils/WalletContext';
 import CenterTitle from '@components/CenterTitle';
@@ -105,7 +105,11 @@ const Dashboard = () => {
   const [navigatorLanguage, setNavigatorLanguage] = useState('en-US');
 
   useEffect(() => {
-    setNavigatorLanguage(navigator.language);
+    let mounted = true;
+    if (mounted) {
+      setNavigatorLanguage(navigator.language);
+    }
+    return () => mounted = false;
   }, []);
 
   useEffect(() => {
@@ -130,7 +134,7 @@ const Dashboard = () => {
     setVestedTokensNFT({});
   };
 
-  useEffect(() => {
+  useMemo(() => {
     async function getWalletData(addresses) {
       const defaultOptions = {
         headers: {
@@ -192,18 +196,14 @@ const Dashboard = () => {
             const tokenObject = {
               name: data[0].assets[0].name,
               ch: data[0].creationHeight,
-              description: toUtf8String(data[0].additionalRegisters.R5).substr(
-                2
-              ),
+              description: toUtf8String(data[0].additionalRegisters.R5).substring(2),
               r7: data[0].additionalRegisters.R7,
               r9: data[0].additionalRegisters?.R9
-                ? resolveIpfs(
-                    toUtf8String(data[0].additionalRegisters?.R9).substr(2)
-                  )
+                ? resolveIpfs(toUtf8String(data[0].additionalRegisters?.R9).substring(2))
                 : undefined,
-              r5: toUtf8String(data[0].additionalRegisters.R5).substr(2),
+              r5: toUtf8String(data[0].additionalRegisters.R5).substring(2),
               ext: toUtf8String(data[0].additionalRegisters.R9)
-                .substr(2)
+                .substring(2)
                 .slice(-4),
               token: initialAssetList[i].token,
               id: initialAssetList[i].id,
@@ -360,29 +360,53 @@ const Dashboard = () => {
           };
         });
 
-      setStakedTokens(stakedTokens.data);
-      const tokens = stakedTokens.data.map((token) => token.tokenName);
-      try {
-        const pricesObject = {};
-        const tokenPrices = await axios.post(
-          `${process.env.API_URL}/asset/prices`,
-          { tokens: tokens }
-        );
-        tokenPrices.data.forEach((price) => {
-          pricesObject[price.name] = price.price;
-        });
-        setPriceDataStaked(pricesObject);
-      } catch (e) {
-        console.log(e);
+      // stakedTokens.data 
+      // 
+      // {
+      //   "ergopad": [
+      //     {
+      //       "project": "ergopad",
+      //       "tokenName": "ergopad",
+      //       "totalStaked": 0.00,
+      //       "addresses": {
+      //         "SOME-ERGO-ADDRESS": {
+      //           "totalStaked": 0.00,
+      //           "stakeBoxes": [
+      //             {
+      //               "boxId": "SOME-BOX-ID",
+      //               "stakeKeyId": "SOME-STAKE-KEY-ID",
+      //               "stakeAmount": 0.00
+      //             }
+      //           ]
+      //         }
+      //       }
+      //     }
+      //   ],
+      // }
+      if (stakedTokens.data.length > 0) {
+        setStakedTokens(stakedTokens.data);
+        const tokens = stakedTokens.data.map((token) => token.tokenName);
+        try {
+          const pricesObject = {};
+          const tokenPrices = await axios.post(
+            `${process.env.API_URL}/asset/prices`,
+            { tokens: tokens }
+          );
+          tokenPrices.data.forEach((price) => {
+            pricesObject[price.name] = price.price;
+          });
+          setPriceDataStaked(pricesObject);
+        } catch (e) {
+          console.log(e);
+        }
       }
-
       setLoadingStakingTable(false);
     };
 
     const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
       (x, i, a) => a.indexOf(x) == i && x
     );
-    if (walletAddresses.length) {
+    if (walletAddresses?.length > 0) {
       getWalletData(walletAddresses);
       getVestedTokenData(walletAddresses);
       getStakedTokenData(walletAddresses);
@@ -397,7 +421,7 @@ const Dashboard = () => {
     const historyState = JSON.parse(JSON.stringify(historyData));
     // build new state
     if (addVestingTableTokens) {
-      if (priceDataErgopad.ergopad) {
+      if (priceDataErgopad?.ergopad) {
         try {
           // vesting ergopad
           const ergopadValueOpt = vestedTokens.filter(
@@ -436,31 +460,36 @@ const Dashboard = () => {
     }
     if (addStakingTableTokens) {
       // staked
-      const reducedStaked = reduceStaked(stakedTokens).map((price) => {
-        return {
-          x: price.name + ' (staked)',
-          y: price.amount * (priceDataStaked[price.name] ?? 0),
-        };
-      });
-      holdingState.push(...reducedStaked);
+      if (stakedTokens.length > 0) {
+        const reducedStaked = reduceStaked(stakedTokens).map((price) => {
+          return {
+            x: price.name + ' (staked)',
+            y: price.amount * (priceDataStaked[price.name] ?? 0),
+          };
+        });
+        holdingState.push(...reducedStaked);
+      }
       // staked ergopad history
       const ergopadHistoryOpt = priceHistoryData.filter(
         (token) => token.token === 'ergopad'
       );
-      const ergopadValueOpt = reduceStaked(stakedTokens).filter((price) =>
-        price.name.toLowerCase().includes('ergopad')
-      );
-      if (ergopadValueOpt.length && ergopadHistoryOpt.length) {
-        const history = ergopadHistoryOpt[0].history.map((pt) => {
-          return {
-            timestamp: pt.timestamp,
-            value: pt.price * ergopadValueOpt[0].amount,
-          };
-        });
-        historyState.push({
-          token: ergopadValueOpt[0].name + ' (staked)',
-          history: history,
-        });
+
+      if (stakedTokens.length > 0) {
+        const ergopadValueOpt = reduceStaked(stakedTokens).filter((price) =>
+          price.name.toLowerCase().includes('ergopad')
+        );
+        if ((ergopadValueOpt.length > 0) && (ergopadHistoryOpt.length > 0)) {
+          const history = ergopadHistoryOpt[0].history.map((pt) => {
+            return {
+              timestamp: pt.timestamp,
+              value: pt.price * ergopadValueOpt[0].amount,
+            };
+          });
+          historyState.push({
+            token: ergopadValueOpt[0].name + ' (staked)',
+            history: history,
+          });
+        }
       }
     }
     setHoldingDataAggregated(holdingState);
@@ -566,32 +595,32 @@ const Dashboard = () => {
                 </Grid>
                 {vestedTokens.length + Object.keys(vestedTokensNFT).length >
                   0 && (
-                  <Grid
-                    item
-                    xs={12}
-                    md={4}
-                    sx={{
-                      justifyContent: checkSmall ? 'flex-end' : 'flex-start',
-                    }}
-                  >
-                    <FormGroup
+                    <Grid
+                      item
+                      xs={12}
+                      md={4}
                       sx={{
-                        alignItems: checkSmall ? 'flex-end' : 'flex-start',
+                        justifyContent: checkSmall ? 'flex-end' : 'flex-start',
                       }}
                     >
-                      <Switch
-                        disabled={
-                          loading || loadingStakingTable || loadingVestingTable
-                        }
-                        checked={addVestingTableTokens}
-                        onChange={(e) => setAddVestingTable(e.target.checked)}
-                      />
-                      <FormHelperText>
-                        Add to Wallet Holdings for Total
-                      </FormHelperText>
-                    </FormGroup>
-                  </Grid>
-                )}
+                      <FormGroup
+                        sx={{
+                          alignItems: checkSmall ? 'flex-end' : 'flex-start',
+                        }}
+                      >
+                        <Switch
+                          disabled={
+                            loading || loadingStakingTable || loadingVestingTable
+                          }
+                          checked={addVestingTableTokens}
+                          onChange={(e) => setAddVestingTable(e.target.checked)}
+                        />
+                        <FormHelperText>
+                          Add to Wallet Holdings for Total
+                        </FormHelperText>
+                      </FormGroup>
+                    </Grid>
+                  )}
               </Grid>
               {loadingVestingTable ? (
                 <CircularProgress color="inherit" />
@@ -748,7 +777,8 @@ function toUtf8String(hex) {
 
 function resolveIpfs(url) {
   const ipfsPrefix = 'ipfs://';
-  if (!url.startsWith(ipfsPrefix)) return url;
+  if (!url.startsWith(ipfsPrefix) && url.startsWith('http://')) return 'https://' + url.substring(7);
+  else if (!url.startsWith(ipfsPrefix)) return url;
   else return url.replace(ipfsPrefix, `https://cloudflare-ipfs.com/ipfs/`);
 }
 
@@ -841,6 +871,7 @@ const reduceVestedNFT = (vestedData) => {
 };
 
 const reduceStaked = (stakedData) => {
+  // console.log(stakedData)
   return stakedData.map((data) => {
     return {
       name: data.tokenName,
