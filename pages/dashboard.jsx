@@ -777,8 +777,8 @@ function toUtf8String(hex) {
 
 function resolveIpfs(url) {
   const ipfsPrefix = 'ipfs://';
-  if (!url.startsWith(ipfsPrefix)) return url;
-  if (url.startsWith('http://')) return 'https://' + url.substring(7);
+  if (!url.startsWith(ipfsPrefix) && url.startsWith('http://')) return 'https://' + url.substring(7);
+  else if (!url.startsWith(ipfsPrefix)) return url;
   else return url.replace(ipfsPrefix, `https://cloudflare-ipfs.com/ipfs/`);
 }
 
