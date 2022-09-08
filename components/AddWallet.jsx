@@ -45,6 +45,7 @@ export const AddWallet = () => {
   const { addWalletOpen, setAddWalletOpen } = useAddWallet();
   const { wallet, setWallet, dAppWallet, setDAppWallet } = useWallet();
   const [init, setInit] = useState(false);
+  const [mobileAdd, setMobileAdd] = useState(false);
 
   /**
    * dapp state
@@ -233,18 +234,26 @@ export const AddWallet = () => {
     setLoading(false);
   };
 
-  const [mobileAdd, setMobileAdd] = useState(false)
-
   return (
     <>
       <Dialog open={addWalletOpen} onClose={handleClose}>
-        <DialogTitle sx={{ textAlign: 'center', mb: 0, pb: 0, fontWeight: '800', fontSize: '32px' }}>{dAppWallet.connected ? 'DApp Connected' : 'Connect Wallet'}</DialogTitle>
+        <DialogTitle
+          sx={{
+            textAlign: 'center',
+            mb: 0,
+            pb: 0,
+            fontWeight: '800',
+            fontSize: '32px',
+          }}
+        >
+          {dAppWallet.connected ? 'DApp Connected' : 'Connect Wallet'}
+        </DialogTitle>
         <DialogContent>
           <DialogContentText sx={{ textAlign: 'center', mb: '24px' }}>
             Your wallet info will never be stored on our server.
           </DialogContentText>
           {!dAppWallet.connected && (
-            <Grid container spacing={2} sx={{ py: 2, }}>
+            <Grid container spacing={2} sx={{ py: 2 }}>
               <Grid item xs={4}>
                 <Button
                   // disabled={loading || wallet}
@@ -341,7 +350,6 @@ export const AddWallet = () => {
               </AccordionDetails>
             </Accordion>
           )}
-
           <Collapse in={mobileAdd || dAppWallet.connected}>
             <TextField
               disabled={dAppWallet.connected}
@@ -357,24 +365,22 @@ export const AddWallet = () => {
               error={!isAddressValid(walletInput)}
               sx={{
                 '& .MuiOutlinedInput-input:-webkit-autofill': {
-                  boxShadow: '0 0 0 100px rgba(35, 35, 39, 1) inset'
-                }
+                  boxShadow: '0 0 0 100px rgba(35, 35, 39, 1) inset',
+                },
               }}
             />
             <FormHelperText error={true}>
               {!isAddressValid(walletInput) ? 'Invalid ergo address.' : ''}
             </FormHelperText>
           </Collapse>
-
-
-
         </DialogContent>
-        <DialogActions sx={{ justifyContent: 'space-between' }}>
-          <Button onClick={handleClose}>Close Window</Button>
-          <Button disabled={!wallet} onClick={() => clearWallet(true)}>
+        <DialogActions sx={{ justifyContent: 'space-around', pb: 2 }}>
+          <Button sx={{ width: '150px' }} onClick={handleClose}>Close Window</Button>
+          <Button sx={{ width: '150px' }} disabled={!wallet} onClick={() => clearWallet(true)}>
             Remove Wallet
           </Button>
           <Button
+            sx={{ width: '150px' }}
             onClick={handleSubmitWallet}
             disabled={!isAddressValid(walletInput) || dAppWallet.connected}
           >
