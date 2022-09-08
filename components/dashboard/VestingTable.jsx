@@ -53,8 +53,8 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
 
   return (
     <>
-      {vestedObject.map((vestedToken) => (
-        <Box sx={{ mt: 4 }} key={vestedToken.tokenId}>
+      {vestedObject.map((vestedToken, i) => (
+        <Box sx={{ mt: 4 }} key={i}>
           <Typography
             variant="p"
             color="text.primary"
@@ -96,9 +96,9 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {vestedToken.outstanding.map((vested, index) => {
+                {vestedToken.outstanding.map((vested, i) => {
                   return (
-                    <TableRow key={index}>
+                    <TableRow key={i}>
                       <TableCell sx={{ color: theme.palette.text.secondary }}>
                         {vested.date}
                       </TableCell>
@@ -112,9 +112,10 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
             </Table>
           ) : (
             <Table sx={{ p: 0 }}>
-              {vestedToken.outstanding.map((vested) => {
+              <TableBody>
+              {vestedToken.outstanding.map((vested, i) => {
                 return (
-                  <>
+                  <React.Fragment key={i}>
                     <TableRow sx={{ borderTop: `1px solid #444` }}>
                       <TableCell
                         sx={{
@@ -144,15 +145,16 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                         {vested.date}
                       </TableCell>
                     </TableRow>
-                  </>
+                  </React.Fragment>
                 );
               })}
+              </TableBody>
             </Table>
           )}
         </Box>
       ))}
-      {Object.keys(vestedTokensWithNFT).map((vestedToken) => (
-        <Box sx={{ mt: 4 }} key={vestedTokensWithNFT[vestedToken].boxId}>
+      {Object.keys(vestedTokensWithNFT).map((vestedToken, i) => (
+        <Box key={i} sx={{ mt: 4 }}>
           <Typography
             variant="p"
             color="text.primary"
@@ -184,8 +186,8 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {vestedTokensWithNFT[vestedToken].map((box) => (
-                  <TableRow key={box.boxId}>
+                {vestedTokensWithNFT[vestedToken].map((box, i) => (
+                  <TableRow key={i}>
                     <TableCell sx={{ color: theme.palette.text.secondary }}>
                       {box['Remaining'].toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
                     </TableCell>
@@ -209,8 +211,9 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
             </Table>
           ) : (
             <Table sx={{ p: 0 }}>
-              {vestedTokensWithNFT[vestedToken].map((box) => (
-                <>
+              <TableBody>
+              {vestedTokensWithNFT[vestedToken].map((box, i) => (
+                <React.Fragment key={i}>
                   <TableRow sx={{ borderTop: `1px solid #444` }}>
                     <TableCell
                       sx={{
@@ -270,8 +273,9 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                       </Button>
                     </TableCell>
                   </TableRow>
-                </>
+                </React.Fragment>
               ))}
+              </TableBody>
             </Table>
           )}
         </Box>

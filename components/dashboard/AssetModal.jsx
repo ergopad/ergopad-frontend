@@ -106,15 +106,13 @@ const AssetModal = ({ open, handleClose, asset, navigatorLanguage }) => {
             <AccordionDetails sx={{ overflowWrap: 'break-word' }}>
               {Object.keys(metadata)
                 .filter((key) => !key.match(/^[0-9]+$/))
-                .map((key) => (
-                  <>
-                    <Typography sx={{ fontSize: '0.9rem', mb: 1 }}>
+                .map((key, i) => (
+                    <Typography key={i} sx={{ fontSize: '0.9rem', mb: 1 }}>
                       <strong>
                         {key.charAt(0).toUpperCase() + key.slice(1)}:
                       </strong>{' '}
                       {metadata[key]}
                     </Typography>
-                  </>
                 ))}
             </AccordionDetails>
           </Accordion>
