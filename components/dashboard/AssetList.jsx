@@ -17,8 +17,8 @@ const AssetList = ({ assets, title, type, navigatorLanguage }) => {
         {title}
       </Typography>
 
-      {assets.map((asset) => {
-        if (asset.name != '') return <AssetItem key={asset.id} asset={asset} type={type} navigatorLanguage={navigatorLanguage} />;
+      {assets.map((asset, i) => {
+        if (asset.name != '') return <AssetItem key={i} asset={asset} type={type} navigatorLanguage={navigatorLanguage} />;
       })}
     </Container>
   );

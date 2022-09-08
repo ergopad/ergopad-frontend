@@ -157,7 +157,7 @@ const Footer = () => {
               <Skeleton variant="text" />
             ) : (
               <>
-                {contributionProjectsActive.map((event) => (
+                {contributionProjectsActive?.map((event) => (
                   <ListItem key={event.id} disableGutters sx={listItemStyles}>
                     <Link
                       activeClassName="active"
@@ -168,7 +168,7 @@ const Footer = () => {
                     </Link>
                   </ListItem>
                 ))}
-                {whiteListProjectsActive.map((event) => (
+                {whiteListProjectsActive?.map((event) => (
                   <ListItem key={event.id} disableGutters sx={listItemStyles}>
                     <Link
                       activeClassName="active"
