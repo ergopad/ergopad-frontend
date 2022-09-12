@@ -7,9 +7,15 @@ import MuiNextLink from '@components/MuiNextLink';
 
 const MarkdownList = styled(List)({
   listStyle: 'disc',
-  listStylePosition: 'inside',
+  listStyleType: "disc",
+  // listStylePosition: 'inside',
   padding: 0,
+  marginLeft: '32px',
   marginBottom: '2rem',
+  "& li": {
+    display: 'list-item',
+    paddingLeft: '6px',
+  },
 });
 
 const MarkdownListItem = styled(ListItem)({
