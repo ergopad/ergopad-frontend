@@ -296,7 +296,6 @@ const ActiveRound = ({ projects, isLoading }) => {
         setActiveRounds(previous => [...previous, project])
       })
     }
-    console.log(included)
   }, [projects]);
 
   useEffect(() => {
