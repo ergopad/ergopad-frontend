@@ -6,7 +6,7 @@ import axios from 'axios';
 
 export const ASSET_URL = 'https://raw.githubusercontent.com/capt-nemo429/nautilus-wallet/master/public/icons/assets'
 const MAPPER =
-  'https://raw.githubusercontent.com/capt-nemo429/nautilus-wallet/master/src/mappers/logoMapper.ts';
+  'https://raw.githubusercontent.com/capt-nemo429/nautilus-wallet/master/src/mappers/assetIconMap.ts';
 const ADDRESS_MAPPER_STORAGE_KEY = 'nautilus_address_mapper_324';
 const TIMEOUT = 24 * 60 * 60 * 1000; // 24 hours
 
