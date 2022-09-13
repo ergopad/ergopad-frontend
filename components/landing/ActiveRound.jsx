@@ -190,7 +190,7 @@ const CheckButtonType = ({ name, activeRounds, project }) => {
       .replaceAll(" ", "")
       .replaceAll(/[^a-zA-Z0-9]/g, "")} />
   }
-  else if (name.toLowerCase().includes('whitelist')
+  else if ((name.toLowerCase().includes('whitelist') || name.toLowerCase().includes('snapshot'))
     && name.toLowerCase().includes('staker')
     && activeRounds.some(attr => (
       attr.projectName.toLowerCase()
@@ -282,7 +282,7 @@ const ActiveRound = ({ projects, isLoading }) => {
   } = useContributionProjects();
 
   const checkProject = (project) => {
-    return included.includes(project.name?.toLowerCase())
+    return included.includes(project.name?.toLowerCase().replaceAll(" ", "").replaceAll(/[^a-zA-Z0-9]/g, ""))
   }
 
   useEffect(() => {
