@@ -96,7 +96,7 @@ const Whitelist = () => {
       setWhitelistLoading(true);
       try {
         const res = await axios.get(
-          `${process.env.API_URL}/whitelist/events/${projectName}/${roundName}`
+          `${process.env.API_URL}/whitelist/events/${projectName}/${roundName}?format=adjust_early_bird`
         );
         setWhitelistData(res.data);
         setCheckboxState(
@@ -104,8 +104,8 @@ const Whitelist = () => {
             return { text: text, check: false };
           })
         );
-        const startTime = Date.parse(res.data.start_dtz)
-        const endTime = Date.parse(res.data.end_dtz)
+        const startTime = Date.parse(res.data.start_dtz);
+        const endTime = Date.parse(res.data.end_dtz);
         if (Date.now() < startTime) {
           setWhitelistState(NOT_STARTED);
         } else if (Date.now() > endTime) {
@@ -599,9 +599,17 @@ const Whitelist = () => {
                     <Typography sx={{ color: theme.palette.text.secondary }}>
                       {whitelistState === NOT_STARTED &&
                         'This form is not yet active. The round will start at ' +
-                        new Date(
-                          Date.parse(whitelistData.start_dtz)
-                        ).toLocaleString(navigator.language, {year: 'numeric', month: 'short', day: '2-digit', hour12: 'true', hour: '2-digit', minute: '2-digit', timeZoneName: 'long'})}
+                          new Date(
+                            Date.parse(whitelistData.start_dtz)
+                          ).toLocaleString(navigator.language, {
+                            year: 'numeric',
+                            month: 'short',
+                            day: '2-digit',
+                            hour12: 'true',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            timeZoneName: 'long',
+                          })}
                     </Typography>
                     <Snackbar
                       open={openError}
