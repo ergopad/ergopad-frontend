@@ -37,6 +37,7 @@ const initialFormData = Object.freeze({
     min_stake: 0,
     add_to_footer: false,
     staker_snapshot_whitelist: false,
+    early_bird: null,
   },
   total_sigusd: 0,
   buffer_sigusd: 0,
@@ -177,16 +178,52 @@ const EditWhitelistEventForm = () => {
     }
 
     if (
-      ['min_stake', 'add_to_footer', 'staker_snapshot_whitelist'].includes(
-        e.target.name
-      )
+      [
+        'min_stake',
+        'add_to_footer',
+        'staker_snapshot_whitelist',
+        'early_bird',
+        'early_bird_min_stake',
+        'early_bird_round_length__s',
+      ].includes(e.target.name)
     ) {
       if (['min_stake'].includes(e.target.name)) {
         updateFormData({
           ...formData,
           additionalDetails: {
             ...formData.additionalDetails,
-            [e.target.name]: e.target.value,
+            [e.target.name]: isNaN(parseInt(e.target.value))
+              ? 0
+              : parseInt(e.target.value),
+          },
+        });
+      } else if (['early_bird'].includes(e.target.name)) {
+        updateFormData({
+          ...formData,
+          additionalDetails: {
+            ...formData.additionalDetails,
+            [e.target.name]: e.target.checked
+              ? { min_stake: 0, round_length__s: 3600 }
+              : null,
+          },
+        });
+      } else if (
+        ['early_bird_min_stake', 'early_bird_round_length__s'].includes(
+          e.target.name
+        )
+      ) {
+        updateFormData({
+          ...formData,
+          additionalDetails: {
+            ...formData.additionalDetails,
+            early_bird: {
+              ...formData.additionalDetails.early_bird,
+              [e.target.name.replace('early_bird_', '')]: isNaN(
+                parseInt(e.target.value)
+              )
+                ? 0
+                : parseInt(e.target.value),
+            },
           },
         });
       } else {
@@ -562,6 +599,86 @@ const EditWhitelistEventForm = () => {
               helperText={formErrors.end_dtz && 'Invalid Format'}
             />
           </Grid>
+        </Grid>
+        <Typography variant="h6" sx={{ mt: 4, mb: 1, fontWeight: '700' }}>
+          Early Bird Round Configuration
+        </Typography>
+        <Grid container item>
+          <Grid item xs={12} md={6}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  disabled={
+                    formData.additionalDetails.staker_snapshot_whitelist
+                  }
+                  name="early_bird"
+                  checked={formData.additionalDetails.early_bird != null}
+                  onChange={handleChange}
+                />
+              }
+              label="Add Early Bird Round Configuration"
+            />
+          </Grid>
+        </Grid>
+        <Grid container item>
+          <Grid item xs={12} md={6} sx={{ mt: 1 }}>
+            <TextField
+              sx={{ p: 0.5 }}
+              InputProps={{ disableUnderline: true }}
+              disabled={
+                formData.additionalDetails.early_bird == null ||
+                formData.additionalDetails.staker_snapshot_whitelist
+              }
+              required
+              fullWidth
+              id="early_bird_min_stake"
+              label="Early Bird Min Stake"
+              name="early_bird_min_stake"
+              variant="filled"
+              value={formData.additionalDetails.early_bird?.min_stake ?? 0}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} md={6} sx={{ mt: 1 }}>
+            <TextField
+              sx={{ p: 0.5 }}
+              InputProps={{ disableUnderline: true }}
+              disabled={
+                formData.additionalDetails.early_bird == null ||
+                formData.additionalDetails.staker_snapshot_whitelist
+              }
+              required
+              fullWidth
+              id="early_bird_round_length__s"
+              label="Early Bird Round Length(sec)"
+              name="early_bird_round_length__s"
+              variant="filled"
+              value={
+                formData.additionalDetails.early_bird?.round_length__s ?? 3600
+              }
+              onChange={handleChange}
+            />
+          </Grid>
+          {formData.additionalDetails.early_bird != null && (
+            <Grid item xs={12} sx={{ mt: 1, px: 1 }}>
+              <Typography color="text.secondary" fontSize={12}>
+                Early Bird Round Starts:{' '}
+                {new Date(Date.parse(formData.start_dtz)).toUTCString()}
+              </Typography>
+              <Typography color="text.secondary" fontSize={12}>
+                Public Round Starts:{' '}
+                {new Date(
+                  Date.parse(formData.start_dtz) +
+                    formData.additionalDetails.early_bird?.round_length__s *
+                      1000
+                ).toUTCString()}
+              </Typography>
+              <Typography color="text.secondary" fontSize={12}>
+                Round Ends:{' '}
+                {new Date(Date.parse(formData.end_dtz)).toUTCString()}
+              </Typography>
+            </Grid>
+          )}
         </Grid>
         <Typography variant="h6" sx={{ mt: 4, mb: 1, fontWeight: '700' }}>
           Form Configuration
