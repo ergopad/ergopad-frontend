@@ -299,7 +299,6 @@ const ActiveRound = ({ projects, isLoading }) => {
   }, [projects]);
 
   useEffect(() => {
-    console.log(included)
     if (projects?.length !== 0) {
       setFilteredProjects(projects?.filter(project => checkProject(project)))
     }
