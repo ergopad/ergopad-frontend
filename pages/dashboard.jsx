@@ -882,7 +882,7 @@ const getIssuingBoxPromise = (id) => {
   const box = localStorage.getItem(generateIssueingBoxStorageKey(id));
   if (box === null) {
     return axios
-      .get(`https://api.ergopltform.com/api/v0/assets/${id}/issuingBox`)
+      .get(`https://api.ergoplatform.com/api/v0/assets/${id}/issuingBox`)
       .catch((err) => {
         console.log("ERROR FETCHING: ", err);
       });
