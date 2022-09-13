@@ -172,14 +172,7 @@ const Dashboard = () => {
         const indexMapper = {};
         for (let i = 0; i < initialAssetList.length; i++) {
           if (initialAssetList[i].id != 'ergid') {
-            const promise = axios
-              .get(
-                `https://api.ergoplatform.com/api/v0/assets/${initialAssetList[i].id}/issuingBox`,
-                { ...defaultOptions }
-              )
-              .catch((err) => {
-                console.log('ERROR FETCHING: ', err);
-              });
+            const promise = getIssuingBoxPromise(initialAssetList[i].id);
             indexMapper[initialAssetList[i].id] = i;
             assetListPromises.push(promise);
           } else {
@@ -193,6 +186,8 @@ const Dashboard = () => {
           if (res?.data) {
             const data = res?.data;
             const i = indexMapper[data[0].assets[0].tokenId];
+            // cache issuing box
+            setIssuingBox(initialAssetList[i].id, res);
             const tokenObject = {
               name: data[0].assets[0].name,
               ch: data[0].creationHeight,
@@ -871,13 +866,37 @@ const reduceVestedNFT = (vestedData) => {
 };
 
 const reduceStaked = (stakedData) => {
-  // console.log(stakedData)
   return stakedData.map((data) => {
     return {
       name: data.tokenName,
       amount: data.totalStaked,
     };
   });
+};
+
+const generateIssueingBoxStorageKey = (id) => {
+  return `issuing_box_${id}_87126`;
+};
+
+const getIssuingBoxPromise = (id) => {
+  const box = localStorage.getItem(generateIssueingBoxStorageKey(id));
+  if (box === null) {
+    return axios
+      .get(`https://api.ergopltform.com/api/v0/assets/${id}/issuingBox`)
+      .catch((err) => {
+        console.log("ERROR FETCHING: ", err);
+      });
+  }
+  return JSON.parse(box);
+};
+
+const setIssuingBox = (id, res) => {
+  if (res?.data) {
+    localStorage.setItem(
+      generateIssueingBoxStorageKey(id),
+      JSON.stringify(res)
+    );
+  }
 };
 
 export default Dashboard;
