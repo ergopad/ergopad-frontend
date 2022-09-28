@@ -286,19 +286,19 @@ const Dashboard = () => {
       /**
        * V1 vested ergopad
        */
-      const vested = await axios
-        .post(
-          `${process.env.API_URL}/vesting/v1/`,
-          { addresses: [...addresses] },
-          { ...defaultOptions }
-        )
-        .catch((e) => {
-          console.log('ERROR FETCHING', e);
-          return {
-            data: {},
-          };
-        });
-      setVestedTokens(reduceVested(vested.data));
+      // const vested = await axios
+      //   .post(
+      //     `${process.env.API_URL}/vesting/v1/`,
+      //     { addresses: [...addresses] },
+      //     { ...defaultOptions }
+      //   )
+      //   .catch((e) => {
+      //     console.log('ERROR FETCHING', e);
+      //     return {
+      //       data: {},
+      //     };
+      //   });
+      // setVestedTokens(reduceVested(vested.data));
 
       /**
        * V2 vested with NFT
@@ -837,22 +837,22 @@ const reduceBalances = (balances) => {
   }
 };
 
-const reduceVested = (vestedData) => {
-  const vested = JSON.parse(JSON.stringify(vestedData));
-  const vestedList = Object.keys(vested).map((tokenId) => {
-    return {
-      tokenId: tokenId,
-      ...vested[tokenId],
-      outstanding: Object.keys(vested[tokenId].outstanding).map((date) => {
-        return {
-          date: date,
-          amount: vested[tokenId].outstanding[date].amount,
-        };
-      }),
-    };
-  });
-  return vestedList;
-};
+// const reduceVested = (vestedData) => {
+//   const vested = JSON.parse(JSON.stringify(vestedData));
+//   const vestedList = Object.keys(vested).map((tokenId) => {
+//     return {
+//       tokenId: tokenId,
+//       ...vested[tokenId],
+//       outstanding: Object.keys(vested[tokenId].outstanding).map((date) => {
+//         return {
+//           date: date,
+//           amount: vested[tokenId].outstanding[date].amount,
+//         };
+//       }),
+//     };
+//   });
+//   return vestedList;
+// };
 
 const reduceVestedNFT = (vestedData) => {
   return Object.keys(vestedData).map((token) => {
