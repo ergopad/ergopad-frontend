@@ -53,6 +53,7 @@ const initialFormData = Object.freeze({
     tokenTicker: '',
     tokenomics: [],
   },
+  isDraft: false,
 });
 
 const initialFormErrors = Object.freeze({
@@ -156,7 +157,7 @@ const CreateProjectForm = () => {
       updateFormData({
         ...formData,
         [e.target.name]:
-          e.target.name === 'isLaunched' ? e.target.checked : e.target.value,
+          ['isLaunched', 'isDraft'].includes(e.target.name) ? e.target.checked : e.target.value,
       });
     }
   };
@@ -490,6 +491,17 @@ const CreateProjectForm = () => {
             />
           }
           label="Launched?"
+          sx={{ color: theme.palette.text.secondary, mb: 3, mr: 3 }}
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              name="isDraft"
+              value={formData.isDraft}
+              onChange={handleChange}
+            />
+          }
+          label="Draft?"
           sx={{ color: theme.palette.text.secondary, mb: 3 }}
         />
         <Box sx={{ position: 'relative' }}>

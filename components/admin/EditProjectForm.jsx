@@ -58,6 +58,7 @@ const initialFormData = Object.freeze({
     tokenTicker: '',
     tokenomics: [],
   },
+  isDraft: false,
 });
 
 const initialFormErrors = Object.freeze({
@@ -99,7 +100,7 @@ const EditProjectForm = () => {
     const getTableData = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${process.env.API_URL}/projects/`);
+        const res = await axios.get(`${process.env.API_URL}/projects/?include_drafts=true`);
         res.data.sort((a, b) => a.id - b.id);
         setProjectData(res.data);
       } catch (e) {
@@ -179,7 +180,7 @@ const EditProjectForm = () => {
       updateFormData({
         ...formData,
         [e.target.name]:
-          e.target.name === 'isLaunched' ? e.target.checked : e.target.value,
+          ['isLaunched', 'isDraft'].includes(e.target.name) ? e.target.checked : e.target.value,
       });
     }
   };
@@ -585,6 +586,17 @@ const EditProjectForm = () => {
             />
           }
           label="Launched?"
+          sx={{ color: theme.palette.text.secondary, mb: 3, mr: 3 }}
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              name="isDraft"
+              checked={formData.isDraft ?? 0}
+              onChange={handleChange}
+            />
+          }
+          label="Draft?"
           sx={{ color: theme.palette.text.secondary, mb: 3 }}
         />
         <Box sx={{ position: 'relative' }}>
