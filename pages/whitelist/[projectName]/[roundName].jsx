@@ -261,16 +261,13 @@ const Whitelist = () => {
 
     const emptyCheck =
       formData.ergoAddress !== '' &&
-      (formData.sigValue !== 0 ||
-        whitelistData.additionalDetails.staker_snapshot_whitelist);
+      formData.sigValue !== 0;
     const errorCheck = Object.values(formErrors).every((v) => v === false);
 
     const form = {
       name: '__anon_ergonaut',
       email: formData.email,
-      sigValue: whitelistData.additionalDetails.staker_snapshot_whitelist
-        ? 1
-        : formData.sigValue,
+      sigValue: formData.sigValue,
       ergoAddress: formData.ergoAddress,
       event: whitelistData.eventName,
     };
@@ -313,8 +310,7 @@ const Whitelist = () => {
           updateErrors = { ...updateErrors, ...newEntry };
         } else if (
           key === 'sigValue' &&
-          value === 0 &&
-          !whitelistData.additionalDetails.staker_snapshot_whitelist
+          value === 0
         ) {
           // handle sigValue case
           let newEntry = { [key]: true };
@@ -480,31 +476,36 @@ const Whitelist = () => {
                           onChange={handleChange}
                         />
                       </Grid> */}
-                      {!whitelistData.additionalDetails
-                        .staker_snapshot_whitelist && (
-                        <Grid item xs={12}>
-                          <Typography color="text.secondary">
-                            Enter how much in SigUSD you&apos;d like to invest.
-                            You can send ergo or SigUSD on the sale date.{' '}
-                          </Typography>
-                          <TextField
-                            sx={{ mt: 1 }}
-                            InputProps={{ disableUnderline: true }}
-                            required
-                            fullWidth
-                            id="sigValue"
-                            label="How much would you like to invest in SigUSD value"
-                            name="sigValue"
-                            variant="filled"
-                            helperText={
-                              formErrors.sigValue &&
-                              `Please enter between 1 and ${whitelistData.individualCap} sigUSD`
-                            }
-                            onChange={handleChange}
-                            error={formErrors.sigValue}
-                          />
-                        </Grid>
-                      )}
+                      <Grid item xs={12}>
+                        <Typography color="text.secondary">
+                          Enter how much in SigUSD you&apos;d like to invest.
+                          You can send ergo or SigUSD on the sale date.
+                          {
+                            whitelistData?.additionalDetails
+                              ?.staker_snapshot_whitelist &&
+                              ' The amount of allocation can be lower and will depend on the amount of ergopad tokens you have staked.'
+                          }
+                        </Typography>
+                        <TextField
+                          sx={{ mt: 1 }}
+                          InputProps={{ disableUnderline: true }}
+                          required
+                          fullWidth
+                          id="sigValue"
+                          label="How much would you like to invest in SigUSD value"
+                          name="sigValue"
+                          variant="filled"
+                          helperText={
+                            formErrors.sigValue &&
+                            (whitelistData?.additionalDetails
+                              ?.staker_snapshot_whitelist
+                              ? `Please enter a positive value`
+                              : `Please enter between 1 and ${whitelistData.individualCap} sigUSD`)
+                          }
+                          onChange={handleChange}
+                          error={formErrors.sigValue}
+                        />
+                      </Grid>
                       <Grid item xs={12}>
                         <Typography color="text.secondary">
                           Select your primary wallet address for whitelisting.
