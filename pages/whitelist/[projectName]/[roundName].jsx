@@ -206,17 +206,25 @@ const Whitelist = () => {
     }
 
     if (e.target.name === 'sigValue') {
-      const sigNumber = Number(e.target.value);
-      if (sigNumber <= whitelistData.individualCap && sigNumber > 0) {
+      if (e.target.value === '[max]' && whitelistData?.additionalDetails?.staker_snapshot_whitelist) {
         setFormErrors({
           ...formErrors,
           sigValue: false,
         });
-      } else {
-        setFormErrors({
-          ...formErrors,
-          sigValue: true,
-        });
+      }
+      else {
+        const sigNumber = Number(e.target.value);
+        if (sigNumber <= whitelistData.individualCap && sigNumber > 0) {
+          setFormErrors({
+            ...formErrors,
+            sigValue: false,
+          });
+        } else {
+          setFormErrors({
+            ...formErrors,
+            sigValue: true,
+          });
+        }
       }
     }
 
@@ -261,16 +269,13 @@ const Whitelist = () => {
 
     const emptyCheck =
       formData.ergoAddress !== '' &&
-      (formData.sigValue !== 0 ||
-        whitelistData.additionalDetails.staker_snapshot_whitelist);
+      formData.sigValue !== 0;
     const errorCheck = Object.values(formErrors).every((v) => v === false);
 
     const form = {
       name: '__anon_ergonaut',
       email: formData.email,
-      sigValue: whitelistData.additionalDetails.staker_snapshot_whitelist
-        ? 1
-        : formData.sigValue,
+      sigValue: formData.sigValue === '[max]' ? 1 : formData.sigValue,
       ergoAddress: formData.ergoAddress,
       event: whitelistData.eventName,
     };
@@ -313,8 +318,7 @@ const Whitelist = () => {
           updateErrors = { ...updateErrors, ...newEntry };
         } else if (
           key === 'sigValue' &&
-          value === 0 &&
-          !whitelistData.additionalDetails.staker_snapshot_whitelist
+          value === 0
         ) {
           // handle sigValue case
           let newEntry = { [key]: true };
@@ -480,14 +484,30 @@ const Whitelist = () => {
                           onChange={handleChange}
                         />
                       </Grid> */}
-                      {!whitelistData.additionalDetails
-                        .staker_snapshot_whitelist && (
-                        <Grid item xs={12}>
+                      <Grid
+                        container
+                        item
+                        xs={12}
+                        spacing={3}
+                        alignItems="stretch"
+                      >
+                        <Grid item sx={{ mb: -3 }}>
                           <Typography color="text.secondary">
                             Enter how much in SigUSD you&apos;d like to invest.
-                            You can send ergo or SigUSD on the sale date.{' '}
+                            You can send ergo or SigUSD on the sale date.
+                            {
+                              whitelistData?.additionalDetails
+                                ?.staker_snapshot_whitelist &&
+                                " If you wish to obtain fewer whitelist tokens than you are allocated for, please fill out the field below with the maximum sigUSD amount of tokens you wish to acquire."
+                            }
                           </Typography>
+                        </Grid>
+                        <Grid
+                          item
+                          xs={whitelistData?.additionalDetails?.staker_snapshot_whitelist ? 10 : 12}
+                        >
                           <TextField
+                            value={formData.sigValue}
                             sx={{ mt: 1 }}
                             InputProps={{ disableUnderline: true }}
                             required
@@ -498,13 +518,32 @@ const Whitelist = () => {
                             variant="filled"
                             helperText={
                               formErrors.sigValue &&
-                              `Please enter between 1 and ${whitelistData.individualCap} sigUSD`
+                              (whitelistData?.additionalDetails
+                                ?.staker_snapshot_whitelist
+                                ? `Please enter a positive value`
+                                : `Please enter between 1 and ${whitelistData.individualCap} sigUSD`)
                             }
                             onChange={handleChange}
                             error={formErrors.sigValue}
                           />
                         </Grid>
-                      )}
+                        {whitelistData?.additionalDetails?.staker_snapshot_whitelist && <Grid item xs={2}>
+                          <Button
+                            variant="contained"
+                            sx={{ my: 2, mx: 1 }}
+                            onClick={() => {
+                              handleChange({
+                                target: {
+                                  name: 'sigValue',
+                                  value: '[max]',
+                                }
+                              });
+                            }}
+                          >
+                            Max
+                          </Button>
+                        </Grid>}
+                      </Grid>
                       <Grid item xs={12}>
                         <Typography color="text.secondary">
                           Select your primary wallet address for whitelisting.
