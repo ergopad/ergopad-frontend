@@ -13,6 +13,7 @@ body {
 body {
   min-height: 100vh;
   overflow-x: hidden;
+  overflow-y: overlay;
 }
 
 #__next {
@@ -68,4 +69,30 @@ a {
   width: 100%;
   max-width: 400px;
   height: auto;
+}
+
+::-webkit-scrollbar {
+  background-color: transparent;
+  width: 11px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background-color: rgba(100,100,100,0.3);
+  border-radius: 20px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100,100,100,0.6);
+  border-radius: 20px;
+  border: 3px solid transparent;
+  background-clip: content-box;
 }
