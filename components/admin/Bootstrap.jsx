@@ -28,7 +28,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { TransitionGroup } from 'react-transition-group';
 import { v4 as uuidv4 } from 'uuid';
-import NumberIncrement from '../components/NumberIncrement';
+import NumberIncrement from '../NumberIncrement';
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -96,7 +96,7 @@ const initialFormErrors = Object({
   ]
 });
 
-const CreateAnnouncementForm = () => {
+const Bootstrap = () => {
   // form data is all strings
   const [formData, updateFormData] = useState(initialFormData);
   // form error object, all booleans
@@ -110,6 +110,8 @@ const CreateAnnouncementForm = () => {
     'Please eliminate form errors and try again'
   );
   const [tgeDate, setTgeDate] = useState(dayjs.utc());
+
+  const [jsonFormData, setJsonFormData] = useState([])
 
   // snackbar for error reporting
   const handleCloseError = (event, reason) => {
@@ -212,6 +214,24 @@ const CreateAnnouncementForm = () => {
         )
       })
       if (errorCheck && roundsErrorCheck.every(v => v === true)) {
+        setJsonFormData(formData.rounds.map((item) => {
+          return (
+            {
+              roundName: formData.idoName + ' ' + item.roundName,
+              tokenId: formData.tokenId,
+              roundAllocation: Number(item.roundAllocation),
+              vestingPeriods: item.vestingPeriods,
+              vestingPeriodDuration_ms: item.vestingPeriodDuration_ms,
+              cliff_ms: item.cliff_ms,
+              tokenSigUSDPrice: Number(item.tokenSigUSDPrice),
+              whitelistTokenMultiplier: item.whitelistTokenMultiplier,
+              sellerAddress: formData.sellerAddress,
+              tgeTime_ms: formData.tgeTime_ms,
+              tgePct: 0,
+              roundEnd_ms: formData.roundEnd_ms
+            }
+          )
+        }))
         setOpen(true);
       } else {
         setErrorMessage('Please eliminate form errors and try again');
@@ -396,6 +416,7 @@ const CreateAnnouncementForm = () => {
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
+        keepMounted
       >
         <Box sx={{
           position: 'absolute',
@@ -404,7 +425,7 @@ const CreateAnnouncementForm = () => {
           transform: 'translate(-50%, -50%)',
           // maxHeight: '90vh',
         }}>
-          <SummaryModal formData={formData} />
+          <SummaryModal formData={formData} jsonFormData={jsonFormData} />
         </Box>
       </Modal>
       <Snackbar
@@ -688,55 +709,7 @@ const RoundForm = ({ index, id, data, setData, formErrors, setFormErrors }) => {
   )
 }
 
-const SummaryModal = ({ formData }) => {
-  // set true to disable submit button
-  const [buttonDisabled, setbuttonDisabled] = useState(false);
-  // loading spinner for submit button
-  const [isLoading, setLoading] = useState(false);
-  useEffect(() => {
-    if (isLoading) {
-      setbuttonDisabled(true);
-    } else {
-      setbuttonDisabled(false);
-    }
-  }, [isLoading]);
-
-  const [submitResponse, setSubmitResponse] = useState([{
-    message: 'Not yet submitted',
-    status: undefined,
-    severity: 'warning'
-  }])
-
-  useEffect(() => {
-    const submitArray = formData.rounds.map((item, i) => {
-      return {
-        message: 'Not yet submitted',
-        status: undefined,
-        severity: 'warning'
-      }
-    })
-    setSubmitResponse(submitArray)
-  }, [])
-
-  const jsonFormData = formData.rounds.map((item, i) => {
-    return (
-      {
-        roundName: formData.idoName + ' ' + item.roundName,
-        tokenId: formData.tokenId,
-        roundAllocation: Number(item.roundAllocation),
-        vestingPeriods: item.vestingPeriods,
-        vestingPeriodDuration_ms: item.vestingPeriodDuration_ms,
-        cliff_ms: item.cliff_ms,
-        tokenSigUSDPrice: Number(item.tokenSigUSDPrice),
-        whitelistTokenMultiplier: item.whitelistTokenMultiplier,
-        sellerAddress: formData.sellerAddress,
-        tgeTime_ms: formData.tgeTime_ms,
-        tgePct: 0,
-        roundEnd_ms: formData.roundEnd_ms
-      }
-    )
-  })
-
+const SummaryModal = ({ formData, jsonFormData }) => {
   const bootstrapSummary = [
     {
       name: 'Vesting Start: ',
@@ -805,58 +778,6 @@ const SummaryModal = ({ formData }) => {
     )
   })
 
-  const handleSubmit = (index) => {
-    const defaultOptions = {
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem(
-          'jwt_token_login_422'
-        )}`,
-      },
-    };
-    setLoading(true);
-    axios.post(
-      `${process.env.API_URL}/vesting/bootstrapRound/`,
-      jsonFormData[index],
-      defaultOptions,
-    ).then((response) => {
-      console.log('Response Status: ' + response.status);
-      console.log('Response Message: ' + response.message);
-      setSubmitResponse(prevState => [...prevState.slice(0, index),
-      {
-        message: response.message,
-        status: response.status,
-        severity: 'success'
-      },
-      ...prevState.slice(index + 1)]
-      )
-    }).catch((error) => {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-        setSubmitResponse(prevState => [...prevState.slice(0, index),
-        {
-          message: error.response.data.detail,
-          status: error.response.status,
-          severity: 'error'
-        },
-        ...prevState.slice(index + 1)]
-        )
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log(error.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log('Error', error.message);
-      }
-    })
-    setLoading(false);
-  };
-
   return (
     <Paper component="div" sx={{
       overflowY: 'auto',
@@ -885,78 +806,141 @@ const SummaryModal = ({ formData }) => {
       </List>
       {formData.rounds.map((_item, i) => {
         return (
-          <Paper key={i} sx={{ p: '12px', mb: '12px', background: 'rgba(255,255,255,0.03)' }}>
-            <List dense>
-              {dataSummary[i].map((item, i) => {
-                return (
-                  <ListItem key={i}>
-                    <ListItemText>
-                      <Typography sx={{ fontWeight: 'bold' }}>
-                        {item.name}
-                      </Typography>
-                      <Typography>
-                        {item.value}
-                      </Typography>
-                    </ListItemText>
-                  </ListItem>
-                )
-              })}
-            </List>
-            <Box sx={{ width: '100%', textAlign: 'right' }}>
-              <Button
-                // type="submit"
-                disabled={buttonDisabled}
-                onClick={() => handleSubmit(i)}
-                variant="contained"
-                sx={{ mt: '-100px', mb: 1 }}
-              >
-                Submit
-                {
-                  isLoading && (
-                    <CircularProgress
-                      size={24}
-                      sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        marginTop: '-12px',
-                        marginLeft: '-12px',
-                      }}
-                    />
-                  )
-                }
-              </Button>
-            </Box>
-            {submitResponse[i] && (
-              <Alert severity={submitResponse[i].severity}>
-                {submitResponse[i].status && submitResponse[i].status + ': '}
-                {' ' + submitResponse[i].message}
-              </Alert>
-            )}
-
-            <Accordion sx={{ mb: 0 }}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-              >
-                <Typography>Show JSON</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Box sx={{ maxWidth: '80vw' }}>
-                  <code>
-                    <pre>
-                      {JSON.stringify(jsonFormData[i], null, 2)}
-                    </pre>
-                  </code>
-                </Box>
-              </AccordionDetails>
-            </Accordion>
-          </Paper >
+          <SummaryItem i={i} key={i} dataSummary={dataSummary} jsonFormData={jsonFormData} />
         )
       })}
     </Paper >
   )
 }
 
-export default CreateAnnouncementForm;
+const SummaryItem = ({ i, dataSummary, jsonFormData }) => {
+  // loading spinner for submit button and disable button
+  const [isLoading, setLoading] = useState(false);
+
+  const [submitResponse, setSubmitResponse] = useState({
+    message: 'Not yet submitted',
+    status: undefined,
+    severity: 'warning'
+  })
+
+  const handleSubmit = async (index) => {
+    const defaultOptions = {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem(
+          'jwt_token_login_422'
+        )}`,
+      },
+    };
+    setLoading(true);
+    await axios.post(
+      `${process.env.API_URL}/vesting/bootstrapRound/`,
+      jsonFormData[index],
+      defaultOptions,
+    ).then((response) => {
+      console.log('Response Status: ' + response.status);
+      console.log('Response Message: ' + response.message);
+      setSubmitResponse({
+        message: response.message,
+        status: response.status,
+        severity: 'success'
+      })
+      setLoading(false);
+    }).catch((error) => {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+        setSubmitResponse({
+          message: error.response.data?.details ? error.response.data?.details : error.response.data,
+          status: error.response.status,
+          severity: 'error'
+        })
+        setLoading(false);
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log(error.request);
+        setLoading(false);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log('Error', error.message);
+        setLoading(false);
+      }
+    })
+  }
+  return (
+    <Paper sx={{ p: '12px', mb: '12px', background: 'rgba(255,255,255,0.03)' }}>
+      <List dense>
+        {dataSummary[i].map((item, i) => {
+          return (
+            <ListItem key={i}>
+              <ListItemText>
+                <Typography sx={{ fontWeight: 'bold' }}>
+                  {item.name}
+                </Typography>
+                <Typography>
+                  {item.value}
+                </Typography>
+              </ListItemText>
+            </ListItem>
+          )
+        })}
+      </List>
+      <Box sx={{ width: '100%', textAlign: 'right' }}>
+        <Button
+          // type="submit"
+          disabled={isLoading}
+          onClick={() => handleSubmit(i)}
+          variant="contained"
+          sx={{ mt: '-100px', mb: 1 }}
+        >
+          Submit
+          {
+            isLoading && (
+              <CircularProgress
+                size={24}
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  marginTop: '-12px',
+                  marginLeft: '-12px',
+                }}
+              />
+            )
+          }
+        </Button>
+      </Box>
+      {submitResponse && (
+        <Alert severity={submitResponse.severity}>
+          {submitResponse.status && submitResponse.status + ': '}
+          {' ' + submitResponse.message}
+        </Alert>
+      )}
+
+      <Accordion sx={{ mb: 0 }}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+        >
+          <Typography>Show JSON</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Box sx={{ maxWidth: '80vw' }}>
+            <code>
+              <pre>
+                {JSON.stringify(jsonFormData[i], null, 2)}
+              </pre>
+            </code>
+          </Box>
+        </AccordionDetails>
+      </Accordion>
+    </Paper >
+  )
+}
+
+export default Bootstrap;

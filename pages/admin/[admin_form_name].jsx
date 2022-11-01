@@ -29,6 +29,7 @@ import DeleteTutorialForm from '@components/admin/DeleteTutorialForm';
 import CreateStakingConfigForm from '@components/admin/CreateStakingConfigForm';
 import EditStakingConfigForm from '@components/admin/EditStakingConfigForm';
 import DeleteStakingConfigForm from '@components/admin/DeleteStakingConfigForm';
+import Bootstrap from '@components/admin/Bootstrap'
 
 const AdminForm = () => {
   const JWT_TOKEN =
@@ -66,6 +67,7 @@ const AdminForm = () => {
     create_staking_config: <CreateStakingConfigForm />,
     edit_staking_config: <EditStakingConfigForm />,
     delete_staking_config: <DeleteStakingConfigForm />,
+    bootstrap: <Bootstrap />
   };
 
   useEffect(() => {
