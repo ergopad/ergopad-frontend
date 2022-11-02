@@ -10,3 +10,4 @@ pages/dashboardrechart.jsx
 .pnp.js
 .eslintrc.json
 .vscode
+.env.local

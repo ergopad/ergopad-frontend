@@ -28,7 +28,7 @@ const Home = () => {
   };
 
   return (
-    <Grid item md={8} sx={12}>
+    <Grid item md={9} sx={12}>
       <CenterTitle
         title="Ergopad Admin"
         subtitle="Ergopad Web Content Management Console."

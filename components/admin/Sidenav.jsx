@@ -17,7 +17,7 @@ const Sidenav = () => {
   };
   const router = useRouter();
   return (
-    <Grid item md={4} xs={12} sx={{ flexGrow: 1, mt: 12 }}>
+    <Grid item md={3} xs={12} sx={{ flexGrow: 1, mt: 12 }}>
       <Box sx={{ mr: { md: 12, xs: 0 }, mt: { md: 0, xs: 4 } }}>
         <Typography variant="h4" sx={{ fontWeight: '700', lineHeight: '1.2' }}>
           Admin
@@ -337,6 +337,22 @@ const Sidenav = () => {
             }}
           >
             <ListItemText primary="Delete FAQs" />
+          </ListItem>
+        </List>
+      </Box>
+      <Box sx={{ mr: { md: 12, xs: 0 }, mt: { md: 0, xs: 4 } }}>
+        <Typography variant="h4" sx={{ fontWeight: '700', lineHeight: '1.2' }}>
+          Bootstrap IDO
+        </Typography>
+        <List>
+          <ListItem
+            button
+            sx={{ mb: 2, ...listItemSx }}
+            onClick={() => {
+              router.push('/admin/bootstrap');
+            }}
+          >
+            <ListItemText primary="Bootstrap" />
           </ListItem>
         </List>
       </Box>
