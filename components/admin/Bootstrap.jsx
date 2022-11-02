@@ -179,8 +179,8 @@ const Bootstrap = () => {
       ...updateErrors,
     });
     formData.rounds.map((item, i) => {
-      updateErrors = {};
       Object.entries(item).forEach((entry) => {
+        updateErrors = {};
         const [key, value] = entry;
         if (value == '' && Object.hasOwnProperty.call(formErrors.rounds[i], key)) {
           let newEntry = { [key]: true };
@@ -816,6 +816,7 @@ const SummaryModal = ({ formData, jsonFormData }) => {
 const SummaryItem = ({ i, dataSummary, jsonFormData }) => {
   // loading spinner for submit button and disable button
   const [isLoading, setLoading] = useState(false);
+  const [responseObject, setResponseObject] = useState({})
 
   const [submitResponse, setSubmitResponse] = useState({
     message: 'Not yet submitted',
@@ -836,19 +837,17 @@ const SummaryItem = ({ i, dataSummary, jsonFormData }) => {
       `${process.env.API_URL}/vesting/bootstrapRound/`,
       jsonFormData[index],
       defaultOptions,
-    ).then((response) => {
-      console.log('Response Status: ' + response.status);
-      console.log('Response Message: ' + response.message);
+    ).then((res) => {
+      console.log(res.data)
       setSubmitResponse({
-        message: response.message,
-        status: response.status,
+        message: 'Success. Please see JSON output for token values. ',
+        status: res.status,
         severity: 'success'
       })
+      setResponseObject(res.data)
       setLoading(false);
     }).catch((error) => {
       if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
         console.log(error.response.data);
         console.log(error.response.status);
         console.log(error.response.headers);
@@ -859,14 +858,20 @@ const SummaryItem = ({ i, dataSummary, jsonFormData }) => {
         })
         setLoading(false);
       } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
+        setSubmitResponse({
+          message: 'Service Unavailable',
+          status: 503,
+          severity: 'error'
+        })
         console.log(error.request);
         setLoading(false);
       } else {
-        // Something happened in setting up the request that triggered an Error
         console.log('Error', error.message);
+        setSubmitResponse({
+          message: error.message,
+          status: undefined,
+          severity: 'error'
+        })
         setLoading(false);
       }
     })
@@ -921,6 +926,32 @@ const SummaryItem = ({ i, dataSummary, jsonFormData }) => {
         </Alert>
       )}
 
+
+      {Object.entries(responseObject).length > 0 && (
+        <Accordion sx={{ mb: 0 }}>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Typography>Response Data</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Box sx={{ maxWidth: '80vw' }}>
+              <code>
+              <pre
+                style={{
+                  whiteSpace: 'pre-wrap',
+                  wordWrap: 'break-word',
+                }}
+              >
+                  {JSON.stringify(responseObject, null, 2)}
+                </pre>
+              </code>
+            </Box>
+          </AccordionDetails>
+        </Accordion>
+      )}
       <Accordion sx={{ mb: 0 }}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
@@ -932,7 +963,12 @@ const SummaryItem = ({ i, dataSummary, jsonFormData }) => {
         <AccordionDetails>
           <Box sx={{ maxWidth: '80vw' }}>
             <code>
-              <pre>
+              <pre
+                style={{
+                  whiteSpace: 'pre-wrap',
+                  wordWrap: 'break-word',
+                }}
+              >
                 {JSON.stringify(jsonFormData[i], null, 2)}
               </pre>
             </code>
