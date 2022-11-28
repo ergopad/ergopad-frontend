@@ -211,7 +211,7 @@ const PriceChart = () => {
         <Grid sx={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Link
             underline="none"
-            href={'https://app.ergodex.io/swap'}
+            href={'https://app.spectrum.fi/ergo/swap'}
             aria-label="ergodex"
             title="Trade"
             rel="noreferrer"
