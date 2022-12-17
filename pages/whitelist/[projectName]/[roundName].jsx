@@ -27,6 +27,8 @@ import theme from '@styles/theme';
 import { useWallet } from 'utils/WalletContext';
 import { useAddWallet } from 'utils/AddWalletContext';
 import axios from 'axios';
+import { Address } from "@components/KycComponent/types/types";
+import ErgopadWhitelistFormTemplate from "@components/ErgopadWhitelistFormTemplate/ErgopadWhitelistFormTemplate";
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -86,6 +88,19 @@ const Whitelist = () => {
   // brings wallet data from AddWallet modal component. Will load from localStorage if wallet is set
   const { wallet } = useWallet();
   const { setAddWalletOpen } = useAddWallet();
+  const [applicantStatus, setApplicantStatus] = useState("APPLICANT STATUS: Success");
+  const [kycSuccess, setKycSuccess] = useState(false)
+
+  useEffect(() => {
+    if (applicantStatus.includes("Success")) {
+      setKycSuccess(true)
+    }
+    else setKycSuccess(false)
+  }, [applicantStatus])
+
+  useEffect(() => {
+    setKycSuccess(false)
+  }, [wallet])
 
   const openWalletAdd = () => {
     setAddWalletOpen(true);
@@ -171,12 +186,21 @@ const Whitelist = () => {
     checkboxState.filter((checkBoxes) => !checkBoxes.check).length !== 0;
 
   useEffect(() => {
-    if (!checkboxError && whitelistState === PUBLIC) {
-      setbuttonDisabled(false);
-    } else {
-      setbuttonDisabled(true);
+    if (roundName !== undefined && roundName.includes("kyc")) {
+      if (!checkboxError && whitelistState === PUBLIC && kycSuccess === true) {
+        setbuttonDisabled(false);
+      } else {
+        setbuttonDisabled(true);
+      }
     }
-  }, [checkboxError, whitelistState]);
+    else {
+      if (!checkboxError && whitelistState === PUBLIC) {
+        setbuttonDisabled(false);
+      } else {
+        setbuttonDisabled(true);
+      }
+    }
+  }, [checkboxError, whitelistState, kycSuccess]);
 
   const handleChange = (e) => {
     if (e.target.value == '' && e.target.name !== 'email') {
@@ -339,6 +363,8 @@ const Whitelist = () => {
     setLoading(false);
   };
 
+
+
   return (
     <>
       {whitelistLoading ? (
@@ -363,7 +389,7 @@ const Whitelist = () => {
                 <PageTitle
                   title={whitelistData.title}
                   subtitle={whitelistData.subtitle}
-                  // main={true}
+                // main={true}
                 />
               </Container>
               <Grid
@@ -498,7 +524,7 @@ const Whitelist = () => {
                             {
                               whitelistData?.additionalDetails
                                 ?.staker_snapshot_whitelist &&
-                                " If you wish to obtain fewer whitelist tokens than you are allocated for, please fill out the field below with the maximum sigUSD amount of tokens you wish to acquire."
+                              " If you wish to obtain fewer whitelist tokens than you are allocated for, please fill out the field below with the maximum sigUSD amount of tokens you wish to acquire."
                             }
                           </Typography>
                         </Grid>
@@ -582,6 +608,9 @@ const Whitelist = () => {
                         </FormControl>
                       </Grid>
                     </Grid>
+                    {roundName.includes("kyc") && (
+                      <ErgopadWhitelistFormTemplate address={wallet} applicantStatus={applicantStatus} setApplicantStatus={setApplicantStatus} />
+                    )}
                     <FormControl required error={checkboxError}>
                       <FormGroup sx={{ mt: 2 }}>
                         {checkboxState.map((checkbox, index) => (
@@ -630,6 +659,10 @@ const Whitelist = () => {
                           }}
                         />
                       )}
+                      {applicantStatus && <div>{applicantStatus}</div>}
+                      {/* <Button onClick={() => setApplicantStatus("APPLICANT STATUS: Success")}>
+                        Test
+                      </Button> */}
                     </Box>
                     <Typography sx={{ color: theme.palette.text.secondary }}>
                       {whitelistState === ROUND_END &&
@@ -638,17 +671,17 @@ const Whitelist = () => {
                     <Typography sx={{ color: theme.palette.text.secondary }}>
                       {whitelistState === NOT_STARTED &&
                         'This form is not yet active. The round will start at ' +
-                          new Date(
-                            Date.parse(whitelistData.start_dtz)
-                          ).toLocaleString(navigator.language, {
-                            year: 'numeric',
-                            month: 'short',
-                            day: '2-digit',
-                            hour12: 'true',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            timeZoneName: 'long',
-                          })}
+                        new Date(
+                          Date.parse(whitelistData.start_dtz)
+                        ).toLocaleString(navigator.language, {
+                          year: 'numeric',
+                          month: 'short',
+                          day: '2-digit',
+                          hour12: 'true',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          timeZoneName: 'long',
+                        })}
                     </Typography>
                     <Snackbar
                       open={openError}
