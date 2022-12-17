@@ -43,6 +43,7 @@ const ErgopadWhitelistFormTemplate: React.FC<ErgopadWhitelistFormProps> = ({
   useEffect(() => {
     if (keyChange === 0) { setKeyChange(1) }
     else setKeyChange(0)
+    console.log(address)
   }, [address])
 
   return (

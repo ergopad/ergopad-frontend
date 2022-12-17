@@ -608,7 +608,7 @@ const Whitelist = () => {
                         </FormControl>
                       </Grid>
                     </Grid>
-                    {roundName.includes("kyc") && (
+                    {roundName !== undefined && roundName.includes("kyc") && (
                       <ErgopadWhitelistFormTemplate address={wallet} applicantStatus={applicantStatus} setApplicantStatus={setApplicantStatus} />
                     )}
                     <FormControl required error={checkboxError}>
@@ -659,7 +659,7 @@ const Whitelist = () => {
                           }}
                         />
                       )}
-                      {applicantStatus && <div>{applicantStatus}</div>}
+                      {roundName !== undefined && roundName.includes("kyc") && applicantStatus && <div>{applicantStatus}</div>}
                       {/* <Button onClick={() => setApplicantStatus("APPLICANT STATUS: Success")}>
                         Test
                       </Button> */}
