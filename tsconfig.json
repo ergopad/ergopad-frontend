@@ -3,7 +3,8 @@
     "target": "es6",
     "lib": [
       "es6",
-      "esnext"
+      "esnext",
+      "DOM"
     ],
     "module": "commonjs",
     "moduleResolution": "node",
