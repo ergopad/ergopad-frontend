@@ -573,7 +573,7 @@ const Dashboard = () => {
                   <AssetList
                     assets={audNftList}
                     title="Audio NFTs"
-                    type="NFT"
+                    type="AudioNFT"
                     navigatorLanguage={navigatorLanguage}
                   />
                 </Paper>

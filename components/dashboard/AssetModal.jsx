@@ -61,7 +61,7 @@ const getAveragePrice = (amount, amountUSD) => {
   }
 };
 
-const AssetModal = ({ open, handleClose, asset, navigatorLanguage }) => {
+const AssetModal = ({ open, handleClose, asset, type, navigatorLanguage }) => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('md'));
   const metadata = parseDescription(asset?.description);
@@ -117,7 +117,7 @@ const AssetModal = ({ open, handleClose, asset, navigatorLanguage }) => {
             </AccordionDetails>
           </Accordion>
         </Typography>
-        {asset?.r9 ? (
+        {asset?.r9 && type !== "AudioNFT" ? (
           <Paper variant="outlined" sx={{ mt: 5 }}>
             <img width="100%" src={asset?.r9} alt={asset?.name} />
           </Paper>
