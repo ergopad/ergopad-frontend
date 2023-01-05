@@ -187,7 +187,7 @@ const Footer = () => {
       <Grid container spacing={1} sx={bottomStyles}>
         <Grid item xs={12} md={4} sx={{ textAlign: { xs: "center", md: "left" } }}>
           <Typography variant="inherit" sx={textStyles}>
-            © 2022 ErgoPad. All rights reserved.
+            © 2023 ErgoPad. All rights reserved.
           </Typography>
         </Grid>
         <Grid item xs={12} md={4} sx={{ textAlign: { xs: "center", md: "center" } }}>
