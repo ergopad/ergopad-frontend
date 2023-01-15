@@ -510,7 +510,7 @@ const RoundForm = ({ index, id, data, setData, formErrors, setFormErrors }) => {
 
     let newValue = undefined
     if (e.target.name === 'vestingPeriodDuration_ms') {
-      let newVestingPeriods = (vestingDuration * vestingMultiple / e.target.value).toFixed(0)
+      let newVestingPeriods = Number((vestingDuration * vestingMultiple / e.target.value).toFixed(0))
       setData(
         prevState => ({
           ...prevState,
@@ -527,7 +527,7 @@ const RoundForm = ({ index, id, data, setData, formErrors, setFormErrors }) => {
     }
     if (e.target.name === 'vestingPeriods') {
       setVestingDuration(e.target.value)
-      newValue = (e.target.value * vestingMultiple / data.rounds[index].vestingPeriodDuration_ms).toFixed(0)
+      newValue = Number((e.target.value * vestingMultiple / data.rounds[index].vestingPeriodDuration_ms).toFixed(0))
     }
     if (e.target.name === 'vestingDurationMultiple') {
       setVestingMultiple(e.target.value)
@@ -764,6 +764,17 @@ const SummaryModal = ({ formData, jsonFormData }) => {
         return Number(duration) / 86400000 + ' Days'
       }
     }
+    const dayWeekMonth = (duration) => {
+      if (duration % 2629800000 == 0) {
+        return ' Months'
+      }
+      if (duration % 604800000 == 0) {
+        return ' Weeks'
+      }
+      else {
+        return ' Days'
+      }
+    }
     return (
       [
         {
@@ -780,11 +791,11 @@ const SummaryModal = ({ formData, jsonFormData }) => {
         },
         {
           name: 'Cliff: ',
-          value: duration(item.cliff_ms)
+          value: item.cliff_ms === 0 ? 'None' : duration(item.cliff_ms)
         },
         {
           name: 'Vesting Release Schedule: ',
-          value: durationPeriod(item.vestingPeriodDuration_ms) + ' for ' + duration(item.vestingPeriods)
+          value: durationPeriod(item.vestingPeriodDuration_ms) + ' for ' + item.vestingPeriods + ' ' + dayWeekMonth(item.vestingPeriodDuration_ms)
         },
         {
           name: 'Whitelist Multiplier: ',
