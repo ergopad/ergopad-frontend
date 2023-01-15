@@ -492,7 +492,7 @@ const Whitelist = () => {
                       You have {totalStaked} ergopad tokens staked from this
                       address.
                     </Typography>
-                    <Grid container spacing={2}>
+                    <Grid container spacing={2} sx={{ mb: '24px' }}>
                       {/* <Grid item xs={12}>
                         <TextField
                           sx={{ mt: 1 }}
