@@ -68,8 +68,8 @@ const initialFormData = Object({
       id: uuidv4(),
       roundName: '',
       roundAllocation: 0,
-      vestingPeriodDuration_ms: 0,
-      vestingPeriods: 86400000,
+      vestingPeriodDuration_ms: 86400000,
+      vestingPeriods: 0,
       cliff_ms: 0,
       tokenSigUSDPrice: 0,
       whitelistTokenMultiplier: 1,
@@ -255,8 +255,8 @@ const Bootstrap = () => {
               id: uuidv4(),
               roundName: '',
               roundAllocation: 0,
-              vestingPeriodDuration_ms: 0,
-              vestingPeriods: 86400000,
+              vestingPeriodDuration_ms: 86400000,
+              vestingPeriods: 0,
               cliff_ms: 0,
               tokenSigUSDPrice: 0,
               whitelistTokenMultiplier: 1,
@@ -510,13 +510,29 @@ const RoundForm = ({ index, id, data, setData, formErrors, setFormErrors }) => {
 
     let newValue = undefined
     if (e.target.name === 'vestingPeriodDuration_ms') {
+      let newVestingPeriods = (vestingDuration * vestingMultiple / e.target.value).toFixed(0)
+      setData(
+        prevState => ({
+          ...prevState,
+          rounds: [
+            ...prevState.rounds.slice(0, index),
+            {
+              ...prevState.rounds[index],
+              vestingPeriods: newVestingPeriods,
+            },
+            ...prevState.rounds.slice(index + 1),
+          ]
+        })
+      );
+    }
+    if (e.target.name === 'vestingPeriods') {
       setVestingDuration(e.target.value)
-      newValue = e.target.value * vestingMultiple
+      newValue = (e.target.value * vestingMultiple / data.rounds[index].vestingPeriodDuration_ms).toFixed(0)
     }
     if (e.target.name === 'vestingDurationMultiple') {
       setVestingMultiple(e.target.value)
       newValue = vestingDuration * e.target.value
-      e.target.name = 'vestingPeriodDuration_ms'
+      e.target.name = 'vestingPeriods'
     }
     if (e.target.name === 'cliff_ms') {
       setCliffDuration(e.target.value)
@@ -598,10 +614,10 @@ const RoundForm = ({ index, id, data, setData, formErrors, setFormErrors }) => {
           <FormControl fullWidth>
             <InputLabel id="vesting-periods-label">Vesting Release Frequency</InputLabel>
             <Select
-              id="vestingPeriods"
-              name="vestingPeriods"
+              id="vestingPeriodDuration_ms"
+              name="vestingPeriodDuration_ms"
               label="Vesting Release Frequency"
-              value={data.rounds[index].vestingPeriods}
+              value={data.rounds[index].vestingPeriodDuration_ms}
               onChange={handleChange}
             >
               <MenuItem value={86400000}>Daily</MenuItem>
@@ -638,14 +654,14 @@ const RoundForm = ({ index, id, data, setData, formErrors, setFormErrors }) => {
               <TextField
                 required
                 fullWidth
-                id="vestingPeriodDuration_ms"
-                label="Vesting Period Duration"
-                name="vestingPeriodDuration_ms"
+                id="vestingPeriods"
+                label="Vesting Length"
+                name="vestingPeriods"
                 variant="outlined"
                 value={vestingDuration}
                 onChange={handleChange}
-                error={formErrors.rounds[index].vestingPeriodDuration_ms}
-                helperText={formErrors.rounds[index].vestingPeriodDuration_ms && 'Enter the vesting period duration'}
+                error={formErrors.rounds[index].vestingPeriods}
+                helperText={formErrors.rounds[index].vestingPeriods && 'Enter the vesting length'}
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: '3px 0 0 3px' } }}
               />
             </Grid>
@@ -768,7 +784,7 @@ const SummaryModal = ({ formData, jsonFormData }) => {
         },
         {
           name: 'Vesting Release Schedule: ',
-          value: durationPeriod(item.vestingPeriods) + ' for ' + duration(item.vestingPeriodDuration_ms)
+          value: durationPeriod(item.vestingPeriodDuration_ms) + ' for ' + duration(item.vestingPeriods)
         },
         {
           name: 'Whitelist Multiplier: ',
