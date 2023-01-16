@@ -194,7 +194,7 @@ const Header = () => {
               mt: '-80px'
             }}
           >
-            <Image src="/ido-modal/spf-coin.png" width={353} height={354} />
+            <Image src="/ido-modal/spf-coin.png" width={353} height={354} alt="SPF Token" />
           </Box>
           <Box
             sx={{
@@ -204,7 +204,7 @@ const Header = () => {
               mt: '-60px',
             }}
           >
-            <Image src="/ido-modal/spf-ido-title.png" width={594} height={123} />
+            <Image src="/ido-modal/spf-ido-title.png" width={594} height={123} alt="Spectrum Finance IDO: Powered by ErgoPad" />
           </Box>
         </DialogContent>
         <DialogActions justifyContent="center" sx={{ flexDirection: 'column' }}>
