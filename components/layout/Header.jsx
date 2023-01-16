@@ -5,11 +5,18 @@ import {
   IconButton,
   useScrollTrigger,
   Button,
+  Typography
 } from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import CloseIcon from '@mui/icons-material/Close';
+import { styled } from '@mui/material/styles';
 import MuiNextLink from '@components/MuiNextLink';
 import Navbar from '@components/navigation/Navbar';
 import theme from '@styles/theme';
-import { cloneElement } from 'react';
+import { cloneElement, useState, useEffect } from 'react';
 import { useAddWallet } from 'utils/AddWalletContext';
 import { useWallet } from 'utils/WalletContext';
 import AddWallet from '@components/AddWallet';
@@ -46,6 +53,55 @@ const Header = () => {
 
   const handleClickOpen = () => {
     setAddWalletOpen(true);
+  };
+
+  const [modalOpen, setModalOpen] = useState(true);
+
+  useEffect(() => {
+    localStorage.getItem("dontShowAgain") === "true" && setModalOpen(false)
+  }, []);
+
+  const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+    '& .MuiDialogContent-root': {
+      padding: theme.spacing(2),
+    },
+    '& .MuiDialogActions-root': {
+      padding: theme.spacing(1),
+    },
+    '& .MuiPaper-root': {
+      backgroundImage: 'url("/ido-modal/spf-background.png")',
+      backgroundRepeat: 'no-repeat',
+      backgroundPositionX: 'center',
+      backgroundPositionY: 'center',
+    }
+  }));
+
+  function BootstrapDialogTitle(props) {
+    const { children, onClose, ...other } = props;
+
+    return (
+      <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+        {children}
+        {onClose ? (
+          <IconButton
+            aria-label="close"
+            onClick={onClose}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        ) : null}
+      </DialogTitle>
+    );
+  }
+
+  const handleModalClose = () => {
+    setModalOpen(false);
   };
 
   return (
@@ -122,6 +178,63 @@ const Header = () => {
           </Toolbar>
         </AppBar>
       </ElevationScroll>
+      <BootstrapDialog
+        onClose={handleModalClose}
+        aria-labelledby="ido-modal"
+        open={modalOpen}
+      >
+        <BootstrapDialogTitle id="ido-modal" onClose={handleModalClose}>
+          IDO Announcement
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+          <Box
+            sx={{
+              mx: 'auto',
+              maxWidth: '353px',
+              mt: '-80px'
+            }}
+          >
+            <Image src="/ido-modal/spf-coin.png" width={353} height={354} />
+          </Box>
+          <Box
+            sx={{
+              mx: 'auto',
+              maxWidth: '594px',
+              px: '36px',
+              mt: '-60px',
+            }}
+          >
+            <Image src="/ido-modal/spf-ido-title.png" width={594} height={123} />
+          </Box>
+        </DialogContent>
+        <DialogActions justifyContent="center" sx={{ flexDirection: 'column' }}>
+          <Button
+            autoFocus
+            variant="contained"
+            href="https://ido.spectrum.fi"
+            target="_blank"
+            sx={{ my: '12px' }}
+            size="large"
+            color="secondary"
+          >
+            Learn More
+          </Button>
+          <Button
+            size="small"
+            color="secondary"
+            sx={{
+              ml: '0 !important',
+              mb: '12px'
+            }}
+            onClick={() => {
+              localStorage.setItem("dontShowAgain", "true");
+              handleModalClose()
+            }}
+          >
+            Don't show again
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
     </>
   );
 };
