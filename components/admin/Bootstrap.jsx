@@ -861,7 +861,7 @@ const SummaryItem = ({ i, dataSummary, jsonFormData }) => {
     };
     setLoading(true);
     await axios.post(
-      `${process.env.API_URL}/vesting/bootstrapRound/`,
+      `${process.env.API_URL}/vesting/bootstrapRound`,
       jsonFormData[index],
       defaultOptions,
     ).then((res) => {
