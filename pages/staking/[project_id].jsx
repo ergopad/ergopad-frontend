@@ -934,15 +934,15 @@ const ProjectStaking = () => {
                     <Box
                       sx={{
                         width: '100%',
-                        display: 'flex',
-                        justifyContent: 'center',
+                        textAlign: 'center'
                       }}
                     >
                       <Button
                         variant="contained"
                         disabled={
                           !stakeButtonEnabled ||
-                          stakingConfig.additionalDetails.disableStaking
+                          stakingConfig.additionalDetails.disableStaking ||
+                          stakingConfig.title === 'Neta'
                         }
                         sx={{
                           color: '#fff',
@@ -966,6 +966,11 @@ const ProjectStaking = () => {
                       >
                         Stake Now
                       </Button>
+                      {stakingConfig.title === 'Neta' && (
+                        <Typography variant="p" sx={{ mt: 1, fontSize: '1rem' }}>
+                          Neta staking currently disabled. You are still able to unstake normally.
+                        </Typography>
+                      )}
                     </Box>
                     {stakingConfig.additionalDetails.disableStaking && (
                       <Typography variant="p" sx={{ mt: 1, fontSize: '1rem' }}>
@@ -1002,17 +1007,17 @@ const ProjectStaking = () => {
                           }}
                           addstake={
                             stakingConfig.additionalDetails.stakingV1 ||
-                            stakingConfig.additionalDetails.disableStaking
+                              stakingConfig.additionalDetails.disableStaking
                               ? null
                               : (boxId, stakeKeyId, stakeAmount) => {
-                                  initAddstake();
-                                  setOpenAddstakeModal(true);
-                                  setAddstakeModalData({
-                                    boxId,
-                                    stakeKeyId,
-                                    stakeAmount,
-                                  });
-                                }
+                                initAddstake();
+                                setOpenAddstakeModal(true);
+                                setAddstakeModalData({
+                                  boxId,
+                                  stakeKeyId,
+                                  stakeAmount,
+                                });
+                              }
                           }
                           disableUnstaking={
                             stakingConfig.additionalDetails.disableUnstaking
