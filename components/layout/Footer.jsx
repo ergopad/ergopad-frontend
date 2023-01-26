@@ -60,8 +60,8 @@ const Footer = () => {
           </Typography>
           <List>
             <ListItem disableGutters sx={listItemStyles}>
-              <Link activeClassName="active" href="/guides" sx={linkStyles}>
-                Tutorials & Guides
+              <Link activeClassName="active" href="https://docs.ergopad.io" target="_blank" sx={linkStyles}>
+                Documentation
               </Link>
             </ListItem>
             <ListItem disableGutters sx={listItemStyles}>
@@ -71,14 +71,14 @@ const Footer = () => {
             </ListItem>
             <ListItem disableGutters sx={listItemStyles}>
               <Link activeClassName="active" href="/apply" sx={linkStyles}>
-                Apply
+                IDO Application
               </Link>
             </ListItem>
-            <ListItem disableGutters sx={listItemStyles}>
+            {/* <ListItem disableGutters sx={listItemStyles}>
               <Link activeClassName="active" href="/careers" sx={linkStyles}>
                 Careers
               </Link>
-            </ListItem>
+            </ListItem> */}
           </List>
         </Grid>
         <Grid item xs={6} md={2}>
