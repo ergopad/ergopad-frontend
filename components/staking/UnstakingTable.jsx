@@ -24,7 +24,7 @@ const friendlyAddress = (addr, tot = 8) => {
   return addr.slice(0, tot) + '...' + addr.slice(-tot);
 };
 
-const UnstakingTable = ({ data, unstake, addstake, disableUnstaking }) => {
+const UnstakingTable = ({ data, unstake, addstake, disableUnstaking, disableAddStake }) => {
   const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
   const stakeObject = { ...data };
 
@@ -202,6 +202,7 @@ const UnstakingTable = ({ data, unstake, addstake, disableUnstaking }) => {
                                 stake.penaltyPct ?? 0
                               )
                             }
+                            disabled={disableAddStake}
                           >
                             Add Stake
                           </Button>

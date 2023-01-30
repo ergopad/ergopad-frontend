@@ -1022,6 +1022,9 @@ const ProjectStaking = () => {
                           disableUnstaking={
                             stakingConfig.additionalDetails.disableUnstaking
                           }
+                          disableAddStake={
+                            stakingConfig.title === 'Neta'
+                          }
                         />
                       )}
                     </Paper>
