@@ -102,7 +102,7 @@ const CandleStickChart = () => {
     chartContainerRef.current.replaceChildren();
     const Chart = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
-      height: 400,
+      height: 500,
       layout: {
         backgroundColor: theme.palette.background.paper,
         textColor: theme.palette.text.primary,
