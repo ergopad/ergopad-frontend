@@ -113,41 +113,41 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
           ) : (
             <Table sx={{ p: 0 }}>
               <TableBody>
-              {vestedToken.outstanding.map((vested, i) => {
-                return (
-                  <React.Fragment key={i}>
-                    <TableRow sx={{ borderTop: `1px solid #444` }}>
-                      <TableCell
-                        sx={{
-                          color: theme.palette.text.secondary,
-                          border: 'none',
-                          p: 1,
-                          pt: 2,
-                        }}
-                      >
-                        {vestedHeading.amount}
-                      </TableCell>
-                      <TableCell sx={{ border: 'none', p: 1, pt: 2 }}>
-                        {vested.amount?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell
-                        sx={{
-                          color: theme.palette.text.secondary,
-                          border: 'none',
-                          p: 1,
-                        }}
-                      >
-                        {vestedHeading.date}
-                      </TableCell>
-                      <TableCell sx={{ border: 'none', p: 1 }}>
-                        {vested.date}
-                      </TableCell>
-                    </TableRow>
-                  </React.Fragment>
-                );
-              })}
+                {vestedToken.outstanding.map((vested, i) => {
+                  return (
+                    <React.Fragment key={i}>
+                      <TableRow sx={{ borderTop: `1px solid #444` }}>
+                        <TableCell
+                          sx={{
+                            color: theme.palette.text.secondary,
+                            border: 'none',
+                            p: 1,
+                            pt: 2,
+                          }}
+                        >
+                          {vestedHeading.amount}
+                        </TableCell>
+                        <TableCell sx={{ border: 'none', p: 1, pt: 2 }}>
+                          {vested.amount?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell
+                          sx={{
+                            color: theme.palette.text.secondary,
+                            border: 'none',
+                            p: 1,
+                          }}
+                        >
+                          {vestedHeading.date}
+                        </TableCell>
+                        <TableCell sx={{ border: 'none', p: 1 }}>
+                          {vested.date}
+                        </TableCell>
+                      </TableRow>
+                    </React.Fragment>
+                  );
+                })}
               </TableBody>
             </Table>
           )}
@@ -195,7 +195,7 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                       {box['Redeemable'].toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
                     </TableCell>
                     <TableCell sx={{ color: theme.palette.text.secondary }}>
-                      {new Date(Date.parse(box['Next unlock']+'Z')).toLocaleString()}
+                      {new Date(Date.parse(box['Next unlock'] + 'Z')).toLocaleString()}
                     </TableCell>
                     <TableCell sx={{ color: theme.palette.text.secondary }}>
                       <Button
@@ -212,69 +212,69 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
           ) : (
             <Table sx={{ p: 0 }}>
               <TableBody>
-              {vestedTokensWithNFT[vestedToken].map((box, i) => (
-                <React.Fragment key={i}>
-                  <TableRow sx={{ borderTop: `1px solid #444` }}>
-                    <TableCell
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        border: 'none',
-                        p: 1,
-                        pt: 2,
-                      }}
-                    >
-                      {vestedWithNFTHeading.remaining}
-                    </TableCell>
-                    <TableCell sx={{ border: 'none', p: 1, pt: 2 }}>
-                      {box['Remaining'].toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        border: 'none',
-                        p: 1,
-                      }}
-                    >
-                      {vestedWithNFTHeading.redeemable}
-                    </TableCell>
-                    <TableCell sx={{ border: 'none', p: 1 }}>
-                      {box['Redeemable'].toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        border: 'none',
-                        p: 1,
-                      }}
-                    >
-                      {vestedWithNFTHeading.nextUnlock}
-                    </TableCell>
-                    <TableCell sx={{ border: 'none', p: 1 }}>
-                      {box['Next unlock']}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        border: 'none',
-                        p: 1,
-                      }}
-                    >
-                      <Button
-                        sx={{ textTransform: 'none' }}
-                        onClick={() => redeem(box)}
+                {vestedTokensWithNFT[vestedToken].map((box, i) => (
+                  <React.Fragment key={i}>
+                    <TableRow sx={{ borderTop: `1px solid #444` }}>
+                      <TableCell
+                        sx={{
+                          color: theme.palette.text.secondary,
+                          border: 'none',
+                          p: 1,
+                          pt: 2,
+                        }}
                       >
-                        Redeem
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                </React.Fragment>
-              ))}
+                        {vestedWithNFTHeading.remaining}
+                      </TableCell>
+                      <TableCell sx={{ border: 'none', p: 1, pt: 2 }}>
+                        {box['Remaining'].toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell
+                        sx={{
+                          color: theme.palette.text.secondary,
+                          border: 'none',
+                          p: 1,
+                        }}
+                      >
+                        {vestedWithNFTHeading.redeemable}
+                      </TableCell>
+                      <TableCell sx={{ border: 'none', p: 1 }}>
+                        {box['Redeemable'].toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell
+                        sx={{
+                          color: theme.palette.text.secondary,
+                          border: 'none',
+                          p: 1,
+                        }}
+                      >
+                        {vestedWithNFTHeading.nextUnlock}
+                      </TableCell>
+                      <TableCell sx={{ border: 'none', p: 1 }}>
+                        {new Date(Date.parse(box['Next unlock'] + 'Z')).toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell
+                        sx={{
+                          color: theme.palette.text.secondary,
+                          border: 'none',
+                          p: 1,
+                        }}
+                      >
+                        <Button
+                          sx={{ textTransform: 'none' }}
+                          onClick={() => redeem(box)}
+                        >
+                          Redeem
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  </React.Fragment>
+                ))}
               </TableBody>
             </Table>
           )}

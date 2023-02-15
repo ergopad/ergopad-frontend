@@ -7,12 +7,12 @@ import {
   Button,
   Typography
 } from '@mui/material';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import CloseIcon from '@mui/icons-material/Close';
-import { styled } from '@mui/material/styles';
+// import Dialog from '@mui/material/Dialog';
+// import DialogTitle from '@mui/material/DialogTitle';
+// import DialogContent from '@mui/material/DialogContent';
+// import DialogActions from '@mui/material/DialogActions';
+// import CloseIcon from '@mui/icons-material/Close';
+// import { styled } from '@mui/material/styles';
 import MuiNextLink from '@components/MuiNextLink';
 import Navbar from '@components/navigation/Navbar';
 import theme from '@styles/theme';
@@ -55,54 +55,54 @@ const Header = () => {
     setAddWalletOpen(true);
   };
 
-  const [modalOpen, setModalOpen] = useState(true);
+  // const [modalOpen, setModalOpen] = useState(true);
 
-  useEffect(() => {
-    localStorage.getItem("dontShowAgain") === "true" && setModalOpen(false)
-  }, []);
+  // useEffect(() => {
+  //   localStorage.getItem("dontShowAgain") === "true" && setModalOpen(false)
+  // }, []);
 
-  const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-    '& .MuiDialogContent-root': {
-      padding: theme.spacing(2),
-    },
-    '& .MuiDialogActions-root': {
-      padding: theme.spacing(1),
-    },
-    '& .MuiPaper-root': {
-      backgroundImage: 'url("/ido-modal/spf-background.png")',
-      backgroundRepeat: 'no-repeat',
-      backgroundPositionX: 'center',
-      backgroundPositionY: 'center',
-    }
-  }));
+  // const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  //   '& .MuiDialogContent-root': {
+  //     padding: theme.spacing(2),
+  //   },
+  //   '& .MuiDialogActions-root': {
+  //     padding: theme.spacing(1),
+  //   },
+  //   '& .MuiPaper-root': {
+  //     backgroundImage: 'url("/ido-modal/spf-background.png")',
+  //     backgroundRepeat: 'no-repeat',
+  //     backgroundPositionX: 'center',
+  //     backgroundPositionY: 'center',
+  //   }
+  // }));
 
-  function BootstrapDialogTitle(props) {
-    const { children, onClose, ...other } = props;
+  // function BootstrapDialogTitle(props) {
+  //   const { children, onClose, ...other } = props;
 
-    return (
-      <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
-        {children}
-        {onClose ? (
-          <IconButton
-            aria-label="close"
-            onClick={onClose}
-            sx={{
-              position: 'absolute',
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.grey[500],
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-        ) : null}
-      </DialogTitle>
-    );
-  }
+  //   return (
+  //     <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+  //       {children}
+  //       {onClose ? (
+  //         <IconButton
+  //           aria-label="close"
+  //           onClick={onClose}
+  //           sx={{
+  //             position: 'absolute',
+  //             right: 8,
+  //             top: 8,
+  //             color: (theme) => theme.palette.grey[500],
+  //           }}
+  //         >
+  //           <CloseIcon />
+  //         </IconButton>
+  //       ) : null}
+  //     </DialogTitle>
+  //   );
+  // }
 
-  const handleModalClose = () => {
-    setModalOpen(false);
-  };
+  // const handleModalClose = () => {
+  //   setModalOpen(false);
+  // };
 
   return (
     <>
@@ -178,7 +178,7 @@ const Header = () => {
           </Toolbar>
         </AppBar>
       </ElevationScroll>
-      <BootstrapDialog
+      {/* <BootstrapDialog
         onClose={handleModalClose}
         aria-labelledby="ido-modal"
         open={modalOpen}
@@ -234,7 +234,7 @@ const Header = () => {
             Don't show again
           </Button>
         </DialogActions>
-      </BootstrapDialog>
+      </BootstrapDialog> */}
     </>
   );
 };
