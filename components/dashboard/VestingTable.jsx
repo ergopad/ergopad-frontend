@@ -195,7 +195,7 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                       {box['Redeemable'].toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
                     </TableCell>
                     <TableCell sx={{ color: theme.palette.text.secondary }}>
-                      {box['Next unlock']}
+                      {new Date(Date.parse(box['Next unlock']+'Z')).toLocaleString()}
                     </TableCell>
                     <TableCell sx={{ color: theme.palette.text.secondary }}>
                       <Button
