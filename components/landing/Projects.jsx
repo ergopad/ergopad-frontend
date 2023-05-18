@@ -18,7 +18,7 @@ const Projects = ({ projects, isLoading }) => {
 
   useEffect(() => {
     if (projects?.length !== 0) {
-      setUpcomingProjects(projects?.filter((project) => !project.isLaunched).slice(0, 3))
+      setUpcomingProjects(projects?.filter((project) => !project.isLaunched && !project.name.toLowerCase().startsWith('cardano-')).slice(0, 3))
     }
   }, [projects]);
 
