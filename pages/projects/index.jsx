@@ -49,7 +49,7 @@ const Projects = () => {
     const getProjects = async () => {
       try {
         const res = await axios.get(`${process.env.API_URL}/projects/`);
-        setProjects(res.data);
+        setProjects(res.data.filter((project) => !project.name.toLowerCase().startsWith('cardano-')));
       } catch (e) {
         console.error(e);
       }
@@ -99,7 +99,7 @@ const Projects = () => {
         </Box>
       </Container>
       <Container maxWidth="lg" sx={{ mt: 1 }}>
-      {contributionProjectsActive?.length !== 0 ||
+        {contributionProjectsActive?.length !== 0 ||
           whiteListProjectsActive?.length !== 0 ? (
           <>
             <Typography variant="h4" sx={{ fontWeight: "800", mb: 4 }}>
