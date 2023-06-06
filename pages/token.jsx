@@ -203,7 +203,7 @@ const Token = () => {
             <Divider sx={{ my: 10 }} />
             <CenterTitle 
                 title="Price Chart" 
-                subtitle="Average prices from ErgoDex trading pairs"
+                subtitle="Average prices from Spectrum trading pairs"
             />
 
             <Grid item xs={12} md={12}>
