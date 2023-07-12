@@ -300,6 +300,24 @@ const CheckButtonType = ({ name, activeRounds, project }) => {
         .replaceAll(" ", "")
         .replaceAll(/[^a-zA-Z0-9]/g, "")} />
     )
+    else if (name.toLowerCase().includes('contribution')
+    && name.toLowerCase().includes('window')
+    && activeRounds.some(attr => (
+      attr.projectName.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") ===
+      project.name.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") &&
+      attr.roundName.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "") === "staker") &&
+      attr.title.toLowerCase().includes('contribution')
+    )) return (
+      <ButtonNextLink roundName="staker" roundType="contribute" itemName={name} projectName={project.name.toLowerCase()
+        .replaceAll(" ", "")
+        .replaceAll(/[^a-zA-Z0-9]/g, "")} />
+    )
   else if (name.toLowerCase().includes('ido')) return (
     <ButtonNextLink roundName="" roundType="" itemName={name} projectName="" link="https://app.spectrum.fi/ergo/swap" />
   )
