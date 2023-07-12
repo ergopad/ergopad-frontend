@@ -7,12 +7,12 @@ import {
   Button,
   Typography
 } from '@mui/material';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import CloseIcon from '@mui/icons-material/Close';
-import { styled } from '@mui/material/styles';
+// import Dialog from '@mui/material/Dialog';
+// import DialogTitle from '@mui/material/DialogTitle';
+// import DialogContent from '@mui/material/DialogContent';
+// import DialogActions from '@mui/material/DialogActions';
+// import CloseIcon from '@mui/icons-material/Close';
+// import { styled } from '@mui/material/styles';
 import MuiNextLink from '@components/MuiNextLink';
 import Navbar from '@components/navigation/Navbar';
 import theme from '@styles/theme';
