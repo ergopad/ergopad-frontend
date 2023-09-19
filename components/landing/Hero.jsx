@@ -4,7 +4,7 @@ import TelegramIcon from '@mui/icons-material/Telegram';
 import DiscordIcon from '@components/DiscordIcon';
 import QqIcon from '@components/QqIcon';
 import theme from '@styles/theme';
-import Image from 'next/image';
+import Image from 'next/legacy/image';
 
 const Hero = ({ title, subtitle }) => {
   return (

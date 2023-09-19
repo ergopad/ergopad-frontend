@@ -452,21 +452,21 @@ const Exchange = () => {
             >
               Details
             </Typography>
-            <Typography variant="p" sx={{ fontSize: '1rem', mb: 3 }}>
+            <Typography variant="body2" sx={{ fontSize: '1rem', mb: 3 }}>
               This form will generate a transaction to lock your
               strategic_sale or seedsale tokens into their
               appropriate vesting contracts. Once sent, your ergopad tokens will
               be automatically deposited into your wallet once per month,
               starting January 26th.
             </Typography>
-            <Typography variant="p" sx={{ fontSize: '1rem', mb: 3 }}>
+            <Typography variant="body2" sx={{ fontSize: '1rem', mb: 3 }}>
               If you have both tokens, please send them in two separate
               transactions. Once your tokens are vested, you can see them on the{' '}
               <MuiNextLink href="/dashboard">dashboard</MuiNextLink> page in the
               vesting table. Please follow the instructions closely when you
               submit this form.
             </Typography>
-            <Typography variant="p" sx={{ fontSize: '1rem', mb: 3 }}>
+            <Typography variant="body2" sx={{ fontSize: '1rem', mb: 3 }}>
               The instructions differ if you&apos;re using Yoroi wallet or one
               of the mobile wallets.
             </Typography>
@@ -478,7 +478,7 @@ const Exchange = () => {
             <Typography variant="h4" sx={{ mb: 3, fontWeight: '700' }}>
               Token Exchange Form
             </Typography>
-            <Typography variant="p" sx={{ fontSize: '1rem', mb: 1 }}>
+            <Typography variant="body2" sx={{ fontSize: '1rem', mb: 1 }}>
               Note: {approvalMessage}
             </Typography>
             <TextField
@@ -495,7 +495,7 @@ const Exchange = () => {
               error={formErrors.vestingAmount}
               helperText={formErrors.vestingAmount && valueHelper}
             />
-            <Typography variant="p" sx={{ fontSize: '1rem', mb: 1 }}>
+            <Typography variant="body2" sx={{ fontSize: '1rem', mb: 1 }}>
               Select which token you would like to exchange from:{' '}
             </Typography>
             <ToggleButtonGroup
@@ -658,7 +658,7 @@ const Exchange = () => {
                 {successMessageData.token > 0.0 && (
                   <>
                     <Typography
-                      variant="p"
+                      variant="body2"
                       sx={{
                         fontSize: mediumWidthUp ? '0.8rem' : '0.7rem',
                         mt: 1,
@@ -697,7 +697,7 @@ const Exchange = () => {
               {successMessageData.token > 0.0 && (
                 <>
                   <Typography
-                    variant="p"
+                    variant="body2"
                     sx={{
                       fontSize: mediumWidthUp ? '0.8rem' : '0.7rem',
                       mt: 1,
@@ -710,14 +710,14 @@ const Exchange = () => {
                 </>
               )}
               <>
-                <Typography variant="p" sx={{ fontSize: '1rem', mb: 1 }}>
+                <Typography variant="body2" sx={{ fontSize: '1rem', mb: 1 }}>
                   Time remaining: {timer}
                 </Typography>
                 <Box sx={{ px: 5, mb: 2 }}>
                   <LinearProgress variant="determinate" value={progress} />
                 </Box>
                 <Typography
-                  variant="p"
+                  variant="body2"
                   sx={{ fontSize: mediumWidthUp ? '0.8rem' : '0.7rem', mb: 1 }}
                 >
                   Please make sure you complete the transaction before the timer

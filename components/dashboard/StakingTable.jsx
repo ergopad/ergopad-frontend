@@ -96,7 +96,7 @@ const StakingTable = ({ data }) => {
       <>
         <Box>
           <Typography
-            variant="p"
+            variant="body2"
             color="text.primary"
             sx={{ fontWeight: '400', fontSize: '1rem', mb: 1, pl: 1 }}
           >
@@ -123,7 +123,7 @@ const StakingTable = ({ data }) => {
           {Object.keys(stakeObject.addresses).map((address, i) => (
             <Box sx={{ mt: 2 }} key={i}>
               <Typography
-                variant="p"
+                variant="body2"
                 color="text.primary"
                 sx={{ fontWeight: '600', fontSize: '1rem', mb: 1, pl: 1 }}
               >
@@ -141,7 +141,7 @@ const StakingTable = ({ data }) => {
                 </Typography>
               </Typography>
               <Typography
-                variant="p"
+                variant="body2"
                 color="text.primary"
                 sx={{ fontWeight: '600', fontSize: '1rem', mb: 1, pl: 1 }}
               >

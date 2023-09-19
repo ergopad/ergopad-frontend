@@ -240,7 +240,7 @@ const TokenRedeemModal = ({ box, onClose }) => {
                       </FormControl>
                     </Grid>
                     <Grid item xs={12}>
-                      <Typography variant="p" sx={{ fontSize: '1rem', mb: 0 }}>
+                      <Typography variant="body2" sx={{ fontSize: '1rem', mb: 0 }}>
                         You can now redeem <b>{box ? box['Redeemable'] : 0} </b>
                         tokens.
                       </Typography>

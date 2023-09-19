@@ -170,7 +170,7 @@ const Faq = () => {
             uniqueId="faq"
           />
         ) : (
-          <Typography variant="p">No questions found</Typography>
+          <Typography variant="body2">No questions found</Typography>
         )}
       </Section>
     </>

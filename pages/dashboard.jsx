@@ -537,7 +537,7 @@ const Dashboard = () => {
                 </>
               ) : (
                 <>
-                  <Typography variant="p">
+                  <Typography variant="body2">
                     Not all tokens are shown in this chart
                   </Typography>
                   <StackedAreaPortfolioHistory data={historyDataAggregated} />

@@ -35,7 +35,7 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
       <>
         <Box>
           <Typography
-            variant="p"
+            variant="body2"
             color="text.primary"
             sx={{ fontWeight: '400', fontSize: '1rem', mb: 1, pl: 1 }}
           >
@@ -56,7 +56,7 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
       {vestedObject.map((vestedToken, i) => (
         <Box sx={{ mt: 4 }} key={i}>
           <Typography
-            variant="p"
+            variant="body2"
             color="text.primary"
             sx={{ fontWeight: '600', fontSize: '1rem', mb: 1, pl: 1 }}
           >
@@ -70,7 +70,7 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
             </Typography>
           </Typography>
           <Typography
-            variant="p"
+            variant="body2"
             color="text.primary"
             sx={{ fontWeight: '600', fontSize: '1rem', mb: 1, pl: 1 }}
           >
@@ -156,7 +156,7 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
       {Object.keys(vestedTokensWithNFT).map((vestedToken, i) => (
         <Box key={i} sx={{ mt: 4 }}>
           <Typography
-            variant="p"
+            variant="body2"
             color="text.primary"
             sx={{ fontWeight: '600', fontSize: '1rem', mb: 1, pl: 1 }}
           >

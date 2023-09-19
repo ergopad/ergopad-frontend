@@ -14,3 +14,7 @@ pages/dashboardrechart.jsx
 .yarn
 .pnp*
 .yarnrc.yml
+.env
+localhost.crt
+localhost.key
+server.js

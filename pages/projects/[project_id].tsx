@@ -17,9 +17,10 @@ import {
   useMediaQuery,
   Avatar,
   ListItemButton,
+  useTheme,
+  Link
 } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
-import Link from "@components/MuiNextLink";
 import CenterTitle from "@components/CenterTitle";
 import TelegramIcon from "@mui/icons-material/Telegram";
 import TwitterIcon from "@mui/icons-material/Twitter";
@@ -36,32 +37,99 @@ import Distribution from "@components/projects/Distribution";
 import axios from "axios";
 import { useWhitelistProjects } from "../../hooks/useWhitelistProjects";
 import { useContributionProjects } from "../../hooks/useContributionProjects";
+import { scroller } from 'react-scroll';
+
+export interface Project {
+  name: string;
+  shortDescription: string;
+  description: string;
+  fundsRaised: number;
+  bannerImgUrl: string;
+  isLaunched: boolean;
+  socials: Socials;
+  roadmap: Roadmap;
+  team: Team;
+  tokenomics: Tokenomics;
+  isDraft: boolean;
+  id: number;
+}
+
+interface Socials {
+  telegram: string;
+  twitter: string;
+  discord: string;
+  github: string;
+  website: string;
+}
+
+interface Roadmap {
+  roadmap: RoadmapItem[];
+}
+
+interface RoadmapItem {
+  name: string;
+  description: string;
+  date: string;
+}
+
+interface Team {
+  team: TeamMember[];
+}
+
+interface TeamMember {
+  name: string;
+  description: string;
+  profileImgUrl: string;
+  socials: TeamMemberSocials;
+}
+
+interface TeamMemberSocials {
+  twitter: string;
+  linkedin: string;
+}
+
+interface Tokenomics {
+  tokenName: string;
+  totalTokens: number;
+  tokenTicker: string;
+  tokenomics: TokenomicsItem[];
+}
+
+interface TokenomicsItem {
+  name: string;
+  amount: number;
+  value: string;
+  tge: string;
+  freq: string;
+  length: string;
+  lockup: string;
+}
 
 const navBarLinks = [
   {
     name: "Description",
     icon: "info",
-    link: "#",
+    link: "top",
   },
   {
     name: "Roadmap",
     icon: "signpost",
-    link: "#roadmap",
+    link: "roadmap",
   },
   {
     name: "Team",
     icon: "people",
-    link: "#team",
+    link: "team",
   },
   {
     name: "Tokenomics",
     icon: "data_usage",
-    link: "#tokenomics",
+    link: "tokenomics",
   },
   {
     name: "Distribution",
     icon: "toc",
-    link: "#distribution",
+    link: "distribution",
   },
 ];
 
@@ -72,17 +140,18 @@ const headingStyle = {
 };
 
 const Project = () => {
+  const theme = useTheme()
   const router = useRouter();
   const { project_id } = router.query;
   const [isLoading, setLoading] = useState(true);
-  const [project, setProject] = useState({});
+  const [project, setProject] = useState<Project | undefined>(undefined);
   const [mobileMenu, setMobileMenu] = useState(false);
 
   const { whiteListProjectsActive, isLoading: whiteListProjectsIsLoading } = useWhitelistProjects();
   const { contributionProjectsActive, isLoading: contributionProjectsIsLoading } = useContributionProjects();
 
   const activeRound = useMemo(() => {
-    const whiteListActive = whiteListProjectsActive?.find((project) => project.projectName === project_id);
+    const whiteListActive = whiteListProjectsActive?.find((listedProject: any) => listedProject.projectName === project_id);
     if (whiteListActive) {
       return {
         title: `${whiteListActive.roundName[0].toUpperCase()}${whiteListActive.roundName.slice(1).toLowerCase()} round`,
@@ -90,7 +159,7 @@ const Project = () => {
       };
     }
 
-    const contributionActive = contributionProjectsActive?.find((project) => project.projectName === project_id);
+    const contributionActive = contributionProjectsActive?.find((listedProject: any) => listedProject.projectName === project_id);
     if (contributionActive) {
       return {
         title: `${contributionActive.roundName[0].toUpperCase()}${contributionActive.roundName
@@ -103,14 +172,14 @@ const Project = () => {
     return null;
   }, [whiteListProjectsActive, contributionProjectsActive]);
 
-  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up("md"));
+  const checkSmall = useMediaQuery(() => theme.breakpoints.up("md"));
 
-  const toggleDrawer = (anchor, open) => (event) => {
+  const toggleDrawer = (open: boolean) => (event: any) => {
     if (event && event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
       return;
     }
 
-    setMobileMenu({ ...mobileMenu, [anchor]: open });
+    setMobileMenu(open);
   };
 
   useEffect(() => {
@@ -119,7 +188,7 @@ const Project = () => {
         const res = await axios.get(`${process.env.API_URL}/projects/${project_id}`);
         setProject(res.data);
       } catch {
-        setProject(null);
+        setProject(undefined);
       }
       setLoading(false);
     };
@@ -157,37 +226,25 @@ const Project = () => {
       ) : null}
       {navBarLinks.map(({ icon, name, link }, i) =>
         name == "Description" ||
-        (name == "Team" && project?.team?.team && project.team.team.length) ||
-        (name == "Roadmap" && project?.roadmap?.roadmap && project.roadmap.roadmap.length) ||
-        (name == "Tokenomics" && project?.tokenomics?.tokenomics && project?.tokenomics?.tokenomics.length) ||
-        (name == "Distribution" && project?.tokenomics?.tokenName) ? (
-          <ListItem
-            key={i}
-            button
+          (name == "Team" && project?.team?.team && project.team.team.length) ||
+          (name == "Roadmap" && project?.roadmap?.roadmap && project.roadmap.roadmap.length) ||
+          (name == "Tokenomics" && project?.tokenomics?.tokenomics && project?.tokenomics?.tokenomics.length) ||
+          (name == "Distribution" && project?.tokenomics?.tokenName) ? (
+          <ListItemButton
+            key={`scroller${i}`}
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push(`/projects/${project_id}/${link}`);
+              scroller.scrollTo(link, { duration: 500, smooth: true })
             }}
           >
             <ListItemIcon>
               <Icon>{icon}</Icon>
             </ListItemIcon>
             <ListItemText primary={name} />
-          </ListItem>
+          </ListItemButton>
         ) : null
       )}
     </List>
-  );
-
-  const list = (anchor) => (
-    <Box
-      sx={{ width: anchor === "top" || anchor === "bottom" ? "auto" : 250 }}
-      role="presentation"
-      onClick={toggleDrawer(anchor, false)}
-      onKeyDown={toggleDrawer(anchor, false)}
-    >
-      {navBarList}
-    </Box>
   );
 
   return (
@@ -208,45 +265,47 @@ const Project = () => {
             </Container>
           )}
           {!isLoading && (
-            <Container maxWidth="lg">
+            <Container maxWidth="lg" id="top">
               {!checkSmall
-                ? ["top"].map((anchor) => (
+                ? <Box
+                  sx={{
+                    position: "sticky",
+                    top: 65,
+                    bottom: 20,
+                    // paddingTop: '40px',
+                    // paddingBottom: '40px',
+                    zIndex: 1,
+                  }}
+                >
+                  <Button
+                    sx={{
+                      width: "100vw",
+                      ml: { xs: "-16px", sm: "-24px" },
+                      mt: { xs: "-9px", sm: "-1px" },
+                      borderRadius: "0",
+                    }}
+                    fullWidth
+                    variant="contained"
+                    onClick={toggleDrawer(true)}
+                  >
+                    <MenuIcon />
+                  </Button>
+                  <SwipeableDrawer
+                    anchor='top'
+                    open={mobileMenu}
+                    onClose={toggleDrawer(false)}
+                    onOpen={toggleDrawer(true)}
+                  >
                     <Box
-                      key={anchor}
-                      sx={{
-                        position: "sticky",
-                        top: 65,
-                        bottom: 20,
-                        // paddingTop: '40px',
-                        // paddingBottom: '40px',
-                        zIndex: 1,
-                      }}
+                      sx={{ width: "auto" }}
+                      role="presentation"
+                      onClick={toggleDrawer(false)}
+                      onKeyDown={toggleDrawer(false)}
                     >
-                      <Fragment key={anchor}>
-                        <Button
-                          sx={{
-                            width: "100vw",
-                            ml: { xs: "-16px", sm: "-24px" },
-                            mt: { xs: "-9px", sm: "-1px" },
-                            borderRadius: "0",
-                          }}
-                          fullWidth
-                          variant="contained"
-                          onClick={toggleDrawer(anchor, true)}
-                        >
-                          <MenuIcon />
-                        </Button>
-                        <SwipeableDrawer
-                          anchor={anchor}
-                          open={mobileMenu[anchor]}
-                          onClose={toggleDrawer(anchor, false)}
-                          onOpen={toggleDrawer(anchor, true)}
-                        >
-                          {list(anchor)}
-                        </SwipeableDrawer>
-                      </Fragment>
+                      {navBarList}
                     </Box>
-                  ))
+                  </SwipeableDrawer>
+                </Box>
                 : null}
               <Grid
                 container
@@ -287,7 +346,7 @@ const Project = () => {
                 </Grid>
                 <Grid item xs={12} md={9}>
                   <Typography variant="h2">{project.name}</Typography>
-                  <Typography variant="p">{project.shortDescription}</Typography>
+                  <Typography variant="body2">{project.shortDescription}</Typography>
                   <Divider sx={{ width: "2rem", mb: "1.5rem" }} />
                   <Box sx={{ display: "flex", justifyContent: "left" }}>
                     {project?.socials?.website ? (
@@ -366,7 +425,7 @@ const Project = () => {
                       </Link>
                     ) : null}
                     <CopyToClipboard>
-                      {({ copy }) => (
+                      {({ copy }: any) => (
                         <IconButton aria-label="share" onClick={() => copy(window.location)} size="large">
                           <ShareIcon fontSize="inherit" />
                         </IconButton>

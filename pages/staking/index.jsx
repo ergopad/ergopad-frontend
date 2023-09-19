@@ -655,7 +655,7 @@ const Staking = () => {
               </Box>
               <TabPanel value={tabValue} index={0}>
                 <Typography variant="h4">Staking Info</Typography>
-                <Typography variant="p">
+                <Typography variant="body2">
                   Staking your tokens will generate new tokens daily based on
                   the APY percentage above. If you stake in one of the{' '}
                   <a
@@ -672,19 +672,19 @@ const Staking = () => {
                   , it also makes you eligible for early contribution rounds to
                   IDOs of projects launched on Ergopad.
                 </Typography>
-                <Typography variant="p">
+                <Typography variant="body2">
                   Be aware of the unstaking fees, as outlined in the table.
                   These fees are in place to prevent someone from staking right
                   before a tier snapshot, then unstaking immediately after.
                   Unstaking fees are burned and will no longer be in
                   circulation, reducing the total supply of Ergopad tokens.
                 </Typography>
-                <Typography variant="p">
+                <Typography variant="body2">
                   Note: Please stake a minimum of 10 ergopad tokens, fewer will
                   not work.
                 </Typography>
                 <Typography variant="h4">Terms &amp; Conditions</Typography>
-                <Typography variant="p">
+                <Typography variant="body2">
                   By using this website to stake tokens on the Ergo blockchain,
                   you accept that you are interacting with a smart contract that
                   this website has no control over. The operators of this
@@ -812,7 +812,7 @@ const Staking = () => {
             )
           ) : (
             <>
-              <Typography variant="p" sx={{ fontSize: '1rem', mb: 2 }}>
+              <Typography variant="body2" sx={{ fontSize: '1rem', mb: 2 }}>
                 Once you click submit you will be prompted by your wallet to
                 approve the transaction. Make sure you verify token amounts
                 before approving it.
@@ -995,7 +995,7 @@ const Staking = () => {
             )
           ) : (
             <>
-              <Typography variant="p" sx={{ fontSize: '1rem', mb: 2 }}>
+              <Typography variant="body2" sx={{ fontSize: '1rem', mb: 2 }}>
                 Please note the unstaking penalty before approving the
                 transaction in your wallet.
               </Typography>

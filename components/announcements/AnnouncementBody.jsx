@@ -30,7 +30,7 @@ const AnnouncementBody = ({ announcement }) => {
       <Typography variant="h2" sx={{ mt: 5 }}>
         {announcement.title}
       </Typography>
-      <Typography variant="p">{announcement.shortDescription}</Typography>
+      <Typography variant="body2">{announcement.shortDescription}</Typography>
       <Divider sx={{ width: '2rem', mb: '1.5rem' }} />
       {announcement.description && (
         <>

@@ -8,7 +8,8 @@ const themeSetup =
 			primaryText: 'rgb(244, 244, 245)',
 			secondaryText: 'rgb(162, 162, 168)',
 			borderColor: 'rgba(82,82,90,1)',
-      dividerColor: 'rgba(255,255,255,0.08)'
+      dividerColor: 'rgba(255,255,255,0.08)',
+      primaryMain: '#3ABAB4'
 		},
 	}
 
@@ -18,7 +19,7 @@ let theme = createTheme({
     mode: 'dark',
     primary: {
       // main: 'rgb(58, 186, 180)',
-      main: '#3ABAB4',
+      main: themeSetup.dark.primaryMain,
       hover: '#4BD0C9',
       active: 'rgba(49, 151, 149, 0.25)'
     },
@@ -36,7 +37,7 @@ let theme = createTheme({
       main: 'rgb(237, 100, 166)',
     },
     background: {
-      paper: 'rgba(35, 35, 39, 1)',
+      paper: 'rgba(23, 25, 29, 1)',
       default: themeSetup.dark.background,
       grey: themeSetup.dark.greyBackground
     },
@@ -59,12 +60,9 @@ let theme = createTheme({
     fontFamily: ['Inter', 'sans-serif'].join(','),
     },
   components: {
-    // Name of the component
     MuiAccordion: {
       styleOverrides: {
-        // Name of the slot
         root: {
-          // Some CSS
           marginBottom: '1rem',
         },
       },
@@ -87,6 +85,13 @@ let theme = createTheme({
           }
         }
       ]
+    },
+    MuiButton:{
+      styleOverrides: { 
+        root: {
+          textTransform: 'none'
+        }
+      }
     },
     MuiTextField: {
       variants: [
@@ -114,6 +119,31 @@ let theme = createTheme({
       styleOverrides: {
         root: {
           borderColor: themeSetup.dark.dividerColor
+        }
+      }
+    },
+    MuiFilledInput: {
+      styleOverrides: {
+        root: {
+          borderRadius: '6px',
+          borderStyle: 'solid',
+          borderWidth: '1px',
+          // '& input': {
+          //   paddingTop: '7px',
+          //   paddingBottom: '7px',
+          // },
+          // '&::before': {
+          //   display: 'none',
+          // },
+          // '&::after': {
+          //   display: 'none',
+          // },
+          borderColor: 'rgba(200, 225, 255, 0.2)',
+          background: 'radial-gradient(at right top, rgba(16,20,34,0.4), rgba(1, 4, 10, 0.4))',
+          boxShadow: `2px 2px 5px 3px rgba(0,0,0,0.1)`,
+          '&:hover': {
+            borderColor: themeSetup.dark.primaryMain
+          }
         }
       }
     },
@@ -192,7 +222,7 @@ theme.typography.subtitle1 = {
   color: theme.palette.text.secondary
 }
 
-theme.typography.p = {
+theme.typography.body2 = {
   color: theme.palette.text.secondary,
   fontSize: '1.125rem',
   marginBottom: '1rem',

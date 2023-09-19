@@ -396,15 +396,15 @@ const Apply = () => {
 							What is the Ergodex/Ergopad Accelerator Program?
 						</Typography>
 
-						<Typography variant="p" sx={{ fontSize: '1rem', mb: 3 }}>
+						<Typography variant="body2" sx={{ fontSize: '1rem', mb: 3 }}>
 							The accelerator program will submit your project to our partners at ErgoDEX and if accepted, will provide various additional channels for you to market your project. 
 						</Typography>
 
-						<Typography variant="p" sx={{ fontSize: '1rem', mb: 3 }}>
+						<Typography variant="body2" sx={{ fontSize: '1rem', mb: 3 }}>
 							The ErgoPad and ErgoDEX teams will assist projects in creating relationships with investors, agencies and investment platforms relevant to their projects.
 						</Typography>
 
-						<Typography variant="p" sx={{ fontSize: '1rem', mb: 3 }}>
+						<Typography variant="body2" sx={{ fontSize: '1rem', mb: 3 }}>
 							ErgoDEX will provide the liquidity farming platform to projects launching through ErgoPad, which will encourage users to provide liquidity to the DEX, increasing the TVL of the platform and extending a projects marketing campaign beyond their IDO.
 						</Typography>
 
@@ -412,7 +412,7 @@ const Apply = () => {
 							Not ready to apply?
 						</Typography>
 
-						<Typography variant="p" sx={{ fontSize: '1rem', mb: 3 }}>
+						<Typography variant="body2" sx={{ fontSize: '1rem', mb: 3 }}>
 							You can find the team on these social platforms:
 						</Typography>
 

@@ -8,7 +8,7 @@ import {
   ListItem,
 } from '@mui/material';
 import theme from '@styles/theme';
-import Image from 'next/image';
+import Image from 'next/legacy/image';
 import { useRouter } from 'next/router';
 
 const Dashboard = () => {
@@ -31,12 +31,12 @@ const Dashboard = () => {
         </Grid>
         <Grid item xs={12} md={6} sx={{ mb: 10 }}>
           <Typography variant="h2">Dashboard</Typography>
-          <Typography variant="p">
+          <Typography variant="body2">
             The Ergopad Dashboard lets you keep track of all your Ergo assets,
             and displays all your staked and vested tokens, even when
             they&apos;re locked in smart contracts and not in your wallet.
           </Typography>
-          <Typography variant="p">Other features include:</Typography>
+          <Typography variant="body2">Other features include:</Typography>
           <List
             sx={{
               mt: -2,

@@ -549,7 +549,7 @@ const Contribute = () => {
                     <Typography variant="h4" sx={{ fontWeight: '700' }}>
                       Token Contribution Form
                     </Typography>
-                    <Typography variant="p" sx={{ mb: 1 }}>
+                    <Typography variant="body2" sx={{ mb: 1 }}>
                       Tokens remaining to be distributed for this round:{' '}
                       {(roundDetails.remaining > 0) ? (roundDetails.remaining).toLocaleString(
                         navigator.language,
@@ -563,7 +563,7 @@ const Contribute = () => {
                     }
                       .
                     </Typography>
-                    <Typography variant="p" sx={{ mb: 3 }}>
+                    <Typography variant="body2" sx={{ mb: 3 }}>
                       <b>Note:</b> If you are whitelisted for seed or strategic
                       rounds, be aware of the waitlist open dates, where others
                       may be able to claim your reserved tokens.
@@ -571,7 +571,7 @@ const Contribute = () => {
                     <Grid container spacing={2}>
                       <Grid item xs={12}>
                         <Typography
-                          variant="p"
+                          variant="body2"
                           sx={{ fontSize: '1rem', mb: 1 }}
                         >
                           Your wallet currently has{' '}
@@ -623,7 +623,7 @@ const Contribute = () => {
                       <Grid container item xs={12}>
                         <Grid item xs={12}>
                           <Typography
-                            variant="p"
+                            variant="body2"
                             sx={{ fontSize: '1rem', mb: 1 }}
                           >
                             Enter the number of {contributeData.tokenName}{' '}
@@ -671,7 +671,7 @@ const Contribute = () => {
                       </Grid>
                       <Grid item xs={12}>
                         <Typography
-                          variant="p"
+                          variant="body2"
                           sx={{ fontSize: '1rem', mb: '1rem' }}
                         >
                           You are receiving{' '}
@@ -693,7 +693,7 @@ const Contribute = () => {
                           .
                         </Typography>
                         <Typography
-                          variant="p"
+                          variant="body2"
                           sx={{ fontSize: '1rem', mb: 0 }}
                         >
                           You may contribute the entire sum in ergo or sigUSD.
@@ -716,7 +716,7 @@ const Contribute = () => {
                       </Grid>
                       <Grid item xs={12}>
                         <Typography
-                          variant="p"
+                          variant="body2"
                           sx={{ fontSize: '1rem', mb: 1 }}
                         >
                           Contribution amount in{' '}
@@ -782,7 +782,7 @@ const Contribute = () => {
                       </FormGroup>
                     </FormControl>
                     <Typography
-                      variant="p"
+                      variant="body2"
                       sx={{ fontSize: '1rem', mb: '1rem' }}
                     >
                       Your funds will be sent to the blockchain and off-chain
@@ -794,14 +794,14 @@ const Contribute = () => {
                       redeem them after the IDO date.
                     </Typography>
                     <Typography
-                      variant="p"
+                      variant="body2"
                       sx={{ fontSize: '1rem', mb: '1rem' }}
                     >
                       If there's any issue, the transaction will be
                       automatically refunded. If that happens, please try
                       submitting again.
                     </Typography>
-                    <Typography variant="p" sx={{ fontWeight: 'bold', mb: 0 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0 }}>
                       NOTE: YOROI IS NOT SUPPORTED.
                     </Typography>
                     <Grid container>

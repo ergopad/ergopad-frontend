@@ -33,7 +33,7 @@ const UnstakingTable = ({ data, unstake, addstake, disableUnstaking, disableAddS
       <>
         <Box>
           <Typography
-            variant="p"
+            variant="body2"
             color="text.primary"
             sx={{ fontWeight: '400', fontSize: '1rem', mb: 1, pl: 1 }}
           >
@@ -57,7 +57,7 @@ const UnstakingTable = ({ data, unstake, addstake, disableUnstaking, disableAddS
           })}
         </Typography>
         <Typography
-          variant="p"
+          variant="body2"
           sx={{ fontWeight: '400', fontSize: '1rem', mb: 1, pl: 1 }}
         >
           Note: You may have staked tokens associated with other addresses in
@@ -69,7 +69,7 @@ const UnstakingTable = ({ data, unstake, addstake, disableUnstaking, disableAddS
       {Object.keys(stakeObject.addresses).map((address) => (
         <Box sx={{ mt: 4 }} key={address}>
           <Typography
-            variant="p"
+            variant="body2"
             color="text.primary"
             sx={{ fontWeight: '600', fontSize: '1rem', mb: 1, pl: 1 }}
           >
@@ -87,7 +87,7 @@ const UnstakingTable = ({ data, unstake, addstake, disableUnstaking, disableAddS
             </Typography>
           </Typography>
           <Typography
-            variant="p"
+            variant="body2"
             color="text.primary"
             sx={{ fontWeight: '600', fontSize: '1rem', mb: 1, pl: 1 }}
           >
@@ -244,7 +244,7 @@ const UnstakingTable = ({ data, unstake, addstake, disableUnstaking, disableAddS
         </Box>
       ))}
       {disableUnstaking && (
-        <Typography variant="p" sx={{ mt: 1, fontSize: '1rem' }}>
+        <Typography variant="body2" sx={{ mt: 1, fontSize: '1rem' }}>
           NOTE: Unstaking is currently disabled.
         </Typography>
       )}

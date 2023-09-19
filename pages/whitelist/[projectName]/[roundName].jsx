@@ -383,7 +383,7 @@ const Whitelist = () => {
                     >
                       Join the discussion
                     </Typography>
-                    <Typography variant="p" sx={{ fontSize: '1rem', mb: 3 }}>
+                    <Typography variant="body2" sx={{ fontSize: '1rem', mb: 3 }}>
                       Stay updated on the latest ErgoPad annoucements and
                       upcoming events.
                     </Typography>

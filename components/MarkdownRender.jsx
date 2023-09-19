@@ -33,7 +33,7 @@ const MarkdownRender = ({ description }) => {
         h3: ({ node, ...props }) => (
           <Typography variant="h6" sx={{ marginBottom: '0.2rem' }} {...props} />
         ),
-        p: ({ node, ...props }) => <Typography variant="p" {...props} />,
+        p: ({ node, ...props }) => <Typography variant="body2" {...props} />,
         ul: ({ node, ...props }) => <MarkdownList {...props} />,
         li: ({ node, ...props }) => <MarkdownListItem {...props} />,
         a: ({ node, ...props }) => <MuiNextLink {...props} sx={{ wordBreak: 'break-all' }} />,

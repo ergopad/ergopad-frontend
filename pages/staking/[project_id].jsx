@@ -895,12 +895,12 @@ const ProjectStaking = () => {
                     <MarkdownRender
                       description={stakingConfig.stakingInfo ?? ''}
                     />
-                    <Typography variant="p">
+                    <Typography variant="body2">
                       Note: Please stake a minimum of 10 tokens, fewer will not
                       work.
                     </Typography>
                     <Typography variant="h4">Terms &amp; Conditions</Typography>
-                    <Typography variant="p">
+                    <Typography variant="body2">
                       By using this website to stake tokens on the Ergo
                       blockchain, you accept that you are interacting with a
                       smart contract that this website has no control over. The
@@ -967,13 +967,13 @@ const ProjectStaking = () => {
                         Stake Now
                       </Button>
                       {stakingConfig.title === 'Neta' && (
-                        <Typography variant="p" sx={{ mt: 1, fontSize: '1rem' }}>
+                        <Typography variant="body2" sx={{ mt: 1, fontSize: '1rem' }}>
                           Neta staking currently disabled. You are still able to unstake normally.
                         </Typography>
                       )}
                     </Box>
                     {stakingConfig.additionalDetails.disableStaking && (
-                      <Typography variant="p" sx={{ mt: 1, fontSize: '1rem' }}>
+                      <Typography variant="body2" sx={{ mt: 1, fontSize: '1rem' }}>
                         NOTE: Staking is currently disabled.
                       </Typography>
                     )}
@@ -1070,7 +1070,7 @@ const ProjectStaking = () => {
                 )
               ) : (
                 <>
-                  <Typography variant="p" sx={{ fontSize: '1rem', mb: 2 }}>
+                  <Typography variant="body2" sx={{ fontSize: '1rem', mb: 2 }}>
                     Once you click submit you will be prompted by your wallet to
                     approve the transaction. Make sure you verify token amounts
                     before approving it.
@@ -1255,7 +1255,7 @@ const ProjectStaking = () => {
                 )
               ) : (
                 <>
-                  <Typography variant="p" sx={{ fontSize: '1rem', mb: 2 }}>
+                  <Typography variant="body2" sx={{ fontSize: '1rem', mb: 2 }}>
                     Please note the unstaking penalty before approving the
                     transaction in your wallet.
                   </Typography>
@@ -1436,7 +1436,7 @@ const ProjectStaking = () => {
                 )
               ) : (
                 <>
-                  <Typography variant="p" sx={{ fontSize: '1rem', mb: 2 }}>
+                  <Typography variant="body2" sx={{ fontSize: '1rem', mb: 2 }}>
                     You have {tokenBalance} {stakingConfig.title} tokens. You
                     can add tokens to your existing stake box here.
                   </Typography>

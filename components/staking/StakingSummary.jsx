@@ -51,7 +51,7 @@ export const StakingItem = (item, md, ifSmall, loading = false) => {
     return (
       <Grid item xs={12} sx={{ maxWidth: '380px' }} key={item.title}>
         <Typography
-          variant="p"
+          variant="body2"
           sx={{
             mb: 1,
             fontWeight: '700',

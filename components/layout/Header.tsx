@@ -5,23 +5,24 @@ import {
   IconButton,
   useScrollTrigger,
   Button,
-  Typography
+  Typography,
+  Dialog,
+  DialogActions,
+  useTheme,
+  DialogTitle,
+  DialogContent
 } from '@mui/material';
-// import Dialog from '@mui/material/Dialog';
-// import DialogTitle from '@mui/material/DialogTitle';
-// import DialogContent from '@mui/material/DialogContent';
-// import DialogActions from '@mui/material/DialogActions';
-// import CloseIcon from '@mui/icons-material/Close';
-// import { styled } from '@mui/material/styles';
-import MuiNextLink from '@components/MuiNextLink';
+import Link from 'next/link';
 import Navbar from '@components/navigation/Navbar';
-import theme from '@styles/theme';
 import { cloneElement, useState, useEffect } from 'react';
-import { useAddWallet } from 'utils/AddWalletContext';
-import { useWallet } from 'utils/WalletContext';
-import AddWallet from '@components/AddWallet';
-import Image from 'next/image';
+import { useWallet } from '@utils/WalletContext';
+// import AddWallet from '@components/AddWallet';
+import Image from 'next/legacy/image';
 import NotificationBell from '@components/NotificationBell';
+import UserMenu from '@components/user/UserMenu';
+import styled from '@emotion/styled';
+import CloseIcon from '@mui/icons-material/Close';
+import { useSession } from 'next-auth/react';
 
 export const navLinks = [
   { title: `Whitepaper`, path: `/whitepaper` },
@@ -31,7 +32,7 @@ export const navLinks = [
   { title: `Staking`, path: `/staking` },
 ];
 
-function ElevationScroll(props) {
+function ElevationScroll(props: any) {
   const { children } = props;
 
   const trigger = useScrollTrigger({
@@ -46,67 +47,69 @@ function ElevationScroll(props) {
 }
 
 const Header = () => {
-  const { wallet } = useWallet();
-  const { setAddWalletOpen } = useAddWallet();
+  const { wallet, setSessionData, setSessionStatus } = useWallet();
+  const { data: sessionRealData, status: sessionRealStatus } = useSession();
+  const theme = useTheme()
+  const [modalOpen, setModalOpen] = useState(true);
 
-  const walletButtonText = wallet ? wallet : 'Connect Wallet';
+  useEffect(() => {
+    setSessionStatus(sessionRealStatus)
+    if (sessionRealData) {
+      setSessionData(sessionRealData)
+    }
+    else setSessionData(null)
+  }, [sessionRealStatus])
 
-  const handleClickOpen = () => {
-    setAddWalletOpen(true);
+  useEffect(() => {
+    localStorage.getItem("dontShowAgain") === "true" && setModalOpen(false)
+  }, []);
+
+  const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+    '& .MuiDialogContent-root': {
+      padding: 2,
+    },
+    '& .MuiDialogActions-root': {
+      padding: 2,
+    },
+    '& .MuiPaper-root': {
+      backgroundImage: 'url("/ido-modal/spf-background.png")',
+      backgroundRepeat: 'no-repeat',
+      backgroundPositionX: 'center',
+      backgroundPositionY: 'center',
+    }
+  }));
+
+  function BootstrapDialogTitle(props: any) {
+    const { children, onClose, ...other } = props;
+
+    return (
+      <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+        {children}
+        {onClose ? (
+          <IconButton
+            aria-label="close"
+            onClick={onClose}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        ) : null}
+      </DialogTitle>
+    );
+  }
+
+  const handleModalClose = () => {
+    setModalOpen(false);
   };
-
-  // const [modalOpen, setModalOpen] = useState(true);
-
-  // useEffect(() => {
-  //   localStorage.getItem("dontShowAgain") === "true" && setModalOpen(false)
-  // }, []);
-
-  // const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  //   '& .MuiDialogContent-root': {
-  //     padding: theme.spacing(2),
-  //   },
-  //   '& .MuiDialogActions-root': {
-  //     padding: theme.spacing(1),
-  //   },
-  //   '& .MuiPaper-root': {
-  //     backgroundImage: 'url("/ido-modal/spf-background.png")',
-  //     backgroundRepeat: 'no-repeat',
-  //     backgroundPositionX: 'center',
-  //     backgroundPositionY: 'center',
-  //   }
-  // }));
-
-  // function BootstrapDialogTitle(props) {
-  //   const { children, onClose, ...other } = props;
-
-  //   return (
-  //     <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
-  //       {children}
-  //       {onClose ? (
-  //         <IconButton
-  //           aria-label="close"
-  //           onClick={onClose}
-  //           sx={{
-  //             position: 'absolute',
-  //             right: 8,
-  //             top: 8,
-  //             color: (theme) => theme.palette.grey[500],
-  //           }}
-  //         >
-  //           <CloseIcon />
-  //         </IconButton>
-  //       ) : null}
-  //     </DialogTitle>
-  //   );
-  // }
-
-  // const handleModalClose = () => {
-  //   setModalOpen(false);
-  // };
 
   return (
     <>
-      <AddWallet />
+      {/* <AddWallet /> */}
       <ElevationScroll>
         <AppBar
           color="transparent"
@@ -129,10 +132,9 @@ const Header = () => {
           >
             <Box sx={{ display: 'flex', flexGrow: 1 }}>
               <Box sx={{ display: 'inline-flex' }}>
-                <MuiNextLink
-                  activeClassName="active"
+                <Link
                   href="/"
-                  sx={{ pr: '2rem' }}
+                  style={{ paddingRight: '2rem' }}
                 >
                   <IconButton>
                     <Image
@@ -155,7 +157,7 @@ const Header = () => {
                       <polygon points="24.2 16 21.8 21.8 16 24.2 10.2 21.8 7.8 16 0 16 4.7 27.3 16 32 27.3 27.3 32 16" fill="url(#a)"/>
                     </svg> */}
                   </IconButton>
-                </MuiNextLink>
+                </Link>
               </Box>
               <Box sx={{ display: 'inline-flex' }}>
                 <Navbar navLinks={navLinks} />
@@ -165,20 +167,13 @@ const Header = () => {
               <NotificationBell />
             </Box>
             <Box sx={{ display: 'flex' }}>
-              <Button
-                variant="contained"
-                id="walletButton"
-                sx={walletButtonSx}
-                onClick={handleClickOpen}
-              >
-                {walletButtonText}
-              </Button>
+              <UserMenu />
             </Box>
             {/* {isMobile && <SideDrawer navLinks={navLinks} />} */}
           </Toolbar>
         </AppBar>
       </ElevationScroll>
-      {/* <BootstrapDialog
+      <BootstrapDialog
         onClose={handleModalClose}
         aria-labelledby="ido-modal"
         open={modalOpen}
@@ -204,10 +199,16 @@ const Header = () => {
               mt: '-60px',
             }}
           >
-            <Image src="/ido-modal/spf-ido-title.png" width={594} height={123} alt="Spectrum Finance IDO: Powered by ErgoPad" />
+            <Image
+              src="/ido-modal/spf-ido-title.png"
+              width={594}
+              height={123}
+              alt="Spectrum Finance IDO: Powered by ErgoPad"
+
+            />
           </Box>
         </DialogContent>
-        <DialogActions justifyContent="center" sx={{ flexDirection: 'column' }}>
+        <DialogActions sx={{ flexDirection: 'column', justifyContent: "center" }}>
           <Button
             autoFocus
             variant="contained"
@@ -234,28 +235,9 @@ const Header = () => {
             Don't show again
           </Button>
         </DialogActions>
-      </BootstrapDialog> */}
+      </BootstrapDialog>
     </>
   );
 };
 
 export default Header;
-
-const walletButtonSx = {
-  color: '#fff',
-  fontSize: '1rem',
-  px: '1.2rem',
-  textTransform: 'none',
-  backgroundColor: theme.palette.primary.main,
-  '&:hover': {
-    backgroundColor: theme.palette.primary.hover,
-    boxShadow: 'none',
-  },
-  '&:active': {
-    backgroundColor: theme.palette.primary.active,
-  },
-  textOverflow: 'ellipsis',
-  maxWidth: '10em',
-  overflow: 'hidden',
-  whiteSpace: 'nowrap',
-};

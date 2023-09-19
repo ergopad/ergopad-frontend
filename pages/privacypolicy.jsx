@@ -9,11 +9,11 @@ const PrivacyPolicy = () => {
                 title="Privacy Policy"
             />
             
-            <Typography variant="p">
+            <Typography variant="body2">
                 This website stores your wallet data in LocalStorage on your browser, which is saved on your computer but not on the ErgoPad.io servers. When you interact with the Dashboard and any of the dApps, your data is included in a server request but never stored. 
             </Typography>
 
-            <Typography variant="p">
+            <Typography variant="body2">
                 LocalStorage persists when you leave this website, but is never shared with others. To delete it, just click the button at the top where your wallet is saved, and select &quot;remove wallet.&quot; 
             </Typography>
         </Container>

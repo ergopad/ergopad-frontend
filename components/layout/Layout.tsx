@@ -5,7 +5,11 @@ import Header from '@components/layout/Header';
 import Footer from '@components/layout/Footer';
 import BottomNav from '@components/navigation/BottomNav';
 
-const Layout = ({ children }) => {
+type LayoutProps = {
+  children: React.ReactNode;
+};
+
+const Layout: React.FC<LayoutProps> = ({ children }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const router = useRouter();
