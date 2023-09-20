@@ -255,20 +255,17 @@ export const userRouter = createTRPCRouter({
       if (userAddress && wallet.changeAddress !== userAddress
         && !wallet.unusedAddresses.includes(userAddress)
         && !wallet.usedAddresses.includes(userAddress)) {
-        throw new Error("Cannot delete: wallet is currently the default address for this user");
-      }
-
-      // Attempt to delete the wallet
-      const deleteResponse = await prisma.wallet.delete({
-        where: {
-          id: walletId,
+        // Attempt to delete the wallet
+        const deleteResponse = await prisma.wallet.delete({
+          where: {
+            id: walletId,
+          }
+        });
+        if (!deleteResponse) {
+          throw new Error("Error removing this wallet")
         }
-      });
-
-      if (!deleteResponse) {
-        throw new Error("Error removing this wallet")
+        return { success: true }; // Return a success response or any other relevant data
       }
-
-      return { success: true }; // Return a success response or any other relevant data
+      else throw new Error("Cannot delete: wallet is currently the default address for this user");
     }),
 });
