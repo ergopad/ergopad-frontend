@@ -3,13 +3,15 @@ import {
   Box,
   LinearProgress,
   Typography,
-  useTheme
+  useTheme,
+  Button
 } from '@mui/material';
 import SignIn, { Expanded } from '@components/user/SignIn';
 import { trpc } from "@utils/trpc";
 import { signIn, signOut } from "next-auth/react"
 import nautilusIcon from "@public/icons/nautilus.png";
 import { useWallet } from '@utils/WalletContext';
+import { NonceResponse } from '@lib/types';
 
 interface INautilusLogin {
   expanded: Expanded
@@ -20,16 +22,18 @@ interface INautilusLogin {
   dappConnected: boolean;
   setDappConnected: React.Dispatch<React.SetStateAction<boolean>>;
   setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  dappConnection: Function;
 }
 
-const NautilusLogin: FC<INautilusLogin> = ({ setExpanded, setLoading, localLoading, setLocalLoading, setModalOpen, dappConnected, setDappConnected }) => {
+const NautilusLogin: FC<INautilusLogin> = ({ setExpanded, setLoading, localLoading, setLocalLoading, setModalOpen, dappConnected, setDappConnected, dappConnection }) => {
   const theme = useTheme()
   const [defaultAddress, setDefaultAddress] = useState<string | undefined>(undefined);
   const [usedAddresses, setUsedAddresses] = useState<string[]>([])
   const [unusedAddresses, setUnusedAddresses] = useState<string[]>([])
   const getNonce = trpc.user.getNonce.useQuery({ userAddress: defaultAddress }, { enabled: false, retry: false });
-  const [newNonce, setNewNonce] = useState<string | undefined>(undefined)
-  const { wallet, setWallet, setDAppWallet, sessionData, sessionStatus } = useWallet()
+  const [newNonce, setNewNonce] = useState<NonceResponse | undefined>(undefined)
+  const { wallet, setWallet, setDAppWallet, sessionData, sessionStatus, fetchSessionData } = useWallet()
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
 
   useEffect(() => {
     if (defaultAddress && dappConnected && sessionStatus === 'unauthenticated') {
@@ -66,64 +70,62 @@ const NautilusLogin: FC<INautilusLogin> = ({ setExpanded, setLoading, localLoadi
   const refetchData = () => {
     getNonce.refetch()
       .then((response: any) => {
-        console.log('set new nonce')
+        if (response && response.error) {
+          throw new Error(response.error.message);
+        }
+        setNewNonce(response.data.nonce)
       })
       .catch((error: any) => {
-        console.error(error);
+        console.error('This is an error: ' + error);
+        setErrorMessage(error.message)
         setLocalLoading(false)
       });
   }
 
   useEffect(() => {
-    if (getNonce?.data?.nonce !== null && getNonce?.data?.nonce !== undefined && sessionStatus === 'unauthenticated') {
-      setNewNonce(getNonce.data.nonce)
-    }
-  }, [getNonce.data, sessionStatus])
-
-  useEffect(() => {
     if (newNonce && defaultAddress) {
-      // console.log('verifying ownership with nonce: ' + newNonce)
-      if (sessionStatus === 'unauthenticated') {
+      if (sessionStatus === 'unauthenticated' && newNonce) {
         verifyOwnership(newNonce, defaultAddress)
       }
     }
   }, [newNonce, sessionStatus])
 
-  const verifyOwnership = async (nonce: string, address: string) => {
+  const verifyOwnership = async (nonce: NonceResponse, address: string) => {
     try {
-      setLoading(true);
-      // console.log('nonce: ' + nonce);
-      // console.log('address: ' + address);
-      // @ts-ignore
-      const signature = await ergo.auth(address, nonce);
-      // console.log(signature);
-      if (signature) {
-        const response = await signIn("credentials", {
-          nonce,
-          defaultAddress: defaultAddress,
-          signature: JSON.stringify(signature),
-          wallet: JSON.stringify({
-            type: 'nautilus',
-            defaultAddress: defaultAddress,
-            usedAddresses,
-            unusedAddresses
-          }),
-          redirect: false
-        });
-        if (!response?.status || response.status !== 200) {
-          setDefaultAddress(undefined);
-          setDappConnected(false)
-          window.ergoConnector.nautilus.disconnect();
+      if (nonce) {
+        setLoading(true);
+        // console.log('nonce: ' + nonce);
+        // @ts-ignore
+        const signature = await ergo.auth(address, nonce);
+        // console.log(signature);
+        if (signature) {
+          const response = await signIn("credentials", {
+            nonce: nonce.nonce,
+            userId: nonce.userId,
+            signature: JSON.stringify(signature),
+            wallet: JSON.stringify({
+              type: 'nautilus',
+              defaultAddress: defaultAddress,
+              usedAddresses,
+              unusedAddresses
+            }),
+            redirect: false
+          });
+          if (!response?.status || response.status !== 200) {
+            setDefaultAddress(undefined);
+            setDappConnected(false)
+            window.ergoConnector.nautilus.disconnect();
+          }
         }
-        console.log(response);
       }
+      else throw new Error('Invalid nonce')
     } catch (error) {
-      console.log('disconnect');
       setDefaultAddress(undefined);
       setDappConnected(false)
       window.ergoConnector.nautilus.disconnect();
       console.error(error);
     } finally {
+      await fetchSessionData()
       setLoading(false);
       setLocalLoading(false)
       setExpanded(undefined)
@@ -131,81 +133,16 @@ const NautilusLogin: FC<INautilusLogin> = ({ setExpanded, setLoading, localLoadi
     }
   };
 
+  const cleanup = () => {
+    setDefaultAddress(undefined);
+    setDappConnected(false)
+    setErrorMessage(undefined)
+    window.ergoConnector.nautilus.disconnect();
+    dappConnection()
+  }
+
   return (
     <>
-      {/* {props.dAppWallet.connected && isAddressValid(props.wallet) ? (
-        <>
-          <Typography sx={{ mb: "1rem", fontSize: ".9rem" }}>
-            Select which address you want to use as as the default.
-          </Typography>
-          <TextField
-            label="Default Wallet Address"
-            fullWidth
-            value={props.wallet}
-            disabled
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  {props.wallet !== "" && <CheckCircleIcon color="success" />}
-                </InputAdornment>
-              ),
-            }}
-          />
-
-          <Box
-            sx={{
-              // width: "100%",
-              border: "1px solid",
-              borderColor: theme.palette.background.default,
-              borderRadius: ".3rem",
-              mt: "1rem",
-              maxHeight: "12rem",
-              overflowY: "auto",
-            }}
-          >
-            {props.dAppWallet.name !== undefined && props.dAppWallet.addresses.map((address: string, i: number) => {
-              return (
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: 'space-between',
-                    alignItems: "center",
-                    // width: "100%",
-                    fontSize: ".7rem",
-                    pl: ".5rem",
-                    mt: ".5rem",
-                    pb: ".5rem",
-                    borderBottom: i === props.dAppWallet.addresses.length - 1 ? 0 : "1px solid",
-                    borderBottomColor: theme.palette.background.default,
-                  }}
-                  key={i}
-                >
-                  <Box sx={{
-                    maxWidth: '60vw',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}>
-                    {address}
-                  </Box>
-                  <Box>
-                    <Button
-                      sx={{ ml: "auto", mr: ".5rem" }}
-                      variant="contained"
-                      color={props.wallet === address ? "success" : "primary"}
-                      size="small"
-                      onClick={() => props.changeWallet(address)}
-                    >
-                      {props.wallet === address ? "Active" : "Choose"}
-                    </Button>
-                  </Box>
-                </Box>
-              )
-            })}
-          </Box>
-        </>
-      ) : ( */}
-      {/* <Button onClick={() => dappConnection()}>Start</Button> */}
       {localLoading &&
         <Box>
           <Typography sx={{ mb: 1, textAlign: 'center' }}>
@@ -214,6 +151,17 @@ const NautilusLogin: FC<INautilusLogin> = ({ setExpanded, setLoading, localLoadi
           <LinearProgress />
         </Box>
       }
+      {errorMessage && (
+        <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+          <Typography color="error" sx={{ flexGrow: 1 }}>
+            Address already in use by another account
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={() => cleanup()}
+          >Try again</Button>
+        </Box>
+      )}
       {/* )} */}
     </>
   );

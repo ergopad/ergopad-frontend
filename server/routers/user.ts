@@ -1,9 +1,10 @@
 import { verifySignature } from '@pages/api/auth/[...nextauth]';
 import { prisma } from '@server/prisma';
+import { checkAddressAvailability } from '@server/utils/checkAddress';
 import { nanoid } from 'nanoid';
 import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
-import { generateNonceForUser } from '../utils/nonce';
+import { generateNonceForLogin } from '../utils/nonce';
 
 // const isErgoMainnetAddress = (value: string): boolean => {
 //   const base58Chars = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
@@ -24,7 +25,11 @@ export const userRouter = createTRPCRouter({
         return { nonce: null }; // Return a default value or error if the input is not defined
       }
 
-      const nonce = await generateNonceForUser(userAddress);
+      const nonce = await generateNonceForLogin(userAddress);
+
+      if (!nonce) {
+        throw new Error('Address already in use by another user account')
+      }
 
       return { nonce };
     }),
@@ -39,42 +44,12 @@ export const userRouter = createTRPCRouter({
         return { status: "error", message: "Address not provided" };
       }
 
-      const walletAddressToCheck = address;
-
-      const [userWithAddress, walletWithChangeAddress, walletWithAddressInArrays] = await prisma.$transaction([
-        prisma.user.findUnique({
-          where: {
-            defaultAddress: walletAddressToCheck
-          },
-          select: { id: true }
-        }),
-        prisma.wallet.findUnique({
-          where: {
-            changeAddress: walletAddressToCheck
-          },
-          select: { id: true }
-        }),
-        prisma.wallet.findFirst({
-          where: {
-            OR: [
-              { unusedAddresses: { has: walletAddressToCheck } },
-              { usedAddresses: { has: walletAddressToCheck } }
-            ]
-          },
-          select: { id: true }
-        })
-      ]);
-
-      if (userWithAddress) {
-        return { status: "unavailable", message: "Address is in use as a defaultAddress" };
-      }
-
-      if (walletWithChangeAddress) {
-        return { status: "unavailable", message: "Address is in use as a changeAddress" };
-      }
-
-      if (walletWithAddressInArrays) {
-        return { status: "unavailable", message: "Address is in use in either unusedAddresses or usedAddresses" };
+      const result = await checkAddressAvailability(address);
+      if (result.status === "unavailable") {
+        return {
+          status: "unavailable",
+          message: "Address is in use in some form."
+        };
       }
 
       return { status: "available", message: "Address is not in use" };
@@ -155,6 +130,12 @@ export const userRouter = createTRPCRouter({
       const verificationId = nanoid();
       const nonce = nanoid();
 
+      const isAvailable = await checkAddressAvailability(input.address)
+
+      if (isAvailable.status !== 'available') {
+        throw new Error('Address in use by another wallet')
+      }
+
       const existingLoginRequests = await prisma.loginRequest.findMany({
         where: { user_id: userId },
       });
@@ -196,6 +177,8 @@ export const userRouter = createTRPCRouter({
       const userId = ctx.session.user.id
       const { newDefault, walletId } = input
 
+      // TODO: if this is their login wallet, update their user default address too
+
       const wallet = await prisma.wallet.update({
         where: {
           id: walletId,
@@ -212,25 +195,78 @@ export const userRouter = createTRPCRouter({
 
       return { success: true }
     }),
+  changeLoginAddress: protectedProcedure
+    .input(z.object({
+      changeAddress: z.string()
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const userId = ctx.session.user.id;
+      const { changeAddress } = input;
+
+      // Verify that the provided changeAddress belongs to a wallet of the current user
+      const wallet = await prisma.wallet.findFirst({
+        where: {
+          changeAddress: changeAddress,
+          user_id: userId
+        },
+        select: {
+          id: true // just selecting id for brevity; we just want to know if a record exists
+        }
+      });
+
+      if (!wallet) {
+        throw new Error("The provided address does not belong to any of the user's wallets");
+      }
+
+      // Update the user's defaultAddress with the provided changeAddress
+      await prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          defaultAddress: changeAddress
+        }
+      });
+
+      return { success: true }
+    }),
   removeWallet: protectedProcedure
     .input(z.object({
       walletId: z.number(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const userId = ctx.session.user.id
-      const walletId = input.walletId
+      const userId = ctx.session.user.id;
+      const userAddress = ctx.session.user.address;
+      const walletId = input.walletId;
 
-      // Attempt to delete the wallet that belongs to the user
-      const deleteResponse = await prisma.wallet.deleteMany({
+      // check if wallet belongs to this user
+      const wallet = await prisma.wallet.findUnique({
         where: {
           id: walletId,
           user_id: userId
         }
       });
 
-      // Check if any wallet was deleted
-      if (deleteResponse.count === 0) {
-        throw new Error("Wallet not found or doesn't belong to the user");
+      if (!wallet) {
+        throw new Error("Wallet not found or doesn't belong to this user");
+      }
+
+      // Check if userAddress exists in any of the address fields of the fetched wallet
+      if (userAddress && wallet.changeAddress !== userAddress
+        && !wallet.unusedAddresses.includes(userAddress)
+        && !wallet.usedAddresses.includes(userAddress)) {
+        throw new Error("Cannot delete: wallet is currently the default address for this user");
+      }
+
+      // Attempt to delete the wallet
+      const deleteResponse = await prisma.wallet.delete({
+        where: {
+          id: walletId,
+        }
+      });
+
+      if (!deleteResponse) {
+        throw new Error("Error removing this wallet")
       }
 
       return { success: true }; // Return a success response or any other relevant data

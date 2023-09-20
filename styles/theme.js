@@ -132,10 +132,10 @@ let theme = createTheme({
           //   paddingTop: '7px',
           //   paddingBottom: '7px',
           // },
-          // '&::before': {
+          // '&:before': {
           //   display: 'none',
           // },
-          // '&::after': {
+          // '&:after': {
           //   display: 'none',
           // },
           borderColor: 'rgba(200, 225, 255, 0.2)',

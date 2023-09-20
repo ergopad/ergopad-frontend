@@ -27,40 +27,66 @@ import AddIcon from '@mui/icons-material/Add';
 import AddWalletModal from '@components/user/AddWalletModal';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { useWallet } from '@utils/WalletContext';
+import { Wallet } from 'next-auth';
 
 const ConnectedWallets: NextPage = () => {
   const theme = useTheme()
   const desktop = useMediaQuery(theme.breakpoints.up('md'))
   const [defaultAddress, setDefaultAddress] = useState('');
   const [addressOptions, setAddressOptions] = useState<string[]>([]);
+  const removeWalletMutation = trpc.user.removeWallet.useMutation()
+  const changeDefaultAddressMutation = trpc.user.changeDefaultAddress.useMutation()
+  const changeLoginAddressMutation = trpc.user.changeLoginAddress.useMutation()
+  const [addWalletModalOpen, setAddWalletModalOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [defaultAddressLoading, setDefaultAddressLoading] = useState(false)
+  const [removeLoading, setRemoveLoading] = useState<number | undefined>(undefined)
+  const { sessionData, sessionStatus, fetchSessionData, providerLoading, setProviderLoading } = useWallet()
   const walletsQuery = trpc.user.getWallets.useQuery(
     undefined,
     {
       refetchOnWindowFocus: false,
     }
   )
-  const removeWalletMutation = trpc.user.removeWallet.useMutation()
-  const changeDefaultAddressMutation = trpc.user.changeDefaultAddress.useMutation()
-  const [addWalletModalOpen, setAddWalletModalOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [removeLoading, setRemoveLoading] = useState<number | undefined>(undefined)
-  const { sessionData, sessionStatus } = useWallet()
+
+  const updateLoginAddress = async (address: string) => {
+    try {
+      setDefaultAddressLoading(true)
+      setProviderLoading(true)
+      const changeLogin = await changeLoginAddressMutation.mutateAsync({
+        changeAddress: address
+      })
+      if (changeLogin) {
+        await fetchSessionData()
+        setDefaultAddressLoading(false)
+        setProviderLoading(false)
+      }
+    } catch (error) {
+      console.error("Error setting Login wallet", error);
+      setDefaultAddressLoading(false)
+    }
+  }
+
+  const updateWallets = async () => {
+    if (walletsQuery.data) {
+      let changeAddresses = walletsQuery.data.wallets.map(wallet => wallet.changeAddress);
+
+      // If address exists, remove it from its current position and prepend it
+      if (sessionData?.user.address) {
+        const address = sessionData?.user.address
+        changeAddresses = changeAddresses.filter(addr => addr !== address);
+        changeAddresses.unshift(address);
+        setDefaultAddress(address);
+      }
+
+      setAddressOptions(changeAddresses);
+    }
+  }
 
   useEffect(() => {
-    const address = sessionData?.user?.address;
-
-    if (sessionStatus === 'authenticated') walletsQuery.refetch()
-
-    if (address) {
-      setAddressOptions((prev) => {
-        if (!prev.includes(address)) {
-          setDefaultAddress(address);
-          return [address, ...prev];
-        }
-        return prev;
-      });
-    }
-  }, [sessionData]);
+    console.log('fetch ' + sessionStatus)
+    if (sessionStatus === 'authenticated') updateWallets()
+  }, [sessionData, sessionStatus, fetchSessionData]);
 
   const handleChange = (event: SelectChangeEvent) => {
     setDefaultAddress(event.target.value);
@@ -71,32 +97,42 @@ const ConnectedWallets: NextPage = () => {
     const fetching = async () => {
       const fetch = await walletsQuery.refetch()
       if (!fetch.isLoading) {
+        updateWallets()
         setLoading(false)
       }
     }
     fetching()
   }
 
+  // should run if the user adds another address, but also on page load when 
+  // nextauth verifies an authenticated session
   useEffect(() => {
-    if (!addWalletModalOpen) {
+    if (!addWalletModalOpen && sessionStatus === 'authenticated') {
       handleAddWalletModalClose()
     }
-  }, [addWalletModalOpen])
+  }, [addWalletModalOpen, sessionStatus])
 
   const removeItem = async (id: number, i: number) => {
-    setRemoveLoading(i)
-    const removeWallet = await removeWalletMutation.mutateAsync({
-      walletId: id
-    })
-    if (removeWallet.success) {
-      const fetch = await walletsQuery.refetch()
-      if (!fetch.isLoading) {
-        setRemoveLoading(undefined)
-      }
-    }
-    else setRemoveLoading(undefined)
-  }
+    try {
+      setRemoveLoading(i);
 
+      const removeWallet = await removeWalletMutation.mutateAsync({
+        walletId: id
+      });
+
+      if (removeWallet.success) {
+        const fetch = await walletsQuery.refetch();
+        if (!fetch.isLoading) {
+          setRemoveLoading(undefined);
+        }
+      } else {
+        throw new Error("Failed to remove the wallet");
+      }
+    } catch (error) {
+      console.error("Error removing wallet:", error);
+      setRemoveLoading(undefined);
+    }
+  };
 
   const [loadingAddress, setLoadingAddress] = useState<string | null>(null);
   const handleDefaultAddressChange = async (walletId: number, address: string) => {
@@ -115,18 +151,30 @@ const ConnectedWallets: NextPage = () => {
     }
   }
 
+  const [sortedWallets, setSortedWallets] = useState<Wallet[]>([])
+  useEffect(() => {
+    if (walletsQuery.data?.wallets && walletsQuery.data.wallets.length > 0) {
+      const newSorted = walletsQuery.data?.wallets.sort((a, b) => {
+        return a.id - b.id;
+      });
+      updateWallets()
+      setSortedWallets(newSorted)
+    }
+  }, [walletsQuery.data?.wallets])
+
+
   return (
     <>
       <Section
         title="Connected Wallets"
-        subtitle="Add or remove connected wallets and change your login address here."
+        subtitle="Add or remove connected wallets and change your default address here."
         main={true}
         toggleOutside={true}
         extra={
           <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 2 }}>
             <Box>
               <Typography sx={{ color: theme.palette.text.secondary }}>
-                Login address:
+                Default account address:
               </Typography>
             </Box>
             <Box>
@@ -164,8 +212,12 @@ const ConnectedWallets: NextPage = () => {
               </FormControl>
             </Box>
             <Box>
-              <Button variant="contained">
-                Update
+              <Button
+                variant="contained"
+                onClick={() => updateLoginAddress(defaultAddress)}
+                disabled={defaultAddressLoading}
+              >
+                {defaultAddressLoading ? <CircularProgress size={24} /> : "Update"}
               </Button>
             </Box>
           </Box>
@@ -178,103 +230,109 @@ const ConnectedWallets: NextPage = () => {
               <CircularProgress />
             </Box>
           )
-          : walletsQuery.data?.wallets && (
-            <Grid container alignItems="stretch" spacing={3}>
-              {walletsQuery.data?.wallets.map((wallet, i) => {
-                const addresses = [...wallet.usedAddresses, ...wallet.unusedAddresses]
-                return (
-                  <Grid xs={12} sm={6} md={4}>
-                    <Paper key={`wallet-${i}`} sx={{ p: 2, height: '100%', minHeight: '250px' }}>
-                      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <Box>
-                          <Typography variant="h5" sx={{ mb: 0 }}>
-                            {wallet.changeAddress === sessionData?.user?.address && 'Login '}
-                            Wallet {i + 1}
-                          </Typography>
-                          <Typography variant="subtitle1">
-                            {wallet.type && (wallet.type.charAt(0).toUpperCase() + wallet.type.slice(1))}
-                          </Typography>
+          : sessionStatus !== 'authenticated'
+            ? <Box sx={{ textAlign: 'center' }}>
+              <Typography>
+                Sign in to view connected wallets
+              </Typography>
+            </Box>
+            : sortedWallets && (
+              <Grid container alignItems="stretch" spacing={3}>
+                {sortedWallets.map((wallet, i) => {
+                  const addresses = [...wallet.usedAddresses, ...wallet.unusedAddresses]
+                  return (
+                    <Grid xs={12} sm={6} md={4} key={`wallet-${i}`}>
+                      <Paper sx={{ p: 2, height: '100%', minHeight: '250px' }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                          <Box>
+                            <Typography variant="h5" sx={{ mb: 0 }}>
+                              {wallet.changeAddress === sessionData?.user?.address && 'Default '}
+                              Wallet {i + 1}
+                            </Typography>
+                            <Typography variant="subtitle1">
+                              {wallet.type && (wallet.type.charAt(0).toUpperCase() + wallet.type.slice(1))}
+                            </Typography>
+                          </Box>
+                          <Box sx={{ mr: -1 }}>
+                            {removeLoading === i
+                              ? <CircularProgress />
+                              : wallet.changeAddress !== sessionData?.user?.address && (
+                                <IconButton onClick={() => removeItem(wallet.id, i)}>
+                                  <DeleteOutlineIcon />
+                                </IconButton>
+                              )}
+                          </Box>
                         </Box>
-                        <Box sx={{ mr: -1 }}>
-                          {removeLoading === i
-                            ? <CircularProgress />
-                            : wallet.changeAddress !== sessionData?.user?.address && (
-                              <IconButton onClick={() => removeItem(wallet.id, i)}>
-                                <DeleteOutlineIcon />
-                              </IconButton>
-                            )}
-                        </Box>
-                      </Box>
 
-                      <TextField
-                        label="Default Wallet Address"
-                        sx={{ width: "100%", mt: ".75rem" }}
-                        value={wallet.changeAddress}
-                        disabled
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <CheckCircleIcon color="success" />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                      <Box
-                        sx={{
-                          width: "100%",
-                          border: "1px solid",
-                          borderColor: theme.palette.divider,
-                          borderRadius: ".3rem",
-                          mt: "1rem",
-                          maxHeight: "12rem",
-                          overflowY: "auto",
-                        }}
-                      >
-                        {addresses.map((address: any, i: number) => {
-                          return (
-                            <Box
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                width: "100%",
-                                fontSize: "14px",
-                                pl: ".5rem",
-                                mt: ".5rem",
-                                pb: ".5rem",
-                                borderBottom:
-                                  i === addresses.length - 1 ? 0 : "1px solid",
-                                borderColor: theme.palette.divider,
-                              }}
-                              key={`address-selector-${i}`}
-                            >
-                              {getShorterAddress(address, 9)}
-                              <Button
-                                sx={{ ml: "auto", mr: ".5rem" }}
-                                variant="contained"
-                                color="primary"
-                                size="small"
-                                disabled={wallet.changeAddress === address || loadingAddress === address}
-                                onClick={() => handleDefaultAddressChange(wallet.id, address)}
+                        <TextField
+                          label="Default Wallet Address"
+                          sx={{ width: "100%", mt: ".75rem" }}
+                          value={wallet.changeAddress}
+                          disabled
+                          InputProps={{
+                            startAdornment: wallet.changeAddress === sessionData?.user?.address && (
+                              <InputAdornment position="start">
+                                <CheckCircleIcon color="success" />
+                              </InputAdornment>
+                            ),
+                          }}
+                        />
+                        <Box
+                          sx={{
+                            width: "100%",
+                            border: "1px solid",
+                            borderColor: theme.palette.divider,
+                            borderRadius: ".3rem",
+                            mt: "1rem",
+                            maxHeight: "12rem",
+                            overflowY: "auto",
+                          }}
+                        >
+                          {addresses.map((address: any, i: number) => {
+                            return (
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  width: "100%",
+                                  fontSize: "14px",
+                                  pl: ".5rem",
+                                  mt: ".5rem",
+                                  pb: ".5rem",
+                                  borderBottom:
+                                    i === addresses.length - 1 ? 0 : "1px solid",
+                                  borderColor: theme.palette.divider,
+                                }}
+                                key={`address-selector-${i}`}
                               >
-                                {wallet.changeAddress === address
-                                  ? "Active"
-                                  : loadingAddress === address ? <CircularProgress size={24} /> : "Select"}
-                              </Button>
-                            </Box>
-                          )
-                        })}
-                      </Box>
-                    </Paper>
-                  </Grid>
-                )
-              })}
-              <Grid xs={12} sm={6} md={4}>
-                <Button variant="outlined" fullWidth sx={{ height: '100%', minHeight: '250px' }} onClick={() => setAddWalletModalOpen(true)}>
-                  <AddIcon sx={{ fontSize: '72px' }} />
-                </Button>
+                                {getShorterAddress(address, 9)}
+                                <Button
+                                  sx={{ ml: "auto", mr: ".5rem" }}
+                                  variant="contained"
+                                  color="primary"
+                                  size="small"
+                                  disabled={wallet.changeAddress === address || loadingAddress === address}
+                                  onClick={() => handleDefaultAddressChange(wallet.id, address)}
+                                >
+                                  {wallet.changeAddress === address
+                                    ? "Active"
+                                    : loadingAddress === address ? <CircularProgress size={24} /> : "Select"}
+                                </Button>
+                              </Box>
+                            )
+                          })}
+                        </Box>
+                      </Paper>
+                    </Grid>
+                  )
+                })}
+                <Grid xs={12} sm={6} md={4}>
+                  <Button variant="outlined" fullWidth sx={{ height: '100%', minHeight: '250px' }} onClick={() => setAddWalletModalOpen(true)}>
+                    <AddIcon sx={{ fontSize: '72px' }} />
+                  </Button>
+                </Grid>
               </Grid>
-            </Grid>
-          )
+            )
         }
 
       </Section >

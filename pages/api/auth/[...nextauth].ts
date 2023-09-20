@@ -24,9 +24,16 @@ const generateNonce = () => {
 
 type Credentials = {
   nonce: string;
-  defaultAddress: string;
+  userId: string;
   signature: string;
   wallet: string;
+}
+
+type ParsedWallet = {
+  type: 'mobile' | 'nautilus';
+  defaultAddress: string;
+  usedAddresses: string[];
+  unusedAddresses: string[];
 }
 
 export default async function handler(
@@ -65,11 +72,11 @@ export const authOptions = (
   }
 
   async function signUser(user: User, credentials: Credentials): Promise<User | null> {
-    const walletParse = JSON.parse(credentials.wallet)
+    const walletParse: ParsedWallet = JSON.parse(credentials.wallet)
     const signatureParse = JSON.parse(credentials.signature)
     // TODO: add nonce verification: compare with user's database entry
-    const result = verifySignature(credentials.defaultAddress, signatureParse.signedMessage, signatureParse.proof, walletParse.type)
-    // console.log('Address signed in with: ' + credentials.defaultAddress)
+    const result = verifySignature(walletParse.defaultAddress, signatureParse.signedMessage, signatureParse.proof, walletParse.type)
+    // console.log('Address signed in with: ' + walletParse.defaultAddress)
     // console.log('Signed Message: ' + signatureParse.signedMessage)
     // console.log('Proof: ' + signatureParse.proof)
     // console.log(result)
@@ -91,24 +98,24 @@ export const authOptions = (
   }
 
   async function createNewUser(credentials: Credentials): Promise<User | null> {
-    const { nonce, defaultAddress, signature, wallet } = credentials
-    const walletParse = JSON.parse(wallet)
+    const { nonce, userId, signature, wallet } = credentials
+    const walletParse: ParsedWallet = JSON.parse(wallet)
     const signatureParse = JSON.parse(signature)
-    console.log(walletParse)
+    // console.log(walletParse)
 
     const user = await prisma.user.update({
       where: {
-        defaultAddress: defaultAddress
+        id: userId
       },
       data: {
-        name: defaultAddress,
-        defaultAddress,
+        name: walletParse.defaultAddress,
+        defaultAddress: walletParse.defaultAddress,
         nonce,
         wallets: {
           create: [
             {
               type: walletParse.type,
-              changeAddress: defaultAddress,
+              changeAddress: walletParse.defaultAddress,
               unusedAddresses: walletParse.unusedAddresses,
               usedAddresses: walletParse.usedAddresses
             }
@@ -127,7 +134,7 @@ export const authOptions = (
       },
     })
 
-    const result = verifySignature(credentials.defaultAddress, signatureParse.signedMessage, signatureParse.proof, walletParse.type)
+    const result = verifySignature(walletParse.defaultAddress, signatureParse.signedMessage, signatureParse.proof, walletParse.type)
 
     if (user && account && result) {
       // set a new nonce for the user to make sure an attacker can't reuse this one
@@ -160,8 +167,8 @@ export const authOptions = (
             type: "text",
             placeholder: "",
           },
-          defaultAddress: {
-            label: "Change Address",
+          userId: {
+            label: "User Id",
             type: "text",
             placeholder: "",
           },
@@ -183,31 +190,31 @@ export const authOptions = (
               return null
             }
 
-            const { nonce, defaultAddress, signature, wallet } =
+            const { nonce, userId, signature, wallet } =
               credentials as Credentials
 
-            if (!nonce || !defaultAddress || !signature) {
+            // console.log('User ID: ' + userId)
+
+            if (!nonce || !userId || !signature || !wallet) {
               return null
             }
 
             // NOTE THAT WE CREATED A USER WHEN GENERATING A NONCE
             // Even if this is a new user, we will already have a database entry
-            // But in that case, defaultAddress will be null so we just have to
-            // check for that scenario. 
-            const userWithWallets = await prisma.user.findFirst({
+            const user = await prisma.user.findFirst({
               where: {
-                defaultAddress: defaultAddress,
-                wallets: {
-                  some: {},
-                },
+                id: userId,
               },
-            }) as User;
+              include: {
+                wallets: true // This fetches the associated wallets along with the user
+              }
+            });
 
-            // User already exists
-            if (userWithWallets) return signUser(userWithWallets, credentials as Credentials)
-
-            // User is new
-            return createNewUser(credentials as Credentials)
+            if (user && user.wallets.length > 0) {
+              return signUser(user, credentials as Credentials)
+            } else if (user && user.wallets.length === 0) {
+              return createNewUser(credentials as Credentials)
+            } else throw new Error('Unable to verify user')
           } catch (error) {
             console.error(error)
             return null
@@ -334,7 +341,7 @@ export const authOptions = (
             req: req,
           })
           if (cookie) {
-            console.log(cookie)
+            // console.log(cookie)
             return cookie
           }
           else return ''

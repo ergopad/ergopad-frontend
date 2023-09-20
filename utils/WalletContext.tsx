@@ -1,5 +1,14 @@
-import React, { ReactNode, createContext, useContext, useState, FunctionComponent } from 'react';
+import React, {
+  ReactNode,
+  createContext,
+  useContext,
+  useState,
+  FunctionComponent,
+  useEffect,
+  useCallback
+} from 'react';
 import { Session } from 'next-auth';
+import { getSession } from 'next-auth/react';
 
 interface WalletState {
   wallet: string | undefined;
@@ -10,6 +19,7 @@ interface WalletState {
   };
   sessionData: Session | null;
   sessionStatus: "loading" | "authenticated" | "unauthenticated";
+  providerLoading: boolean;
 }
 
 interface WalletContextType extends WalletState {
@@ -17,18 +27,19 @@ interface WalletContextType extends WalletState {
   setDAppWallet: React.Dispatch<React.SetStateAction<WalletState['dAppWallet']>>;
   setSessionData: React.Dispatch<React.SetStateAction<WalletState['sessionData']>>;
   setSessionStatus: React.Dispatch<React.SetStateAction<WalletState['sessionStatus']>>;
+  setProviderLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  fetchSessionData: Function;
 }
 
 interface WalletConsumerProps {
   children: (context: WalletContextType) => ReactNode;
 }
 
-// The Context with a default value (can be undefined if preferred)
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
-// Template Provider
 const WalletProvider: FunctionComponent<{ children: ReactNode }> = ({ children }) => {
   const [wallet, setWallet] = useState<string>('');
+  const [providerLoading, setProviderLoading] = useState<boolean>(false);
   const [dAppWallet, setDAppWallet] = useState<WalletState['dAppWallet']>({
     connected: false,
     name: '',
@@ -36,6 +47,30 @@ const WalletProvider: FunctionComponent<{ children: ReactNode }> = ({ children }
   });
   const [sessionData, setSessionData] = useState<WalletState['sessionData']>(null)
   const [sessionStatus, setSessionStatus] = useState<WalletState['sessionStatus']>('unauthenticated')
+
+  const fetchSessionData = useCallback(async () => {
+    setProviderLoading(true)
+    try {
+      const updatedSessionData = await getSession();
+
+      if (updatedSessionData) {
+        setSessionData(updatedSessionData);
+        setSessionStatus("authenticated");
+      } else {
+        setSessionData(null);
+        setSessionStatus("unauthenticated");
+      }
+    } catch (error) {
+      console.error("Failed to fetch session data:", error);
+      setSessionData(null);
+      setSessionStatus("unauthenticated");
+    }
+    setProviderLoading(false)
+  }, []);
+
+  useEffect(() => {
+    fetchSessionData();
+  }, [fetchSessionData]);
 
   // Context values passed to consumer
   const value = {
@@ -46,7 +81,10 @@ const WalletProvider: FunctionComponent<{ children: ReactNode }> = ({ children }
     sessionData,
     setSessionData,
     sessionStatus,
-    setSessionStatus
+    setSessionStatus,
+    fetchSessionData,
+    providerLoading,
+    setProviderLoading
   };
 
   return (

@@ -164,7 +164,7 @@ export const SignIn: FC<ISignIn> = ({ open, setOpen, setLoading }) => {
                   It is OK to login with Nautilus on desktop and Ergo Mobile wallet or Terminus on your phone, as long as you have the same address available on both devices.
                 </Typography>
                 <Typography sx={{ mb: 2 }}>
-                  You may add multiple wallets to your account with Premium membership, but if you choose a wallet provider, that address will be your master login.
+                  You may add multiple wallets to your account but only one address will be your master login. You can change it at any time on the Connected Wallets page.
                 </Typography>
               </AccordionDetails>
             </Accordion>
@@ -276,6 +276,7 @@ export const SignIn: FC<ISignIn> = ({ open, setOpen, setLoading }) => {
                 localLoading={nautilusLoading}
                 setLocalLoading={setNautilusLoading}
                 setModalOpen={setOpen}
+                dappConnection={dappConnection}
               />
             </Collapse>
           )}

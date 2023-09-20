@@ -40,12 +40,11 @@ interface IUserMenuProps {
 const UserMenu: FC<IUserMenuProps> = () => {
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false)
-  const [providerLoading, setProviderLoading] = useState(true)
   const [addWalletModal, setAddWalletModal] = useState(false)
-  const { wallet, setWallet, dAppWallet, setDAppWallet, sessionData, sessionStatus } = useWallet()
+  const { wallet, setWallet, dAppWallet, setDAppWallet, sessionData, sessionStatus, providerLoading, setProviderLoading } = useWallet()
 
   useEffect(() => {
-    console.log('session: ' + sessionStatus);
+    // console.log('session: ' + sessionStatus);
     if (sessionStatus === 'authenticated' || sessionStatus === 'unauthenticated') {
       setProviderLoading(false);
     }
@@ -54,7 +53,7 @@ const UserMenu: FC<IUserMenuProps> = () => {
       const checkDappConnection = async () => {
         const isNautilusConnected = await window.ergoConnector.nautilus.connect();
         if (isNautilusConnected) {
-          console.log('Nautilus is connected')
+          // console.log('Nautilus is connected')
 
           // @ts-ignore
           const changeAddress = await ergo.get_change_address();
@@ -115,9 +114,9 @@ const UserMenu: FC<IUserMenuProps> = () => {
   }, [addWalletModal])
 
   useEffect(() => {
-    console.log('address changed')
-    console.log(sessionData?.user.address)
-    console.log(sessionStatus)
+    // console.log('address changed')
+    // console.log(sessionData?.user.address)
+    // console.log(sessionStatus)
     if (sessionStatus === 'authenticated' && typeof sessionData?.user.address !== 'string') {
       setAddWalletModal(true)
       setWallet('')
@@ -148,15 +147,18 @@ const UserMenu: FC<IUserMenuProps> = () => {
           <Button
             sx={walletButtonSx}
             variant="contained"
+            disabled={providerLoading}
             onClick={(e) => wallet
               ? handleClick(e)
               : setAddWalletModal(true)}
           >
             {/* <Avatar src={sessionData.user.image} sx={{ width: '24px', height: '24px', mr: 1 }} variant="square" /> */}
             <Typography>
-              {wallet
-                ? getShortAddress(wallet)
-                : 'Add wallet'
+              {providerLoading
+                ? 'Loading...'
+                : wallet
+                  ? getShortAddress(wallet)
+                  : 'Add wallet'
               }
             </Typography>
           </Button>

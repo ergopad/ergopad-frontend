@@ -47,18 +47,8 @@ function ElevationScroll(props: any) {
 }
 
 const Header = () => {
-  const { wallet, setSessionData, setSessionStatus } = useWallet();
-  const { data: sessionRealData, status: sessionRealStatus } = useSession();
   const theme = useTheme()
   const [modalOpen, setModalOpen] = useState(true);
-
-  useEffect(() => {
-    setSessionStatus(sessionRealStatus)
-    if (sessionRealData) {
-      setSessionData(sessionRealData)
-    }
-    else setSessionData(null)
-  }, [sessionRealStatus])
 
   useEffect(() => {
     localStorage.getItem("dontShowAgain") === "true" && setModalOpen(false)

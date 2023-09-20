@@ -56,12 +56,6 @@ export default async function ergoauthLoginMobile(req: NextApiRequest, res: Next
     // insert 205 at the beginning of the new array
 
 
-    // Aberg (Satergo dev)
-
-    // correction, 205 (just checked)
-
-
-
     // use paideia API to get the sigmaBoolean because there is no way to do it without accessing the appkit
     // First API call
     const loginResponse = await fetch('https://api.paideia.im/auth/login/mobile', {

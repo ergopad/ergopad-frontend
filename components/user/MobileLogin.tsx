@@ -10,27 +10,30 @@ import {
   Input,
   LinearProgress,
   TextField,
-  Typography
+  Typography,
+  useTheme
 } from '@mui/material';
 import Link from '@components/Link';
 import { signIn } from 'next-auth/react';
 import { Expanded } from './SignIn';
-import { Signature } from '@lib/types';
+import { NonceResponse, Signature } from '@lib/types';
+import { isErgoMainnetAddress } from '@utils/general';
+import { useWallet } from '@utils/WalletContext';
 
 interface IMobileLogin {
   setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const MobileLogin: FC<IMobileLogin> = ({ setModalOpen }) => {
+  const theme = useTheme()
   const [localLoading, setLocalLoading] = useState(false)
   const [address, setAddress] = useState<string>('');
   const [verificationId, setVerificationId] = useState<string | null>(null);
-  const [nonce, setNonce] = useState<string | null>(null);
-  const [signature, setSignature] = useState<Signature>({
-    signedMessage: '',
-    proof: ''
-  })
+  const [nonce, setNonce] = useState<NonceResponse | undefined>(undefined);
+  const [signature, setSignature] = useState<Signature | undefined>(undefined)
   const [isSignatureProcessed, setIsSignatureProcessed] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
+  const { fetchSessionData, providerLoading, setProviderLoading } = useWallet()
 
   const loginMutation = trpc.auth.initiateLogin.useMutation();
   trpc.auth.checkLoginStatus.useQuery(
@@ -49,7 +52,6 @@ const MobileLogin: FC<IMobileLogin> = ({ setModalOpen }) => {
       refetchIntervalInBackground: true,
       onSuccess: (data) => {
         if (data?.status === 'SIGNED') {
-          console.log(data)
           setSignature({
             signedMessage: data.signedMessage,
             proof: data.proof
@@ -61,12 +63,17 @@ const MobileLogin: FC<IMobileLogin> = ({ setModalOpen }) => {
 
   const initiateLoginFlow = async () => {
     try {
+      setProviderLoading(true)
       setLocalLoading(true)
       const response = await loginMutation.mutateAsync({ address });
       setVerificationId(response.verificationId);
       setNonce(response.nonce);
       setIsSignatureProcessed(false); // Reset the processed state
-    } catch (error) {
+    } catch (error: any) {
+      setLocalLoading(false)
+      setIsSignatureProcessed(false);
+      setErrorMessage(error.message)
+      setAddress('')
       console.error("Error initiating login flow:", error);
     }
   };
@@ -74,14 +81,14 @@ const MobileLogin: FC<IMobileLogin> = ({ setModalOpen }) => {
   const authSignIn = async () => {
     // console.log(signature)
     const response = await signIn("credentials", {
-      nonce,
-      defaultAddress: address,
+      nonce: nonce?.nonce,
+      userId: nonce?.userId,
       signature: JSON.stringify(signature),
       wallet: JSON.stringify({
         type: 'mobile',
         defaultAddress: address,
-        address: address,
-        icon: ''
+        usedAddresses: [],
+        unusedAddresses: []
       }),
       redirect: false
     });
@@ -89,12 +96,14 @@ const MobileLogin: FC<IMobileLogin> = ({ setModalOpen }) => {
       console.log('error logging in');
     }
     // console.log(response);
+    await fetchSessionData()
+    setProviderLoading(false)
     setModalOpen(false)
     setLocalLoading(false)
   }
 
   useEffect(() => {
-    if (!isSignatureProcessed && signature.signedMessage !== '' && signature.proof !== '') {
+    if (!isSignatureProcessed && signature && nonce) {
       // console.log('proof received');
       authSignIn();
       setIsSignatureProcessed(true); // Mark the signature as processed
@@ -107,25 +116,56 @@ const MobileLogin: FC<IMobileLogin> = ({ setModalOpen }) => {
   return (
     <Box>
       <Collapse in={!isSignatureProcessed}>
-        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2, mb: 1 }}>
-          <TextField
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder="Enter your wallet address"
-            variant="filled"
-            sx={{ flexGrow: 1 }}
-          />
-          <Button
-            variant="contained"
-            onClick={initiateLoginFlow}
-            disabled={localLoading}
-          >
-            {!localLoading
-              ? 'Submit'
-              : <CircularProgress size={18} />
-            }
-          </Button>
+        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2, mb: 1, alignItems: 'center' }}>
+          <Box sx={{ flexGrow: 1 }}>
+            <TextField
+              value={address}
+              onChange={(e) => {
+                setAddress(e.target.value)
+                setErrorMessage(undefined)
+              }}
+              placeholder="Enter your wallet address"
+              variant="filled"
+              fullWidth
+              sx={{
+                '& input': {
+                  paddingTop: '7px',
+                  paddingBottom: '7px',
+                },
+                '& .MuiInputBase-root': {
+                  '&:hover': {
+                    borderColor: theme.palette.primary.main
+                  },
+                  '&:before': {
+                    display: 'none',
+                  },
+                  '&:after': {
+                    display: 'none',
+                  },
+                }
+              }}
+            />
+          </Box>
+
+          <Box>
+            <Button
+              variant="contained"
+              onClick={initiateLoginFlow}
+              disabled={localLoading || !isErgoMainnetAddress(address)}
+            >
+              {!localLoading
+                ? 'Submit'
+                : <CircularProgress size={18} />
+              }
+            </Button>
+          </Box>
+
         </Box>
+        {errorMessage && (
+          <Typography color="error">
+            Address already in use by another account
+          </Typography>
+        )}
       </Collapse>
       <Collapse in={isSignatureProcessed && localLoading}>
         <Box>

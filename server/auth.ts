@@ -1,9 +1,5 @@
 import { ProviderType } from "next-auth/providers/index";
 
-const SUPPORTED_WALLETS = [
-  'begin', 'eternl', 'flint', 'lace', 'nami', 'nufi', 'gerowallet', 'typhoncip30', 'vespr'
-];
-
 /**
  * Module augmentation for `next-auth` types.
  * Allows us to add custom properties to the `session` object and keep type
@@ -94,6 +90,7 @@ declare module "next-auth" {
     usedAddresses: string[];
     user_id: string;
     user?: UserProfile;
+    type: string | null;
   }
   interface Transaction {
     id: string;

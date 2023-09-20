@@ -113,6 +113,14 @@ export const getShorterAddress = (address: string, substring?: number): string =
   return shortAddress;
 };
 
+export const isErgoMainnetAddress = (value: string): boolean => {
+  const base58Chars = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+  return value.startsWith('9') &&
+    value.length === 51 &&
+    [...value].every(char => base58Chars.includes(char));
+};
+
+
 export const adjustDecimals = (amount: number, decimals: number): number => {
   return amount / Math.pow(10, decimals);
 }
