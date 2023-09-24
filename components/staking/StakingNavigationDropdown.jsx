@@ -18,7 +18,7 @@ const StakingNavigationDropdown = ({
       border: 'none',
     },
     '& .MuiFilledInput-root': {
-      background: theme.palette.background.greyBackground,
+      background: 'rgb(46, 46, 51)',
       border: '1px solid rgba(82,82,90,1)',
       borderRadius: '4px',
     },

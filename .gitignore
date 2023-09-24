@@ -18,3 +18,4 @@ pages/dashboardrechart.jsx
 localhost.crt
 localhost.key
 server.js
+package.json.local

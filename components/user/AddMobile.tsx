@@ -1,25 +1,14 @@
-import React, { useEffect, useState, FC } from 'react'
-import { z } from 'zod';
-import { trpc } from "@utils/trpc";
-import QRCode from 'react-qr-code';
+import React, { useState, FC } from 'react'
 import {
   Box,
   Button,
-  CircularProgress,
   Collapse,
-  Input,
-  LinearProgress,
-  TextField,
   Typography,
   useTheme,
   useMediaQuery,
   Avatar
 } from '@mui/material';
-import Link from '@components/Link';
-import { signIn } from 'next-auth/react';
-import { Expanded } from './SignIn';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useWallet } from '@utils/WalletContext';
 import AddMobileOpen from './AddMobileOpen';
 import { AddWalletExpanded } from './AddWalletModal';
 

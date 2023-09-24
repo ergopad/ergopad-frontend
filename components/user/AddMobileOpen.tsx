@@ -1,5 +1,4 @@
 import React, { useEffect, useState, FC } from 'react'
-import { z } from 'zod';
 import { trpc } from "@utils/trpc";
 import QRCode from 'react-qr-code';
 import {
@@ -11,7 +10,6 @@ import {
   TextField,
   Typography,
   useTheme,
-  useMediaQuery,
 } from '@mui/material';
 import Link from '@components/Link';
 import { useWallet } from '@utils/WalletContext';
@@ -27,14 +25,13 @@ interface IMobileLogin {
 
 const MobileLogin: FC<IMobileLogin> = ({ localLoading, setLocalLoading, setModalOpen, setExpanded }) => {
   const theme = useTheme()
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
   const [address, setAddress] = useState<string>('');
   const [verificationId, setVerificationId] = useState<string | null>(null);
   const [nonce, setNonce] = useState<string | null>(null);
   const [signature, setSignature] = useState<Signature | undefined>(undefined)
   const [isSignatureProcessed, setIsSignatureProcessed] = useState<boolean>(false);
-  const { wallet, setWallet } = useWallet()
+  const { setWallet } = useWallet()
   const mutateAddAddress = trpc.user.addAddress.useMutation()
   const loginMutation = trpc.user.initAddWallet.useMutation();
   trpc.auth.checkLoginStatus.useQuery(

@@ -3,10 +3,12 @@ import { nanoid } from 'nanoid';
 import { checkAddressAvailability, getUserIdByAddress } from './checkAddress';
 
 export async function generateNonceForLogin(userAddress: string) {
+  // First, check if a user exists with the given userAddress as the defaultAddress.
   let user = await prisma.user.findUnique({
     where: { defaultAddress: userAddress },
   });
 
+  // If no user exists with the defaultAddress, then check using the getUserIdByAddress function
   if (!user) {
     const userId = await getUserIdByAddress(userAddress);
     if (userId) {
@@ -14,17 +16,19 @@ export async function generateNonceForLogin(userAddress: string) {
         where: { id: userId },
       });
     }
-    else {
-      user = await prisma.user.create({
-        data: {
-          defaultAddress: userAddress,
-        },
-      });
-    }
+  }
+
+  // If still no user found, then create a new one
+  if (!user) {
+    user = await prisma.user.create({
+      data: {
+        defaultAddress: userAddress,
+      },
+    });
   }
 
   if (!user) {
-    throw new Error('Unable to create new user')
+    throw new Error('Unable to create or find a user')
   }
 
   const nonce = nanoid();

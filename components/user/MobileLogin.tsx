@@ -1,5 +1,4 @@
 import React, { useEffect, useState, FC } from 'react'
-import { z } from 'zod';
 import { trpc } from "@utils/trpc";
 import QRCode from 'react-qr-code';
 import {
@@ -7,7 +6,6 @@ import {
   Button,
   CircularProgress,
   Collapse,
-  Input,
   LinearProgress,
   TextField,
   Typography,
@@ -15,7 +13,6 @@ import {
 } from '@mui/material';
 import Link from '@components/Link';
 import { signIn } from 'next-auth/react';
-import { Expanded } from './SignIn';
 import { NonceResponse, Signature } from '@lib/types';
 import { isErgoMainnetAddress } from '@utils/general';
 import { useWallet } from '@utils/WalletContext';

@@ -1,17 +1,30 @@
 import { createTheme } from '@mui/material/styles';
+// import { Palette, PaletteOptions } from '@mui/material/styles';
 
-const themeSetup = 
-	{
-		dark: {
-			background: 'rgb( 29, 29, 32 )',
-			greyBackground: 'rgb(46, 46, 51)',
-			primaryText: 'rgb(244, 244, 245)',
-			secondaryText: 'rgb(162, 162, 168)',
-			borderColor: 'rgba(82,82,90,1)',
-      dividerColor: 'rgba(255,255,255,0.08)',
-      primaryMain: '#3ABAB4'
-		},
-	}
+declare module '@mui/material/styles' {
+  interface Palette {
+    tertiary?: Palette['primary'];
+    quaternary?: Palette['primary'];
+  }
+
+  interface PaletteOptions {
+    tertiary?: PaletteOptions['primary'];
+    quaternary?: PaletteOptions['primary'];
+  }
+}
+
+export const themeSetup =
+{
+  dark: {
+    background: 'rgb( 29, 29, 32 )',
+    greyBackground: 'rgb(46, 46, 51)',
+    primaryText: 'rgb(244, 244, 245)',
+    secondaryText: 'rgb(162, 162, 168)',
+    borderColor: 'rgba(82,82,90,1)',
+    dividerColor: 'rgba(255,255,255,0.08)',
+    primaryMain: '#3ABAB4'
+  },
+}
 
 // Create a theme instance.
 let theme = createTheme({
@@ -20,18 +33,18 @@ let theme = createTheme({
     primary: {
       // main: 'rgb(58, 186, 180)',
       main: themeSetup.dark.primaryMain,
-      hover: '#4BD0C9',
-      active: 'rgba(49, 151, 149, 0.25)'
+      // hover: '#4BD0C9',
+      // active: 'rgba(49, 151, 149, 0.25)'
     },
     secondary: {
       main: '#9f7aea',
-      hover: '#B886F9',
-      active: 'rgba(128, 90, 213, 0.25)',
+      // hover: '#B886F9',
+      // active: 'rgba(128, 90, 213, 0.25)',
     },
     tertiary: {
       main: '#667eea',
-      hover: '#8096F7',
-      active: 'rgba(90, 103, 216, 0.25)'
+      // hover: '#8096F7',
+      // active: 'rgba(90, 103, 216, 0.25)'
     },
     quaternary: {
       main: 'rgb(237, 100, 166)',
@@ -39,26 +52,26 @@ let theme = createTheme({
     background: {
       paper: 'rgba(23, 25, 29, 1)',
       default: themeSetup.dark.background,
-      grey: themeSetup.dark.greyBackground
+      // grey: themeSetup.dark.greyBackground
     },
     text: {
       primary: themeSetup.dark.primaryText,
       secondary: themeSetup.dark.secondaryText,
-      tertiary: 'rgb(228, 228, 231)'
+      // tertiary: 'rgb(228, 228, 231)'
     },
     action: {
       hover: '#ffffff',
-      light: {},
+      // light: {},
     },
-    greyButton: {
-      background: 'rgb(46, 46, 51)',
-      hover: 'rgba(63,62,68,255)'
-    },
-    borderColor: themeSetup.dark.borderColor,
+    // greyButton: {
+    //   background: 'rgb(46, 46, 51)',
+    //   hover: 'rgba(63,62,68,255)'
+    // },
+    // borderColor: themeSetup.dark.borderColor,
   },
   typography: {
     fontFamily: ['Inter', 'sans-serif'].join(','),
-    },
+  },
   components: {
     MuiAccordion: {
       styleOverrides: {
@@ -76,18 +89,18 @@ let theme = createTheme({
         }
       }
     },
-    MuiAppBar: {
-      variants: [
-        {
-          props: { color: 'background' },
-          style: {
-            background: themeSetup.dark.background
-          }
-        }
-      ]
-    },
-    MuiButton:{
-      styleOverrides: { 
+    // MuiAppBar: {
+    //   variants: [
+    //     {
+    //       props: { color: 'background' },
+    //       style: {
+    //         background: themeSetup.dark.background
+    //       }
+    //     }
+    //   ]
+    // },
+    MuiButton: {
+      styleOverrides: {
         root: {
           textTransform: 'none'
         }
@@ -228,5 +241,5 @@ theme.typography.body2 = {
   marginBottom: '1rem',
   display: 'block'
 }
-    
+
 export default theme;

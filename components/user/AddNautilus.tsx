@@ -9,9 +9,7 @@ import {
   Button,
   Avatar
 } from '@mui/material';
-import SignIn, { Expanded } from '@components/user/SignIn';
 import { trpc } from "@utils/trpc";
-import nautilusIcon from "@public/icons/nautilus.png";
 import { nanoid } from 'nanoid';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useWallet } from '@utils/WalletContext';

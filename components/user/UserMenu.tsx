@@ -1,31 +1,21 @@
 import React, { FC, useState, useEffect, useContext } from 'react';
 import {
-  IconButton,
-  Icon,
   Avatar,
   Typography,
   Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogActions,
-  Box
 } from '@mui/material'
 import { useRouter } from 'next/router';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
-import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import SignIn from './SignIn';
 import { getShortAddress } from '@utils/general';
 import { signIn, signOut } from "next-auth/react"
-import AddNautilus from './AddNautilus';
 import { useWallet } from '@utils/WalletContext'
 import theme from '@styles/theme';
-import AddMobile from './AddMobile';
 import AddWalletModal from './AddWalletModal';
 
 interface IWalletType {

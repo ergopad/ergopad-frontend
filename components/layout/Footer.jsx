@@ -195,7 +195,7 @@ const Footer = () => {
             Terms
           </Link>{" "}
           ·{" "}
-          <Link activeClassName="active" href="/privacypolicy" sx={linkStyles}>
+          <Link activeClassName="active" href="/privacy" sx={linkStyles}>
             Privacy Policy
           </Link>
         </Grid>

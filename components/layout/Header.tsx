@@ -32,109 +32,96 @@ export const navLinks = [
   { title: `Staking`, path: `/staking` },
 ];
 
-function ElevationScroll(props: any) {
-  const { children } = props;
-
+const Header = () => {
+  const theme = useTheme()
   const trigger = useScrollTrigger({
     disableHysteresis: true,
     threshold: 0,
   });
+  // const [modalOpen, setModalOpen] = useState(true);
 
-  return cloneElement(children, {
-    elevation: trigger ? 4 : 0,
-    color: trigger ? 'background' : 'transparent',
-  });
-}
+  // useEffect(() => {
+  //   localStorage.getItem("dontShowAgain") === "true" && setModalOpen(false)
+  // }, []);
 
-const Header = () => {
-  const theme = useTheme()
-  const [modalOpen, setModalOpen] = useState(true);
+  // const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  //   '& .MuiDialogContent-root': {
+  //     padding: 2,
+  //   },
+  //   '& .MuiDialogActions-root': {
+  //     padding: 2,
+  //   },
+  //   '& .MuiPaper-root': {
+  //     backgroundImage: 'url("/ido-modal/spf-background.png")',
+  //     backgroundRepeat: 'no-repeat',
+  //     backgroundPositionX: 'center',
+  //     backgroundPositionY: 'center',
+  //   }
+  // }));
 
-  useEffect(() => {
-    localStorage.getItem("dontShowAgain") === "true" && setModalOpen(false)
-  }, []);
+  // function BootstrapDialogTitle(props: any) {
+  //   const { children, onClose, ...other } = props;
 
-  const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-    '& .MuiDialogContent-root': {
-      padding: 2,
-    },
-    '& .MuiDialogActions-root': {
-      padding: 2,
-    },
-    '& .MuiPaper-root': {
-      backgroundImage: 'url("/ido-modal/spf-background.png")',
-      backgroundRepeat: 'no-repeat',
-      backgroundPositionX: 'center',
-      backgroundPositionY: 'center',
-    }
-  }));
+  //   return (
+  //     <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+  //       {children}
+  //       {onClose ? (
+  //         <IconButton
+  //           aria-label="close"
+  //           onClick={onClose}
+  //           sx={{
+  //             position: 'absolute',
+  //             right: 8,
+  //             top: 8,
+  //             color: (theme) => theme.palette.grey[500],
+  //           }}
+  //         >
+  //           <CloseIcon />
+  //         </IconButton>
+  //       ) : null}
+  //     </DialogTitle>
+  //   );
+  // }
 
-  function BootstrapDialogTitle(props: any) {
-    const { children, onClose, ...other } = props;
-
-    return (
-      <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
-        {children}
-        {onClose ? (
-          <IconButton
-            aria-label="close"
-            onClick={onClose}
-            sx={{
-              position: 'absolute',
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.grey[500],
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-        ) : null}
-      </DialogTitle>
-    );
-  }
-
-  const handleModalClose = () => {
-    setModalOpen(false);
-  };
+  // const handleModalClose = () => {
+  //   setModalOpen(false);
+  // };
 
   return (
     <>
-      {/* <AddWallet /> */}
-      <ElevationScroll>
-        <AppBar
-          color="transparent"
-          enableColorOnDark
+      <AppBar
+        elevation={trigger ? 4 : 0}
+        enableColorOnDark
+        sx={{
+          p: 0,
+          display: 'flex',
+          alignItems: 'center',
+          background: trigger ? theme.palette.background.default : 'none'
+        }}
+      >
+        <Toolbar
           sx={{
-            p: 0,
-            display: 'flex',
+            maxWidth: 'lg',
             alignItems: 'center',
-            // background: theme.palette.background.default
+            justifyContent: 'space-between',
+            width: '100%',
           }}
         >
-          <Toolbar
-            sx={{
-              maxWidth: 'lg',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              width: '100%',
-              // backgroundColor: theme.palette.background.default
-            }}
-          >
-            <Box sx={{ display: 'flex', flexGrow: 1 }}>
-              <Box sx={{ display: 'inline-flex' }}>
-                <Link
-                  href="/"
-                  style={{ paddingRight: '2rem' }}
-                >
-                  <IconButton>
-                    <Image
-                      priority
-                      src="/favicon-32x32.png"
-                      alt="Ergopad Logo"
-                      width="32"
-                      height="32"
-                    />
-                    {/* <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <Box sx={{ display: 'flex', flexGrow: 1 }}>
+            <Box sx={{ display: 'inline-flex' }}>
+              <Link
+                href="/"
+                style={{ paddingRight: '2rem' }}
+              >
+                <IconButton>
+                  <Image
+                    priority
+                    src="/favicon-32x32.png"
+                    alt="Ergopad Logo"
+                    width="32"
+                    height="32"
+                  />
+                  {/* <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
                       <linearGradient id="b" x2="32" y1="8" y2="8" gradientUnits="userSpaceOnUse">
                         <stop stopColor={theme.palette.primary.main} offset=".2813"/>
                         <stop stopColor={theme.palette.tertiary.main} offset="1"/>
@@ -146,24 +133,23 @@ const Header = () => {
                       </linearGradient>
                       <polygon points="24.2 16 21.8 21.8 16 24.2 10.2 21.8 7.8 16 0 16 4.7 27.3 16 32 27.3 27.3 32 16" fill="url(#a)"/>
                     </svg> */}
-                  </IconButton>
-                </Link>
-              </Box>
-              <Box sx={{ display: 'inline-flex' }}>
-                <Navbar navLinks={navLinks} />
-              </Box>
+                </IconButton>
+              </Link>
             </Box>
-            <Box sx={{ display: 'flex', px: 1 }}>
-              <NotificationBell />
+            <Box sx={{ display: 'inline-flex' }}>
+              <Navbar navLinks={navLinks} />
             </Box>
-            <Box sx={{ display: 'flex' }}>
-              <UserMenu />
-            </Box>
-            {/* {isMobile && <SideDrawer navLinks={navLinks} />} */}
-          </Toolbar>
-        </AppBar>
-      </ElevationScroll>
-      <BootstrapDialog
+          </Box>
+          <Box sx={{ display: 'flex', px: 1 }}>
+            <NotificationBell />
+          </Box>
+          <Box sx={{ display: 'flex' }}>
+            <UserMenu />
+          </Box>
+          {/* {isMobile && <SideDrawer navLinks={navLinks} />} */}
+        </Toolbar>
+      </AppBar>
+      {/* <BootstrapDialog
         onClose={handleModalClose}
         aria-labelledby="ido-modal"
         open={modalOpen}
@@ -225,7 +211,7 @@ const Header = () => {
             Don't show again
           </Button>
         </DialogActions>
-      </BootstrapDialog>
+      </BootstrapDialog> */}
     </>
   );
 };

@@ -3,13 +3,11 @@ import {
   Box,
   LinearProgress,
   Typography,
-  useTheme,
   Button
 } from '@mui/material';
-import SignIn, { Expanded } from '@components/user/SignIn';
+import { Expanded } from '@components/user/SignIn';
 import { trpc } from "@utils/trpc";
-import { signIn, signOut } from "next-auth/react"
-import nautilusIcon from "@public/icons/nautilus.png";
+import { signIn } from "next-auth/react"
 import { useWallet } from '@utils/WalletContext';
 import { NonceResponse } from '@lib/types';
 
@@ -26,7 +24,6 @@ interface INautilusLogin {
 }
 
 const NautilusLogin: FC<INautilusLogin> = ({ setExpanded, setLoading, localLoading, setLocalLoading, setModalOpen, dappConnected, setDappConnected, dappConnection }) => {
-  const theme = useTheme()
   const [defaultAddress, setDefaultAddress] = useState<string | undefined>(undefined);
   const [usedAddresses, setUsedAddresses] = useState<string[]>([])
   const [unusedAddresses, setUnusedAddresses] = useState<string[]>([])
