@@ -301,11 +301,11 @@ const CandleStickChart = () => {
                 textTransform: 'none',
                 backgroundColor: theme.palette.tertiary.main,
                 '&:hover': {
-                  backgroundColor: theme.palette.tertiary.hover,
+                  backgroundColor: '#8096F7',
                   boxShadow: 'none',
                 },
                 '&:active': {
-                  backgroundColor: theme.palette.tertiary.active,
+                  backgroundColor: 'rgba(90, 103, 216, 0.25)',
                 },
               }}
             >

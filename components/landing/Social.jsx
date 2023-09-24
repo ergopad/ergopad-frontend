@@ -63,11 +63,11 @@ const Social = () => {
               textTransform: 'none',
               backgroundColor: theme.palette.secondary.main,
               '&:hover': {
-                backgroundColor: theme.palette.secondary.hover,
+                backgroundColor: '#B886F9',
                 boxShadow: 'none',
               },
               '&:active': {
-                backgroundColor: theme.palette.secondary.active,
+                backgroundColor: 'rgba(128, 90, 213, 0.25)',
               },
             }}
           >

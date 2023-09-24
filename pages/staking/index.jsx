@@ -730,11 +730,11 @@ const Staking = () => {
                       textTransform: 'none',
                       background: theme.palette.primary.main,
                       '&:hover': {
-                        background: theme.palette.primary.hover,
+                        background: '#4BD0C9',
                         boxShadow: 'none',
                       },
                       '&:active': {
-                        background: theme.palette.primary.active,
+                        background: 'rgba(49, 151, 149, 0.25)',
                       },
                     }}
                     onClick={() => {
@@ -913,11 +913,11 @@ const Staking = () => {
                         textTransform: 'none',
                         background: theme.palette.tertiary.main,
                         '&:hover': {
-                          background: theme.palette.tertiary.hover,
+                          background: '#8096F7',
                           boxShadow: 'none',
                         },
                         '&:active': {
-                          background: theme.palette.tertiary.active,
+                          background: 'rgba(90, 103, 216, 0.25)',
                         },
                       }}
                       onClick={stake}
@@ -948,11 +948,11 @@ const Staking = () => {
                         textTransform: 'none',
                         background: theme.palette.tertiary.main,
                         '&:hover': {
-                          background: theme.palette.tertiary.hover,
+                          background: '#8096F7',
                           boxShadow: 'none',
                         },
                         '&:active': {
-                          background: theme.palette.tertiary.active,
+                          background: 'rgba(90, 103, 216, 0.25)',
                         },
                       }}
                       onClick={stakeErgopay}
@@ -1092,11 +1092,11 @@ const Staking = () => {
                         textTransform: 'none',
                         background: theme.palette.secondary.main,
                         '&:hover': {
-                          background: theme.palette.secondary.hover,
+                          background: '#B886F9',
                           boxShadow: 'none',
                         },
                         '&:active': {
-                          background: theme.palette.secondary.active,
+                          background: 'rgba(128, 90, 213, 0.25)',
                         },
                       }}
                       onClick={unstake}
@@ -1127,11 +1127,11 @@ const Staking = () => {
                         textTransform: 'none',
                         background: theme.palette.secondary.main,
                         '&:hover': {
-                          background: theme.palette.secondary.hover,
+                          background: '#B886F9',
                           boxShadow: 'none',
                         },
                         '&:active': {
-                          background: theme.palette.secondary.active,
+                          background: 'rgba(128, 90, 213, 0.25)',
                         },
                       }}
                       onClick={unstakeErgopay}

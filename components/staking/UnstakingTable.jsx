@@ -187,11 +187,11 @@ const UnstakingTable = ({ data, unstake, addstake, disableUnstaking, disableAddS
                               textTransform: 'none',
                               backgroundColor: theme.palette.primary.main,
                               '&:hover': {
-                                backgroundColor: theme.palette.primary.hover,
+                                backgroundColor: '#4BD0C9',
                                 boxShadow: 'none',
                               },
                               '&:active': {
-                                backgroundColor: theme.palette.primary.active,
+                                backgroundColor: 'rgba(49, 151, 149, 0.25)',
                               },
                             }}
                             onClick={() =>
@@ -216,11 +216,11 @@ const UnstakingTable = ({ data, unstake, addstake, disableUnstaking, disableAddS
                             textTransform: 'none',
                             backgroundColor: theme.palette.primary.main,
                             '&:hover': {
-                              backgroundColor: theme.palette.primary.hover,
+                              backgroundColor: '#4BD0C9',
                               boxShadow: 'none',
                             },
                             '&:active': {
-                              backgroundColor: theme.palette.primary.active,
+                              backgroundColor: 'rgba(49, 151, 149, 0.25)',
                             },
                           }}
                           onClick={() =>

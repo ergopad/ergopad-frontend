@@ -348,7 +348,7 @@ const socialStyles = {
   borderRadius: "15px",
   ".MuiSvgIcon-root": { transition: "100ms ease-in-out" },
   "&:hover .MuiSvgIcon-root": {
-    color: (theme) => theme.palette.primary.hover,
+    color: (theme) => '#4BD0C9',
     transform: "scale(1.2, 1.2)",
   },
 };
