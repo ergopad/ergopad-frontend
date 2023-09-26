@@ -41,16 +41,23 @@ model Session {
 
 model User {
   id             String         @id @default(cuid())
+  created_at     DateTime       @default(now())
+  updated_at     DateTime       @updatedAt
   name           String?
   defaultAddress String?        @unique @map("default_address")
   nonce          String?
   email          String?        @unique
   emailVerified  DateTime?      @map("email_verified")
   image          String?
+  sumsubId       String?        @map("sumsub_id")
+  sumsubType     String?        @map("sumsub_type")
+  sumsubResult   Json?          @map("sumsub_result")
+  sumsubStatus   String?        @map("sumsub_status")
   accounts       Account[]
   sessions       Session[]
   wallets        Wallet[]
   loginRequests  LoginRequest[]
+  transactions   Transaction[]
 
   @@map("users")
 }
@@ -62,48 +69,6 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verificationtokens")
-}
-
-model UserProfile {
-  id             String        @id @default(cuid())
-  userId         String?       @unique @map("user_id")
-  created_at     DateTime      @default(now())
-  updated_at     DateTime      @updatedAt
-  email_verified DateTime?
-  first_name     String?
-  last_name      String?
-  middle_name    String?
-  legal_name     String?
-  birth_date     String?
-  country        String?
-  birth_country  String?
-  birth_state    String?
-  birth_place    String?
-  marital_status String?
-  nationality    String?
-  occupation     String?
-  image          String?
-  addresses      Address[]
-  transactions   Transaction[]
-
-  @@map("user_profiles")
-}
-
-model Address {
-  id             String      @id @default(cuid())
-  address_line_1 String
-  address_line_2 String?
-  city           String
-  state          String
-  region         String?
-  district       String?
-  province       String?
-  postal_code    String
-  country        String
-  user_id        String
-  user           UserProfile @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@map("addresses")
 }
 
 model Wallet {
@@ -119,15 +84,15 @@ model Wallet {
 }
 
 model Transaction {
-  id          String       @id @default(cuid())
+  id          String   @id @default(cuid())
   description String
   amount      String
   currency    String
   address     String
-  completed   Boolean      @default(false)
-  created_at  DateTime     @default(now())
+  completed   Boolean  @default(false)
+  created_at  DateTime @default(now())
   user_id     String
-  user        UserProfile? @relation(fields: [user_id], references: [id])
+  user        User     @relation(fields: [user_id], references: [id])
 
   @@map("transactions")
 }

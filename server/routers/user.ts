@@ -13,6 +13,15 @@ import { generateNonceForLogin } from '../utils/nonce';
 //     [...value].every(char => base58Chars.includes(char));
 // };
 
+type SumsubResultType = {
+  reviewAnswer: string;
+  rejectLabels?: string[];
+  reviewRejectType?: string;
+  clientComment?: string;
+  moderationComment?: string;
+  buttonIds?: string[];
+};
+
 export const userRouter = createTRPCRouter({
   getNonce: publicProcedure
     .input(z.object({
@@ -177,9 +186,50 @@ export const userRouter = createTRPCRouter({
       const userId = ctx.session.user.id
       const { newDefault, walletId } = input
 
-      // TODO: if this is their login wallet, update their user default address too
+      // Fetch the wallet's associated addresses
+      const wallet = await prisma.wallet.findUnique({
+        where: {
+          id: walletId,
+          user_id: userId
+        },
+        select: {
+          changeAddress: true,
+          unusedAddresses: true,
+          usedAddresses: true
+        }
+      });
 
-      const wallet = await prisma.wallet.update({
+      if (!wallet) {
+        throw new Error("Wallet does not match user");
+      }
+
+      // Combine all the addresses associated with the wallet
+      const allWalletAddresses = [wallet.changeAddress, ...wallet.unusedAddresses, ...wallet.usedAddresses];
+
+      // Fetch the user's current default address
+      const user = await prisma.user.findUnique({
+        where: {
+          id: userId
+        },
+        select: {
+          defaultAddress: true
+        }
+      });
+
+      // If the user's default address is in the list of all wallet addresses, update it to the new address
+      if (user!.defaultAddress && allWalletAddresses.includes(user!.defaultAddress)) {
+        await prisma.user.update({
+          where: {
+            id: userId
+          },
+          data: {
+            defaultAddress: newDefault
+          }
+        });
+      }
+
+      // Update the wallet's change address
+      await prisma.wallet.update({
         where: {
           id: walletId,
           user_id: userId
@@ -189,12 +239,10 @@ export const userRouter = createTRPCRouter({
         }
       });
 
-      if (!wallet) {
-        throw new Error("Wallet does not match user");
-      }
-
       return { success: true }
     }),
+  // Change the default user address. This is used for things like airdrops. 
+  // Note: the user can login with any wallet, so change Login address is not the best name
   changeLoginAddress: protectedProcedure
     .input(z.object({
       changeAddress: z.string()
@@ -267,5 +315,53 @@ export const userRouter = createTRPCRouter({
         return { success: true }; // Return a success response or any other relevant data
       }
       else throw new Error("Cannot delete: wallet is currently the default address for this user");
+    }),
+  getSumsubResult: protectedProcedure
+    .query(async ({ ctx }) => {
+      const userId = ctx.session.user.id;
+
+      // Fetch the user from the database
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          sumsubId: true,
+          sumsubType: true,
+          sumsubResult: true,
+          sumsubStatus: true,
+        },
+      });
+
+      if (!user) {
+        throw new Error('Unable to retrieve user data');
+      }
+
+      const sumsubResult: SumsubResultType = user.sumsubResult as SumsubResultType;
+
+      return {
+        sumsubId: user.sumsubId,
+        sumsubType: user.sumsubType,
+        sumsubResult: sumsubResult,
+        sumsubStatus: user.sumsubStatus,
+      };
+    }),
+  changeUserDetails: protectedProcedure
+    .input(z.object({
+      name: z.string().optional(),
+      email: z.string().optional(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const userId = ctx.session.user.id;
+      const { name, email } = input;
+
+      const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: { name, email },
+      });
+
+      if (!updatedUser) {
+        throw new Error('Error updating user profile');
+      }
+
+      return { success: true }
     }),
 });

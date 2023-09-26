@@ -19,3 +19,5 @@ localhost.crt
 localhost.key
 server.js
 package.json.local
+ssl.crt
+ssl.key

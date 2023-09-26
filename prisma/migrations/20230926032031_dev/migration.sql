@@ -33,12 +33,18 @@ CREATE TABLE "sessions" (
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "name" TEXT,
     "default_address" TEXT,
     "nonce" TEXT,
     "email" TEXT,
     "email_verified" TIMESTAMP(3),
     "image" TEXT,
+    "sumsub_id" TEXT,
+    "sumsub_type" TEXT,
+    "sumsub_result" JSONB,
+    "sumsub_status" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -48,47 +54,6 @@ CREATE TABLE "verificationtokens" (
     "identifier" TEXT NOT NULL,
     "token" TEXT NOT NULL,
     "expires" TIMESTAMP(3) NOT NULL
-);
-
--- CreateTable
-CREATE TABLE "user_profiles" (
-    "id" TEXT NOT NULL,
-    "user_id" TEXT,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-    "email_verified" TIMESTAMP(3),
-    "first_name" TEXT,
-    "last_name" TEXT,
-    "middle_name" TEXT,
-    "legal_name" TEXT,
-    "birth_date" TEXT,
-    "country" TEXT,
-    "birth_country" TEXT,
-    "birth_state" TEXT,
-    "birth_place" TEXT,
-    "marital_status" TEXT,
-    "nationality" TEXT,
-    "occupation" TEXT,
-    "image" TEXT,
-
-    CONSTRAINT "user_profiles_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "addresses" (
-    "id" TEXT NOT NULL,
-    "address_line_1" TEXT NOT NULL,
-    "address_line_2" TEXT,
-    "city" TEXT NOT NULL,
-    "state" TEXT NOT NULL,
-    "region" TEXT,
-    "district" TEXT,
-    "province" TEXT,
-    "postal_code" TEXT NOT NULL,
-    "country" TEXT NOT NULL,
-    "user_id" TEXT NOT NULL,
-
-    CONSTRAINT "addresses_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -151,9 +116,6 @@ CREATE UNIQUE INDEX "verificationtokens_token_key" ON "verificationtokens"("toke
 CREATE UNIQUE INDEX "verificationtokens_identifier_token_key" ON "verificationtokens"("identifier", "token");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "user_profiles_user_id_key" ON "user_profiles"("user_id");
-
--- CreateIndex
 CREATE UNIQUE INDEX "wallets_changeAddress_key" ON "wallets"("changeAddress");
 
 -- CreateIndex
@@ -166,13 +128,10 @@ ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_fkey" FOREIGN KEY ("user
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "addresses" ADD CONSTRAINT "addresses_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user_profiles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "wallets" ADD CONSTRAINT "wallets_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "transactions" ADD CONSTRAINT "transactions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user_profiles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "transactions" ADD CONSTRAINT "transactions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "LoginRequest" ADD CONSTRAINT "LoginRequest_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

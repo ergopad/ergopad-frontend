@@ -64,6 +64,7 @@ const ConnectedWallets: NextPage = () => {
     } catch (error) {
       console.error("Error setting Login wallet", error);
       setDefaultAddressLoading(false)
+      setProviderLoading(false)
     }
   }
 
@@ -138,6 +139,7 @@ const ConnectedWallets: NextPage = () => {
   const handleDefaultAddressChange = async (walletId: number, address: string) => {
     setLoadingAddress(address);
     await changeDefaultAddress(walletId, address);
+    await fetchSessionData()
     setLoadingAddress(null);
   }
   const changeDefaultAddress = async (id: number, address: string) => {

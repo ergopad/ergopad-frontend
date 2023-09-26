@@ -16,7 +16,10 @@ import {
   FormHelperText,
   CircularProgress,
   Alert,
-  useTheme
+  useTheme,
+  MenuItem,
+  Select,
+  SelectChangeEvent
 } from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
@@ -29,16 +32,31 @@ import { useWallet } from '@utils/WalletContext';
 import { trpc } from '@utils/trpc';
 import { Wallet } from 'next-auth';
 
+type FormData = {
+  name: string;
+  email: string;
+  ergoAddress: string;
+  usdValue: string;
+}
+
+type FormErrors = {
+  name: boolean;
+  email: boolean;
+  ergoAddress: boolean;
+  usdValue: boolean;
+}
+
 const initialFormData = {
   name: '',
   email: '',
-  adaAddresses: [''],
-  usdValue: 0,
+  ergoAddress: '',
+  usdValue: '',
 }
 
 const initialFormErrors = {
+  name: false,
   email: false,
-  adaAddresses: false,
+  ergoAddress: false,
   usdValue: false,
 }
 
@@ -82,18 +100,21 @@ type WhitelistState = 'NOT_STARTED' | 'PUBLIC' | 'ROUND_END'
 const emailRegex = /\S+@\S+\.\S+/;
 
 const Whitelist = () => {
+  const eventName = 'palmyra-public-202309wl'
   // routing
   // const router = useRouter();
   // const { projectName, roundName } = router.query;
   // whitelist data
   const [whitelistData, setWhitelistData] = useState<Event | undefined>(undefined);
   const [whitelistState, setWhitelistState] = useState<WhitelistState>('NOT_STARTED');
+  const [sumsubStatus, setSumsubStatus] = useState<string | undefined>(undefined)
+  const [sumsubId, setSumsubId] = useState<string | undefined | null>(undefined)
   const [checkboxState, setCheckboxState] = useState<any>([]);
   // set true to disable submit button
   const [buttonDisabled, setbuttonDisabled] = useState(true);
   // form data
-  const [formErrors, setFormErrors] = useState<any>(initialFormErrors);
-  const [formData, updateFormData] = useState<any>(initialFormData);
+  const [formErrors, setFormErrors] = useState<FormErrors>(initialFormErrors);
+  const [formData, updateFormData] = useState<FormData>(initialFormData);
   // loading spinner for submit button
   const [isLoading, setLoading] = useState(false);
   // open success modal
@@ -106,13 +127,14 @@ const Whitelist = () => {
   );
   // total staked
   const [totalStaked, setTotalStaked] = useState(0);
-  const { wallet, sessionStatus, sessionData } = useWallet()
+  const { wallet, sessionStatus, sessionData, fetchSessionData, setProviderLoading } = useWallet()
   const walletsQuery = trpc.user.getWallets.useQuery(
     undefined,
     {
       refetchOnWindowFocus: false,
     }
   )
+  const changeUserDetailsMutation = trpc.user.changeUserDetails.useMutation()
 
   const getWallets = async (): Promise<Wallet[]> => {
     setLoading(true);
@@ -132,18 +154,22 @@ const Whitelist = () => {
       try {
         const wallets = await getWallets();
 
-        let addressSet: Set<string> = new Set();
-        for (let wallet of wallets) {
-          for (let address of wallet.unusedAddresses) {
-            addressSet.add(address);
-          }
-          for (let address of wallet.usedAddresses) {
-            addressSet.add(address);
-          }
-          addressSet.add(wallet.changeAddress);
-        }
+        let uniqueAddresses = [wallet];
 
-        const uniqueAddresses = [...addressSet];
+        if (wallets.length > 0) {
+          let addressSet: Set<string> = new Set();
+          for (let wallet of wallets) {
+            for (let address of wallet.unusedAddresses) {
+              addressSet.add(address);
+            }
+            for (let address of wallet.usedAddresses) {
+              addressSet.add(address);
+            }
+            addressSet.add(wallet.changeAddress);
+          }
+
+          uniqueAddresses = [...addressSet];
+        }
 
         const res = await axios.post(
           `${process.env.API_URL}/staking/staked/`,
@@ -158,11 +184,11 @@ const Whitelist = () => {
         console.error("Error fetching wallets:", error);
       }
     };
-    updateFormData({
-      ...initialFormData,
-      ergoAddress: wallet,
-    });
     if (wallet) {
+      updateFormData({
+        ...initialFormData,
+        ergoAddress: wallet,
+      });
       // get ergopad staked from address
       getErgoPadStaked();
       setFormErrors({
@@ -233,7 +259,7 @@ const Whitelist = () => {
       }
       else {
         const sigNumber = Number(e.target.value);
-        if (sigNumber >= 100) {
+        if (sigNumber >= 100 && sigNumber <= 25000) {
           setFormErrors({
             ...formErrors,
             usdValue: false,
@@ -247,18 +273,15 @@ const Whitelist = () => {
       }
     }
 
-    if (e.target.name === 'adaAddresses') {
+    if (e.target.name === 'ergoAddress') {
       updateFormData({
         ...formData,
-        // Trimming any whitespace
         [e.target.name]: [e.target.value.trim()],
       });
     }
     else {
       updateFormData({
         ...formData,
-
-        // Trimming any whitespace
         [e.target.name]: e.target.value.trim(),
       });
     }
@@ -291,37 +314,51 @@ const Whitelist = () => {
     setOpenSuccess(false);
   };
 
+  const changeUserDetails = async (name: string, email: string) => {
+    try {
+      const changeDetails = await changeUserDetailsMutation.mutateAsync({
+        name,
+        email
+      })
+      if (changeDetails) {
+        console.log('user updated')
+      }
+    } catch (error) {
+      console.error("Error setting Login wallet", error);
+    }
+  }
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
 
-    const emptyCheck =
-      formData.adaAddresses !== '' &&
-      formData.usdValue !== 0;
+    const emptyCheck = formData.usdValue !== undefined
+      && formData.usdValue !== ''
+      && formData.name !== ''
+      && formData.email !== ''
     const errorCheck = Object.values(formErrors).every((v) => v === false);
 
     const form = {
       name: formData.name,
       email: formData.email,
-      usdValue: formData.usdValue,
-      adaAddresses: formData.adaAddresses,
-      event: whitelistData?.eventName,
-      kycApproval: false,
-      tpe: 'cardano'
+      usdValue: formData.usdValue === '[max]' ? 1 : formData.usdValue,
+      ergoAddress: formData.ergoAddress,
+      event: eventName,
+      kycApproval: sumsubStatus === 'GREEN' ? true : false,
+      tpe: 'ergo'
     };
 
-    if (errorCheck && emptyCheck) {
+    if (errorCheck && emptyCheck && sumsubStatus === 'GREEN') {
       console.log(form)
       try {
+        changeUserDetails(formData.name, formData.email)
         const res = await axios.post(
           `${process.env.API_URL}/whitelist/signup`,
           { ...form }
         );
         // modal for success message
         setSuccessMessage(
-          whitelistData?.additionalDetails.staker_snapshot_whitelist
-            ? 'Saved'
-            : `Saved: ${res.data.detail}`
+          'Successfully signed up for whitelist'
         );
         setOpenSuccess(true);
       } catch (err: any) {
@@ -332,28 +369,31 @@ const Whitelist = () => {
         setOpenError(true);
       }
     } else {
-      let updateErrors = {};
+      type ErrorObject = {
+        [key: string]: boolean;
+      };
+      let updateErrors: ErrorObject = {};
       Object.entries(formData).forEach((entry: [string, any]) => {
         const [key, value] = entry;
-        // special patch for email regex
-        if (!['email', 'usdValue'].includes(key) && value == '') {
-          // default
-          let newEntry = { [key]: true };
-          updateErrors = { ...updateErrors, ...newEntry };
-        } else if (
-          key === 'email' &&
-          !(emailRegex.test(value) || value === '')
-        ) {
-          // email check
-          let newEntry = { [key]: true };
-          updateErrors = { ...updateErrors, ...newEntry };
-        } else if (
-          key === 'usdValue' &&
-          value === 0
-        ) {
-          // handle usdValue case
-          let newEntry = { [key]: true };
-          updateErrors = { ...updateErrors, ...newEntry };
+
+        switch (key) {
+          case 'email':
+            if (!emailRegex.test(value) || value === '') {
+              updateErrors[key] = true;
+            }
+            break;
+
+          case 'usdValue':
+            if (value === 0 || value === undefined || value === '') {
+              updateErrors[key] = true;
+            }
+            break;
+
+          default:
+            if (value === '') {
+              updateErrors[key] = true;
+            }
+            break;
         }
       });
 
@@ -377,13 +417,15 @@ const Whitelist = () => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [userId, setUserId] = useState('')
 
+  const checkVerificationResult = trpc.user.getSumsubResult.useQuery(undefined, { enabled: false, retry: false })
+
   useEffect(() => {
     if (sessionStatus === 'authenticated' && sessionData?.user.id) {
       const id = sessionData.user.id
       setUserId(id)
       console.log(id)
       // Fetch the access token from your API when the component mounts
-      fetch(`/api/getAccessToken?userId=${id}`)
+      fetch(`/api/sumsub/getAccessToken?userId=${id}`)
         .then(response => response.json())
         .then(data => setAccessToken(data.token))
         .catch(error => console.error('Error fetching access token:', error));
@@ -392,7 +434,7 @@ const Whitelist = () => {
 
   const expirationHandler = async () => {
     // Fetch a new access token from your API when the current token has expired
-    const response = await fetch(`/api/getAccessToken?userId=${userId}`);
+    const response = await fetch(`/api/sumsub/getAccessToken?userId=${userId}`);
     const data = await response.json();
     setAccessToken(data.token);
     return data.token;
@@ -407,7 +449,16 @@ const Whitelist = () => {
   };
 
   const messageHandler = (message: any) => {
-    // Handle messages from the SDK
+    if (message.includes('applicantReviewComplete')) {
+      checkVerificationResult.refetch()
+        .then((response) => {
+          setSumsubStatus(response.data?.sumsubResult?.reviewAnswer)
+          setSumsubId(response.data?.sumsubId)
+        })
+        .catch((error: any) => {
+          console.error(error);
+        });
+    }
     console.log("Received message from SDK:", message);
   }
 
@@ -416,20 +467,66 @@ const Whitelist = () => {
     console.error("Received error from SDK:", error);
   }
 
+  // WALLET UPDATE STUFF
+  const [defaultAddressLoading, setDefaultAddressLoading] = useState(false)
+  const [defaultAddress, setDefaultAddress] = useState('');
+  const [addressOptions, setAddressOptions] = useState<string[]>([]);
+  const changeLoginAddressMutation = trpc.user.changeLoginAddress.useMutation()
+  const updateLoginAddress = async (address: string) => {
+    try {
+      setDefaultAddressLoading(true)
+      setProviderLoading(true)
+      const changeLogin = await changeLoginAddressMutation.mutateAsync({
+        changeAddress: address
+      })
+      if (changeLogin) {
+        await fetchSessionData()
+        setDefaultAddressLoading(false)
+        setProviderLoading(false)
+      }
+    } catch (error) {
+      console.error("Error setting Login wallet", error);
+      setDefaultAddressLoading(false)
+      setProviderLoading(false)
+    }
+  }
+  useEffect(() => {
+    console.log('fetch ' + sessionStatus)
+    if (sessionStatus === 'authenticated') updateWallets()
+  }, [sessionData, sessionStatus, fetchSessionData]);
+  const updateWallets = async () => {
+    if (walletsQuery.data) {
+      let changeAddresses = walletsQuery.data.wallets.map(wallet => wallet.changeAddress);
+
+      // If address exists, remove it from its current position and prepend it
+      if (sessionData?.user.address) {
+        const address = sessionData?.user.address
+        changeAddresses = changeAddresses.filter(addr => addr !== address);
+        changeAddresses.unshift(address);
+        setDefaultAddress(address);
+      }
+
+      setAddressOptions(changeAddresses);
+    }
+  }
+  const handleChangeAddress = (event: SelectChangeEvent) => {
+    setDefaultAddress(event.target.value);
+  };
+
   return (
     <>
       <Container maxWidth="md" sx={{ py: 12 }}>
 
         <>
-          <Typography variant="h3" component="h1" sx={{ fontWeight: '600' }}>
-            Palmyra Platform IDO Whitelist Form
+          <Typography variant="h2" component="h1" sx={{ fontWeight: '600', mb: 1 }}>
+            Palmyra Platform IDO Whitelist
           </Typography>
-          <Typography variant="body1" sx={{ mb: 4 }}>
+          <Typography variant="body1" sx={{ fontSize: '20px', mb: 4 }}>
             Sign up to participate in the Palmyra Platform IDO
           </Typography>
 
           <Box component="form" noValidate onSubmit={handleSubmit}>
-            <Typography sx={{ mb: 3 }}>
+            <Typography sx={{ fontSize: '18px', mb: 0 }}>
               {sessionStatus === 'authenticated'
                 ? (
                   `You have ${totalStaked.toLocaleString()} Ergopad tokens staked from this account.`
@@ -438,12 +535,13 @@ const Whitelist = () => {
                   `Please login to verify number of Ergopad tokens staked.`
                 )}
             </Typography>
+            <Typography variant="body2" sx={{ fontSize: '16px', mb: 4 }}>
+              It is not necessary to stake Ergopad to participate in this IDO, however the higher tier you have, the greater chance of reserving a spot. Access is not guaranteed if higher tiers sell out the IDO.
+            </Typography>
 
-
-            <Grid container spacing={2} sx={{ mb: '50px' }}>
+            <Grid container spacing={3} sx={{ mb: '50px' }}>
               <Grid item xs={12} md={6}>
                 <TextField
-                  sx={{ mt: 1 }}
                   InputProps={{ disableUnderline: true }}
                   fullWidth
                   name="name"
@@ -460,7 +558,6 @@ const Whitelist = () => {
               </Grid>
               <Grid item xs={12} md={6}>
                 <TextField
-                  sx={{ mt: 1 }}
                   InputProps={{ disableUnderline: true }}
                   fullWidth
                   name="email"
@@ -478,36 +575,32 @@ const Whitelist = () => {
               <Grid
                 item
                 xs={12}
-                spacing={3}
                 alignItems="stretch"
               >
-                <Typography>
-                  Enter the maximum, in USD value, you would like to invest. There is no guarantee you will be eligible for this amount.
-                </Typography>
-                <TextField
-                  value={formData.usdValue}
-                  sx={{ mt: 1 }}
-                  InputProps={{ disableUnderline: true }}
-                  required
-                  fullWidth
-                  id="usdValue"
-                  label="How much would you like to invest in USD value"
-                  name="usdValue"
-                  variant="filled"
-                  helperText={
-                    formErrors.usdValue &&
-                    (whitelistData?.additionalDetails
-                      ?.staker_snapshot_whitelist
-                      ? `Please enter a positive value`
-                      : `Please enter between 100 and 50,000 USD`)
-                  }
-                  onChange={handleChange}
-                  error={formErrors.usdValue}
-                />
-                {whitelistData?.additionalDetails?.staker_snapshot_whitelist && <Grid item xs={2}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
+                  <TextField
+                    value={formData.usdValue}
+                    sx={{ m: 0 }}
+                    InputProps={{ disableUnderline: true }}
+                    required
+                    fullWidth
+                    id="usdValue"
+                    label="Amount requested (USD value)"
+                    name="usdValue"
+                    variant="filled"
+                    helperText={
+                      formErrors.usdValue &&
+                      (whitelistData?.additionalDetails
+                        ?.staker_snapshot_whitelist
+                        ? `Please enter a positive value`
+                        : `Please enter between 100 and 25,000 USD`)
+                    }
+                    onChange={handleChange}
+                    error={formErrors.usdValue}
+                  />
                   <Button
                     variant="contained"
-                    sx={{ my: 2, mx: 1 }}
+                    sx={{ height: '56px' }}
                     onClick={() => {
                       handleChange({
                         target: {
@@ -519,7 +612,63 @@ const Whitelist = () => {
                   >
                     Max
                   </Button>
-                </Grid>}
+                </Box>
+                <Typography sx={{ mb: 1, color: theme.palette.text.secondary, textAlign: 'right' }}>
+                  Note: the amount requested is not guaranteed.
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Box>
+                  <Typography sx={{ color: theme.palette.text.secondary }}>
+                    Address to receive whitelist tokens (you may change this any time)
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+
+                  <Box>
+                    <FormControl
+                      variant="filled"
+                      sx={{ m: 1, minWidth: 120, width: { xs: '100%', md: '600px' } }}
+                    >
+                      <Select
+                        labelId="default-address-label"
+                        id="default-address"
+                        value={defaultAddress}
+                        onChange={handleChangeAddress}
+                        sx={{
+                          '& .MuiSelect-select': {
+                            py: '7px'
+                          },
+                          '& input': {
+                            paddingTop: '7px',
+                            paddingBottom: '7px',
+                          },
+                          '&::before': {
+                            display: 'none',
+                          },
+                          '&::after': {
+                            display: 'none',
+                          },
+                        }}
+                      >
+                        {addressOptions.map((item, i) => {
+                          return (
+                            <MenuItem value={item} key={`address-option-${i}`}>{item}</MenuItem>
+                          )
+                        })}
+                      </Select>
+                    </FormControl>
+                  </Box>
+                  <Box>
+                    <Button
+                      variant="contained"
+                      onClick={() => updateLoginAddress(defaultAddress)}
+                      disabled={defaultAddressLoading}
+                    >
+                      {defaultAddressLoading ? <CircularProgress size={24} /> : "Update"}
+                    </Button>
+                  </Box>
+                </Box>
               </Grid>
             </Grid>
             {accessToken ? (
@@ -567,10 +716,11 @@ const Whitelist = () => {
               </FormGroup>
             </FormControl>
             <Box sx={{ position: 'relative' }}>
+              Sumsub status {sumsubStatus}
               <Button
                 type="submit"
                 fullWidth
-                disabled={buttonDisabled}
+                // disabled={buttonDisabled}
                 // disabled={true}
                 variant="contained"
                 sx={{ mb: 2 }}
@@ -595,9 +745,9 @@ const Whitelist = () => {
                 'We apologize for the inconvenience, the signup form has closed.'}
             </Typography>
             <Typography sx={{ color: theme.palette.text.secondary }}>
-              {whitelistState === 'NOT_STARTED' && typeof window !== 'undefined' &&
+              {whitelistState === 'NOT_STARTED' &&
                 'This form is not yet active. The round will start at ' +
-                new Date(1695654000000).toLocaleString(navigator.language, {
+                new Date(1695654000000).toLocaleString(typeof navigator !== 'undefined' ? navigator.language : 'en-us', {
                   year: 'numeric',
                   month: 'short',
                   day: '2-digit',

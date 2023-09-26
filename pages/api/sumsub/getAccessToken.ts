@@ -27,16 +27,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         'X-App-Access-Sig': signature,
         'X-App-Access-Ts': timestamp,
       },
-      // Add any request payload here (if applicable)
+
       // body: JSON.stringify({}),
     };
 
     const response = await fetch(apiUrl, requestOptions);
 
-    console.log('Status code:', response.status);
+    // console.log('Status code:', response.status);
 
     const data = await response.json();
-    console.log('Response body:', data);
+    // console.log('Response body:', data);
 
     if (!response.ok) {
       throw new Error('Response not OK');
