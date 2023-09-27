@@ -114,16 +114,11 @@ let theme = createTheme({
             '&:hover': {
               border: 'none',
             },
-            '& .MuiFilledInput-root': {
-              background: themeSetup.dark.greyBackground,
-              border: `1px solid ${themeSetup.dark.borderColor}`,
-              borderRadius: 4,
-            },
-            '& .MuiInputLabel-root': {
-              '&.Mui-focused': {
-                color: themeSetup.dark.secondaryText,
-              },
-            },
+            // '& .MuiInputLabel-root': {
+            //   '&.Mui-focused': {
+            //     color: themeSetup.dark.secondaryText,
+            //   },
+            // },
           }
         }
       ]
@@ -145,12 +140,12 @@ let theme = createTheme({
           //   paddingTop: '7px',
           //   paddingBottom: '7px',
           // },
-          // '&:before': {
-          //   display: 'none',
-          // },
-          // '&:after': {
-          //   display: 'none',
-          // },
+          '&:before': {
+            display: 'none',
+          },
+          '&:after': {
+            display: 'none',
+          },
           borderColor: 'rgba(200, 225, 255, 0.2)',
           background: 'radial-gradient(at right top, rgba(16,20,34,0.4), rgba(1, 4, 10, 0.4))',
           boxShadow: `2px 2px 5px 3px rgba(0,0,0,0.1)`,

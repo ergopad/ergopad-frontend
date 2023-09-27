@@ -19,7 +19,8 @@ import {
   useTheme,
   MenuItem,
   Select,
-  SelectChangeEvent
+  SelectChangeEvent,
+  Link
 } from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
@@ -95,23 +96,35 @@ interface Event {
   total_sigusd: number;
 }
 
-type WhitelistState = 'NOT_STARTED' | 'PUBLIC' | 'ROUND_END'
+type WhitelistState = 'NOT_STARTED' | 'LIVE' | 'ROUND_END'
 
 const emailRegex = /\S+@\S+\.\S+/;
 
+const checkboxes = [
+  {
+    check: false,
+    text: <>
+      I have read and agree to the Ergopad <Link target="_blank" href="/terms">Terms of Service</Link> and <Link target="_blank" href="/privacy">Privacy Policy</Link>
+    </>
+  }
+]
+
 const Whitelist = () => {
   const eventName = 'palmyra-public-202309wl'
+  // Mon Oct 02 2023 16:00:00 GMT+0000
+  const startDate = new Date(1696262400000)
+  // Mon Sep 25 2023 16:00:00 GMT+0000
+  // const startDate = new Date(1695657600000)
+  // Wed Oct 25 2023 16:00:00 GMT+0000
+  const endDate = new Date(1698249600000)
   // routing
   // const router = useRouter();
   // const { projectName, roundName } = router.query;
   // whitelist data
-  const [whitelistData, setWhitelistData] = useState<Event | undefined>(undefined);
   const [whitelistState, setWhitelistState] = useState<WhitelistState>('NOT_STARTED');
   const [sumsubStatus, setSumsubStatus] = useState<string | undefined>(undefined)
   const [sumsubId, setSumsubId] = useState<string | undefined | null>(undefined)
-  const [checkboxState, setCheckboxState] = useState<any>([]);
-  // set true to disable submit button
-  const [buttonDisabled, setbuttonDisabled] = useState(true);
+  const [checkboxState, setCheckboxState] = useState<any>(checkboxes);
   // form data
   const [formErrors, setFormErrors] = useState<FormErrors>(initialFormErrors);
   const [formData, updateFormData] = useState<FormData>(initialFormData);
@@ -204,24 +217,15 @@ const Whitelist = () => {
     }
   }, [wallet]);
 
-  useEffect(() => {
-    if (isLoading) {
-      setbuttonDisabled(true);
-    } else {
-      setbuttonDisabled(false);
-    }
-  }, [isLoading]);
-
   const checkboxError =
     checkboxState.filter((checkBoxes: any) => !checkBoxes.check).length !== 0;
 
   useEffect(() => {
-    if (!checkboxError && whitelistState === 'PUBLIC') {
-      setbuttonDisabled(false);
-    } else {
-      setbuttonDisabled(true);
-    }
-  }, [checkboxError, whitelistState]);
+    const dateNow = new Date()
+    if (dateNow < startDate) setWhitelistState('NOT_STARTED')
+    else if (dateNow > endDate) setWhitelistState('ROUND_END')
+    else setWhitelistState('LIVE')
+  }, [])
 
   const handleChange = (e: any) => {
     if (e.target.value == '' && e.target.name !== 'email') {
@@ -309,16 +313,17 @@ const Whitelist = () => {
     setOpenError(false);
   };
 
-  // modal for success message
+  // snackbar for success message
   const handleCloseSuccess = () => {
     setOpenSuccess(false);
   };
 
-  const changeUserDetails = async (name: string, email: string) => {
+  const changeUserDetails = async (name: string, email: string, whitelist: string) => {
     try {
       const changeDetails = await changeUserDetailsMutation.mutateAsync({
         name,
-        email
+        email,
+        whitelist
       })
       if (changeDetails) {
         console.log('user updated')
@@ -342,7 +347,7 @@ const Whitelist = () => {
       name: formData.name,
       email: formData.email,
       usdValue: formData.usdValue === '[max]' ? 1 : formData.usdValue,
-      ergoAddress: formData.ergoAddress,
+      ergoAddress: sessionData?.user.id,
       event: eventName,
       kycApproval: sumsubStatus === 'GREEN' ? true : false,
       tpe: 'ergo'
@@ -351,16 +356,16 @@ const Whitelist = () => {
     if (errorCheck && emptyCheck && sumsubStatus === 'GREEN') {
       console.log(form)
       try {
-        changeUserDetails(formData.name, formData.email)
+
         const res = await axios.post(
           `${process.env.API_URL}/whitelist/signup`,
           { ...form }
         );
-        // modal for success message
-        setSuccessMessage(
-          'Successfully signed up for whitelist'
-        );
-        setOpenSuccess(true);
+        if (res.data.status === 'success') {
+          setSuccessMessage('Successfully signed up for whitelist');
+          setOpenSuccess(true);
+          changeUserDetails(formData.name, formData.email, eventName)
+        }
       } catch (err: any) {
         // snackbar for error message
         setErrorMessage(
@@ -492,7 +497,10 @@ const Whitelist = () => {
   }
   useEffect(() => {
     console.log('fetch ' + sessionStatus)
-    if (sessionStatus === 'authenticated') updateWallets()
+    if (sessionStatus === 'authenticated') {
+      getWallets()
+      updateWallets()
+    }
   }, [sessionData, sessionStatus, fetchSessionData]);
   const updateWallets = async () => {
     if (walletsQuery.data) {
@@ -516,7 +524,6 @@ const Whitelist = () => {
   return (
     <>
       <Container maxWidth="md" sx={{ py: 12 }}>
-
         <>
           <Typography variant="h2" component="h1" sx={{ fontWeight: '600', mb: 1 }}>
             Palmyra Platform IDO Whitelist
@@ -538,45 +545,102 @@ const Whitelist = () => {
             <Typography variant="body2" sx={{ fontSize: '16px', mb: 4 }}>
               It is not necessary to stake Ergopad to participate in this IDO, however the higher tier you have, the greater chance of reserving a spot. Access is not guaranteed if higher tiers sell out the IDO.
             </Typography>
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h4" sx={{ mb: 0 }}>
+                KYC Approval
+              </Typography>
+              <Typography sx={{ mb: 2, color: theme.palette.text.secondary }}>
+                Please fill out the KYC form before proceeding
+              </Typography>
+              {accessToken ? (
+                <Box sx={{
+                  p: 4, pb: 0, background: '#ffffff', borderRadius: '16px',
+                  minHeight: { xs: '457px', md: '570px' },
+                }}>
+                  <SumsubWebSdk
+                    accessToken={accessToken}
+                    expirationHandler={expirationHandler}
+                    config={config}
+                    options={options}
+                    onMessage={messageHandler}
+                    onError={errorHandler}
+                  />
+                </Box>
+              ) : (
+                <Box sx={{
+                  p: 4,
+                  background: '#ffffff',
+                  borderRadius: '16px',
+                  height: { xs: '457px', md: '570px' },
+                  position: 'relative'
+                }}
+                >
+                  <Typography
+                    sx={{
+                      color: theme.palette.background.default,
+                      position: 'absolute',
+                      left: '50%',
+                      top: '50%',
+                      transform: 'translate(-50%,-50%)'
+                    }}
+                  >
+                    No KYC access token, please sign in first.
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+            <Box sx={{ mb: 5 }}>
+              <Typography variant="h4" sx={{ mb: 0 }}>
+                Contact Info
+              </Typography>
+              <Typography sx={{ mb: 2, color: theme.palette.text.secondary }}>
+                Please provide contact info so we can send out IDO updates
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    InputProps={{ disableUnderline: true }}
+                    fullWidth
+                    name="name"
+                    label="Your Full Name"
+                    error={formErrors.name}
+                    id="name"
+                    variant="filled"
+                    helperText={
+                      formErrors.name &&
+                      'Please enter your full name'
+                    }
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    InputProps={{ disableUnderline: true }}
+                    fullWidth
+                    name="email"
+                    label="Your Email"
+                    error={formErrors.email}
+                    id="email"
+                    variant="filled"
+                    helperText={
+                      formErrors.email &&
+                      'Please enter a valid email address'
+                    }
+                    onChange={handleChange}
+                  />
+                </Grid>
+              </Grid>
+            </Box>
 
-            <Grid container spacing={3} sx={{ mb: '50px' }}>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  InputProps={{ disableUnderline: true }}
-                  fullWidth
-                  name="name"
-                  label="Your Full Name"
-                  error={formErrors.name}
-                  id="name"
-                  variant="filled"
-                  helperText={
-                    formErrors.name &&
-                    'Please enter your full name'
-                  }
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  InputProps={{ disableUnderline: true }}
-                  fullWidth
-                  name="email"
-                  label="Your Email"
-                  error={formErrors.email}
-                  id="email"
-                  variant="filled"
-                  helperText={
-                    formErrors.email &&
-                    'Please enter a valid email address'
-                  }
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid
-                item
-                xs={12}
-                alignItems="stretch"
-              >
+            <Box sx={{ mb: 5 }}>
+              <Typography variant="h4" sx={{ mb: 0 }}>
+                IDO Details
+              </Typography>
+              <Typography sx={{ mb: 2, color: theme.palette.text.secondary }}>
+                Provide some contribution details to help us plan the distribution
+              </Typography>
+              <Box sx={{ mb: 3 }}>
+
                 <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
                   <TextField
                     value={formData.usdValue}
@@ -589,11 +653,7 @@ const Whitelist = () => {
                     name="usdValue"
                     variant="filled"
                     helperText={
-                      formErrors.usdValue &&
-                      (whitelistData?.additionalDetails
-                        ?.staker_snapshot_whitelist
-                        ? `Please enter a positive value`
-                        : `Please enter between 100 and 25,000 USD`)
+                      formErrors.usdValue && `Please enter between 100 and 25,000 USD`
                     }
                     onChange={handleChange}
                     error={formErrors.usdValue}
@@ -613,43 +673,25 @@ const Whitelist = () => {
                     Max
                   </Button>
                 </Box>
-                <Typography sx={{ mb: 1, color: theme.palette.text.secondary, textAlign: 'right' }}>
-                  Note: the amount requested is not guaranteed.
+                <Typography sx={{ color: theme.palette.text.secondary, textAlign: 'right' }}>
+                  The amount requested is not guaranteed
                 </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <Box>
-                  <Typography sx={{ color: theme.palette.text.secondary }}>
-                    Address to receive whitelist tokens (you may change this any time)
-                  </Typography>
-                </Box>
-                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-
-                  <Box>
+              </Box>
+              <Box>
+                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ width: '100%' }}>
                     <FormControl
                       variant="filled"
-                      sx={{ m: 1, minWidth: 120, width: { xs: '100%', md: '600px' } }}
+                      fullWidth
+                      sx={{ minWidth: 120, width: '100%' }}
                     >
+                      <InputLabel id="default-address-selector-label">Address to receive whitelist tokens</InputLabel>
                       <Select
-                        labelId="default-address-label"
-                        id="default-address"
+                        id="default-address-selector"
+                        label="Address to receive whitelist tokens"
                         value={defaultAddress}
                         onChange={handleChangeAddress}
-                        sx={{
-                          '& .MuiSelect-select': {
-                            py: '7px'
-                          },
-                          '& input': {
-                            paddingTop: '7px',
-                            paddingBottom: '7px',
-                          },
-                          '&::before': {
-                            display: 'none',
-                          },
-                          '&::after': {
-                            display: 'none',
-                          },
-                        }}
+
                       >
                         {addressOptions.map((item, i) => {
                           return (
@@ -663,35 +705,20 @@ const Whitelist = () => {
                     <Button
                       variant="contained"
                       onClick={() => updateLoginAddress(defaultAddress)}
+                      sx={{ height: '56px' }}
                       disabled={defaultAddressLoading}
                     >
                       {defaultAddressLoading ? <CircularProgress size={24} /> : "Update"}
                     </Button>
                   </Box>
                 </Box>
-              </Grid>
-            </Grid>
-            {accessToken ? (
-              <Box sx={{}}>
-                <Typography variant="h4">
-                  KYC Approval
+                <Typography sx={{ color: theme.palette.text.secondary, textAlign: 'right' }}>
+                  You may change this any time in the user menu
                 </Typography>
-                <Box sx={{ p: 4, background: '#ffffff', borderRadius: '16px' }}>
-                  <SumsubWebSdk
-                    accessToken={accessToken}
-                    expirationHandler={expirationHandler}
-                    config={config}
-                    options={options}
-                    onMessage={messageHandler}
-                    onError={errorHandler}
-                  />
-                </Box>
               </Box>
-            ) : (
-              <Box sx={{ mb: 3 }}>No access token</Box>
-            )}
+            </Box>
             <FormControl required error={checkboxError}>
-              <FormGroup sx={{ mt: 2 }}>
+              <FormGroup sx={{ mb: 2 }}>
                 {checkboxState.map((checkbox: any, index: number) => (
                   <FormControlLabel
                     key={index}
@@ -705,7 +732,7 @@ const Whitelist = () => {
                     label={checkbox.text}
                     sx={{
                       color: theme.palette.text.secondary,
-                      mb: 2,
+                      mb: 1,
                     }}
                   />
                 ))}
@@ -716,12 +743,10 @@ const Whitelist = () => {
               </FormGroup>
             </FormControl>
             <Box sx={{ position: 'relative' }}>
-              Sumsub status {sumsubStatus}
               <Button
                 type="submit"
                 fullWidth
-                // disabled={buttonDisabled}
-                // disabled={true}
+                disabled={isLoading || checkboxError || whitelistState !== 'LIVE' || sumsubStatus !== 'GREEN' || !sessionData?.user.id}
                 variant="contained"
                 sx={{ mb: 2 }}
               >
@@ -734,29 +759,43 @@ const Whitelist = () => {
                     position: 'absolute',
                     top: '50%',
                     left: '50%',
-                    marginTop: '-9px',
+                    marginTop: '-20px',
                     marginLeft: '-12px',
                   }}
                 />
               )}
             </Box>
-            <Typography sx={{ color: theme.palette.text.secondary }}>
-              {whitelistState === 'ROUND_END' &&
-                'We apologize for the inconvenience, the signup form has closed.'}
-            </Typography>
-            <Typography sx={{ color: theme.palette.text.secondary }}>
-              {whitelistState === 'NOT_STARTED' &&
-                'This form is not yet active. The round will start at ' +
-                new Date(1695654000000).toLocaleString(typeof navigator !== 'undefined' ? navigator.language : 'en-us', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: '2-digit',
-                  hour12: true,
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  timeZoneName: 'short',
-                })}
-            </Typography>
+            {sumsubStatus !== 'GREEN' && (
+              <Typography sx={{ color: theme.palette.text.secondary, mb: 2 }} >
+                Please complete the KYC form above.
+              </Typography>
+            )}
+            {whitelistState === 'ROUND_END' && (
+              <Typography sx={{ color: theme.palette.text.secondary, mb: 2 }} >
+                We apologize for the inconvenience, the signup form has closed.
+              </Typography>
+            )}
+            {whitelistState === 'NOT_STARTED' && (
+              <Typography sx={{ color: theme.palette.text.secondary }}>
+                {
+                  `This form is not yet active. The round will start at 
+                    ${startDate
+                    .toLocaleString(typeof navigator !== 'undefined'
+                      ? navigator.language
+                      : 'en-us',
+                      {
+                        year: 'numeric',
+                        month: 'short',
+                        day: '2-digit',
+                        hour12: false,
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        timeZoneName: 'short',
+                      })
+                  }`
+                }
+              </Typography>
+            )}
             <Snackbar
               open={openError}
               autoHideDuration={6000}
@@ -784,7 +823,6 @@ const Whitelist = () => {
               </Alert>
             </Snackbar>
           </Box>
-
         </>
       </Container>
     </>

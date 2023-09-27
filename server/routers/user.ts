@@ -348,14 +348,34 @@ export const userRouter = createTRPCRouter({
     .input(z.object({
       name: z.string().optional(),
       email: z.string().optional(),
+      whitelist: z.string().optional()
     }))
     .mutation(async ({ input, ctx }) => {
       const userId = ctx.session.user.id;
-      const { name, email } = input;
+      const { name, email, whitelist } = input;
+
+      // Prepare the data object for the update
+      const updateData: any = {};
+
+      // Conditionally add fields to the updateData object
+      if (name) {
+        updateData.name = name;
+      }
+
+      if (email) {
+        updateData.email = email;
+      }
+
+      // If whitelist is provided, add it to the whitelists array
+      if (whitelist) {
+        updateData.whitelists = {
+          push: whitelist
+        };
+      }
 
       const updatedUser = await prisma.user.update({
         where: { id: userId },
-        data: { name, email },
+        data: updateData,
       });
 
       if (!updatedUser) {

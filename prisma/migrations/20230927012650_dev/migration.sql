@@ -45,6 +45,7 @@ CREATE TABLE "users" (
     "sumsub_type" TEXT,
     "sumsub_result" JSONB,
     "sumsub_status" TEXT,
+    "whitelists" TEXT[],
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );

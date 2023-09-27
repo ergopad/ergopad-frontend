@@ -28,7 +28,7 @@ const ErgopadTermsOfService = () => {
         </Typography>
 
         <Typography variant="body2">
-          Last modified: September 23, 2023
+          Last modified: September 26, 2023
         </Typography>
 
         <Typography variant="h4" component="h2" gutterBottom>
@@ -36,9 +36,8 @@ const ErgopadTermsOfService = () => {
         </Typography>
 
         <Typography variant="body2">
-          1.1 These Terms of Service (hereinafter referred to as &quot;Terms&quot;) govern the use and conditions of the website located
-          at{' '}
-          <Typography component="a" href="https://ergopad.io" target="_blank" rel="noopener">
+          1.1 These Terms of Service (hereinafter referred to as &quot;Terms&quot;) govern the use and conditions of the website located at{' '}
+          <Typography component="a" href="https://ergopad.io" rel="noopener" sx={{ fontSize: '18px' }}>
             https://ergopad.io
           </Typography>{' '}
           (hereinafter referred to as the &quot;Website&quot;) and the services provided by Benevolent SA de CV (hereinafter referred
@@ -71,15 +70,15 @@ const ErgopadTermsOfService = () => {
             <Typography>&quot;Company&quot; refers to Benevolent SA de CV.</Typography>
           </ListItem>
           <ListItem>
-            <Typography>&quot;Platform&quot; refers to Ergopad Finance, the online platform operated by the Company.</Typography>
+            <Typography>&quot;Platform&quot; refers to Ergopad, the online platform operated by the Company.</Typography>
           </ListItem>
           <ListItem>
-            <Typography>&quot;Project&quot; refers to Projects launched on the Platform.</Typography>
+            <Typography>&quot;Project&quot; refers to any Project launched on the Platform.</Typography>
           </ListItem>
           <ListItem>
             <Typography>
               &quot;Services&quot; refers to the features, functionalities, and offerings provided by the Company through the Website.
-              These may include but are not limited to access to the online platform, the exchange or trading of
+              These may include but are not limited to access to the online platform, the exchange of
               cryptocurrencies or tokens, participation in token sales or staking activities, access to information, and any
               other services made available by the Company through the Website.
             </Typography>
@@ -118,9 +117,9 @@ const ErgopadTermsOfService = () => {
         </Typography>
 
         <Typography variant="body2">
-          3.3 Privacy Policy: The Company collects, uses, stores, and protects user data in accordance with applicable data
-          protection laws. By using the platform, you acknowledge and agree to the Company&apos;s Privacy Policy, which outlines
-          the types of data collected, how it is used, and your rights regarding your personal information.
+          3.3 Privacy Policy: The Company collects, uses, stores, and protects user data in accordance with applicable data protection laws and our Anti-Money Laundering (AML) Policy. Users can refer to our <Typography component="a" href="https://ergopad.io/privacy" rel="noopener" sx={{ fontSize: '18px' }}>
+            Privacy Policy
+          </Typography> for more details on data retention and management.
         </Typography>
 
         <Typography variant="body2">
@@ -131,20 +130,17 @@ const ErgopadTermsOfService = () => {
         </Typography>
 
         <Typography variant="body2">
-          3.5 Disclaimer for Accessibility of the Website and the Services: The Website and the Services are provided on an
-          &quot;AS IS&quot; and &quot;AS AVAILABLE&quot; basis. The Company makes no warranty or representation regarding the accuracy,
-          completeness, or timeliness of the information provided on the platform. You accept that any reliance on such
-          information is at your own risk.
+          3.5 Disclaimer for Accessibility of the Website and the Services: The Website and the Services are provided on an &quot;AS IS&quot; and &quot;AS AVAILABLE&quot; basis. The Company makes no warranty or representation regarding the accuracy, completeness, or timeliness of the information provided on the platform. Users accept that any reliance on such information is at their own risk. Additionally, the platform may occasionally be unavailable due to maintenance or other reasons. The Company will endeavor to schedule maintenance during off-peak hours and provide users with advance notice whenever possible. However, unplanned outages or emergency maintenance may occur, and the Company will not be liable for any inconvenience or loss resulting from such outages.
         </Typography>
 
         <Typography variant="body2">
-          3.7 Governing Law and Jurisdiction: These Terms and your use of the Website and the Services shall be governed by and
+          3.6 Governing Law and Jurisdiction: These Terms and your use of the Website and the Services shall be governed by and
           construed in accordance with the laws of El Salvador. Any dispute arising out of or in connection with these Terms shall
           be subject to the exclusive jurisdiction of the courts of El Salvador.
         </Typography>
 
         <Typography variant="body2">
-          3.8 Eligibility: As a user of the Interface, you declare and guarantee that you are not presently subjected to any economic or
+          3.7 Eligibility: As a user of the Interface, you declare and guarantee that you are not presently subjected to any economic or
           trade sanctions enforced by any governmental authority or organization, nor are you listed as a prohibited or restricted
           party, including listings maintained by the United Nations. Furthermore, you affirm and guarantee that you are not a citizen,
           resident, or organized in a jurisdiction or territory that is currently under comprehensive country-wide, territory-wide,
@@ -227,8 +223,8 @@ const ErgopadTermsOfService = () => {
 
         <Typography variant="body2">
           5.3 Intellectual Property: The Company grants you a limited, non-exclusive, non-transferable license to access and
-          use the intellectual property owned or licensed by the Company solely for the purpose of using the platform and its
-          services. You shall not reproduce, modify, distribute, or exploit the Company&apos;s intellectual property without
+          use the intellectual property owned or licensed by the Company solely for the purpose of using the Platform and its
+          Services. You shall not reproduce, modify, distribute, or exploit the Company&apos;s intellectual property without
           prior written consent.
         </Typography>
 
@@ -252,8 +248,7 @@ const ErgopadTermsOfService = () => {
         </Typography>
 
         <Typography variant="body2">
-          5.7 Dispute Resolution: Any dispute arising out of or in connection with these Terms shall be subject to the
-          exclusive jurisdiction of the courts of El Salvador.
+          5.7 Dispute Resolution: Any dispute arising out of or in connection with these Terms shall initially be resolved through good faith negotiations between the parties. If the dispute cannot be resolved through negotiations within thirty (30) days, either party may propose to resolve the dispute through binding arbitration. The arbitration shall be conducted in El Salvador, in accordance with the rules of a recognized arbitration institution mutually agreed upon by the parties. If the parties cannot agree on an arbitration institution, the arbitration shall be conducted under the rules of the International Chamber of Commerce. Any dispute not resolved through negotiation or arbitration shall be subject to the exclusive jurisdiction of the courts of El Salvador.
         </Typography>
 
         <Typography variant="body2">
@@ -262,9 +257,7 @@ const ErgopadTermsOfService = () => {
         </Typography>
 
         <Typography variant="body2">
-          5.9 Suspension or Termination of Services: The Company reserves the right to suspend or terminate your access to the
-          services without prior notice if you engage in any prohibited activities, violate the terms of service, or if your
-          continued use poses a risk to the platform or other users.
+          5.9 Suspension or Termination of Services: The Company reserves the right to suspend or terminate your access to the services without prior notice if you engage in any prohibited activities, violate the terms of service, or if your continued use poses a risk to the platform or other users. In the event of termination, users are responsible for retrieving their tokens from the staking platform. While the code is open source, and the staking platform is deployed via smart contracts on the Ergo blockchain, users will need to determine the appropriate steps to retrieve their tokens and unlock any outstanding vested tokens. The Company will not be responsible for any loss, inconvenience, or challenges faced by users in this regard.
         </Typography>
 
         <Typography variant="body2">
@@ -273,13 +266,17 @@ const ErgopadTermsOfService = () => {
           third party for any modification, suspension, or discontinuation of the services.
         </Typography>
         <Typography variant="body2">
-          5.11.1 Platform Role: The Platform serves as an intermediary facilitating token sales between third-party companies ("Issuers") and Users. The Company does not issue tokens directly nor takes responsibility for the creation, listing, or management of tokens.
+          5.11.1 Platform Role: The Platform serves as an intermediary facilitating token sales between third-party companies ("Issuers") and Users. The Company does not issue tokens directly and does not take responsibility for the creation, listing, or management of tokens. If the Company takes part in those activities, it is solely on the behalf of token Issuers and/or Projects launching through the Platform.
         </Typography>
         <Typography variant="body2">
           5.11.2 Issuer Responsibility: Issuers utilizing the platform to launch their tokens are solely responsible for the tokens they issue, including their legality, functionality, and associated claims. The Company does not endorse, verify, or validate any Issuer or their token offerings.
         </Typography>
         <Typography variant="body2">
-          5.11.3 User Responsibility: Users are responsible for performing their own research and due diligence before participating in any third-party token sales facilitated by the Platform. Engaging in any such sales is at the User's own risk.
+          5.11.3 User Responsibility: Users are responsible for performing their own research and due diligence before participating in any token sale facilitated by the Platform. Engaging in any such sales is at the User's own risk.
+        </Typography>
+
+        <Typography variant="body2">
+          5.12 Fees: The Platform may charge users minor fees during certain transactions, such as staking. As of the last update of this document, the fee for staking is 0.26 erg. These fees are subject to change, and users will not be notified of any adjustments. Fees will be clearly visible in any blockchain transaction initiated while using the Platform. All fees are non-refundable and are used to support the maintenance and operations of the Platform.
         </Typography>
 
         <Typography variant="h4" component="h2" gutterBottom>

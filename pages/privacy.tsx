@@ -29,7 +29,7 @@ const PrivacyPolicy = () => {
         </Typography>
 
         <Typography variant="body2">
-          Last modified: September 23, 2023
+          Last modified: September 26, 2023
         </Typography>
 
         <Typography variant="h4" component="h2" gutterBottom>
@@ -53,12 +53,12 @@ const PrivacyPolicy = () => {
           </ListItem>
           <ListItem>
             <Typography>
-              Financial Information: Bank account details, payment card information, and transaction history.
+              Financial Information: Blockchain transaction history.
             </Typography>
           </ListItem>
           <ListItem>
             <Typography>
-              Authentication Information: Usernames, passwords, and security questions and answers.
+              Authentication Information: Account information used to authenticate your user account including information collected through third-party authentication providers.
             </Typography>
           </ListItem>
           <ListItem>
@@ -68,7 +68,7 @@ const PrivacyPolicy = () => {
           </ListItem>
           <ListItem>
             <Typography>
-              Cookies and Similar Technologies: Information collected through cookies, web beacons, and similar technologies when you use the Website.
+              Cookies and Similar Technologies: No information is collected through cookies. Our server only uses an http cookie to store your session data.
             </Typography>
           </ListItem>
         </List>
@@ -187,7 +187,7 @@ const PrivacyPolicy = () => {
           </ListItem>
           <ListItem>
             <Typography>
-              Do Not Track: Adjusting your browser settings to disable tracking technologies.
+              Do Not Track: Adjusting your browser settings to disable tracking technologies, though we do not utilize any such technologies beyond what is used to track your login session.
             </Typography>
           </ListItem>
         </List>

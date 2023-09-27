@@ -190,13 +190,13 @@ const UserMenu: FC<IUserMenuProps> = () => {
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           >
-            <MenuItem
+            {/* <MenuItem
               sx={{ mt: '6px' }}
             // onClick={() => router.push('/users/' + walletContext.wallet.getChangeAddress)}
             >
               <Avatar src={sessionData?.user.image} variant="rounded" /> View Profile
             </MenuItem>
-            <Divider />
+            <Divider /> */}
             {/* <MenuItem onClick={() => router.push('/user-settings/')}>
               <ListItemIcon>
                 <Settings fontSize="small" />

@@ -58,6 +58,7 @@ model User {
   wallets        Wallet[]
   loginRequests  LoginRequest[]
   transactions   Transaction[]
+  whitelists     String[]
 
   @@map("users")
 }
