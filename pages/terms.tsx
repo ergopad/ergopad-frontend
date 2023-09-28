@@ -70,7 +70,7 @@ const ErgopadTermsOfService = () => {
             <Typography>&quot;Company&quot; refers to Benevolent SA de CV.</Typography>
           </ListItem>
           <ListItem>
-            <Typography>&quot;Platform&quot; refers to Ergopad, the online platform operated by the Company.</Typography>
+            <Typography>&quot;Platform&quot; refers to Ergopad, the online platform operated by the Company. This may also be referred to interchangeably as Interface or Website. </Typography>
           </ListItem>
           <ListItem>
             <Typography>&quot;Project&quot; refers to any Project launched on the Platform.</Typography>
@@ -90,11 +90,14 @@ const ErgopadTermsOfService = () => {
           </ListItem>
           <ListItem>
             <Typography>
-              &quot;User(s)&quot; refers to individuals or entities accessing and using the Company Services.
+              &quot;User(s)&quot; refers to individuals or entities accessing and using the Services provided via the Platform.
             </Typography>
           </ListItem>
           <ListItem>
             <Typography>&quot;Website&quot; refers to the website associated with the Platform.</Typography>
+          </ListItem>
+          <ListItem>
+            <Typography>&quot;Interface&quot; refers to any interface used to access the Services associated with the Platform, including the Website.</Typography>
           </ListItem>
         </List>
 
@@ -107,7 +110,7 @@ const ErgopadTermsOfService = () => {
           binding obligations stipulated in these Terms are enforceable. To access or use the Platform, you must be able to form
           a legally binding contract with us. Accordingly, you represent that you are at least the age of majority in your jurisdiction
           (e.g., 18 years old) and have the full right, power, and authority to enter into and comply with the terms and conditions of
-          this Agreement on behalf of yourself and any company or legal entity for which you may access or use the Interface.
+          this Agreement on behalf of yourself and any company or legal entity for which you may access or use the Platform.
         </Typography>
 
         <Typography variant="body2">
@@ -140,12 +143,12 @@ const ErgopadTermsOfService = () => {
         </Typography>
 
         <Typography variant="body2">
-          3.7 Eligibility: As a user of the Interface, you declare and guarantee that you are not presently subjected to any economic or
+          3.7 Eligibility: As a user of the Platform, you declare and guarantee that you are not presently subjected to any economic or
           trade sanctions enforced by any governmental authority or organization, nor are you listed as a prohibited or restricted
           party, including listings maintained by the United Nations. Furthermore, you affirm and guarantee that you are not a citizen,
           resident, or organized in a jurisdiction or territory that is currently under comprehensive country-wide, territory-wide,
-          or regional economic sanctions imposed by the United Nations. You further represent and warrant that your access and use of the Interface will comply with all applicable laws and
-          regulations, and that you will not use the Interface to conduct, promote, or facilitate any illegal activity. This
+          or regional economic sanctions imposed by the United Nations. You further represent and warrant that your access and use of the Platform will comply with all applicable laws and
+          regulations, and that you will not use the Platform to conduct, promote, or facilitate any illegal activity. This
           includes but not limited to money laundering, terrorist financing, fraud, or any other illegal activities.
         </Typography>
 

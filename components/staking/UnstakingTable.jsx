@@ -56,7 +56,7 @@ const UnstakingTable = ({ data, unstake, addstake, disableUnstaking, disableAddS
             maximumFractionDigits: 2,
           })}
         </Typography>
-        <Typography
+        {/* <Typography
           variant="body2"
           sx={{ fontWeight: '400', fontSize: '1rem', mb: 1, pl: 1 }}
         >
@@ -64,7 +64,7 @@ const UnstakingTable = ({ data, unstake, addstake, disableUnstaking, disableAddS
           your wallet. This page only shows tokens for the selected addresses.
           For overall wallet summary visit the dashboard. The values in the
           table may take some time to reflect new changes.
-        </Typography>
+        </Typography> */}
       </Box>
       {Object.keys(stakeObject.addresses).map((address) => (
         <Box sx={{ mt: 4 }} key={address}>
@@ -199,7 +199,8 @@ const UnstakingTable = ({ data, unstake, addstake, disableUnstaking, disableAddS
                                 stake.boxId,
                                 stake.stakeKeyId,
                                 stake.stakeAmount,
-                                stake.penaltyPct ?? 0
+                                stake.penaltyPct ?? 0,
+                                address
                               )
                             }
                             disabled={disableAddStake}

@@ -32,6 +32,7 @@ import SumsubWebSdk from '@sumsub/websdk-react';
 import { useWallet } from '@utils/WalletContext';
 import { trpc } from '@utils/trpc';
 import { Wallet } from 'next-auth';
+import ChangeDefaultAddress from '@components/user/ChangeDefaultAddress';
 
 type FormData = {
   name: string;
@@ -639,83 +640,52 @@ const Whitelist = () => {
               <Typography sx={{ mb: 2, color: theme.palette.text.secondary }}>
                 Provide some contribution details to help us plan the distribution
               </Typography>
-              <Box sx={{ mb: 3 }}>
+              <Grid container spacing={2} sx={{ mb: 3 }}>
 
-                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
-                  <TextField
-                    value={formData.usdValue}
-                    sx={{ m: 0 }}
-                    InputProps={{ disableUnderline: true }}
-                    required
-                    fullWidth
-                    id="usdValue"
-                    label="Amount requested (USD value)"
-                    name="usdValue"
-                    variant="filled"
-                    helperText={
-                      formErrors.usdValue && `Please enter between 100 and 25,000 USD`
-                    }
-                    onChange={handleChange}
-                    error={formErrors.usdValue}
-                  />
-                  <Button
-                    variant="contained"
-                    sx={{ height: '56px' }}
-                    onClick={() => {
-                      handleChange({
-                        target: {
-                          name: 'usdValue',
-                          value: '[max]',
-                        }
-                      });
-                    }}
-                  >
-                    Max
-                  </Button>
-                </Box>
-                <Typography sx={{ color: theme.palette.text.secondary, textAlign: 'right' }}>
-                  The amount requested is not guaranteed
-                </Typography>
-              </Box>
-              <Box>
-                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 1 }}>
-                  <Box sx={{ width: '100%' }}>
-                    <FormControl
-                      variant="filled"
+                <Grid item xs={12} md={6}>
+                  <ChangeDefaultAddress title="Address to receive whitelist tokens" />
+                  <Typography sx={{ color: theme.palette.text.secondary, textAlign: 'right' }}>
+                    You may change this any time in the user menu
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
+                    <TextField
+                      value={formData.usdValue}
+                      sx={{ m: 0 }}
+                      InputProps={{ disableUnderline: true }}
+                      required
                       fullWidth
-                      sx={{ minWidth: 120, width: '100%' }}
-                    >
-                      <InputLabel id="default-address-selector-label">Address to receive whitelist tokens</InputLabel>
-                      <Select
-                        id="default-address-selector"
-                        label="Address to receive whitelist tokens"
-                        value={defaultAddress}
-                        onChange={handleChangeAddress}
-
-                      >
-                        {addressOptions.map((item, i) => {
-                          return (
-                            <MenuItem value={item} key={`address-option-${i}`}>{item}</MenuItem>
-                          )
-                        })}
-                      </Select>
-                    </FormControl>
-                  </Box>
-                  <Box>
+                      id="usdValue"
+                      label="Amount requested (USD value)"
+                      name="usdValue"
+                      variant="filled"
+                      helperText={
+                        formErrors.usdValue && `Please enter between 100 and 25,000 USD`
+                      }
+                      onChange={handleChange}
+                      error={formErrors.usdValue}
+                    />
                     <Button
                       variant="contained"
-                      onClick={() => updateLoginAddress(defaultAddress)}
                       sx={{ height: '56px' }}
-                      disabled={defaultAddressLoading}
+                      onClick={() => {
+                        handleChange({
+                          target: {
+                            name: 'usdValue',
+                            value: '[max]',
+                          }
+                        });
+                      }}
                     >
-                      {defaultAddressLoading ? <CircularProgress size={24} /> : "Update"}
+                      Max
                     </Button>
                   </Box>
-                </Box>
-                <Typography sx={{ color: theme.palette.text.secondary, textAlign: 'right' }}>
-                  You may change this any time in the user menu
-                </Typography>
-              </Box>
+                  <Typography sx={{ color: theme.palette.text.secondary, textAlign: 'right' }}>
+                    The amount requested is not guaranteed
+                  </Typography>
+                </Grid>
+              </Grid>
             </Box>
             <FormControl required error={checkboxError}>
               <FormGroup sx={{ mb: 2 }}>

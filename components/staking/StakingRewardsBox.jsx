@@ -28,18 +28,18 @@ const StakingRewardsBox = ({
   tokenName,
   loading,
   totalStaked,
-  aggregateWallet,
-  handleSwitchChange,
+  // aggregateWallet,
+  // handleSwitchChange,
 }) => {
-  const [tooltipOpen, setTooltipOpen] = useState(false);
+  // const [tooltipOpen, setTooltipOpen] = useState(false);
 
-  const handleTooltipClose = () => {
-    setTooltipOpen(false);
-  };
+  // const handleTooltipClose = () => {
+  //   setTooltipOpen(false);
+  // };
 
-  const handleTooltipOpen = () => {
-    setTooltipOpen(true);
-  };
+  // const handleTooltipOpen = () => {
+  //   setTooltipOpen(true);
+  // };
 
   return (
     <>
@@ -70,7 +70,7 @@ const StakingRewardsBox = ({
           </Typography>
         </Box>
       </Box>
-      <Box sx={{ p: 1 }}>
+      {/* <Box sx={{ p: 1 }}>
         <Stack
           direction="row"
           spacing={1}
@@ -79,7 +79,7 @@ const StakingRewardsBox = ({
           sx={{ color: theme.palette.text.secondary }}
         >
           <Typography sx={{ textAlign: 'right' }}>
-            Sum all addresses in wallet
+            Sum all addresses on account
           </Typography>
           <ClickAwayListener onClickAway={handleTooltipClose}>
             <Tooltip
@@ -89,7 +89,7 @@ const StakingRewardsBox = ({
               disableFocusListener
               disableHoverListener
               disableTouchListener
-              title="You can choose a main address when you connect a wallet. Toggle  to show the number of staked tokens in only the selected address, or to take the sum of all addresses in your connected wallet"
+              title="Adds up staked tokens from all addresses connected to your account, rather than just your default address"
             >
               <IconButton aria-label="more info" onClick={handleTooltipOpen}>
                 <InfoIcon
@@ -105,7 +105,7 @@ const StakingRewardsBox = ({
             onChange={(e) => handleSwitchChange(e.target.checked)}
           />
         </Stack>
-      </Box>
+      </Box> */}
     </>
   );
 };

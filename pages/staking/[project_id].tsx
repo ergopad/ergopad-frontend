@@ -16,12 +16,13 @@ import {
   TextField,
   CircularProgress,
   useMediaQuery,
+  useTheme,
+  Alert,
 } from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import PropTypes from 'prop-types';
 import CenterTitle from '@components/CenterTitle';
 import MarkdownRender from '@components/MarkdownRender';
 import { StakingItem } from '@components/staking/StakingSummary';
@@ -33,17 +34,16 @@ import UnstakingTable from '@components/staking/UnstakingTable';
 import TransactionSubmitted from '@components/TransactionSubmitted';
 import ErgopayModalBody from '@components/ErgopayModalBody';
 import MuiNextLink from '@components/MuiNextLink';
-import theme from '@styles/theme';
-import { useWallet } from 'utils/WalletContext';
-import { forwardRef, useEffect, useState } from 'react';
+import { useWallet } from '@utils/WalletContext';
+import { SetStateAction, forwardRef, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import { trpc } from '@utils/trpc';
+import { Wallet } from 'next-auth';
+import Link from 'next/link';
+import ChangeDefaultAddress from '@components/user/ChangeDefaultAddress';
 
 const STAKING_TOKEN_OPTIONS = [{ title: 'ErgoPad', project: 'default' }];
-
-const Alert = forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
 
 const modalStyle = {
   position: 'absolute',
@@ -57,7 +57,20 @@ const modalStyle = {
   p: 4,
 };
 
-const defaultStakingConfig = Object.freeze({
+type StakingConfig = {
+  project: string;
+  title: string;
+  tokenId: string;
+  tokenDecimals: number;
+  stakingInfo: string;
+  additionalDetails: {
+    stakingV1: boolean;
+    disableStaking?: boolean;
+    disableUnstaking?: boolean;
+  }
+}
+
+const defaultStakingConfig: StakingConfig = {
   project: 'ergopad',
   title: 'ErgoPad',
   tokenId: '0xtest',
@@ -66,53 +79,71 @@ const defaultStakingConfig = Object.freeze({
   additionalDetails: {
     stakingV1: false,
   },
-});
+}
 
-const initStakingForm = Object.freeze({
+type StakingForm = {
+  wallet: string;
+  tokenAmount: number;
+}
+const initStakingForm: StakingForm = {
   wallet: '',
   tokenAmount: 0,
-});
+}
 
-const initStakingFormErrors = Object.freeze({
+type StakingFormErrors = {
+  wallet: boolean;
+  tokenAmount: boolean;
+}
+
+const initStakingFormErrors: StakingFormErrors = {
   wallet: false,
   tokenAmount: false,
-});
+}
 
-const initUnstakingForm = Object.freeze({
+const initUnstakingForm = {
   tokenAmount: 0,
-});
+}
 
-const initUnstakingFormErrors = Object.freeze({
+const initUnstakingFormErrors = {
   wallet: false,
   tokenAmount: false,
-});
+}
 
-const initAddstakeForm = Object.freeze({
+const initAddstakeForm = {
   tokenAmount: 0,
-});
+}
 
-const initAddstakeFormErrors = Object.freeze({
+const initAddstakeFormErrors = {
   wallet: false,
   tokenAmount: false,
-});
+}
 
-const initStaked = Object.freeze({
+const initStaked = {
   totalStaked: 0,
   addresses: {},
-});
+}
 
-const initUnstaked = Object.freeze({
+const initUnstaked = {
   boxId: '',
   stakeKeyId: '',
   stakeAmount: 0,
   penaltyPct: 25,
-});
+}
 
-const initAddstaked = Object.freeze({
+type AddStaked = {
+  boxId: string;
+  stakeKeyId: string;
+  stakeAmount: number;
+  penaltyPct: number;
+  address: string;
+}
+const initAddstaked: AddStaked = {
   boxId: '',
   stakeKeyId: '',
   stakeAmount: 0,
-});
+  penaltyPct: 0,
+  address: ''
+}
 
 const defaultOptions = {
   headers: {
@@ -120,7 +151,7 @@ const defaultOptions = {
   },
 };
 
-function TabPanel(props) {
+function TabPanel(props: { [x: string]: any; children: any; value: any; index: any; }) {
   const { children, value, index, ...other } = props;
 
   return (
@@ -136,13 +167,7 @@ function TabPanel(props) {
   );
 }
 
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.number.isRequired,
-  value: PropTypes.number.isRequired,
-};
-
-function a11yProps(index) {
+function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`,
@@ -150,8 +175,8 @@ function a11yProps(index) {
 }
 
 const ProjectStaking = () => {
-  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
-  // nav
+  const theme = useTheme()
+  const checkSmall = useMediaQuery(() => theme.breakpoints.up('md'));
   const router = useRouter();
   const { project_id } = router.query;
   const [pageLoading, setPageLoading] = useState(true);
@@ -159,8 +184,14 @@ const ProjectStaking = () => {
   const [tokenChoiceList, setTokenChoiceList] = useState(STAKING_TOKEN_OPTIONS);
   const [stakingConfig, setStakingConfig] = useState(defaultStakingConfig);
   // wallet
-  const { wallet, dAppWallet } = useWallet();
-  const [aggregateWallet, setAggregateWallet] = useState(true);
+  const { wallet, sessionStatus, sessionData, fetchSessionData, setProviderLoading } = useWallet()
+  const walletsQuery = trpc.user.getWallets.useQuery(
+    undefined,
+    {
+      refetchOnWindowFocus: false,
+    }
+  )
+  // const [aggregateWallet, setAggregateWallet] = useState(true);
   // stake modal
   const [tokenBalance, setTokenBalance] = useState(0);
   const [openModal, setOpenModal] = useState(false);
@@ -206,8 +237,13 @@ const ProjectStaking = () => {
   const [ergopayUrl, setErgopayUrl] = useState(null);
   // tabs
   const [tabValue, setTabValue] = useState(0);
+  const [currentWalletType, setCurrentWalletType] = useState<string | null>(null)
+  const [dappWalletAddresses, setDappWalletAddresses] = useState<string[]>([])
+  const [getTokenBalanceLoading, setGetTokenBalanceLoading] = useState(false)
+  const [currentModalWalletType, setCurrentModalWalletType] = useState<string | null>(null)
+  const [currentDappWalletAddresses, setCurrentDappWalletAddresses] = useState<string[]>([])
 
-  const handleTabChange = (event, newValue) => {
+  const handleTabChange = (event: any, newValue: SetStateAction<number>) => {
     setTabValue(newValue);
   };
 
@@ -218,12 +254,12 @@ const ProjectStaking = () => {
         const res = await axios.get(`${process.env.API_URL}/staking/config`);
         setTokenChoiceList([
           ...STAKING_TOKEN_OPTIONS,
-          ...res.data.map((option) => {
+          ...res.data.map((option: { project: any; title: any; }) => {
             return { project: option.project, title: option.title };
           }),
         ]);
         const config = res.data.filter(
-          (config) => config.project === project_id
+          (config: { project: string | string[] | undefined; }) => config.project === project_id
         )[0];
         setStakingConfig(config ?? defaultStakingConfig);
       } catch (e) {
@@ -233,21 +269,57 @@ const ProjectStaking = () => {
     };
 
     if (project_id) {
-      setTokenChoice(project_id);
+      setTokenChoice(project_id.toString());
       getPageConfig();
     }
   }, [project_id]);
+
+  const getWalletType = (address: string) => {
+    const wallets = walletsQuery.data?.wallets
+    if (wallets) {
+      const wallet = wallets.find(w =>
+        w.changeAddress === address ||
+        w.unusedAddresses.includes(address) ||
+        w.usedAddresses.includes(address)
+      );
+      if (wallet && wallet.type === 'nautilus') setCurrentDappWalletAddresses([
+        ...wallet?.unusedAddresses, ...wallet.usedAddresses
+      ])
+      return wallet ? wallet.type : null;
+    }
+    else return null
+  };
 
   useEffect(() => {
     // load staked tokens for primary wallet address
     const getStaked = async () => {
       setUnstakeTableLoading(true);
       try {
-        const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
-          (x, i, a) => a.indexOf(x) == i && x
-        );
+        // const wallets = await getWallets();
+        const wallets = walletsQuery.data?.wallets
+        let uniqueAddresses: string[] = [];
+        if (wallet) uniqueAddresses = [wallet]
+
+        if (wallets && wallets.length > 0) {
+          let addressSet: Set<string> = new Set();
+          for (let thisWallet of wallets) {
+            for (let address of thisWallet.unusedAddresses) {
+              addressSet.add(address);
+            }
+            for (let address of thisWallet.usedAddresses) {
+              addressSet.add(address);
+            }
+            addressSet.add(thisWallet.changeAddress);
+            if (thisWallet.changeAddress === wallet) {
+              setCurrentWalletType(thisWallet.type)
+              if (thisWallet.type === 'nautilus') setDappWalletAddresses([...thisWallet.usedAddresses, ...thisWallet.unusedAddresses])
+            }
+          }
+
+          uniqueAddresses = [...addressSet];
+        }
         const request = {
-          addresses: aggregateWallet ? [...walletAddresses] : [wallet],
+          addresses: uniqueAddresses,
         };
         const res = await axios.post(
           `${process.env.API_URL}/staking/${project_id}/staked/`,
@@ -267,11 +339,14 @@ const ProjectStaking = () => {
       if (!project_id) setStakingConfig(defaultStakingConfig);
       setStakedData(initStaked);
     }
-  }, [wallet, dAppWallet.addresses, aggregateWallet, project_id]);
+  }, [wallet, project_id]);
 
   useEffect(() => {
     // reset staking Form on wallet change
-    setStakingForm({ ...initStakingForm, wallet: wallet });
+    if (wallet) {
+      setStakingForm({ ...initStakingForm, wallet: wallet });
+    }
+    else setStakingForm({ ...initStakingForm });
     setStakingFormErrors({
       ...initStakingFormErrors,
       wallet: wallet === '',
@@ -288,46 +363,55 @@ const ProjectStaking = () => {
 
   useEffect(() => {
     // get token balance
-    const getTokenBalance = async () => {
+    const getTokenBalance = async (address: string) => {
       try {
-        if (dAppWallet.connected) {
-          const balance = await ergo.get_balance(stakingConfig.tokenId); // eslint-disable-line
-          setTokenBalance(balance / Math.pow(10, stakingConfig.tokenDecimals));
-        } else if (wallet !== '') {
+        // if (dAppWallet.connected) {
+        //   const balance = await ergo.get_balance(stakingConfig.tokenId); // eslint-disable-line
+        //   setTokenBalance(balance / Math.pow(10, stakingConfig.tokenDecimals));
+        // } else 
+
+        setGetTokenBalanceLoading(true)
+        if (address !== '') {
           const res = await axios.post(
             `${process.env.API_URL}/asset/balances/`,
-            { addresses: [wallet] },
+            { addresses: [address] },
             { ...defaultOptions }
           );
-          const token = res.data.addresses[wallet].tokens.filter(
-            (token) => token.tokenId === stakingConfig.tokenId
+          const token = res.data.addresses[address].tokens.filter(
+            (token: { tokenId: string; }) => token.tokenId === stakingConfig.tokenId
           )[0];
-          if (token) {
+          if (token && token.amount > 0) {
             setTokenBalance(
               token.amount / Math.pow(10, stakingConfig.tokenDecimals)
             );
           }
+          else {
+            setTokenBalance(0);
+          }
         } else {
           setTokenBalance(0);
         }
+        setGetTokenBalanceLoading(false)
       } catch (e) {
         console.log('ERROR: ', e);
+        setGetTokenBalanceLoading(false)
       }
     };
-
+    if (openAddstakeModal) {
+      setCurrentModalWalletType(getWalletType(addstakeModalData.address))
+    }
     if (openModal || openAddstakeModal) {
-      getTokenBalance();
+      getTokenBalance(openAddstakeModal ? addstakeModalData.address : wallet!);
     }
   }, [
     openModal,
     openAddstakeModal,
     wallet,
-    dAppWallet.connected,
+    // dAppWallet.connected,
     stakingConfig,
   ]);
 
-  const stake = async (e) => {
-    e.preventDefault();
+  const StakeNautilus = async (walletAddress: string) => {
     setStakeLoading(true);
     const emptyCheck = Object.values(stakingForm).every(
       (v) => v !== '' && v !== 0
@@ -340,11 +424,11 @@ const ProjectStaking = () => {
         const tokenAmount = Math.round(
           stakingForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals)
         );
-        const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
+        const walletAddresses = [wallet, ...dappWalletAddresses].filter(
           (x, i, a) => a.indexOf(x) == i && x
         );
         const request = {
-          wallet: stakingForm.wallet,
+          wallet: walletAddress,
           amount: tokenAmount / Math.pow(10, stakingConfig.tokenDecimals),
           utxos: [],
           txFormat: 'eip-12',
@@ -356,12 +440,14 @@ const ProjectStaking = () => {
           { ...defaultOptions }
         );
         const unsignedtx = res.data;
-        const signedtx = await ergo.sign_tx(unsignedtx); // eslint-disable-line
-        const ok = await ergo.submit_tx(signedtx); // eslint-disable-line
+        // @ts-ignore
+        const signedtx = await ergo.sign_tx(unsignedtx);
+        // @ts-ignore
+        const ok = await ergo.submit_tx(signedtx);
         setSuccessMessageSnackbar('Transaction Submitted: ' + ok);
         setTransactionSubmitted(ok);
         setOpenSuccessSnackbar(true);
-      } catch (e) {
+      } catch (e: any) {
         if (e.response) {
           setErrorMessage(
             'Error: ' + e.response.status + ' - ' + e.response.data
@@ -391,6 +477,25 @@ const ProjectStaking = () => {
       setOpenError(true);
     }
     setStakeLoading(false);
+  }
+
+  const stakeWithDappConnector = async (walletAddress: string) => {
+    // @ts-ignore
+    const connected = await ergoConnector.nautilus.connect();
+    if (connected) {
+      // @ts-ignore
+      const address = await ergo.get_change_address();
+      if (address === walletAddress) {
+        StakeNautilus(address)
+      }
+      else {
+        // @ts-ignore
+        ergoConnector.nautilus.disconnect()
+        setErrorMessage('Please connect the correct Nautilus wallet');
+        setOpenError(true);
+        stakeWithDappConnector(walletAddress)
+      }
+    }
   };
 
   const stakeErgopay = async () => {
@@ -421,7 +526,7 @@ const ProjectStaking = () => {
         setErgopayUrl(res.data.url);
         setSuccessMessageSnackbar('Form Submitted');
         setOpenSuccessSnackbar(true);
-      } catch (e) {
+      } catch (e: any) {
         if (e.response) {
           setErrorMessage(
             'Error: ' + e.response.status + ' - ' + e.response.data
@@ -467,7 +572,7 @@ const ProjectStaking = () => {
   const unstake = async () => {
     setUnstakeModalLoading(true);
     const emptyCheck = Object.values(unstakingForm).every(
-      (v) => v !== '' && v !== 0
+      (v) => v !== undefined && v !== 0
     );
     const errorCheck = Object.values(unstakingFormErrors).every(
       (v) => v === false
@@ -476,7 +581,7 @@ const ProjectStaking = () => {
       try {
         const tokenAmount =
           unstakingForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals);
-        const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
+        const walletAddresses = [wallet, dappWalletAddresses].filter(
           (x, i, a) => a.indexOf(x) == i && x
         );
         const request = {
@@ -498,12 +603,14 @@ const ProjectStaking = () => {
         const unsignedtx = stakingConfig.additionalDetails.stakingV1
           ? res.data.unsignedTX
           : res.data;
+        // @ts-ignore
         const signedtx = await ergo.sign_tx(unsignedtx); // eslint-disable-line
+        // @ts-ignore
         const ok = await ergo.submit_tx(signedtx); // eslint-disable-line
         setSuccessMessageSnackbar('Transaction Submitted: ' + ok);
         setTransactionSubmitted(ok);
         setOpenSuccessSnackbar(true);
-      } catch (e) {
+      } catch (e: any) {
         if (e.response) {
           setErrorMessage(
             'Error: ' + e.response.status + ' - ' + e.response.data
@@ -518,7 +625,7 @@ const ProjectStaking = () => {
       let updateErrors = {};
       Object.entries(unstakingForm).forEach((entry) => {
         const [key, value] = entry;
-        if (value == '') {
+        if (value === 0) {
           if (Object.hasOwn(unstakingFormErrors, key)) {
             let newEntry = { [key]: true };
             updateErrors = { ...updateErrors, ...newEntry };
@@ -539,7 +646,7 @@ const ProjectStaking = () => {
   const unstakeErgopay = async () => {
     setUnstakeErgopayLoading(true);
     const emptyCheck = Object.values(unstakingForm).every(
-      (v) => v !== '' && v !== 0
+      (v) => v !== undefined && v !== 0
     );
     const errorCheck = Object.values(unstakingFormErrors).every(
       (v) => v === false
@@ -566,7 +673,7 @@ const ProjectStaking = () => {
         setErgopayUrl(res.data.url);
         setSuccessMessageSnackbar('Form Submitted');
         setOpenSuccessSnackbar(true);
-      } catch (e) {
+      } catch (e: any) {
         if (e.response) {
           setErrorMessage(
             'Error: ' + e.response.status + ' - ' + e.response.data
@@ -581,7 +688,7 @@ const ProjectStaking = () => {
       let updateErrors = {};
       Object.entries(unstakingForm).forEach((entry) => {
         const [key, value] = entry;
-        if (value == '') {
+        if (value === 0) {
           if (Object.hasOwn(unstakingFormErrors, key)) {
             let newEntry = { [key]: true };
             updateErrors = { ...updateErrors, ...newEntry };
@@ -609,10 +716,29 @@ const ProjectStaking = () => {
     });
   };
 
+  const addStakeWithDappConnector = async () => {
+    // @ts-ignore
+    const connected = await ergoConnector.nautilus.connect();
+    if (connected) {
+      // @ts-ignore
+      const address = await ergo.get_change_address();
+      if (address === addstakeModalData.address) {
+        addstake()
+      }
+      else {
+        // @ts-ignore
+        ergoConnector.nautilus.disconnect()
+        setErrorMessage(`Please connect the wallet with address ${addstakeModalData.address} `);
+        setOpenError(true);
+        addStakeWithDappConnector()
+      }
+    }
+  };
+
   const addstake = async () => {
     setAddstakeModalLoading(true);
     const emptyCheck = Object.values(addstakeForm).every(
-      (v) => v !== '' && v !== 0
+      (v) => v !== undefined && v !== 0
     );
     const errorCheck = Object.values(addstakeFormErrors).every(
       (v) => v === false
@@ -621,13 +747,13 @@ const ProjectStaking = () => {
       try {
         const tokenAmount =
           addstakeForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals);
-        const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
+        const walletAddresses = [addstakeModalData.address, ...currentDappWalletAddresses].filter(
           (x, i, a) => a.indexOf(x) == i && x
         );
         const request = {
           stakeBox: addstakeModalData.boxId,
           amount: tokenAmount / Math.pow(10, stakingConfig.tokenDecimals),
-          address: wallet,
+          address: addstakeModalData.address,
           utxos: [],
           txFormat: 'eip-12',
           addresses: [...walletAddresses],
@@ -638,12 +764,14 @@ const ProjectStaking = () => {
           { ...defaultOptions }
         );
         const unsignedtx = res.data;
+        // @ts-ignore
         const signedtx = await ergo.sign_tx(unsignedtx); // eslint-disable-line
+        // @ts-ignore
         const ok = await ergo.submit_tx(signedtx); // eslint-disable-line
         setSuccessMessageSnackbar('Transaction Submitted: ' + ok);
         setTransactionSubmitted(ok);
         setOpenSuccessSnackbar(true);
-      } catch (e) {
+      } catch (e: any) {
         if (e.response) {
           setErrorMessage(
             'Error: ' + e.response.status + ' - ' + e.response.data
@@ -658,7 +786,7 @@ const ProjectStaking = () => {
       let updateErrors = {};
       Object.entries(addstakeForm).forEach((entry) => {
         const [key, value] = entry;
-        if (value == '') {
+        if (value === undefined || value === 0) {
           if (Object.hasOwn(addstakeFormErrors, key)) {
             let newEntry = { [key]: true };
             updateErrors = { ...updateErrors, ...newEntry };
@@ -679,7 +807,7 @@ const ProjectStaking = () => {
   const addstakeErgopay = async () => {
     setAddstakeErgopayLoading(true);
     const emptyCheck = Object.values(addstakeForm).every(
-      (v) => v !== '' && v !== 0
+      (v) => v !== undefined && v !== 0
     );
     const errorCheck = Object.values(addstakeFormErrors).every(
       (v) => v === false
@@ -704,7 +832,7 @@ const ProjectStaking = () => {
         setErgopayUrl(res.data.url);
         setSuccessMessageSnackbar('Form Submitted');
         setOpenSuccessSnackbar(true);
-      } catch (e) {
+      } catch (e: any) {
         if (e.response) {
           setErrorMessage(
             'Error: ' + e.response.status + ' - ' + e.response.data
@@ -719,7 +847,7 @@ const ProjectStaking = () => {
       let updateErrors = {};
       Object.entries(addstakeForm).forEach((entry) => {
         const [key, value] = entry;
-        if (value == '') {
+        if (value === 0) {
           if (Object.hasOwn(addstakeFormErrors, key)) {
             let newEntry = { [key]: true };
             updateErrors = { ...updateErrors, ...newEntry };
@@ -738,7 +866,7 @@ const ProjectStaking = () => {
   };
 
   // snackbar for error reporting
-  const handleCloseError = (e, reason) => {
+  const handleCloseError = (e: any, reason: string) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -746,20 +874,20 @@ const ProjectStaking = () => {
   };
 
   // snackbar for success
-  const handleCloseSuccessSnackbar = (e, reason) => {
+  const handleCloseSuccessSnackbar = (e: any, reason: string) => {
     if (reason === 'clickaway') {
       return;
     }
     setOpenSuccessSnackbar(false);
   };
 
-  const handleTokenChoiceChange = (event) => {
+  const handleTokenChoiceChange = (event: { target: { value: SetStateAction<string>; }; }) => {
     setTokenChoice(event.target.value);
     if (event.target.value === 'default') router.push('/staking');
     else router.push(`/staking/${event.target.value}`);
   };
 
-  const handleStakingFormChange = (e) => {
+  const handleStakingFormChange = (e: { target: any; }) => {
     if (e.target.name === 'stakingAmount') {
       const amount = Number(e.target.value);
       if (amount >= 10 && amount <= tokenBalance) {
@@ -784,8 +912,8 @@ const ProjectStaking = () => {
     }
   };
 
-  const handleUnstakingFormChange = (e) => {
-    const calcPenalty = (value, penaltyPct) => {
+  const handleUnstakingFormChange = (e: { target: any; }) => {
+    const calcPenalty = (value: number, penaltyPct: number) => {
       return Math.round(value * penaltyPct) / 100;
     };
     if (e.target.name === 'unstakingAmount') {
@@ -815,7 +943,7 @@ const ProjectStaking = () => {
     }
   };
 
-  const handleAddstakeFormChange = (e) => {
+  const handleAddstakeFormChange = (e: { target: any; }) => {
     if (e.target.name === 'tokenAmount') {
       const amount = Number(e.target.value);
       if (amount > 0 && amount <= tokenBalance) {
@@ -907,9 +1035,9 @@ const ProjectStaking = () => {
                       operators of this website accept no liability whatsoever
                       in relation to your use of these smart contracts. By using
                       this website to stake, you also have read and agree to the{' '}
-                      <MuiNextLink href="/terms">
+                      <Link href="/terms">
                         Terms and Conditions
-                      </MuiNextLink>
+                      </Link>
                       .
                     </Typography>
                     <FormGroup
@@ -991,10 +1119,10 @@ const ProjectStaking = () => {
                         <UnstakingTable
                           data={stakedData}
                           unstake={(
-                            boxId,
-                            stakeKeyId,
-                            stakeAmount,
-                            penaltyPct
+                            boxId: any,
+                            stakeKeyId: any,
+                            stakeAmount: any,
+                            penaltyPct: any
                           ) => {
                             initUnstake();
                             setOpenUnstakeModal(true);
@@ -1002,20 +1130,22 @@ const ProjectStaking = () => {
                               boxId,
                               stakeKeyId,
                               stakeAmount,
-                              penaltyPct,
+                              penaltyPct
                             });
                           }}
                           addstake={
                             stakingConfig.additionalDetails.stakingV1 ||
                               stakingConfig.additionalDetails.disableStaking
                               ? null
-                              : (boxId, stakeKeyId, stakeAmount) => {
+                              : (boxId: string, stakeKeyId: string, stakeAmount: number, penaltyPct: number, address: string) => {
                                 initAddstake();
                                 setOpenAddstakeModal(true);
                                 setAddstakeModalData({
                                   boxId,
                                   stakeKeyId,
                                   stakeAmount,
+                                  penaltyPct,
+                                  address
                                 });
                               }
                           }
@@ -1036,8 +1166,8 @@ const ProjectStaking = () => {
                   tokenName={stakingConfig.title}
                   loading={unstakeTableLoading}
                   totalStaked={stakedData.totalStaked}
-                  aggregateWallet={aggregateWallet}
-                  handleSwitchChange={(state) => setAggregateWallet(state)}
+                // aggregateWallet={true}
+                // handleSwitchChange={(state) => setAggregateWallet(state)}
                 />
                 {stakingConfig.additionalDetails.stakingV1 && (
                   <UnstakingFeesTable />
@@ -1064,9 +1194,9 @@ const ProjectStaking = () => {
               </Typography>
               {transactionSubmitted || ergopayUrl ? (
                 transactionSubmitted ? (
-                  <TransactionSubmitted transactionId={transactionSubmitted} />
+                  <TransactionSubmitted transactionId={transactionSubmitted} pending={undefined} />
                 ) : (
-                  <ErgopayModalBody ergopayUrl={ergopayUrl} />
+                  <ErgopayModalBody ergopayUrl={ergopayUrl} pending={undefined} />
                 )
               ) : (
                 <>
@@ -1077,7 +1207,7 @@ const ProjectStaking = () => {
                   </Typography>
                   <Box>
                     <Typography color="text.secondary" sx={{ mb: 1 }}>
-                      You have {tokenBalance} {stakingConfig.title} tokens.
+                      This address has {tokenBalance} {stakingConfig.title} tokens available to stake.
                     </Typography>
                     <Grid
                       container
@@ -1120,110 +1250,84 @@ const ProjectStaking = () => {
                         </Button>
                       </Grid>
                     </Grid>
-                    <FormControl
-                      variant="filled"
-                      fullWidth
-                      required
-                      name="wallet"
-                      error={stakingFormErrors.wallet}
-                    >
-                      <InputLabel
-                        htmlFor="ergoAddress"
-                        sx={{ '&.Mui-focused': { color: 'text.secondary' } }}
-                      >
-                        Primary Ergo Wallet Address
-                      </InputLabel>
-                      <FilledInput
-                        id="ergoAddress"
-                        value={stakingForm.wallet}
-                        disabled
-                        disableUnderline={true}
-                        name="wallet"
-                        type="ergoAddress"
-                        sx={{
-                          width: '100%',
-                          border: '1px solid rgba(82,82,90,1)',
-                          borderRadius: '4px',
-                        }}
-                      />
-                      <FormHelperText>
-                        {stakingFormErrors.wallet &&
-                          'Please connect wallet to proceed'}
-                      </FormHelperText>
-                    </FormControl>
+                    <ChangeDefaultAddress title="Address to stake from" />
                     <Grid container justifyContent="center">
-                      <Grid item>
-                        <Button
-                          variant="contained"
-                          disabled={
-                            stakeErgopayLoading ||
-                            stakeLoading ||
-                            stakingFormErrors.wallet ||
-                            !dAppWallet.connected
-                          }
-                          sx={{
-                            color: '#fff',
-                            fontSize: '1rem',
-                            mt: 2,
-                            mr: 1,
-                            py: '0.6rem',
-                            px: '1.2rem',
-                            textTransform: 'none',
-                            background: theme.palette.tertiary.main,
-                            '&:hover': {
-                              background: '#8096F7',
-                              boxShadow: 'none',
-                            },
-                            '&:active': {
-                              background: 'rgba(90, 103, 216, 0.25)',
-                            },
-                          }}
-                          onClick={stake}
-                        >
-                          Stake with Desktop Wallet
-                          {stakeLoading && (
-                            <CircularProgress
-                              sx={{ ml: 2, color: 'white' }}
-                              size={'1.2rem'}
-                            />
-                          )}
-                        </Button>
-                      </Grid>
-                      <Grid item>
-                        <Button
-                          variant="contained"
-                          disabled={
-                            stakeErgopayLoading ||
-                            stakeLoading ||
-                            stakingFormErrors.wallet
-                          }
-                          sx={{
-                            color: '#fff',
-                            fontSize: '1rem',
-                            mt: 2,
-                            py: '0.6rem',
-                            px: '1.2rem',
-                            textTransform: 'none',
-                            background: theme.palette.tertiary.main,
-                            '&:hover': {
-                              background: '#8096F7',
-                              boxShadow: 'none',
-                            },
-                            '&:active': {
-                              background: 'rgba(90, 103, 216, 0.25)',
-                            },
-                          }}
-                          onClick={stakeErgopay}
-                        >
-                          Stake with Mobile Wallet
-                          {stakeErgopayLoading && (
-                            <CircularProgress
-                              sx={{ ml: 2, color: 'white' }}
-                              size={'1.2rem'}
-                            />
-                          )}
-                        </Button>
-                      </Grid>
+                      {wallet && currentWalletType === 'nautilus' && (
+                        <Grid item>
+                          <Button
+                            variant="contained"
+                            disabled={
+                              stakeErgopayLoading ||
+                              stakeLoading ||
+                              stakingFormErrors.wallet ||
+                              !wallet || currentWalletType !== 'nautilus'
+                            }
+                            sx={{
+                              color: '#fff',
+                              fontSize: '1rem',
+                              mt: 2,
+                              mr: 1,
+                              py: '0.6rem',
+                              px: '1.2rem',
+                              textTransform: 'none',
+                              background: '#667eea',
+                              '&:hover': {
+                                background: '#8096F7',
+                                boxShadow: 'none',
+                              },
+                              '&:active': {
+                                background: 'rgba(90, 103, 216, 0.25)',
+                              },
+                            }}
+                            onClick={() => stakeWithDappConnector(wallet!)}
+                          >
+                            Stake now
+                            {stakeLoading && (
+                              <CircularProgress
+                                sx={{ ml: 2, color: 'white' }}
+                                size={'1.2rem'}
+                              />
+                            )}
+                          </Button>
+                        </Grid>
+                      )}
+                      {wallet && currentWalletType === 'mobile' && (
+                        <Grid item>
+                          <Button
+                            variant="contained"
+                            disabled={
+                              stakeErgopayLoading ||
+                              stakeLoading ||
+                              stakingFormErrors.wallet
+                            }
+                            sx={{
+                              color: '#fff',
+                              fontSize: '1rem',
+                              mt: 2,
+                              py: '0.6rem',
+                              px: '1.2rem',
+                              textTransform: 'none',
+                              background: '#667eea',
+                              '&:hover': {
+                                background: '#8096F7',
+                                boxShadow: 'none',
+                              },
+                              '&:active': {
+                                background: 'rgba(90, 103, 216, 0.25)',
+                              },
+                            }}
+                            onClick={stakeErgopay}
+                          >
+                            Stake now!
+                            {stakeErgopayLoading && (
+                              <CircularProgress
+                                sx={{ ml: 2, color: 'white' }}
+                                size={'1.2rem'}
+                              />
+                            )}
+                          </Button>
+                        </Grid>
+                      )}
                     </Grid>
                   </Box>
                 </>
@@ -1249,9 +1353,9 @@ const ProjectStaking = () => {
               </Typography>
               {transactionSubmitted || ergopayUrl ? (
                 transactionSubmitted ? (
-                  <TransactionSubmitted transactionId={transactionSubmitted} />
+                  <TransactionSubmitted transactionId={transactionSubmitted} pending={undefined} />
                 ) : (
-                  <ErgopayModalBody ergopayUrl={ergopayUrl} />
+                  <ErgopayModalBody ergopayUrl={ergopayUrl} pending={undefined} />
                 )
               ) : (
                 <>
@@ -1339,8 +1443,8 @@ const ProjectStaking = () => {
                           disabled={
                             unstakeModalLoading ||
                             unstakeErgopayLoading ||
-                            unstakingFormErrors.wallet ||
-                            !dAppWallet.connected
+                            unstakingFormErrors.wallet
+                            // || !dAppWallet.connected
                           }
                           sx={{
                             color: '#fff',
@@ -1430,14 +1534,14 @@ const ProjectStaking = () => {
               </Typography>
               {transactionSubmitted || ergopayUrl ? (
                 transactionSubmitted ? (
-                  <TransactionSubmitted transactionId={transactionSubmitted} />
+                  <TransactionSubmitted transactionId={transactionSubmitted} pending={undefined} />
                 ) : (
-                  <ErgopayModalBody ergopayUrl={ergopayUrl} />
+                  <ErgopayModalBody ergopayUrl={ergopayUrl} pending={undefined} />
                 )
               ) : (
                 <>
                   <Typography variant="body2" sx={{ fontSize: '1rem', mb: 2 }}>
-                    You have {tokenBalance} {stakingConfig.title} tokens. You
+                    You have {getTokenBalanceLoading ? '...loading...' : tokenBalance} {stakingConfig.title} tokens at this address. You
                     can add tokens to your existing stake box here.
                   </Typography>
                   <Box>
@@ -1488,78 +1592,85 @@ const ProjectStaking = () => {
                         : ''}
                     </FormHelperText>
                     <Grid container justifyContent="center">
-                      <Grid item>
-                        <Button
-                          variant="contained"
-                          disabled={
-                            addstakeModalLoading ||
-                            addstakeErgopayLoading ||
-                            addstakeFormErrors.wallet ||
-                            !dAppWallet.connected
-                          }
-                          sx={{
-                            color: '#fff',
-                            fontSize: '1rem',
-                            mt: 2,
-                            mr: 1,
-                            py: '0.6rem',
-                            px: '1.2rem',
-                            textTransform: 'none',
-                            background: theme.palette.secondary.main,
-                            '&:hover': {
-                              background: '#B886F9',
-                              boxShadow: 'none',
-                            },
-                            '&:active': {
-                              background: 'rgba(128, 90, 213, 0.25)',
-                            },
-                          }}
-                          onClick={addstake}
-                        >
-                          Add stake with Desktop Wallet
-                          {addstakeModalLoading && (
-                            <CircularProgress
-                              sx={{ ml: 2, color: 'white' }}
-                              size={'1.2rem'}
-                            />
-                          )}
-                        </Button>
-                      </Grid>
-                      <Grid item>
-                        <Button
-                          variant="contained"
-                          disabled={
-                            addstakeModalLoading ||
-                            addstakeErgopayLoading ||
-                            addstakeFormErrors.wallet
-                          }
-                          sx={{
-                            color: '#fff',
-                            fontSize: '1rem',
-                            mt: 2,
-                            py: '0.6rem',
-                            px: '1.2rem',
-                            textTransform: 'none',
-                            background: theme.palette.secondary.main,
-                            '&:hover': {
-                              background: '#B886F9',
-                              boxShadow: 'none',
-                            },
-                            '&:active': {
-                              background: 'rgba(128, 90, 213, 0.25)',
-                            },
-                          }}
-                          onClick={addstakeErgopay}
-                        >
-                          Add stake with Mobile Wallet
-                          {addstakeErgopayLoading && (
-                            <CircularProgress
-                              sx={{ ml: 2, color: 'white' }}
-                              size={'1.2rem'}
-                            />
-                          )}
-                        </Button>
-                      </Grid>
+                      {currentModalWalletType === 'nautilus' && (
+                        <Grid item>
+                          <Button
+                            variant="contained"
+                            disabled={
+                              addstakeModalLoading ||
+                              addstakeErgopayLoading ||
+                              addstakeFormErrors.wallet
+                              || tokenBalance === 0
+                              || getTokenBalanceLoading
+                            }
+                            sx={{
+                              color: '#fff',
+                              fontSize: '1rem',
+                              mt: 2,
+                              mr: 1,
+                              py: '0.6rem',
+                              px: '1.2rem',
+                              textTransform: 'none',
+                              background: theme.palette.secondary.main,
+                              '&:hover': {
+                                background: '#B886F9',
+                                boxShadow: 'none',
+                              },
+                              '&:active': {
+                                background: 'rgba(128, 90, 213, 0.25)',
+                              },
+                            }}
+                            onClick={addStakeWithDappConnector}
+                          >
+                            Add stake with Nautilus
+                            {(addstakeModalLoading || getTokenBalanceLoading) && (
+                              <CircularProgress
+                                sx={{ ml: 2, color: 'white' }}
+                                size={'1.2rem'}
+                              />
+                            )}
+                          </Button>
+                        </Grid>
+                      )}
+                      {currentModalWalletType === 'mobile' && (
+                        <Grid item>
+                          <Button
+                            variant="contained"
+                            disabled={
+                              addstakeModalLoading ||
+                              addstakeErgopayLoading ||
+                              addstakeFormErrors.wallet
+                              || tokenBalance === 0
+                              || getTokenBalanceLoading
+                            }
+                            sx={{
+                              color: '#fff',
+                              fontSize: '1rem',
+                              mt: 2,
+                              py: '0.6rem',
+                              px: '1.2rem',
+                              textTransform: 'none',
+                              background: theme.palette.secondary.main,
+                              '&:hover': {
+                                background: '#B886F9',
+                                boxShadow: 'none',
+                              },
+                              '&:active': {
+                                background: 'rgba(128, 90, 213, 0.25)',
+                              },
+                            }}
+                            onClick={addstakeErgopay}
+                          >
+                            Add stake with Mobile Wallet
+                            {(addstakeErgopayLoading || getTokenBalanceLoading) && (
+                              <CircularProgress
+                                sx={{ ml: 2, color: 'white' }}
+                                size={'1.2rem'}
+                              />
+                            )}
+                          </Button>
+                        </Grid>
+                      )}
                     </Grid>
                   </Box>
                 </>
@@ -1572,7 +1683,6 @@ const ProjectStaking = () => {
             onClose={handleCloseError}
           >
             <Alert
-              onClose={handleCloseError}
               severity="error"
               sx={{ width: '100%' }}
             >
@@ -1585,7 +1695,6 @@ const ProjectStaking = () => {
             onClose={handleCloseSuccessSnackbar}
           >
             <Alert
-              onClose={handleCloseSuccessSnackbar}
               severity="success"
               sx={{ width: '100%' }}
             >

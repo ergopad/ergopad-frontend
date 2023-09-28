@@ -3,6 +3,7 @@ import {
   Avatar,
   Typography,
   Button,
+  Box
 } from '@mui/material'
 import { useRouter } from 'next/router';
 import Menu from '@mui/material/Menu';
@@ -17,6 +18,7 @@ import { signIn, signOut } from "next-auth/react"
 import { useWallet } from '@utils/WalletContext'
 import theme from '@styles/theme';
 import AddWalletModal from './AddWalletModal';
+import Link from 'next/link';
 
 interface IWalletType {
   name: string;
@@ -203,12 +205,17 @@ const UserMenu: FC<IUserMenuProps> = () => {
               </ListItemIcon>
               Edit Profile
             </MenuItem> */}
-            <MenuItem onClick={() => router.push('/connected-wallets')}>
-              <ListItemIcon>
-                <AccountBalanceWalletIcon fontSize="small" />
-              </ListItemIcon>
-              Connected wallets
-            </MenuItem>
+            <Box sx={{ '&:hover a': { textDecoration: 'none!important' } }}>
+              <Link href="/connected-wallets" passHref>
+                <MenuItem >
+                  <ListItemIcon>
+                    <AccountBalanceWalletIcon fontSize="small" />
+                  </ListItemIcon>
+                  Connected wallets
+                </MenuItem>
+              </Link>
+            </Box>
+
             <MenuItem onClick={() => clearWallet()}>
               <ListItemIcon>
                 <Logout fontSize="small" />
