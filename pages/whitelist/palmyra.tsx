@@ -107,6 +107,10 @@ const checkboxes = [
     text: <>
       I have read and agree to the Ergopad <Link target="_blank" href="/terms">Terms of Service</Link> and <Link target="_blank" href="/privacy">Privacy Policy</Link>
     </>
+  },
+  {
+    check: false,
+    text: <>I verify that the funds I will send are aquired legally</>
   }
 ]
 

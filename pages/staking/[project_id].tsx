@@ -118,26 +118,48 @@ const initAddstakeFormErrors = {
   tokenAmount: false,
 }
 
-const initStaked = {
+export type StakedData = {
+  project: string;
+  tokenName: string;
+  totalStaked: number;
+  addresses: {
+    [address: string]: {
+      totalStaked: number;
+      stakeBoxes: {
+        boxId: string;
+        stakeKeyId: string;
+        stakeAmount: number;
+        penaltyPct?: number;
+        penaltyEndTime?: number;
+      }[];
+    };
+  };
+};
+
+const initStaked: StakedData = {
+  project: '',
+  tokenName: '',
   totalStaked: 0,
   addresses: {},
 }
 
-const initUnstaked = {
-  boxId: '',
-  stakeKeyId: '',
-  stakeAmount: 0,
-  penaltyPct: 25,
-}
-
-type AddStaked = {
+export type Staked = {
   boxId: string;
   stakeKeyId: string;
   stakeAmount: number;
   penaltyPct: number;
   address: string;
 }
-const initAddstaked: AddStaked = {
+
+const initUnstaked: Staked = {
+  boxId: '',
+  stakeKeyId: '',
+  stakeAmount: 0,
+  penaltyPct: 25,
+  address: ''
+}
+
+const initAddstaked: Staked = {
   boxId: '',
   stakeKeyId: '',
   stakeAmount: 0,
@@ -184,7 +206,7 @@ const ProjectStaking = () => {
   const [tokenChoiceList, setTokenChoiceList] = useState(STAKING_TOKEN_OPTIONS);
   const [stakingConfig, setStakingConfig] = useState(defaultStakingConfig);
   // wallet
-  const { wallet, sessionStatus, sessionData, fetchSessionData, setProviderLoading } = useWallet()
+  const { wallet } = useWallet()
   const walletsQuery = trpc.user.getWallets.useQuery(
     undefined,
     {
@@ -290,43 +312,55 @@ const ProjectStaking = () => {
     else return null
   };
 
+  const getWallets = async (): Promise<Wallet[]> => {
+    return new Promise(async (resolve) => {
+      const fetchResult = await walletsQuery.refetch();
+      if (fetchResult && fetchResult.data) {
+        resolve(fetchResult.data.wallets);
+      } else {
+        resolve([]);
+      }
+    });
+  };
+
   useEffect(() => {
     // load staked tokens for primary wallet address
     const getStaked = async () => {
       setUnstakeTableLoading(true);
       try {
-        // const wallets = await getWallets();
-        const wallets = walletsQuery.data?.wallets
-        let uniqueAddresses: string[] = [];
-        if (wallet) uniqueAddresses = [wallet]
+        const wallets = await getWallets();
+        if (wallets) {
+          let uniqueAddresses: string[] = [];
+          if (wallet) uniqueAddresses = [wallet]
 
-        if (wallets && wallets.length > 0) {
-          let addressSet: Set<string> = new Set();
-          for (let thisWallet of wallets) {
-            for (let address of thisWallet.unusedAddresses) {
-              addressSet.add(address);
+          if (wallets && wallets.length > 0) {
+            let addressSet: Set<string> = new Set();
+            for (let thisWallet of wallets) {
+              for (let address of thisWallet.unusedAddresses) {
+                addressSet.add(address);
+              }
+              for (let address of thisWallet.usedAddresses) {
+                addressSet.add(address);
+              }
+              addressSet.add(thisWallet.changeAddress);
+              if (thisWallet.changeAddress === wallet) {
+                setCurrentWalletType(thisWallet.type)
+                if (thisWallet.type === 'nautilus') setDappWalletAddresses([...thisWallet.usedAddresses, ...thisWallet.unusedAddresses])
+              }
             }
-            for (let address of thisWallet.usedAddresses) {
-              addressSet.add(address);
-            }
-            addressSet.add(thisWallet.changeAddress);
-            if (thisWallet.changeAddress === wallet) {
-              setCurrentWalletType(thisWallet.type)
-              if (thisWallet.type === 'nautilus') setDappWalletAddresses([...thisWallet.usedAddresses, ...thisWallet.unusedAddresses])
-            }
+
+            uniqueAddresses = [...addressSet];
           }
-
-          uniqueAddresses = [...addressSet];
+          const request = {
+            addresses: uniqueAddresses,
+          };
+          const res = await axios.post(
+            `${process.env.API_URL}/staking/${project_id}/staked/`,
+            request,
+            { ...defaultOptions }
+          );
+          setStakedData(res.data);
         }
-        const request = {
-          addresses: uniqueAddresses,
-        };
-        const res = await axios.post(
-          `${process.env.API_URL}/staking/${project_id}/staked/`,
-          request,
-          { ...defaultOptions }
-        );
-        setStakedData(res.data);
       } catch (e) {
         console.log('ERROR FETCHING: ', e);
       }
@@ -400,11 +434,15 @@ const ProjectStaking = () => {
     if (openAddstakeModal) {
       setCurrentModalWalletType(getWalletType(addstakeModalData.address))
     }
-    if (openModal || openAddstakeModal) {
-      getTokenBalance(openAddstakeModal ? addstakeModalData.address : wallet!);
+    if (openUnstakeModal) {
+      setCurrentModalWalletType(getWalletType(unstakeModalData.address))
+    }
+    if (openModal || openAddstakeModal || openUnstakeModal) {
+      getTokenBalance(openAddstakeModal ? addstakeModalData.address : openUnstakeModal ? unstakeModalData.address : wallet!);
     }
   }, [
     openModal,
+    openUnstakeModal,
     openAddstakeModal,
     wallet,
     // dAppWallet.connected,
@@ -424,7 +462,7 @@ const ProjectStaking = () => {
         const tokenAmount = Math.round(
           stakingForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals)
         );
-        const walletAddresses = [wallet, ...dappWalletAddresses].filter(
+        const walletAddresses = [walletAddress, ...dappWalletAddresses].filter(
           (x, i, a) => a.indexOf(x) == i && x
         );
         const request = {
@@ -569,7 +607,26 @@ const ProjectStaking = () => {
     });
   };
 
-  const unstake = async () => {
+  const unstakeWithDappConnector = async (walletAddress: string) => {
+    // @ts-ignore
+    const connected = await ergoConnector.nautilus.connect();
+    if (connected) {
+      // @ts-ignore
+      const address = await ergo.get_change_address();
+      if (address === walletAddress) {
+        unstakeNautilus(address)
+      }
+      else {
+        // @ts-ignore
+        ergoConnector.nautilus.disconnect()
+        setErrorMessage('Please connect the correct Nautilus wallet');
+        setOpenError(true);
+        unstakeWithDappConnector(walletAddress)
+      }
+    }
+  };
+
+  const unstakeNautilus = async (walletAddress: string) => {
     setUnstakeModalLoading(true);
     const emptyCheck = Object.values(unstakingForm).every(
       (v) => v !== undefined && v !== 0
@@ -581,13 +638,13 @@ const ProjectStaking = () => {
       try {
         const tokenAmount =
           unstakingForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals);
-        const walletAddresses = [wallet, dappWalletAddresses].filter(
+        const walletAddresses = [walletAddress, ...dappWalletAddresses].filter(
           (x, i, a) => a.indexOf(x) == i && x
         );
         const request = {
           stakeBox: unstakeModalData.boxId,
           amount: tokenAmount / Math.pow(10, stakingConfig.tokenDecimals),
-          address: wallet,
+          address: walletAddress,
           utxos: [],
           txFormat: 'eip-12',
           addresses: [...walletAddresses],
@@ -658,9 +715,9 @@ const ProjectStaking = () => {
         const request = {
           stakeBox: unstakeModalData.boxId,
           amount: tokenAmount / Math.pow(10, stakingConfig.tokenDecimals),
-          address: wallet,
+          address: unstakeModalData.address,
           utxos: [],
-          addresses: [wallet],
+          addresses: [unstakeModalData.address],
           txFormat: 'ergo_pay',
         };
         const res = await axios.post(
@@ -819,9 +876,9 @@ const ProjectStaking = () => {
         const request = {
           stakeBox: addstakeModalData.boxId,
           amount: tokenAmount / Math.pow(10, stakingConfig.tokenDecimals),
-          address: wallet,
+          address: addstakeModalData.address,
           utxos: [],
-          addresses: [wallet],
+          addresses: [addstakeModalData.address],
           txFormat: 'ergo_pay',
         };
         const res = await axios.post(
@@ -1119,10 +1176,11 @@ const ProjectStaking = () => {
                         <UnstakingTable
                           data={stakedData}
                           unstake={(
-                            boxId: any,
-                            stakeKeyId: any,
-                            stakeAmount: any,
-                            penaltyPct: any
+                            boxId: string,
+                            stakeKeyId: string,
+                            stakeAmount: number,
+                            penaltyPct: number,
+                            address: string
                           ) => {
                             initUnstake();
                             setOpenUnstakeModal(true);
@@ -1130,7 +1188,8 @@ const ProjectStaking = () => {
                               boxId,
                               stakeKeyId,
                               stakeAmount,
-                              penaltyPct
+                              penaltyPct,
+                              address
                             });
                           }}
                           addstake={
@@ -1196,9 +1255,8 @@ const ProjectStaking = () => {
                 transactionSubmitted ? (
                   <TransactionSubmitted transactionId={transactionSubmitted} pending={undefined} />
                 ) : (
-                  <ErgopayModalBody ergopayUrl={ergopayUrl} pending={undefined} />
-                )
-              ) : (
+                  <ErgopayModalBody ergopayUrl={ergopayUrl!} address={wallet!} pending={undefined} />
+                )) : (
                 <>
                   <Typography variant="body2" sx={{ fontSize: '1rem', mb: 2 }}>
                     Once you click submit you will be prompted by your wallet to
@@ -1281,7 +1339,7 @@ const ProjectStaking = () => {
                             }}
                             onClick={() => stakeWithDappConnector(wallet!)}
                           >
-                            Stake now
+                            Stake now with Nautilus
                             {stakeLoading && (
                               <CircularProgress
                                 sx={{ ml: 2, color: 'white' }}
@@ -1318,7 +1376,7 @@ const ProjectStaking = () => {
                             }}
                             onClick={stakeErgopay}
                           >
-                            Stake now!
+                            Stake now with Ergopay
                             {stakeErgopayLoading && (
                               <CircularProgress
                                 sx={{ ml: 2, color: 'white' }}
@@ -1355,9 +1413,8 @@ const ProjectStaking = () => {
                 transactionSubmitted ? (
                   <TransactionSubmitted transactionId={transactionSubmitted} pending={undefined} />
                 ) : (
-                  <ErgopayModalBody ergopayUrl={ergopayUrl} pending={undefined} />
-                )
-              ) : (
+                  <ErgopayModalBody ergopayUrl={ergopayUrl!} address={unstakeModalData.address} pending={undefined} />
+                )) : (
                 <>
                   <Typography variant="body2" sx={{ fontSize: '1rem', mb: 2 }}>
                     Please note the unstaking penalty before approving the
@@ -1437,78 +1494,82 @@ const ProjectStaking = () => {
                         : ''}
                     </FormHelperText>
                     <Grid container justifyContent="center">
-                      <Grid item>
-                        <Button
-                          variant="contained"
-                          disabled={
-                            unstakeModalLoading ||
-                            unstakeErgopayLoading ||
-                            unstakingFormErrors.wallet
-                            // || !dAppWallet.connected
-                          }
-                          sx={{
-                            color: '#fff',
-                            fontSize: '1rem',
-                            mt: 2,
-                            mr: 1,
-                            py: '0.6rem',
-                            px: '1.2rem',
-                            textTransform: 'none',
-                            background: theme.palette.secondary.main,
-                            '&:hover': {
-                              background: '#B886F9',
-                              boxShadow: 'none',
-                            },
-                            '&:active': {
-                              background: 'rgba(128, 90, 213, 0.25)',
-                            },
-                          }}
-                          onClick={unstake}
-                        >
-                          Unstake with Desktop Wallet
-                          {unstakeModalLoading && (
-                            <CircularProgress
-                              sx={{ ml: 2, color: 'white' }}
-                              size={'1.2rem'}
-                            />
-                          )}
-                        </Button>
-                      </Grid>
-                      <Grid item>
-                        <Button
-                          variant="contained"
-                          disabled={
-                            unstakeModalLoading ||
-                            unstakeErgopayLoading ||
-                            unstakingFormErrors.wallet
-                          }
-                          sx={{
-                            color: '#fff',
-                            fontSize: '1rem',
-                            mt: 2,
-                            py: '0.6rem',
-                            px: '1.2rem',
-                            textTransform: 'none',
-                            background: theme.palette.secondary.main,
-                            '&:hover': {
-                              background: '#B886F9',
-                              boxShadow: 'none',
-                            },
-                            '&:active': {
-                              background: 'rgba(128, 90, 213, 0.25)',
-                            },
-                          }}
-                          onClick={unstakeErgopay}
-                        >
-                          Unstake with Mobile Wallet
-                          {unstakeErgopayLoading && (
-                            <CircularProgress
-                              sx={{ ml: 2, color: 'white' }}
-                              size={'1.2rem'}
-                            />
-                          )}
-                        </Button>
-                      </Grid>
+                      {currentModalWalletType === 'nautilus' && (
+                        <Grid item>
+                          <Button
+                            variant="contained"
+                            disabled={
+                              unstakeModalLoading ||
+                              unstakeErgopayLoading ||
+                              unstakingFormErrors.wallet
+                              // || !dAppWallet.connected
+                            }
+                            sx={{
+                              color: '#fff',
+                              fontSize: '1rem',
+                              mt: 2,
+                              mr: 1,
+                              py: '0.6rem',
+                              px: '1.2rem',
+                              textTransform: 'none',
+                              background: theme.palette.secondary.main,
+                              '&:hover': {
+                                background: '#B886F9',
+                                boxShadow: 'none',
+                              },
+                              '&:active': {
+                                background: 'rgba(128, 90, 213, 0.25)',
+                              },
+                            }}
+                            onClick={() => unstakeWithDappConnector(unstakeModalData.address)}
+                          >
+                            Unstake with Desktop Wallet
+                            {unstakeModalLoading && (
+                              <CircularProgress
+                                sx={{ ml: 2, color: 'white' }}
+                                size={'1.2rem'}
+                              />
+                            )}
+                          </Button>
+                        </Grid>
+                      )}
+                      {currentModalWalletType === 'mobile' && (
+                        <Grid item>
+                          <Button
+                            variant="contained"
+                            disabled={
+                              unstakeModalLoading ||
+                              unstakeErgopayLoading ||
+                              unstakingFormErrors.wallet
+                            }
+                            sx={{
+                              color: '#fff',
+                              fontSize: '1rem',
+                              mt: 2,
+                              py: '0.6rem',
+                              px: '1.2rem',
+                              textTransform: 'none',
+                              background: theme.palette.secondary.main,
+                              '&:hover': {
+                                background: '#B886F9',
+                                boxShadow: 'none',
+                              },
+                              '&:active': {
+                                background: 'rgba(128, 90, 213, 0.25)',
+                              },
+                            }}
+                            onClick={unstakeErgopay}
+                          >
+                            Unstake with Mobile Wallet
+                            {unstakeErgopayLoading && (
+                              <CircularProgress
+                                sx={{ ml: 2, color: 'white' }}
+                                size={'1.2rem'}
+                              />
+                            )}
+                          </Button>
+                        </Grid>
+                      )}
                     </Grid>
                   </Box>
                 </>
@@ -1532,12 +1593,8 @@ const ProjectStaking = () => {
               <Typography id="modal-modal-title" variant="h6" component="h2">
                 Add tokens to stake box
               </Typography>
-              {transactionSubmitted || ergopayUrl ? (
-                transactionSubmitted ? (
-                  <TransactionSubmitted transactionId={transactionSubmitted} pending={undefined} />
-                ) : (
-                  <ErgopayModalBody ergopayUrl={ergopayUrl} pending={undefined} />
-                )
+              {ergopayUrl ? (
+                <ErgopayModalBody ergopayUrl={ergopayUrl} address={addstakeModalData.address} pending={undefined} />
               ) : (
                 <>
                   <Typography variant="body2" sx={{ fontSize: '1rem', mb: 2 }}>

@@ -1,14 +1,21 @@
+import { FC } from 'react';
 import {
   Box,
   Card,
   CardContent,
   CircularProgress,
   Typography,
+  Link
 } from '@mui/material';
-import MuiNextLink from '@components/MuiNextLink';
 import QRCode from 'react-qr-code';
 
-const ErgopayModalBody = ({ ergopayUrl, pending }) => {
+type ErgopayModalBodyProps = {
+  ergopayUrl: string;
+  address: string;
+  pending?: boolean;
+}
+
+const ErgopayModalBody: FC<ErgopayModalBodyProps> = ({ ergopayUrl, address, pending }) => {
   return (
     <Box
       sx={{
@@ -47,9 +54,19 @@ const ErgopayModalBody = ({ ergopayUrl, pending }) => {
             </Card>
             <Typography variant="h6" sx={{ mt: 2 }}>
               Scan QR using your mobile wallet or{' '}
-              <MuiNextLink href={ergopayUrl}>click this link</MuiNextLink> to
+              <Link href={ergopayUrl}>click this link</Link> to
               open your wallet app.
             </Typography>
+            <Link
+              href={
+                'https://explorer.ergoplatform.com/en/addresses/' +
+                address
+              }
+              rel="noreferrer"
+              target="_blank"
+            >
+              View your wallet on explorer to check if it went through
+            </Link> (You may need to refresh a few times)
           </>
         )}
       </Box>

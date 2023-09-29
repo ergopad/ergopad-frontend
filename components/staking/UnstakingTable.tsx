@@ -5,10 +5,12 @@ import {
   TableCell,
   TableRow,
   Typography,
+  useTheme,
   useMediaQuery,
 } from '@mui/material';
 import theme from '@styles/theme';
-import { Fragment } from 'react';
+import { FC, Fragment } from 'react';
+import { StakedData, Staked } from '@pages/staking/[project_id]';
 
 const stakedHeading = {
   boxId: 'Box Id',
@@ -18,14 +20,45 @@ const stakedHeading = {
   unstake: '',
 };
 
-const friendlyAddress = (addr, tot = 8) => {
+export type Unstake = {
+  boxId: string;
+  stakeKeyId: string;
+  stakeAmount: number;
+  penaltyPct: number;
+  address: string;
+}
+
+type StakeFunction = (
+  boxId: string,
+  stakeKeyId: string,
+  stakeAmount: number,
+  penaltyPct: number,
+  address: string
+) => void;
+
+const friendlyAddress = (addr: string, tot = 8) => {
   if (addr === undefined || addr.slice === undefined) return '';
   if (addr.length < 30) return addr;
   return addr.slice(0, tot) + '...' + addr.slice(-tot);
 };
 
-const UnstakingTable = ({ data, unstake, addstake, disableUnstaking, disableAddStake }) => {
-  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
+type UnstakingTableProps = {
+  data: StakedData;
+  unstake: StakeFunction;
+  addstake: StakeFunction | null;
+  disableUnstaking?: boolean;
+  disableAddStake?: boolean;
+};
+
+const UnstakingTable: FC<UnstakingTableProps> = ({
+  data,
+  unstake,
+  addstake,
+  disableUnstaking,
+  disableAddStake
+}) => {
+  const theme = useTheme()
+  const checkSmall = useMediaQuery(theme.breakpoints.up('md'));
   const stakeObject = { ...data };
 
   if (stakeObject.totalStaked === 0) {
@@ -75,7 +108,7 @@ const UnstakingTable = ({ data, unstake, addstake, disableUnstaking, disableAddS
           >
             Address:{' '}
             <Typography
-              variant="span"
+              component="span"
               color="text.secondary"
               sx={{
                 textTransform: 'capitalize',
@@ -93,7 +126,7 @@ const UnstakingTable = ({ data, unstake, addstake, disableUnstaking, disableAddS
           >
             Total Staked:{' '}
             <Typography
-              variant="span"
+              component="span"
               color="text.secondary"
               sx={{ textTransform: 'capitalize', fontWeight: '400' }}
             >
@@ -151,8 +184,8 @@ const UnstakingTable = ({ data, unstake, addstake, disableUnstaking, disableAddS
                     <TableCell sx={{ border: 'none', p: 1 }}>
                       {stake.penaltyEndTime
                         ? new Date(stake.penaltyEndTime)
-                            .toISOString()
-                            .slice(0, 10)
+                          .toISOString()
+                          .slice(0, 10)
                         : '-'}
                     </TableCell>
                   </TableRow>
@@ -164,7 +197,7 @@ const UnstakingTable = ({ data, unstake, addstake, disableUnstaking, disableAddS
                         pt: 1,
                         pb:
                           index ===
-                          stakeObject.addresses[address].stakeBoxes.length - 1
+                            stakeObject.addresses[address].stakeBoxes.length - 1
                             ? 0
                             : 3,
                       }}
@@ -229,7 +262,8 @@ const UnstakingTable = ({ data, unstake, addstake, disableUnstaking, disableAddS
                               stake.boxId,
                               stake.stakeKeyId,
                               stake.stakeAmount,
-                              stake.penaltyPct ?? 0
+                              stake.penaltyPct ?? 0,
+                              address
                             )
                           }
                         >
