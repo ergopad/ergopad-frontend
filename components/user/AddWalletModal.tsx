@@ -24,7 +24,7 @@ const AddWalletModal: FC<AddWalletProps> = ({ open, setModalOpen, setLoading, cu
   return (
     <Dialog open={open}>
       <DialogTitle>
-        {customTitle ? customTitle : 'Connect a wallet to continue'}
+        {customTitle ? customTitle : 'Add a wallet to your account'}
       </DialogTitle>
       <DialogContent>
         <Box>

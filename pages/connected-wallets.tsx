@@ -162,7 +162,7 @@ const ConnectedWallets: NextPage = () => {
       updateWallets()
       setSortedWallets(newSorted)
     }
-  }, [walletsQuery.data?.wallets])
+  }, [walletsQuery.data?.wallets, sessionStatus])
 
   return (
     <>
