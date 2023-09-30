@@ -14,16 +14,17 @@ interface AddWalletProps {
   open: boolean;
   setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  customTitle?: string;
 }
 
 export type AddWalletExpanded = 'mobile' | 'nautilus' | undefined
 
-const AddWalletModal: FC<AddWalletProps> = ({ open, setModalOpen, setLoading }) => {
+const AddWalletModal: FC<AddWalletProps> = ({ open, setModalOpen, setLoading, customTitle }) => {
   const [expanded, setExpanded] = useState<AddWalletExpanded>(undefined)
   return (
     <Dialog open={open}>
       <DialogTitle>
-        Connect a wallet to continue
+        {customTitle ? customTitle : 'Connect a wallet to continue'}
       </DialogTitle>
       <DialogContent>
         <Box>

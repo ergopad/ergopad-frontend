@@ -236,6 +236,7 @@ const UserMenu: FC<IUserMenuProps> = () => {
         open={addWalletModal}
         setModalOpen={setAddWalletModal}
         setLoading={setProviderLoading}
+        customTitle={"Account Created: Please connect a wallet to continue"}
       />
     </>
   );
