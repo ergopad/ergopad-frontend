@@ -75,20 +75,20 @@ export const SignIn: FC<ISignIn> = ({ open, setOpen, setLoading }) => {
     setOpen(false)
   }
 
-  const handleConnect = async (walletName: string) => {
-    // setLoading(true)
-    window.ergoConnector.nautilus.disconnect()
-    const connected = await window.ergoConnector.nautilus.connect()
-    console.log(connected)
-    // setDappConnected(true)
-    // connectDapp()
-  }
+  // const handleConnect = async (walletName: string) => {
+  //   // setLoading(true)
+  //   window.ergoConnector.nautilus.disconnect()
+  //   const connected = await window.ergoConnector.nautilus.connect()
+  //   // console.log(connected)
+  //   // setDappConnected(true)
+  //   // connectDapp()
+  // }
 
   const handleProviderSignIn = (providerId: string) => {
     setLoading(true);
     signIn(providerId)
       .then((result) => {
-        console.log(result)
+        // console.log(result)
       })
       .catch((error) => {
         console.error(error);

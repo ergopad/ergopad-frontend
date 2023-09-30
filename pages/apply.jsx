@@ -135,7 +135,7 @@ const Apply = () => {
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		setLoading(true)
-		console.log(formData)
+		// console.log(formData)
 
 		const errorCheck = Object.values(formErrors).every(v => v === false)
 
@@ -157,8 +157,8 @@ const Apply = () => {
 		if (errorCheck) {
 			axios.post(`${process.env.API_URL}/util/email`, { ...defaultOptions, ...form })
 				.then(res => {
-					console.log(res);
-					console.log(res.data);
+					// console.log(res);
+					// console.log(res.data);
 					setLoading(false)
 
 					// modal for success message

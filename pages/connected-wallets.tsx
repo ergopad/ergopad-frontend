@@ -85,7 +85,7 @@ const ConnectedWallets: NextPage = () => {
   }
 
   useEffect(() => {
-    console.log('fetch ' + sessionStatus)
+    // console.log('fetch ' + sessionStatus)
     if (sessionStatus === 'authenticated') updateWallets()
   }, [sessionData, sessionStatus, fetchSessionData]);
 

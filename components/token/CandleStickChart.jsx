@@ -178,7 +178,7 @@ const CandleStickChart = () => {
       setLoading(false)
     };
 
-    console.log(`${process.env.API_URL}/asset/ohlcv/${pairBaseCurrencyMapper[pair]}/ergopad/${stepUnitMapper[stepUnit].stepSize}/${stepUnitMapper[stepUnit].stepUnit}/${new Date(Date.now() - (400000 * stepUnitMapper[stepUnit].inSeconds)).toISOString().slice(0, 10)}/${new Date(Date.now() + 86400000).toISOString().slice(0, 10)}?offset=0&limit=500`)
+    // console.log(`${process.env.API_URL}/asset/ohlcv/${pairBaseCurrencyMapper[pair]}/ergopad/${stepUnitMapper[stepUnit].stepSize}/${stepUnitMapper[stepUnit].stepUnit}/${new Date(Date.now() - (400000 * stepUnitMapper[stepUnit].inSeconds)).toISOString().slice(0, 10)}/${new Date(Date.now() + 86400000).toISOString().slice(0, 10)}?offset=0&limit=500`)
 
     getData();
   }, [stepUnit, pair]);

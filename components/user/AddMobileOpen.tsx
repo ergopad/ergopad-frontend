@@ -50,7 +50,7 @@ const MobileLogin: FC<IMobileLogin> = ({ localLoading, setLocalLoading, setModal
       refetchIntervalInBackground: true,
       onSuccess: (data) => {
         if (data?.status === 'SIGNED') {
-          console.log(data)
+          // console.log(data)
           setSignature({
             signedMessage: data.signedMessage,
             proof: data.proof
@@ -85,7 +85,7 @@ const MobileLogin: FC<IMobileLogin> = ({ localLoading, setLocalLoading, setModal
         }
       });
       if (response.defaultAddress) {
-        console.log(response.defaultAddress)
+        // console.log(response.defaultAddress)
         setWallet(response.defaultAddress)
         // setMessage(`Address ${address} successfully added`)
         setModalOpen(false)

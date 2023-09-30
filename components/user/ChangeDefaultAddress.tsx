@@ -61,7 +61,7 @@ const ChangeDefaultAddress: FC<ChangeDefaultAddressProps> = ({
     }
   }
   useEffect(() => {
-    console.log('fetch ' + sessionStatus)
+    // console.log('fetch ' + sessionStatus)
     if (sessionStatus === 'authenticated') {
       getWallets()
       updateWallets()

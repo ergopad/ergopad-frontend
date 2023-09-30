@@ -331,7 +331,7 @@ const Whitelist = () => {
         whitelist
       })
       if (changeDetails) {
-        console.log('user updated')
+        // console.log('user updated')
       }
     } catch (error) {
       console.error("Error setting Login wallet", error);
@@ -359,7 +359,7 @@ const Whitelist = () => {
     };
 
     if (errorCheck && emptyCheck && sumsubStatus === 'GREEN') {
-      console.log(form)
+      // console.log(form)
       try {
 
         const res = await axios.post(
@@ -433,7 +433,7 @@ const Whitelist = () => {
     if (sessionStatus === 'authenticated' && sessionData?.user.id) {
       const id = sessionData.user.id
       setUserId(id)
-      console.log(id)
+      // console.log(id)
       // Fetch the access token from your API when the component mounts
       fetch(`/api/sumsub/getAccessToken?userId=${id}`)
         .then(response => response.json())
@@ -469,7 +469,7 @@ const Whitelist = () => {
           console.error(error);
         });
     }
-    console.log("Received message from SDK:", message);
+    // console.log("Received message from SDK:", message);
   }
 
   const errorHandler = (error: any) => {
@@ -501,7 +501,7 @@ const Whitelist = () => {
     }
   }
   useEffect(() => {
-    console.log('fetch ' + sessionStatus)
+    // console.log('fetch ' + sessionStatus)
     if (sessionStatus === 'authenticated') {
       getWallets()
       updateWallets()

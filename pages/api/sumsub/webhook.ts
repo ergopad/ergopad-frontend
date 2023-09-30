@@ -85,7 +85,7 @@ async function processWebhookData(data: any) {
       },
     });
 
-    console.log('User updated:', updatedUser);
+    // console.log('User updated:', updatedUser);
   } catch (error) {
     console.error('Error updating user:', error);
   }

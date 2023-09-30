@@ -865,7 +865,7 @@ const SummaryItem = ({ i, dataSummary, jsonFormData }) => {
       jsonFormData[index],
       defaultOptions,
     ).then((res) => {
-      console.log(res.data)
+      // console.log(res.data)
       setSubmitResponse({
         message: 'Success. Please see JSON output for token values. ',
         status: res.status,

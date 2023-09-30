@@ -378,7 +378,7 @@ const Exchange = () => {
         const res = await axios.post(`${process.env.API_URL}/vesting/vest/`, {
           ...data,
         });
-        console.log(res.data);
+        // console.log(res.data);
         setLoading(false);
         // modal for success message
         setOpenSuccess(true);

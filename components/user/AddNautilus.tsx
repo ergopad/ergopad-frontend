@@ -57,7 +57,7 @@ const NautilusLogin: FC<INautilusLogin> = ({ setModalOpen, expanded, setExpanded
     const connect = await window.ergoConnector.nautilus.connect()
     if (connect) {
       setDappConnected(true)
-      console.log('AddNautilus: dapp connected')
+      // console.log('AddNautilus: dapp connected')
     }
     else {
       setDappConnected(false)
@@ -73,7 +73,7 @@ const NautilusLogin: FC<INautilusLogin> = ({ setModalOpen, expanded, setExpanded
       // @ts-ignore
       const changeAddress = await ergo.get_change_address();
       if (changeAddress) {
-        console.log('AddNautilus: address retrieved')
+        // console.log('AddNautilus: address retrieved')
         setMessage('Verifying that address is not in use')
         setChangeAddress(changeAddress)
       }
@@ -118,7 +118,7 @@ const NautilusLogin: FC<INautilusLogin> = ({ setModalOpen, expanded, setExpanded
             window.ergoConnector.nautilus.disconnect();
           }
           if (response.data?.status === 'available') {
-            console.log('AddNautilus: address is available')
+            // console.log('AddNautilus: address is available')
             setDefaultAddress(changeAddress)
           }
         })
@@ -147,7 +147,7 @@ const NautilusLogin: FC<INautilusLogin> = ({ setModalOpen, expanded, setExpanded
           }
         });
         if (response.defaultAddress) {
-          console.log(response.defaultAddress)
+          // console.log(response.defaultAddress)
           setWallet(response.defaultAddress)
           setMessage(`Address ${address} successfully added`)
         }

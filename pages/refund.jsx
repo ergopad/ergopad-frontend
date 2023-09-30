@@ -124,7 +124,7 @@ const Refund = () => {
           defaultOptions
         );
         setOpenSuccessSnackbar(true);
-        console.log(res);
+        // console.log(res);
       } catch (e) {
         if (e?.response?.data?.detail) {
           setErrorMessage('Error: ' + e.response.data.detail);

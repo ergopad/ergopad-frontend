@@ -382,7 +382,7 @@ const [addressesWithType, setAddressesWithType] = useState([])
         }
         return acc;
       }, {});
-      console.log(combinedData);
+      // console.log(combinedData);
       setVestedTokensNFT(combinedData);
     
       const tokens = Object.keys(combinedData);

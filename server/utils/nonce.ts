@@ -52,7 +52,7 @@ export async function generateNonceForAddWallet(userAddress: string) {
   if (!user) {
     const addressAvailability = await checkAddressAvailability(userAddress);
 
-    console.log(addressAvailability)
+    // console.log(addressAvailability)
 
     if (addressAvailability?.status === 'available') {
       user = await prisma.user.create({

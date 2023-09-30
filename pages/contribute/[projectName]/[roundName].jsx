@@ -175,10 +175,9 @@ const Contribute = () => {
           }
         }
   
-        // Assuming you have a setCurrentWallet method or a useState hook for currentWallet
         if (matchedWallet) {
           setCurrentWallet(matchedWallet);
-          console.log(matchedWallet)
+          // console.log(matchedWallet)
         }
   
       } catch (e) {
@@ -428,7 +427,7 @@ const Contribute = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (address, otherAddresses) => {
     setLoading(true);
     const emptyCheck = Object.values(formData).every(
       (v) => v !== '' && v !== 0
@@ -442,18 +441,18 @@ const Contribute = () => {
             : Math.round(
                 formData.vestingAmount * contributeData.tokenPrice * 100
               ) / 100;
-        const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
-          (x, i, a) => a.indexOf(x) == i && x
-        );
+        // const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
+        //   (x, i, a) => a.indexOf(x) == i && x
+        // );
         const res = await axios.post(
           `${process.env.API_URL}/vesting/contribute`,
           {
             proxyNFT: contributeData.proxyNFTId,
             vestingAmount: formData.vestingAmount,
             sigUSDAmount: sigUSDAmount,
-            address: formData.address,
+            address: address,
             utxos: [],
-            addresses: [...walletAddresses],
+            addresses: [otherAddresses],
             txFormat: 'eip-12',
           },
           defaultOptions

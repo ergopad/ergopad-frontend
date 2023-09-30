@@ -15,8 +15,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     });
 
-    console.log('message: ' + signedMessage)
-    console.log('proof: ' + proof)
+    // console.log('message: ' + signedMessage)
+    // console.log('proof: ' + proof)
 
     return res.status(200).json({
       status: 'SIGNED',
