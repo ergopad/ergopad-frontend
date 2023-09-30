@@ -16,9 +16,11 @@ import {
   Checkbox,
   FilledInput,
   InputLabel,
+  Alert,
   CircularProgress,
   Modal,
   useMediaQuery,
+  Link
 } from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
@@ -32,10 +34,8 @@ import MarkdownRender from '@components/MarkdownRender';
 import theme from '@styles/theme';
 import axios from 'axios';
 import MuiNextLink from '@components/MuiNextLink';
-
-const Alert = forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+import ChangeDefaultAddress from '@components/user/ChangeDefaultAddress';
+import { trpc } from '@utils/trpc';
 
 const modalStyle = {
   position: 'absolute',
@@ -101,18 +101,31 @@ const defaultOptions = {
   },
 };
 
+const checkboxes = [
+  {
+    check: false,
+    text: <>
+      I have read and agree to the Ergopad <Link target="_blank" href="/terms">Terms of Service</Link> and <Link target="_blank" href="/privacy">Privacy Policy</Link>
+    </>
+  },
+  {
+    check: false,
+    text: <>I verify that the funds I am sending are aquired legally</>
+  }
+]
+
 const Contribute = () => {
   const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
   // routing
   const router = useRouter();
   const { projectName, roundName } = router.query;
   // wallet
-  const { wallet, dAppWallet } = useWallet();
+  const { wallet, dAppWallet, providerLoading } = useWallet();
   const { setAddWalletOpen } = useAddWallet();
   // contribute data
   const [contributeData, setContributeData] = useState(null);
   const [contributeLoading, setContributeLoading] = useState(true);
-  const [checkboxState, setCheckboxState] = useState([]);
+  const [checkboxState, setCheckboxState] = useState(checkboxes);
   // submit button
   const [buttonDisabled, setbuttonDisabled] = useState(false);
   const [isLoading, setLoading] = useState(false);
@@ -137,6 +150,48 @@ const Contribute = () => {
   const [ergopayUrl, setErgopayUrl] = useState('');
   // erg conversion rate loading from backend
   const [conversionRate, setConversionRate] = useState(1.0);
+  const [currentWallet, setCurrentWallet] = useState({})
+
+  const walletsQuery = trpc.user.getWallets.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
+  
+  useEffect(() => {
+    const getMatchingWallet = async () => {
+      setLoading(true);
+      
+      try {
+        const fetchResult = await walletsQuery.refetch();
+        const wallets = fetchResult?.data?.wallets || [];
+        
+        let matchedWallet = null;
+  
+        for (let thisWallet of wallets) {
+          const { unusedAddresses, usedAddresses, changeAddress } = thisWallet;
+  
+          if ([...unusedAddresses, ...usedAddresses, changeAddress].includes(wallet)) {
+            matchedWallet = thisWallet;
+            break;
+          }
+        }
+  
+        // Assuming you have a setCurrentWallet method or a useState hook for currentWallet
+        if (matchedWallet) {
+          setCurrentWallet(matchedWallet);
+          console.log(matchedWallet)
+        }
+  
+      } catch (e) {
+        console.log('ERROR FETCHING: ', e);
+      }
+  
+      setLoading(false);
+    };
+  
+    if (wallet !== '') {
+      getMatchingWallet();
+    }
+  }, [wallet]);
 
   useEffect(() => {
     const getContributeData = async () => {
@@ -146,11 +201,12 @@ const Contribute = () => {
           `${process.env.API_URL}/contribution/events/${projectName}/${roundName}`
         );
         setContributeData(res.data);
-        setCheckboxState(
-          res.data.checkBoxes.checkBoxes.map((text) => {
-            return { text: text, check: false };
-          })
-        );
+        // setCheckboxState(
+        //   res.data.checkBoxes.checkBoxes.map((text) => {
+        //     return { text: text, check: false };
+        //   })
+        // );
+        setCheckboxState(checkboxes)
       } catch (e) {
         console.log(e);
       }
@@ -347,6 +403,28 @@ const Contribute = () => {
         ...formData,
         vestingAmount: e.target.value,
       });
+    }
+  };
+
+  const submitWithNautilus = async (walletAddress) => {
+    const connected = await ergoConnector.nautilus.connect();
+    if (connected) {
+      const address = await ergo.get_change_address();
+      const usedAddresses = await ergo.get_used_addresses();
+      const unusedAddresses = await ergo.get_unused_addresses();
+      if (
+        address === currentWallet.changeAddress ||
+        usedAddresses.includes(currentWallet.changeAddress) ||
+        unusedAddresses.includes(currentWallet.changeAddress)
+      ) {
+        handleSubmit(address, [...usedAddresses, ...unusedAddresses])
+      }
+      else {
+        ergoConnector.nautilus.disconnect()
+        setErrorMessage('Please connect the correct Nautilus wallet');
+        setOpenError(true);
+        redeemWithNautilus(walletAddress)
+      }
     }
   };
 
@@ -549,7 +627,7 @@ const Contribute = () => {
                     <Typography variant="h4" sx={{ fontWeight: '700' }}>
                       Token Contribution Form
                     </Typography>
-                    <Typography variant="body2" sx={{ mb: 1 }}>
+                    {/* <Typography variant="body2" sx={{ mb: 1 }}>
                       Tokens remaining to be distributed for this round:{' '}
                       {(roundDetails.remaining > 0) ? (roundDetails.remaining).toLocaleString(
                         navigator.language,
@@ -562,19 +640,14 @@ const Contribute = () => {
                       )
                     }
                       .
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 3 }}>
-                      <b>Note:</b> If you are whitelisted for seed or strategic
-                      rounds, be aware of the waitlist open dates, where others
-                      may be able to claim your reserved tokens.
-                    </Typography>
+                    </Typography> */}
                     <Grid container spacing={2}>
                       <Grid item xs={12}>
                         <Typography
                           variant="body2"
                           sx={{ fontSize: '1rem', mb: 1 }}
                         >
-                          Your wallet currently has{' '}
+                          This address currently has{' '}
                           {walletBalance.whitelist.toLocaleString(
                             navigator.language,
                             {
@@ -582,10 +655,9 @@ const Contribute = () => {
                                 contributeData.tokenDecimals,
                             }
                           )}{' '}
-                          whitelist tokens. Reconnect your wallet with the dapp
-                          connector to hard refresh this value.
+                          whitelist tokens. 
                         </Typography>
-                        <FormControl
+                        {/* <FormControl
                           variant="filled"
                           fullWidth
                           required
@@ -618,7 +690,9 @@ const Contribute = () => {
                             {formErrors.address &&
                               'Please add a wallet address.'}
                           </FormHelperText>
-                        </FormControl>
+                        </FormControl> */}
+                                        <ChangeDefaultAddress title="Address to send from" />
+
                       </Grid>
                       <Grid container item xs={12}>
                         <Grid item xs={12}>
@@ -696,9 +770,7 @@ const Contribute = () => {
                           variant="body2"
                           sx={{ fontSize: '1rem', mb: 0 }}
                         >
-                          You may contribute the entire sum in ergo or sigUSD.
-                          If you wish to contribute ergo, it will be taken at an
-                          exchange of ~$
+                          Ergo exchange ~$
                           {conversionRate} sigUSD per ergo.
                         </Typography>
                       </Grid>
@@ -771,7 +843,7 @@ const Contribute = () => {
                             label={checkbox.text}
                             sx={{
                               color: theme.palette.text.secondary,
-                              mb: 2,
+                              mb: 0,
                             }}
                           />
                         ))}
@@ -785,38 +857,33 @@ const Contribute = () => {
                       variant="body2"
                       sx={{ fontSize: '1rem', mb: '1rem' }}
                     >
-                      Your funds will be sent to the blockchain and off-chain
-                      fulfillment bots will pick them up from the queue and
-                      complete the transaction. You will receive a Vesting Key
-                      which represents your tokens locked in vesting contracts.
-                      View the{' '}
+                      Once you receive your vesting key, 
+                      view the{' '}
                       <MuiNextLink href="/dashboard">dashboard</MuiNextLink> to
-                      redeem them after the IDO date.
+                      redeem them after the unlock date.
                     </Typography>
-                    <Typography
+                    {/* <Typography
                       variant="body2"
                       sx={{ fontSize: '1rem', mb: '1rem' }}
                     >
                       If there's any issue, the transaction will be
                       automatically refunded. If that happens, please try
                       submitting again.
-                    </Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0 }}>
-                      NOTE: YOROI IS NOT SUPPORTED.
-                    </Typography>
+                    </Typography> */}
                     <Grid container>
                       <Grid item xs={6} sx={{ pr: 0.5 }}>
                         <Button
                           type="submit"
                           fullWidth
                           disabled={
-                            buttonDisabled ||
-                            formErrors.address ||
-                            !dAppWallet.connected
+                            buttonDisabled 
+                            || formErrors.address 
+                            || currentWallet.type !== 'nautilus' 
+                            || providerLoading
                           }
                           variant="contained"
                           sx={{ mt: 3, mb: 3, textTransform: 'none', px: 0 }}
-                          onClick={handleSubmit}
+                          onClick={() => submitWithNautilus(currentWallet.changeAddress)}
                         >
                           Send with Desktop Wallet
                         </Button>
@@ -825,7 +892,12 @@ const Contribute = () => {
                         <Button
                           type="submit"
                           fullWidth
-                          disabled={buttonDisabled || formErrors.address}
+                          disabled={
+                            buttonDisabled 
+                            || formErrors.address 
+                            || currentWallet.type !== 'mobile'
+                            || providerLoading
+                          }
                           variant="contained"
                           sx={{ mt: 3, mb: 3, textTransform: 'none', px: 0 }}
                           onClick={handleSubmitErgopay}
@@ -834,14 +906,14 @@ const Contribute = () => {
                         </Button>
                       </Grid>
                     </Grid>
-                    {isLoading && (
+                    {(isLoading || providerLoading) && (
                       <CircularProgress
                         size={24}
                         sx={{
                           position: 'relative',
                           top: '0px',
                           left: '50%',
-                          marginTop: '-9px',
+                          marginTop: '-18px',
                           marginLeft: '-12px',
                         }}
                       />
@@ -878,8 +950,8 @@ const Contribute = () => {
                   <Typography id="modal-title" variant="h6" component="h2">
                     Contribution
                   </Typography>
-                  {ergopayUrl ? (
-                    <ErgopayModalBody ergopayUrl={ergopayUrl} />
+                  {ergopayUrl && currentWallet.changeAddress ? (
+                    <ErgopayModalBody ergopayUrl={ergopayUrl} address={currentWallet.changeAddress} />
                   ) : (
                     <TransactionSubmitted
                       transactionId={transactionId}
@@ -907,7 +979,6 @@ const Contribute = () => {
                 onClose={handleCloseSuccessSnackbar}
               >
                 <Alert
-                  onClose={handleCloseSuccessSnackbar}
                   severity="success"
                   sx={{ width: '100%' }}
                 >

@@ -1,6 +1,6 @@
 import { prisma } from '@server/prisma';
+import { Address } from 'ergo-lib-wasm-nodejs';
 import { NextApiRequest, NextApiResponse } from 'next';
-
 
 interface ErgoAuthRequest {
   address: string;
@@ -44,12 +44,13 @@ export default async function ergoauthLoginMobile(req: NextApiRequest, res: Next
   try {
     const replyTo = `${process.env.AUTH_DOMAIN}/api/mobile-auth/verify?verificationId=${verificationId}`;
     // console.log(address)
-    // const rawBytes = Address.from_mainnet_str(address).content_bytes()
-    // const indexedBytes = rawBytes.slice(1)
-    // const resultBytes = [205, ...indexedBytes];
-    // const base64String = Buffer.from(resultBytes).toString('base64');
-    // console.log(resultBytes)
-    // console.log(base64String)
+    const rawBytes = Address.from_mainnet_str(address).content_bytes()
+    console.log(rawBytes)
+    const indexedBytes = rawBytes.slice(1)
+    const resultBytes = [205, ...indexedBytes];
+    const base64String = Buffer.from(resultBytes).toString('base64');
+    console.log(resultBytes)
+    console.log(base64String)
 
     // decode address to bytes using base58
     // copy the range from index 1 to index length - 4
@@ -82,13 +83,14 @@ export default async function ergoauthLoginMobile(req: NextApiRequest, res: Next
     // Extract sigmaBoolean from the second response
     const sigmaBoolean = signingRequestData.sigmaBoolean;
 
-    console.log('address boolean: ' + sigmaBoolean)
+    console.log('address: ' + address)
+    console.log('sigma boolean: ' + sigmaBoolean)
 
     const ergoAuthRequest: ErgoAuthRequest = {
       address,
       signingMessage: user.nonce,
       sigmaBoolean: sigmaBoolean,
-      userMessage: 'Sign the message to sign in to Crux Finance',
+      userMessage: 'Sign the message to sign in to Ergopad',
       messageSeverity: 'INFORMATION',
       replyTo,
     };

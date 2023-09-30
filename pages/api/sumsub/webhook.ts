@@ -58,14 +58,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           console.error('HMAC validation failed. Signatures do not match.');
           return res.status(403).json({ error: 'Invalid digest' });
         }
-
-        // Handle the payload as needed
-        // TODO: use the payload to update the user in the database
         const parsedData = JSON.parse(rawBody)
-        console.log(parsedData)
-
         res.status(200).json({ status: 'Payload received and validated' });
-
         processWebhookData(parsedData)
       });
     } catch (error) {

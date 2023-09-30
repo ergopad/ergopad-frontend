@@ -164,7 +164,6 @@ const ConnectedWallets: NextPage = () => {
     }
   }, [walletsQuery.data?.wallets])
 
-
   return (
     <>
       <Section
