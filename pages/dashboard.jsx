@@ -107,7 +107,7 @@ const [walletAddresses, setWalletAddresses] = useState([])
 const [addressesWithType, setAddressesWithType] = useState([])
 
 
-  const { wallet, providerLoading } = useWallet()
+  const { wallet, providerLoading, sessionStatus } = useWallet()
   const walletsQuery = trpc.user.getWallets.useQuery(
     undefined,
     {
@@ -115,14 +115,12 @@ const [addressesWithType, setAddressesWithType] = useState([])
     }
   )
   const getWallets = async () => {
-    return new Promise(async (resolve) => {
-      const fetchResult = await walletsQuery.refetch();
-      if (fetchResult && fetchResult.data) {
-        resolve(fetchResult.data.wallets);
-      } else {
-        resolve([]);
-      }
-    });
+    console.log('trigger')
+    if (sessionStatus !== 'authenticated') {
+      return []
+    }
+    const fetchResult = await walletsQuery?.refetch();
+    return fetchResult && fetchResult.data ? fetchResult.data.wallets : [];
   };
   useEffect(() => {
     // load staked tokens for primary wallet address

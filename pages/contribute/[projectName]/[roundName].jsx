@@ -690,8 +690,7 @@ const Contribute = () => {
                               'Please add a wallet address.'}
                           </FormHelperText>
                         </FormControl> */}
-                                        <ChangeDefaultAddress title="Address to send from" />
-
+                        <ChangeDefaultAddress title="Address to send from" />
                       </Grid>
                       <Grid container item xs={12}>
                         <Grid item xs={12}>

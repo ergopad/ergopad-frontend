@@ -70,7 +70,7 @@ const WalletProvider: FunctionComponent<{ children: ReactNode }> = ({ children }
 
   useEffect(() => {
     fetchSessionData();
-  }, [fetchSessionData]);
+  }, []);
 
   // Context values passed to consumer
   const value = {

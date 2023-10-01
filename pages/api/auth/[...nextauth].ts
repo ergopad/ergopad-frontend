@@ -301,6 +301,10 @@ export const authOptions = (
         token: JWT;
         user: any;
       }) {
+        console.log('\x1b[32m', 'Get auth session', '\x1b[0m', {
+          url: req.url,
+          method: req.method,
+        });
         // we have to get the cookie to get the session ID because 
         // it doesn't seem possible to pass it along the auth flow
         const cookie = getCookie(`next-auth.session-token`, {
@@ -340,6 +344,7 @@ export const authOptions = (
           const cookie = getCookie(`next-auth.session-token`, {
             req: req,
           })
+
           if (cookie) {
             // console.log(cookie)
             return cookie

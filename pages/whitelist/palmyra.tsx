@@ -155,16 +155,11 @@ const Whitelist = () => {
   const changeUserDetailsMutation = trpc.user.changeUserDetails.useMutation()
 
   const getWallets = async (): Promise<Wallet[]> => {
-    setLoading(true);
-    return new Promise(async (resolve) => {
-      const fetchResult = await walletsQuery.refetch();
-      if (fetchResult && fetchResult.data) {
-        resolve(fetchResult.data.wallets);
-      } else {
-        resolve([]);
-      }
-      setLoading(false)
-    });
+    if (sessionStatus !== 'authenticated') {
+      return []
+    }
+    const fetchResult = await walletsQuery?.refetch();
+    return fetchResult && fetchResult.data ? fetchResult.data.wallets : [];
   };
 
   useEffect(() => {

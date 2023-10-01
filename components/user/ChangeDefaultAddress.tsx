@@ -23,7 +23,6 @@ const ChangeDefaultAddress: FC<ChangeDefaultAddressProps> = ({
 }) => {
   const { sessionStatus, sessionData, fetchSessionData, providerLoading, setProviderLoading } = useWallet()
   const [addressOptions, setAddressOptions] = useState<string[]>([]);
-  const [defaultAddressLoading, setDefaultAddressLoading] = useState(false)
   const [defaultAddress, setDefaultAddress] = useState('');
   const changeLoginAddressMutation = trpc.user.changeLoginAddress.useMutation()
 
@@ -35,14 +34,11 @@ const ChangeDefaultAddress: FC<ChangeDefaultAddressProps> = ({
   )
 
   const getWallets = async (): Promise<Wallet[]> => {
-    return new Promise(async (resolve) => {
-      const fetchResult = await walletsQuery.refetch();
-      if (fetchResult && fetchResult.data) {
-        resolve(fetchResult.data.wallets);
-      } else {
-        resolve([]);
-      }
-    });
+    if (sessionStatus !== 'authenticated') {
+      return []
+    }
+    const fetchResult = await walletsQuery.refetch();
+    return fetchResult && fetchResult.data ? fetchResult.data.wallets : [];
   };
 
   const updateLoginAddress = async (address: string) => {

@@ -15,13 +15,13 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useWallet } from '@utils/WalletContext';
 import { AddWalletExpanded } from './AddWalletModal';
 
-interface INautilusLogin {
+interface IAddNautilus {
   setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   expanded: AddWalletExpanded;
   setExpanded: React.Dispatch<React.SetStateAction<AddWalletExpanded>>;
 }
 
-const NautilusLogin: FC<INautilusLogin> = ({ setModalOpen, expanded, setExpanded }) => {
+const AddNautilus: FC<IAddNautilus> = ({ setModalOpen, expanded, setExpanded }) => {
   const theme = useTheme()
   const [defaultAddress, setDefaultAddress] = useState<string | undefined>(undefined);
   const [message, setMessage] = useState('Please follow the prompts on Nautilus')
@@ -300,4 +300,4 @@ const NautilusLogin: FC<INautilusLogin> = ({ setModalOpen, expanded, setExpanded
   );
 }
 
-export default NautilusLogin;
+export default AddNautilus;

@@ -7,6 +7,7 @@ import {
   Typography,
   useTheme,
   useMediaQuery,
+  TableBody,
 } from '@mui/material';
 import theme from '@styles/theme';
 import { FC, Fragment } from 'react';
@@ -137,85 +138,116 @@ const UnstakingTable: FC<UnstakingTableProps> = ({
             </Typography>
           </Typography>
           <Table sx={{ p: 0 }}>
-            {stakeObject.addresses[address].stakeBoxes.map((stake, index) => {
-              return (
-                <Fragment key={stake.boxId}>
-                  <TableRow sx={{ borderTop: `1px solid #444` }}>
-                    <TableCell
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        border: 'none',
-                        p: 1,
-                        pt: 2,
-                      }}
-                    >
-                      {stakedHeading.stakeAmount}
-                    </TableCell>
-                    <TableCell sx={{ border: 'none', p: 1, pt: 2 }}>
-                      {stake.stakeAmount?.toLocaleString(navigator.language, {
-                        maximumFractionDigits: 2,
-                      })}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        border: 'none',
-                        p: 1,
-                      }}
-                    >
-                      {stakedHeading.penaltyPct}
-                    </TableCell>
-                    <TableCell sx={{ border: 'none', p: 1 }}>
-                      {stake.penaltyPct ?? 0}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell
-                      sx={{
-                        color: theme.palette.text.secondary,
-                        border: 'none',
-                        p: 1,
-                      }}
-                    >
-                      {stakedHeading.penaltyEndTime}
-                    </TableCell>
-                    <TableCell sx={{ border: 'none', p: 1 }}>
-                      {stake.penaltyEndTime
-                        ? new Date(stake.penaltyEndTime)
-                          .toISOString()
-                          .slice(0, 10)
-                        : '-'}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell
-                      sx={{
-                        border: 'none',
-                        p: 0,
-                        pt: 1,
-                        pb:
-                          index ===
-                            stakeObject.addresses[address].stakeBoxes.length - 1
-                            ? 0
-                            : 3,
-                      }}
-                      colSpan={2}
-                    >
-                      <Box
+            <TableBody>
+              {stakeObject.addresses[address].stakeBoxes.map((stake, index) => {
+                return (
+                  <Fragment key={stake.boxId}>
+                    <TableRow sx={{ borderTop: `1px solid #444` }}>
+                      <TableCell
                         sx={{
-                          width: '100%',
-                          display: 'flex',
-                          justifyContent: 'center',
+                          color: theme.palette.text.secondary,
+                          border: 'none',
+                          p: 1,
+                          pt: 2,
                         }}
                       >
-                        {typeof addstake !== 'undefined' && addstake && (
+                        {stakedHeading.stakeAmount}
+                      </TableCell>
+                      <TableCell sx={{ border: 'none', p: 1, pt: 2 }}>
+                        {stake.stakeAmount?.toLocaleString(navigator.language, {
+                          maximumFractionDigits: 2,
+                        })}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell
+                        sx={{
+                          color: theme.palette.text.secondary,
+                          border: 'none',
+                          p: 1,
+                        }}
+                      >
+                        {stakedHeading.penaltyPct}
+                      </TableCell>
+                      <TableCell sx={{ border: 'none', p: 1 }}>
+                        {stake.penaltyPct ?? 0}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell
+                        sx={{
+                          color: theme.palette.text.secondary,
+                          border: 'none',
+                          p: 1,
+                        }}
+                      >
+                        {stakedHeading.penaltyEndTime}
+                      </TableCell>
+                      <TableCell sx={{ border: 'none', p: 1 }}>
+                        {stake.penaltyEndTime
+                          ? new Date(stake.penaltyEndTime)
+                            .toISOString()
+                            .slice(0, 10)
+                          : '-'}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell
+                        sx={{
+                          border: 'none',
+                          p: 0,
+                          pt: 1,
+                          pb:
+                            index ===
+                              stakeObject.addresses[address].stakeBoxes.length - 1
+                              ? 0
+                              : 3,
+                        }}
+                        colSpan={2}
+                      >
+                        <Box
+                          sx={{
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          {typeof addstake !== 'undefined' && addstake && (
+                            <Button
+                              variant="contained"
+                              size="small"
+                              sx={{
+                                mr: 3,
+                                color: '#fff',
+                                textTransform: 'none',
+                                backgroundColor: theme.palette.primary.main,
+                                '&:hover': {
+                                  backgroundColor: '#4BD0C9',
+                                  boxShadow: 'none',
+                                },
+                                '&:active': {
+                                  backgroundColor: 'rgba(49, 151, 149, 0.25)',
+                                },
+                              }}
+                              onClick={() =>
+                                addstake(
+                                  stake.boxId,
+                                  stake.stakeKeyId,
+                                  stake.stakeAmount,
+                                  stake.penaltyPct ?? 0,
+                                  address
+                                )
+                              }
+                              disabled={disableAddStake}
+                            >
+                              Add Stake
+                            </Button>
+                          )}
                           <Button
+                            disabled={disableUnstaking}
                             variant="contained"
                             size="small"
                             sx={{
-                              mr: 3,
                               color: '#fff',
                               textTransform: 'none',
                               backgroundColor: theme.palette.primary.main,
@@ -228,7 +260,7 @@ const UnstakingTable: FC<UnstakingTableProps> = ({
                               },
                             }}
                             onClick={() =>
-                              addstake(
+                              unstake(
                                 stake.boxId,
                                 stake.stakeKeyId,
                                 stake.stakeAmount,
@@ -236,45 +268,16 @@ const UnstakingTable: FC<UnstakingTableProps> = ({
                                 address
                               )
                             }
-                            disabled={disableAddStake}
                           >
-                            Add Stake
+                            Unstake
                           </Button>
-                        )}
-                        <Button
-                          disabled={disableUnstaking}
-                          variant="contained"
-                          size="small"
-                          sx={{
-                            color: '#fff',
-                            textTransform: 'none',
-                            backgroundColor: theme.palette.primary.main,
-                            '&:hover': {
-                              backgroundColor: '#4BD0C9',
-                              boxShadow: 'none',
-                            },
-                            '&:active': {
-                              backgroundColor: 'rgba(49, 151, 149, 0.25)',
-                            },
-                          }}
-                          onClick={() =>
-                            unstake(
-                              stake.boxId,
-                              stake.stakeKeyId,
-                              stake.stakeAmount,
-                              stake.penaltyPct ?? 0,
-                              address
-                            )
-                          }
-                        >
-                          Unstake
-                        </Button>
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                </Fragment>
-              );
-            })}
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  </Fragment>
+                );
+              })}
+            </TableBody>
           </Table>
         </Box>
       ))}

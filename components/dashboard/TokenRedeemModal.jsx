@@ -18,7 +18,6 @@ import { useEffect, useState, forwardRef } from 'react';
 import { useWallet } from 'utils/WalletContext';
 import TransactionSubmitted from '@components/TransactionSubmitted';
 import ErgopayModalBody from '@components/ErgopayModalBody';
-import { trpc } from '@utils/trpc';
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -71,12 +70,6 @@ const TokenRedeemModal = ({ box, onClose }) => {
   // transaction submitted
   const [transactionSubmitted, setTransactionSubmitted] = useState(null);
   const [ergopayUrl, setErgopayUrl] = useState(null);
-  // const walletsQuery = trpc.user.getWallets.useQuery(
-  //   undefined,
-  //   {
-  //     refetchOnWindowFocus: false,
-  //   }
-  // )
 
   const redeemWithNautilus = async (walletAddress) => {
     const connected = await ergoConnector.nautilus.connect();
@@ -251,7 +244,7 @@ const TokenRedeemModal = ({ box, onClose }) => {
                         </InputLabel>
                         <FilledInput
                           id="address"
-                          value={formData.address}
+                          value={formData.address ? formData.address : ''}
                           disabled
                           disableUnderline={true}
                           name="address"

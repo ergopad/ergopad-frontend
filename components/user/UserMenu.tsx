@@ -1,15 +1,12 @@
-import React, { FC, useState, useEffect, useContext } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import {
-  Avatar,
   Typography,
   Button,
   Box
 } from '@mui/material'
-import { useRouter } from 'next/router';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import Divider from '@mui/material/Divider';
 import Logout from '@mui/icons-material/Logout';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import SignIn from './SignIn';
@@ -20,20 +17,22 @@ import theme from '@styles/theme';
 import AddWalletModal from './AddWalletModal';
 import Link from 'next/link';
 
-interface IWalletType {
-  name: string;
-  icon: string;
-  version: string;
-}
-
 interface IUserMenuProps {
 }
 
 const UserMenu: FC<IUserMenuProps> = () => {
-  const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false)
   const [addWalletModal, setAddWalletModal] = useState(false)
-  const { wallet, setWallet, dAppWallet, setDAppWallet, sessionData, sessionStatus, providerLoading, setProviderLoading } = useWallet()
+  const {
+    wallet,
+    setWallet,
+    dAppWallet,
+    setDAppWallet,
+    sessionData,
+    sessionStatus,
+    providerLoading,
+    setProviderLoading
+  } = useWallet()
 
   useEffect(() => {
     // console.log('session: ' + sessionStatus);
@@ -89,7 +88,7 @@ const UserMenu: FC<IUserMenuProps> = () => {
   };
 
   const clearWallet = async () => {
-    window.ergoConnector.nautilus.disconnect();
+    window?.ergoConnector?.nautilus.disconnect();
     signOut()
   };
 
@@ -216,7 +215,7 @@ const UserMenu: FC<IUserMenuProps> = () => {
               </Link>
             </Box>
 
-            <MenuItem onClick={() => clearWallet()}>
+            <MenuItem onClick={clearWallet}>
               <ListItemIcon>
                 <Logout fontSize="small" />
               </ListItemIcon>

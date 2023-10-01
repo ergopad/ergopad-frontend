@@ -215,7 +215,7 @@ const Staking = () => {
   const [ergopayUrl, setErgopayUrl] = useState(null);
   // tabs
   const [tabValue, setTabValue] = useState(0);
-  const { wallet, providerLoading } = useWallet()
+  const { wallet, providerLoading, sessionStatus } = useWallet()
   const walletsQuery = trpc.user.getWallets.useQuery(
     undefined,
     {
@@ -226,7 +226,6 @@ const Staking = () => {
   const [currentModalWalletType, setCurrentModalWalletType] = useState<string | null>(null)
   const [dappWalletAddresses, setDappWalletAddresses] = useState<string[]>([])
   const [currentDappWalletAddresses, setCurrentDappWalletAddresses] = useState<string[]>([])
-
 
   const handleTabChange = (event: any, newValue: SetStateAction<number>) => {
     setTabValue(newValue);
@@ -252,16 +251,12 @@ const Staking = () => {
 
 
   const getWallets = async (): Promise<Wallet[]> => {
-    return new Promise(async (resolve) => {
-      const fetchResult = await walletsQuery.refetch();
-      if (fetchResult && fetchResult.data) {
-        resolve(fetchResult.data.wallets);
-      } else {
-        resolve([]);
-      }
-    });
+    if (sessionStatus !== 'authenticated') {
+      return []
+    }
+    const fetchResult = await walletsQuery?.refetch();
+    return fetchResult && fetchResult.data ? fetchResult.data.wallets : [];
   };
-
 
   useEffect(() => {
     // load staked tokens for primary wallet address

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -14,15 +15,11 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import Navbar from '@components/navigation/Navbar';
-import { cloneElement, useState, useEffect } from 'react';
 import { useWallet } from '@utils/WalletContext';
 // import AddWallet from '@components/AddWallet';
 import Image from 'next/legacy/image';
 import NotificationBell from '@components/NotificationBell';
 import UserMenu from '@components/user/UserMenu';
-import styled from '@emotion/styled';
-import CloseIcon from '@mui/icons-material/Close';
-import { useSession } from 'next-auth/react';
 
 export const navLinks = [
   { title: `Whitepaper`, path: `/whitepaper` },

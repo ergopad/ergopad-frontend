@@ -206,7 +206,7 @@ const ProjectStaking = () => {
   const [tokenChoiceList, setTokenChoiceList] = useState(STAKING_TOKEN_OPTIONS);
   const [stakingConfig, setStakingConfig] = useState(defaultStakingConfig);
   // wallet
-  const { wallet } = useWallet()
+  const { wallet, sessionStatus } = useWallet()
   const walletsQuery = trpc.user.getWallets.useQuery(
     undefined,
     {
@@ -297,8 +297,8 @@ const ProjectStaking = () => {
   }, [project_id]);
 
   const getWalletType = (address: string) => {
-    const wallets = walletsQuery.data?.wallets
-    if (wallets) {
+    const wallets = walletsQuery?.data?.wallets
+    if (wallets && wallets.length > 0) {
       const wallet = wallets.find(w =>
         w.changeAddress === address ||
         w.unusedAddresses.includes(address) ||
@@ -313,14 +313,11 @@ const ProjectStaking = () => {
   };
 
   const getWallets = async (): Promise<Wallet[]> => {
-    return new Promise(async (resolve) => {
-      const fetchResult = await walletsQuery.refetch();
-      if (fetchResult && fetchResult.data) {
-        resolve(fetchResult.data.wallets);
-      } else {
-        resolve([]);
-      }
-    });
+    if (sessionStatus !== 'authenticated') {
+      return []
+    }
+    const fetchResult = await walletsQuery?.refetch();
+    return fetchResult && fetchResult.data ? fetchResult.data.wallets : [];
   };
 
   useEffect(() => {

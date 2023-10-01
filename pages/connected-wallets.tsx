@@ -102,7 +102,7 @@ const ConnectedWallets: NextPage = () => {
         setLoading(false)
       }
     }
-    fetching()
+    if (sessionStatus === 'authenticated') fetching()
   }
 
   // should run if the user adds another address, but also on page load when 
@@ -155,7 +155,7 @@ const ConnectedWallets: NextPage = () => {
 
   const [sortedWallets, setSortedWallets] = useState<Wallet[]>([])
   useEffect(() => {
-    if (walletsQuery.data?.wallets && walletsQuery.data.wallets.length > 0) {
+    if (walletsQuery.data?.wallets && walletsQuery.data.wallets.length > 0 && sessionStatus === 'authenticated') {
       const newSorted = walletsQuery.data?.wallets.sort((a, b) => {
         return a.id - b.id;
       });
@@ -172,7 +172,7 @@ const ConnectedWallets: NextPage = () => {
         main={true}
         toggleOutside={true}
         extra={
-          <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'center', gap: 2 }}>
             <Box>
               <Typography sx={{ color: theme.palette.text.secondary }}>
                 Default account address:
@@ -206,7 +206,7 @@ const ConnectedWallets: NextPage = () => {
                 >
                   {addressOptions.map((item, i) => {
                     return (
-                      <MenuItem value={item} key={`address-option-${i}`}>{item}</MenuItem>
+                      <MenuItem value={item} key={`address-option-${i}`}>{desktop ? item : getShorterAddress(item, 8)}</MenuItem>
                     )
                   })}
                 </Select>

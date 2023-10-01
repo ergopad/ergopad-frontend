@@ -17,7 +17,7 @@ import {
   Collapse,
   IconButton
 } from "@mui/material";
-import { signIn } from "next-auth/react"; // Import signIn from next-auth
+import { signIn } from "next-auth/react";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MobileLogin from "./MobileLogin";
 import NautilusLogin from "./NautilusLogin";

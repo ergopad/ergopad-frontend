@@ -22,8 +22,8 @@ const clientSideEmotionCache = createEmotionCache();
 
 type MyAppProps = AppProps & {
 	pageProps: {
-		session?: Session; // Make this optional or required based on your app's needs
-		[key: string]: any; // For any additional props you might pass to a page
+		session?: Session;
+		[key: string]: any;
 	};
 };
 

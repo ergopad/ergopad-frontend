@@ -6,7 +6,7 @@
     "dev": "node server.js",
     "dev:http": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "node server.js",
     "lint": "next lint",
     "postinstall": "prisma generate"
   },

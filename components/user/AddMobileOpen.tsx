@@ -16,14 +16,14 @@ import { useWallet } from '@utils/WalletContext';
 import { AddWalletExpanded } from './AddWalletModal';
 import { Signature } from '@lib/types';
 
-interface IMobileLogin {
+interface IAddMobileOpen {
   localLoading: boolean;
   setLocalLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setExpanded: React.Dispatch<React.SetStateAction<AddWalletExpanded>>;
 }
 
-const MobileLogin: FC<IMobileLogin> = ({ localLoading, setLocalLoading, setModalOpen, setExpanded }) => {
+const AddMobileOpen: FC<IAddMobileOpen> = ({ localLoading, setLocalLoading, setModalOpen, setExpanded }) => {
   const theme = useTheme()
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
   const [address, setAddress] = useState<string>('');
@@ -192,4 +192,4 @@ const MobileLogin: FC<IMobileLogin> = ({ localLoading, setLocalLoading, setModal
   );
 }
 
-export default MobileLogin
+export default AddMobileOpen
