@@ -84,7 +84,7 @@ const PrivacyPolicy = () => {
         <List sx={listStyle}>
           <ListItem>
             <Typography>
-              Providing Financial Services: Facilitating transactions, processing payments, and managing your accounts on the Platform.
+              Providing Payment and Transfer Infrastructure: Facilitating blockchain transactions, processing blockchain payments to third parties and smart contracts, and managing a record of your transactions generated through the Platform.
             </Typography>
           </ListItem>
           <ListItem>

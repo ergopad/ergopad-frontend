@@ -44,9 +44,8 @@ const ErgopadTermsOfService = () => {
           to as the &quot;Company&quot; or &quot;We&quot; or &quot;Us&quot;), a corporation registered in El Salvador. These Terms constitute a binding and
           enforceable legal contract between the Company and its affiliates and subsidiaries worldwide, and you, an end user
           of the Services (hereinafter referred to as &quot;You&quot; or &quot;User&quot;) in relation to the Services. By accessing,
-          registering, using, or clicking on the Services and information made available by the Company via the Website, you
-          hereby accept and agree to all the Terms set forth herein. If you do not agree to these Terms, you may not access
-          or use the Website and the Services.
+          registering, using, or clicking on the Services and information made available by the Company via the Website or by agreeing to use the Services to deploy your token project, you
+          hereby accept and agree to all the Terms set forth herein. If you do not agree to these Terms, you may not access or use the Website and the Services.
         </Typography>
 
         <Typography variant="h4" component="h2" gutterBottom>
@@ -77,10 +76,7 @@ const ErgopadTermsOfService = () => {
           </ListItem>
           <ListItem>
             <Typography>
-              &quot;Services&quot; refers to the features, functionalities, and offerings provided by the Company through the Website.
-              These may include but are not limited to access to the online platform, the exchange of
-              cryptocurrencies or tokens, participation in token sales or staking activities, access to information, and any
-              other services made available by the Company through the Website.
+              &quot;Services&quot; refers to the features, functionalities, and offerings provided by the Company through the Website. These may include but are not limited to access to the online platform, the exchange of cryptocurrencies or tokens, participation in token sales or staking activities, access to information, using the launchpad to deploy your token project, and any other services made available by the Company through the Website.
             </Typography>
           </ListItem>
           <ListItem>
