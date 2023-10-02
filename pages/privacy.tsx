@@ -29,7 +29,7 @@ const PrivacyPolicy = () => {
         </Typography>
 
         <Typography variant="body2">
-          Last modified: September 26, 2023
+          Last modified: October 2, 2023
         </Typography>
 
         <Typography variant="h4" component="h2" gutterBottom>
