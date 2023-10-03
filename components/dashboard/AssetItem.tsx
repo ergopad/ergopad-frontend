@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Typography, SvgIcon } from "@mui/material";
+import { Typography, SvgIcon, Box } from "@mui/material";
 import AudiotrackIcon from "@mui/icons-material/Audiotrack";
 import { styled } from "@mui/system";
 import AssetModal from "./AssetModal";
@@ -10,23 +10,9 @@ import { formatNumber } from "@utils/general";
 const SIGUSD_TOKEN_ID =
   "03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04";
 
-const StyledAsset = styled("div")(({ theme }) => ({
-  width: "100%",
-  display: "flex",
-  alignItems: "center",
-  marginTop: theme.spacing(2),
-  paddingBottom: theme.spacing(1),
-  cursor: "pointer",
-  // marginBottom: theme.spacing(2),
-  // padding: theme.spacing(1),
-  // borderRadius: '10px',
-  // justifyContent: 'space-between',
-  // backgroundColor: `rgba( 255, 255, 255, 0.04)`,
-}));
-
 const AssetIcon = styled("img")(() => ({
-  width: "50px",
-  height: "50px",
+  width: "40px",
+  height: "40px",
   borderRadius: "12px",
 }));
 
@@ -41,24 +27,6 @@ const IconWrapper = styled("div")(() => ({
   height: "40px",
   borderRadius: "12px",
   background: "rgba(102, 102, 102, 0.3)",
-}));
-
-const AssetNameContainer = styled("div")(({ theme }) => ({
-  flexGrow: 2,
-  flexDirection: "column",
-  justifyContent: "center",
-  paddingLeft: theme.spacing(2),
-  paddingRight: theme.spacing(2),
-  maxWidth: "240px",
-  "& .MuiTypography-root": {
-    padding: 2,
-  },
-}));
-const AssetAmountContainer = styled("div")(() => ({
-  display: "flex",
-  alignItems: "right",
-  flexDirection: "column",
-  justifyContent: "right",
 }));
 
 const AssetItem: FC<{
@@ -87,7 +55,7 @@ const AssetItem: FC<{
       };
     }, []);
 
-    const AssetImage = () => {
+    const AssetImage: FC = () => {
       if (type === "AudioNFT") {
         return (
           <IconWrapper>
@@ -109,23 +77,44 @@ const AssetItem: FC<{
 
     return (
       <>
-        <StyledAsset className="asset" onClick={() => setShowModal(true)}>
-          <AssetImage />
-          <AssetNameContainer>
-            <Typography
-              sx={{
-                maxWidth: "180px",
-                display: "block",
-                overflow: "hidden",
-                whiteSpace: "nowrap",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {asset.name}
-            </Typography>
-          </AssetNameContainer>
+        <Box
+          className="asset"
+          onClick={() => setShowModal(true)}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            mt: 2,
+            pb: 1,
+            cursor: "pointer",
+            flexDirection: 'row',
+            // justifyContent: 'space-between'
+          }}
+        >
+          <Box sx={{ display: 'flex', flexGrow: 1, alignItems: 'center', flexDirection: 'row', gap: 1 }}>
+            <Box sx={{ width: '40px', height: '40px' }}>
+              <AssetImage />
+            </Box>
+            <Box>
+              <Typography
+                sx={{
+                  maxWidth: "180px",
+                  display: "block",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {asset.name}
+              </Typography>
+            </Box>
+          </Box>
+
           {type !== "NFT" && type !== "AudioNFT" && (
-            <AssetAmountContainer>
+            <Box sx={{
+              display: "flex",
+              alignItems: "right",
+              flexDirection: "column",
+            }}>
               <Typography sx={{ textAlign: "right" }}>
                 {asset.amount > 100000000
                   ?
@@ -149,9 +138,9 @@ const AssetItem: FC<{
                   {stableDenominator}
                 </Typography>
               ) : null}
-            </AssetAmountContainer>
+            </Box>
           )}
-        </StyledAsset>
+        </Box>
         <AssetModal
           key={asset.id + "-modal"}
           open={showModal}

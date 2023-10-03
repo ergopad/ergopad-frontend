@@ -1,4 +1,5 @@
 import { prisma } from '@server/prisma';
+import { deleteEmptyUser } from '@server/utils/deleteEmptyUser';
 import { nanoid } from 'nanoid';
 import { z } from 'zod';
 import { createTRPCRouter, publicProcedure } from '../trpc';
@@ -22,6 +23,7 @@ export const authRouter = createTRPCRouter({
       }
 
       if (!user.nonce) {
+        await deleteEmptyUser(nonce.userId) // remove empty user if something went wrong
         throw new Error(`Nonce not generated correctly`);
       }
 

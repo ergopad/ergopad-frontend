@@ -36,6 +36,7 @@ CREATE TABLE "users" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "name" TEXT,
+    "status" TEXT,
     "default_address" TEXT,
     "nonce" TEXT,
     "email" TEXT,

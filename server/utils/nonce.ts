@@ -1,6 +1,6 @@
 import { prisma } from '@server/prisma';
 import { nanoid } from 'nanoid';
-import { checkAddressAvailability, getUserIdByAddress } from './checkAddress';
+import { getUserIdByAddress } from './checkAddress';
 
 export async function generateNonceForLogin(userAddress: string) {
   // First, check if a user exists with the given userAddress as the defaultAddress.
@@ -23,12 +23,13 @@ export async function generateNonceForLogin(userAddress: string) {
     user = await prisma.user.create({
       data: {
         defaultAddress: userAddress,
+        status: 'pending'
       },
     });
   }
 
   if (!user) {
-    throw new Error('Unable to create or find a user')
+    throw new Error('Database error')
   }
 
   const nonce = nanoid();
@@ -42,35 +43,18 @@ export async function generateNonceForLogin(userAddress: string) {
   return { nonce, userId: user.id };
 }
 
-export async function generateNonceForAddWallet(userAddress: string) {
-  // Check if a user with the given address already exists
-  let user = await prisma.user.findUnique({
-    where: { defaultAddress: userAddress },
-  });
-
-  // If the user doesn't exist, create a new user model in the database
-  if (!user) {
-    const addressAvailability = await checkAddressAvailability(userAddress);
-
-    // console.log(addressAvailability)
-
-    if (addressAvailability?.status === 'available') {
-      user = await prisma.user.create({
-        data: {
-          defaultAddress: userAddress,
-        },
-      });
-    }
-    else return null
-  }
-
+export async function generateNonceForAddWallet(userId: string) {
   const nonce = nanoid();
 
   // Update the user's nonce in the database
-  await prisma.user.update({
-    where: { id: user.id },
+  const user = await prisma.user.update({
+    where: { id: userId },
     data: { nonce },
   });
+
+  if (!user) {
+    throw new Error("User doesn't exist")
+  }
 
   return nonce;
 }

@@ -33,7 +33,7 @@ const AddNautilus: FC<IAddNautilus> = ({ setModalOpen, expanded, setExpanded }) 
   const [usedAddresses, setUsedAddresses] = useState<string[]>([])
   const [unusedAddresses, setUnusedAddresses] = useState<string[]>([])
   const { wallet, setWallet, setDAppWallet, sessionData, sessionStatus } = useWallet()
-
+  const getNonce = trpc.user.getNonceProtected.useQuery(undefined, { enabled: false, retry: false });
   const [changeAddress, setChangeAddress] = useState<string | undefined>(undefined)
   const checkAddress = trpc.user.checkAddressAvailable.useQuery(
     { address: changeAddress },
@@ -45,12 +45,37 @@ const AddNautilus: FC<IAddNautilus> = ({ setModalOpen, expanded, setExpanded }) 
     }
   }, [])
 
-  useEffect(() => {
-    if (sessionStatus === 'authenticated' && dappConnected && !defaultAddress) getAddress()
-    if (sessionStatus === 'authenticated' && dappConnected && defaultAddress) {
-      const nonce = nanoid()
-      verifyOwnership(nonce, defaultAddress)
+  const getNewNonce = async (): Promise<string | null> => {
+    try {
+      const response = await getNonce.refetch();
+      if (response && response.error) {
+        throw new Error(response.error.message);
+      }
+      if (response.data?.nonce) {
+        // console.log(response.data.nonce)
+        return response.data.nonce
+      }
+      else console.error('Unexpected nonce error')
+      return null
+    } catch (error: any) {
+      console.error('Nonce error: ' + error);
+      return null;
     }
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (defaultAddress) {
+        const nonce = await getNewNonce();
+        if (nonce !== null) {
+          verifyOwnership(nonce, defaultAddress);
+        } else {
+          console.error('Unexpected nonce error')
+        }
+      }
+      else getAddress();
+    }
+    if (sessionStatus === 'authenticated' && dappConnected) fetchData();
   }, [defaultAddress, dappConnected, sessionStatus]);
 
   const connectNautilus = async () => {
@@ -64,7 +89,7 @@ const AddNautilus: FC<IAddNautilus> = ({ setModalOpen, expanded, setExpanded }) 
       setLocalLoading(false)
       setMessage('Failed to connect to nautilus')
       setRetry(true)
-      console.log('AddNautilus: failed to connect to nautilus')
+      console.error('Failed to connect to nautilus')
     }
   }
 
@@ -109,7 +134,7 @@ const AddNautilus: FC<IAddNautilus> = ({ setModalOpen, expanded, setExpanded }) 
       checkAddress.refetch()
         .then((response) => {
           if (response.data?.status === 'unavailable') {
-            console.log('AddNautilus: address in use by another wallet')
+            // console.log('AddNautilus: address in use by another wallet')
             setMessage('Address in use by another wallet')
             setRetry(true)
             setDappConnected(false)
@@ -156,7 +181,7 @@ const AddNautilus: FC<IAddNautilus> = ({ setModalOpen, expanded, setExpanded }) 
         }
       }
     } catch (error) {
-      console.log('AddNautilus: ' + error);
+      console.error(error);
       setChangeAddress(undefined)
       setDefaultAddress(undefined);
       setDappConnected(false)

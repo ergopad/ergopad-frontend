@@ -44,6 +44,7 @@ model User {
   created_at     DateTime       @default(now())
   updated_at     DateTime       @updatedAt
   name           String?
+  status         String?
   defaultAddress String?        @unique @map("default_address")
   nonce          String?
   email          String?        @unique

@@ -18,10 +18,6 @@ import {
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GithubProvider from 'next-auth/providers/github';
 
-const generateNonce = () => {
-  return nanoid()
-}
-
 type Credentials = {
   nonce: string;
   userId: string;
@@ -74,15 +70,50 @@ export const authOptions = (
   async function signUser(user: User, credentials: Credentials): Promise<User | null> {
     const walletParse: ParsedWallet = JSON.parse(credentials.wallet)
     const signatureParse = JSON.parse(credentials.signature)
-    // TODO: add nonce verification: compare with user's database entry
+
+    if (walletParse.type === 'nautilus') {
+      const signedMessageSplit = signatureParse.signedMessage.split(";");
+      const nonce = signedMessageSplit[0];
+      const url = signedMessageSplit[1];
+      // console.log('\x1b[32m', 'Nonce: ', '\x1b[0m', nonce);
+      // console.log('\x1b[32m', 'URL: ', '\x1b[0m', url);
+      if (nonce !== user.nonce) {
+        console.error(`Nonce doesn't match`)
+        throw new Error(`Nonce doesn't match`)
+      }
+      if (process.env.AUTH_DOMAIN !== `https://${url}`) {
+        console.error(`Source domain is invalid`)
+        throw new Error('Source domain is invalid')
+      }
+    }
+    else if (walletParse.type === 'mobile') {
+      const nonce = signatureParse.signedMessage.slice(20, 41);
+      const url = signatureParse.signedMessage.slice(41, -20);
+      // console.log('\x1b[32m', 'Nonce: ', '\x1b[0m', nonce);
+      // console.log('\x1b[32m', 'URL: ', '\x1b[0m', url);
+      if (nonce !== user.nonce) {
+        console.error(`Nonce doesn't match`)
+        throw new Error(`Nonce doesn't match`)
+      }
+      if (url !== process.env.AUTH_DOMAIN) {
+        console.error(`Source domain is invalid`)
+        throw new Error('Source domain is invalid')
+      }
+    }
+    else {
+      throw new Error('Unrecognized wallet type')
+    }
+
     const result = verifySignature(walletParse.defaultAddress, signatureParse.signedMessage, signatureParse.proof, walletParse.type)
+    // console.log('\x1b[32m', 'Wallet info', '\x1b[0m', walletParse);
+    // console.log('\x1b[32m', 'User Nonce', '\x1b[0m', user.nonce);
     // console.log('Address signed in with: ' + walletParse.defaultAddress)
     // console.log('Signed Message: ' + signatureParse.signedMessage)
     // console.log('Proof: ' + signatureParse.proof)
     // console.log(result)
     if (result) {
       // set a new nonce for the user to make sure an attacker can't reuse this one
-      const newNonce = generateNonce();
+      const newNonce = nanoid()
       prisma.user.update({
         where: {
           id: user.id
@@ -98,58 +129,70 @@ export const authOptions = (
   }
 
   async function createNewUser(credentials: Credentials): Promise<User | null> {
-    const { nonce, userId, signature, wallet } = credentials
-    const walletParse: ParsedWallet = JSON.parse(wallet)
-    const signatureParse = JSON.parse(signature)
-    // console.log(walletParse)
+    const { nonce, userId, signature, wallet } = credentials;
+    const walletParse: ParsedWallet = JSON.parse(wallet);
+    const signatureParse = JSON.parse(signature);
 
-    const user = await prisma.user.update({
-      where: {
-        id: userId
-      },
-      data: {
-        name: walletParse.defaultAddress,
-        defaultAddress: walletParse.defaultAddress,
-        nonce,
-        wallets: {
-          create: [
-            {
-              type: walletParse.type,
-              changeAddress: walletParse.defaultAddress,
-              unusedAddresses: walletParse.unusedAddresses,
-              usedAddresses: walletParse.usedAddresses
-            }
-          ]
-        }
-      },
-    })
-    if (!user) null
+    try {
+      const result = verifySignature(walletParse.defaultAddress, signatureParse.signedMessage, signatureParse.proof, walletParse.type);
 
-    const account = await prisma.account.create({
-      data: {
-        userId: user.id,
-        type: 'credentials',
-        provider: 'credentials',
-        providerAccountId: walletParse.defaultAddress,
-      },
-    })
+      if (!result) {
+        await prisma.user.delete({ where: { id: userId } });
+        throw new Error("Verification failed.");  // Throw error if verification fails
+      }
 
-    const result = verifySignature(walletParse.defaultAddress, signatureParse.signedMessage, signatureParse.proof, walletParse.type)
-
-    if (user && account && result) {
-      // set a new nonce for the user to make sure an attacker can't reuse this one
-      const newNonce = generateNonce();
-      prisma.user.update({
-        where: {
-          id: user.id
-        },
+      const user = await prisma.user.update({
+        where: { id: userId },
         data: {
-          nonce: newNonce
+          name: walletParse.defaultAddress,
+          defaultAddress: walletParse.defaultAddress,
+          nonce,
+          wallets: {
+            create: [
+              {
+                type: walletParse.type,
+                changeAddress: walletParse.defaultAddress,
+                unusedAddresses: walletParse.unusedAddresses,
+                usedAddresses: walletParse.usedAddresses
+              }
+            ]
+          }
         }
-      })
-      return user
+      });
+
+      if (!user) {
+        await prisma.user.delete({ where: { id: userId } });
+        throw new Error("User update failed.");  // Throw error if user update fails
+      }
+
+      const account = await prisma.account.create({
+        data: {
+          userId: user.id,
+          type: 'credentials',
+          provider: 'credentials',
+          providerAccountId: walletParse.defaultAddress,
+        }
+      });
+
+      if (user && account && result) {
+        const newNonce = nanoid()
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            nonce: newNonce,
+            status: 'active'
+          }
+        });
+        return user;
+      } else {
+        await prisma.user.delete({ where: { id: userId } });
+        throw new Error("Failed to create account or update nonce.");  // Throw error if account creation or nonce update fails
+      }
+    } catch (error) {
+      console.error("Error creating new user: ", error);
+      await prisma.user.delete({ where: { id: userId } });
+      return null;
     }
-    return null
   }
 
   return {
@@ -206,13 +249,14 @@ export const authOptions = (
                 id: userId,
               },
               include: {
-                wallets: true // This fetches the associated wallets along with the user
+                wallets: true
               }
             });
 
             if (user && user.wallets.length > 0) {
               return signUser(user, credentials as Credentials)
-            } else if (user && user.wallets.length === 0) {
+            } else if (user && user.wallets.length === 0
+            ) {
               return createNewUser(credentials as Credentials)
             } else throw new Error('Unable to verify user')
           } catch (error) {
@@ -301,10 +345,10 @@ export const authOptions = (
         token: JWT;
         user: any;
       }) {
-        console.log('\x1b[32m', 'Get auth session', '\x1b[0m', {
-          url: req.url,
-          method: req.method,
-        });
+        // console.log('\x1b[32m', 'Get auth session', '\x1b[0m', {
+        //   url: req.url,
+        //   method: req.method,
+        // });
         // we have to get the cookie to get the session ID because 
         // it doesn't seem possible to pass it along the auth flow
         const cookie = getCookie(`next-auth.session-token`, {

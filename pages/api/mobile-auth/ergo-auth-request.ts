@@ -1,4 +1,5 @@
 import { prisma } from '@server/prisma';
+import { deleteEmptyUser } from '@server/utils/deleteEmptyUser';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 interface ErgoAuthRequest {
@@ -31,12 +32,14 @@ export default async function ergoauthLoginMobile(req: NextApiRequest, res: Next
   }
 
   if (!user.nonce) {
+    if (user.status === 'pending') deleteEmptyUser(user.id)
     return res.status(422).json({ error: 'Signing message was not generated, please try again' });
   }
 
   const address = user.defaultAddress;
 
   if (!address) {
+    if (user.status === 'pending') deleteEmptyUser(user.id)
     return res.status(422).json({ error: 'User address not found' });
   }
 
@@ -96,6 +99,7 @@ export default async function ergoauthLoginMobile(req: NextApiRequest, res: Next
     // console.log(ergoAuthRequest)
     res.status(200).json(ergoAuthRequest);
   } catch (e: any) {
+    if (user.status === 'pending') deleteEmptyUser(user.id)
     res.status(500).json({ error: `ERR::login::${e.message}` });
   }
 }

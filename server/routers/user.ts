@@ -1,6 +1,7 @@
 import { verifySignature } from '@pages/api/auth/[...nextauth]';
 import { prisma } from '@server/prisma';
 import { checkAddressAvailability } from '@server/utils/checkAddress';
+import { deleteEmptyUser } from '@server/utils/deleteEmptyUser';
 import { nanoid } from 'nanoid';
 import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
@@ -42,6 +43,20 @@ export const userRouter = createTRPCRouter({
 
       return { nonce };
     }),
+  getNonceProtected: protectedProcedure
+    .query(async ({ ctx }) => {
+      const { session } = ctx;
+      const nonce = nanoid();
+      // Update the user's nonce in the database
+      const updatedUser = await prisma.user.update({
+        where: { id: session.user.id },
+        data: { nonce },
+      });
+      if (!updatedUser) {
+        throw new Error('Unable to generate nonce')
+      }
+      return { nonce };
+    }),
   checkAddressAvailable: publicProcedure
     .input(z.object({
       address: z.string().optional(),
@@ -57,7 +72,7 @@ export const userRouter = createTRPCRouter({
       if (result.status === "unavailable") {
         return {
           status: "unavailable",
-          message: "Address is in use in some form."
+          message: "Address is in use"
         };
       }
 
@@ -82,20 +97,52 @@ export const userRouter = createTRPCRouter({
       const userId = ctx.session.user.id
       const { address, nonce, signature, wallet } = input
       const { type, defaultAddress, usedAddresses, unusedAddresses } = wallet
-      // TODO: verify that nonce is in the signed message
-      // verify that signedMessage includes the correct source URL
+      const user = await prisma.user.findUnique({
+        where: {
+          id: userId
+        }
+      });
+
+      if (!user) {
+        throw new Error("User not found in database");
+      }
+
+      if (type === 'nautilus') {
+        const signedMessageSplit = signature.signedMessage.split(";");
+        const nonce = signedMessageSplit[0];
+        const url = signedMessageSplit[1];
+        // console.log('\x1b[32m', 'Nonce: ', '\x1b[0m', nonce);
+        // console.log('\x1b[32m', 'URL: ', '\x1b[0m', url);
+        // console.log('\x1b[32m', 'User nonce: ', '\x1b[0m', user.nonce);
+        if (nonce !== user.nonce) {
+          console.error(`Nonce doesn't match`)
+          throw new Error(`Nonce doesn't match`)
+        }
+        if (process.env.AUTH_DOMAIN !== `https://${url}`) {
+          console.error(`Source domain is invalid`)
+          throw new Error('Source domain is invalid')
+        }
+      }
+      else if (type === 'mobile') {
+        const nonce = signature.signedMessage.slice(20, 41);
+        const url = signature.signedMessage.slice(41, -20);
+        // console.log('\x1b[32m', 'Nonce: ', '\x1b[0m', nonce);
+        // console.log('\x1b[32m', 'URL: ', '\x1b[0m', url);
+        if (nonce !== user.nonce) {
+          console.error(`Nonce doesn't match`)
+          throw new Error(`Nonce doesn't match`)
+        }
+        if (url !== process.env.AUTH_DOMAIN) {
+          console.error(`Source domain is invalid`)
+          throw new Error('Source domain is invalid')
+        }
+      }
+      else {
+        throw new Error('Unrecognized wallet type')
+      }
+
       const verified = verifySignature(address, signature.signedMessage, signature.proof, wallet.type)
       if (verified) {
-        const user = await prisma.user.findUnique({
-          where: {
-            id: userId
-          }
-        });
-
-        if (!user) {
-          throw new Error("User not found in database");
-        }
-
         // Construct update data
         const updateData: {
           wallets: any,
@@ -138,6 +185,15 @@ export const userRouter = createTRPCRouter({
       const userId = ctx.session.user.id
       const verificationId = nanoid();
       const nonce = nanoid();
+
+      const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: { nonce },
+      });
+
+      if (!updatedUser) {
+        throw new Error('Unable to add nonce to user in database')
+      }
 
       const isAvailable = await checkAddressAvailability(input.address)
 
@@ -384,4 +440,13 @@ export const userRouter = createTRPCRouter({
 
       return { success: true }
     }),
+  deleteEmptyUser: publicProcedure
+    .input(z.object({
+      userId: z.string()
+    }))
+    .mutation(async ({ input }) => {
+      const deleteUser = await deleteEmptyUser(input.userId)
+      if (deleteUser.success) return { success: true }
+      else return { error: deleteUser.error }
+    })
 });

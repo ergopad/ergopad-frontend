@@ -73,28 +73,34 @@ const AddMobileOpen: FC<IAddMobileOpen> = ({ localLoading, setLocalLoading, setM
   };
 
   const addAddress = async () => {
-    // console.log(signature)
-    if (signature && nonce) {
-      const response = await mutateAddAddress.mutateAsync({
-        nonce,
-        address,
-        signature: signature,
-        wallet: {
-          type: 'mobile',
-          defaultAddress: address,
+    try {
+      if (signature && nonce) {
+        const response = await mutateAddAddress.mutateAsync({
+          nonce,
+          address,
+          signature: signature,
+          wallet: {
+            type: 'mobile',
+            defaultAddress: address,
+          }
+        });
+
+        if (response.defaultAddress) {
+          setWallet(response.defaultAddress)
+          setModalOpen(false)
+          setExpanded(undefined)
+          setLocalLoading(false)
+        } else {
+          setLocalLoading(false)
+          setErrorMessage('Error: address not added')
         }
-      });
-      if (response.defaultAddress) {
-        // console.log(response.defaultAddress)
-        setWallet(response.defaultAddress)
-        // setMessage(`Address ${address} successfully added`)
-        setModalOpen(false)
-        setExpanded(undefined)
-        setLocalLoading(false)
       }
-      else {
-        setLocalLoading(false)
-        setErrorMessage('Error: address not added')
+    } catch (error: any) {
+      setLocalLoading(false)
+      if (error.message && error.message.includes("Nonce doesn't match")) {
+        setErrorMessage('Error: Nonce doesn\'t match database, try again or contact support')
+      } else {
+        setErrorMessage('An unexpected error occurred.')
       }
     }
   }

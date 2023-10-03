@@ -31,6 +31,7 @@ const NautilusLogin: FC<INautilusLogin> = ({ setExpanded, setLoading, localLoadi
   const [newNonce, setNewNonce] = useState<NonceResponse | undefined>(undefined)
   const { wallet, setWallet, setDAppWallet, sessionData, sessionStatus, fetchSessionData } = useWallet()
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
+  const deleteEmptyUser = trpc.user.deleteEmptyUser.useMutation()
 
   useEffect(() => {
     if (defaultAddress && dappConnected && sessionStatus === 'unauthenticated') {
@@ -73,7 +74,7 @@ const NautilusLogin: FC<INautilusLogin> = ({ setExpanded, setLoading, localLoadi
         setNewNonce(response.data.nonce)
       })
       .catch((error: any) => {
-        console.error('This is an error: ' + error);
+        console.error('Nonce error: ' + error);
         setErrorMessage(error.message)
         setLocalLoading(false)
       });
@@ -88,46 +89,72 @@ const NautilusLogin: FC<INautilusLogin> = ({ setExpanded, setLoading, localLoadi
   }, [newNonce, sessionStatus])
 
   const verifyOwnership = async (nonce: NonceResponse, address: string) => {
-    try {
-      if (nonce) {
-        setLoading(true);
-        // console.log('nonce: ' + nonce);
-        // @ts-ignore
-        const signature = await ergo.auth(address, nonce);
-        // console.log(signature);
-        if (signature) {
-          const response = await signIn("credentials", {
-            nonce: nonce.nonce,
-            userId: nonce.userId,
-            signature: JSON.stringify(signature),
-            wallet: JSON.stringify({
-              type: 'nautilus',
-              defaultAddress: defaultAddress,
-              usedAddresses,
-              unusedAddresses
-            }),
-            redirect: false
-          });
-          if (!response?.status || response.status !== 200) {
-            setDefaultAddress(undefined);
-            setDappConnected(false)
-            window.ergoConnector.nautilus.disconnect();
-          }
-        }
-      }
-      else throw new Error('Invalid nonce')
-    } catch (error) {
-      setDefaultAddress(undefined);
-      setDappConnected(false)
-      window.ergoConnector.nautilus.disconnect();
-      console.error(error);
-    } finally {
-      await fetchSessionData()
-      setLoading(false);
-      setLocalLoading(false)
-      setExpanded(undefined)
-      setModalOpen(false)
+    if (!nonce) {
+      console.error('Invalid nonce');
+      cleanup();
+      return;
     }
+
+    setLoading(true);
+    // console.log('nonce: ' + nonce.nonce);
+
+    try {
+      // Try for ergo.auth
+      // @ts-ignore
+      const signature = await ergo.auth(address, nonce.nonce);
+      // console.log(signature);
+
+      if (!signature.signedMessage || !signature.proof) {
+        console.error('signature failed to generate');
+        cleanupForAuth(nonce);
+        return;
+      }
+
+      try {
+        // Try for signIn
+        const response = await signIn("credentials", {
+          nonce: nonce.nonce,
+          userId: nonce.userId,
+          signature: JSON.stringify(signature),
+          wallet: JSON.stringify({
+            type: 'nautilus',
+            defaultAddress: defaultAddress,
+            usedAddresses,
+            unusedAddresses
+          }),
+          redirect: false
+        });
+
+        if (!response?.status || response.status !== 200) {
+          cleanupForAuth(nonce);
+          return;
+        }
+
+      } catch (error) {
+        console.error('Error during signIn:', error);
+        cleanupForAuth(nonce);
+        return;
+      }
+
+    } catch (error) {
+      console.error('Error during wallet signature:', error);
+      cleanupForAuth(nonce);
+    } finally {
+      await fetchSessionData();
+      setLoading(false);
+      setLocalLoading(false);
+      setExpanded(undefined);
+      setModalOpen(false);
+    }
+  };
+
+  const cleanupForAuth = (nonce: NonceResponse) => {
+    setDefaultAddress(undefined);
+    setDappConnected(false);
+    deleteEmptyUser.mutateAsync({
+      userId: nonce.userId
+    });
+    window.ergoConnector.nautilus.disconnect();
   };
 
   const cleanup = () => {
