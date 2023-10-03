@@ -119,7 +119,7 @@ export const userRouter = createTRPCRouter({
           throw new Error(`Nonce doesn't match`)
         }
         if (process.env.AUTH_DOMAIN !== `https://${url}`) {
-          console.error(`Source domain should be ${process.env.AUTH_DOMAIN} but is https://${url} `)
+          console.error(`Source domain doesn't match`)
           throw new Error('Source domain is invalid')
         }
       }
