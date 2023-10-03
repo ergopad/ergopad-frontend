@@ -10,18 +10,25 @@ import {
   Modal,
   Snackbar,
   Typography,
+  Alert,
   useMediaQuery,
+  useTheme
 } from '@mui/material';
-import MuiAlert from '@mui/material/Alert';
 import axios from 'axios';
-import { useEffect, useState, forwardRef } from 'react';
-import { useWallet } from 'utils/WalletContext';
+import { useEffect, useState, FC } from 'react';
+import { useWallet } from '@utils/WalletContext';
 import TransactionSubmitted from '@components/TransactionSubmitted';
 import ErgopayModalBody from '@components/ErgopayModalBody';
 
-const Alert = forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+type VestingBox = {
+  boxId: string;
+  Remaining: number;
+  Redeemable: number;
+  "Vesting Key Id": string;
+  "Next unlock": string;
+  address: string;
+  type: string;
+};
 
 const modalStyle = {
   position: 'absolute',
@@ -37,13 +44,13 @@ const modalStyle = {
 
 // const NERG_FEES = 20 * 1000 * 1000;
 
-const initFormData = Object.freeze({
+const initFormData = {
   address: '',
-});
+}
 
-const initFormErrors = Object.freeze({
+const initFormErrors = {
   address: false,
-});
+}
 
 const defaultOptions = {
   headers: {
@@ -51,8 +58,14 @@ const defaultOptions = {
   },
 };
 
-const TokenRedeemModal = ({ box, onClose }) => {
-  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
+type Props = {
+  box: VestingBox;
+  onClose: Function;
+}
+
+const TokenRedeemModal: FC<Props> = ({ box, onClose }) => {
+  const theme = useTheme()
+  const checkSmall = useMediaQuery(() => theme.breakpoints.up('md'));
   // wallet
   const { wallet } = useWallet();
   // form
@@ -71,11 +84,14 @@ const TokenRedeemModal = ({ box, onClose }) => {
   const [transactionSubmitted, setTransactionSubmitted] = useState(null);
   const [ergopayUrl, setErgopayUrl] = useState(null);
 
-  const redeemWithNautilus = async (walletAddress) => {
-    const connected = await ergoConnector.nautilus.connect();
+  const redeemWithNautilus = async (walletAddress: string) => {
+    const connected = await window.ergoConnector.nautilus.connect();
     if (connected) {
+      // @ts-ignore
       const address = await ergo.get_change_address();
+      // @ts-ignore
       const usedAddresses = await ergo.get_used_addresses();
+      // @ts-ignore
       const unusedAddresses = await ergo.get_unused_addresses();
       if (
         address === walletAddress ||
@@ -85,7 +101,7 @@ const TokenRedeemModal = ({ box, onClose }) => {
         handleSubmit(walletAddress, [...usedAddresses, ...unusedAddresses])
       }
       else {
-        ergoConnector.nautilus.disconnect()
+        window.ergoConnector.nautilus.disconnect()
         setErrorMessage('Please connect the correct Nautilus wallet');
         setOpenError(true);
         redeemWithNautilus(walletAddress)
@@ -107,17 +123,17 @@ const TokenRedeemModal = ({ box, onClose }) => {
   }, [loading, formErrors.address, ergopayLoading]);
 
   // snackbar for error reporting
-  const handleCloseError = (e, reason) => {
+  const handleCloseError = (e: any, reason: string) => {
     if (reason === 'clickaway') {
       return;
     }
     setOpenError(false);
   };
 
-  const handleSubmit = async (address, addresses) => {
+  const handleSubmit = async (address: string, addresses: any[]) => {
     setLoading(true);
     const emptyCheck = Object.values(formData).every(
-      (v) => v !== '' && v !== 0
+      (v) => v !== ''
     );
     const errorCheck = Object.values(formErrors).every((v) => v === false);
     if (emptyCheck && errorCheck) {
@@ -137,10 +153,12 @@ const TokenRedeemModal = ({ box, onClose }) => {
           defaultOptions
         );
         const unsignedtx = res.data;
-        const signedtx = await ergo.sign_tx(unsignedtx); // eslint-disable-line
-        const ok = await ergo.submit_tx(signedtx); // eslint-disable-line
+        // @ts-ignore
+        const signedtx = await ergo.sign_tx(unsignedtx);
+        // @ts-ignore
+        const ok = await ergo.submit_tx(signedtx);
         setTransactionSubmitted(ok);
-      } catch (e) {
+      } catch (e: any) {
         // snackbar for error message
         if (e.response) {
           setErrorMessage(
@@ -164,7 +182,7 @@ const TokenRedeemModal = ({ box, onClose }) => {
   const handleSubmitErgopay = async () => {
     setErgopayLoading(true);
     const emptyCheck = Object.values(formData).every(
-      (v) => v !== '' && v !== 0
+      (v) => v !== ''
     );
     const errorCheck = Object.values(formErrors).every((v) => v === false);
     if (emptyCheck && errorCheck) {
@@ -180,7 +198,7 @@ const TokenRedeemModal = ({ box, onClose }) => {
           defaultOptions
         );
         setErgopayUrl(res.data.url);
-      } catch (e) {
+      } catch (e: any) {
         // snackbar for error message
         if (e.response) {
           setErrorMessage(
@@ -221,9 +239,9 @@ const TokenRedeemModal = ({ box, onClose }) => {
             <>
               {transactionSubmitted || ergopayUrl ? (
                 transactionSubmitted ? (
-                  <TransactionSubmitted transactionId={transactionSubmitted} />
+                  <TransactionSubmitted transactionId={transactionSubmitted} pending={undefined} />
                 ) : (
-                  <ErgopayModalBody ergopayUrl={ergopayUrl} />
+                  <ErgopayModalBody ergopayUrl={ergopayUrl!} address={box.address} pending={undefined} />
                 )
               ) : (
                 <Box>
@@ -233,7 +251,6 @@ const TokenRedeemModal = ({ box, onClose }) => {
                         variant="filled"
                         fullWidth
                         required
-                        name="address"
                         error={formErrors.address}
                       >
                         <InputLabel
@@ -312,7 +329,6 @@ const TokenRedeemModal = ({ box, onClose }) => {
         onClose={handleCloseError}
       >
         <Alert
-          onClose={handleCloseError}
           severity="error"
           sx={{ width: '100%' }}
         >
