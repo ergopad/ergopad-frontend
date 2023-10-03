@@ -19,6 +19,7 @@ export const NextLinkComposed = React.forwardRef(function NextLinkComposed(props
       shallow={shallow}
       passHref={passHref}
       locale={locale}
+      legacyBehavior
     >
       <a ref={ref} {...other} />
     </NextLink>

@@ -54,7 +54,7 @@ const Job = () => {
               <Typography variant="h2" sx={{ mt: 5 }}>
                 {job.title}
               </Typography>
-              <Typography variant="p">{job.shortDescription}</Typography>
+              <Typography variant="body2">{job.shortDescription}</Typography>
               <Divider sx={{ width: '2rem', mb: '1.5rem' }} />
               {job.description && (
                 <>
@@ -67,7 +67,7 @@ const Job = () => {
               <Typography variant="h4" sx={{ mt: '2rem' }}>
                 Apply
               </Typography>
-              <Typography variant="p">
+              <Typography variant="body2">
                 Join the{' '}
                 <MuiNextLink
                   href="https://discord.gg/Ph9Wsw6v"

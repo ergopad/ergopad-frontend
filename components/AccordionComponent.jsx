@@ -39,7 +39,7 @@ const AccordionComponent = ({ accordionItems, uniqueId }) => {
                 </AccordionSummary>
     
                 <AccordionDetails>
-                    <Typography variant="p">
+                    <Typography variant="body2">
                         {item.bodyText}
                     </Typography>
                 </AccordionDetails>

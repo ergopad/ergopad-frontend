@@ -54,7 +54,7 @@ const defaultOptions = {
 const TokenRedeemModal = ({ box, onClose }) => {
   const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
   // wallet
-  const { wallet, dAppWallet } = useWallet();
+  const { wallet } = useWallet();
   // form
   const [formErrors, setFormErrors] = useState(initFormErrors);
   const [formData, setFormData] = useState(initFormData);
@@ -71,14 +71,36 @@ const TokenRedeemModal = ({ box, onClose }) => {
   const [transactionSubmitted, setTransactionSubmitted] = useState(null);
   const [ergopayUrl, setErgopayUrl] = useState(null);
 
+  const redeemWithNautilus = async (walletAddress) => {
+    const connected = await ergoConnector.nautilus.connect();
+    if (connected) {
+      const address = await ergo.get_change_address();
+      const usedAddresses = await ergo.get_used_addresses();
+      const unusedAddresses = await ergo.get_unused_addresses();
+      if (
+        address === walletAddress ||
+        usedAddresses.includes(walletAddress) ||
+        unusedAddresses.includes(walletAddress)
+      ) {
+        handleSubmit(walletAddress, [...usedAddresses, ...unusedAddresses])
+      }
+      else {
+        ergoConnector.nautilus.disconnect()
+        setErrorMessage('Please connect the correct Nautilus wallet');
+        setOpenError(true);
+        redeemWithNautilus(walletAddress)
+      }
+    }
+  };
+
   useEffect(() => {
-    setFormData({ address: wallet });
-    if (wallet !== '') {
+    setFormData({ address: box?.address });
+    if (box?.address !== '') {
       setFormErrors({ address: false });
     } else {
       setFormErrors({ address: true });
     }
-  }, [wallet]);
+  }, [box?.address]);
 
   useEffect(() => {
     setButtonDisabled(loading || ergopayLoading || formErrors.address);
@@ -92,7 +114,7 @@ const TokenRedeemModal = ({ box, onClose }) => {
     setOpenError(false);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (address, addresses) => {
     setLoading(true);
     const emptyCheck = Object.values(formData).every(
       (v) => v !== '' && v !== 0
@@ -100,17 +122,17 @@ const TokenRedeemModal = ({ box, onClose }) => {
     const errorCheck = Object.values(formErrors).every((v) => v === false);
     if (emptyCheck && errorCheck) {
       try {
-        const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
-          (x, i, a) => a.indexOf(x) == i && x
-        );
+        // const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
+        //   (x, i, a) => a.indexOf(x) == i && x
+        // );
         const res = await axios.post(
           `${process.env.API_URL}/vesting/redeemWithNFT`,
           {
             boxId: box.boxId,
-            address: formData.address,
+            address: address,
             utxos: [],
             txFormat: 'eip-12',
-            addresses: [...walletAddresses],
+            addresses: addresses,
           },
           defaultOptions
         );
@@ -151,7 +173,7 @@ const TokenRedeemModal = ({ box, onClose }) => {
           `${process.env.API_URL}/vesting/redeemWithNFT`,
           {
             boxId: box.boxId,
-            address: formData.address,
+            address: box.address,
             utxos: [],
             txFormat: 'ergo_pay',
           },
@@ -222,7 +244,7 @@ const TokenRedeemModal = ({ box, onClose }) => {
                         </InputLabel>
                         <FilledInput
                           id="address"
-                          value={formData.address}
+                          value={formData.address ? formData.address : ''}
                           disabled
                           disableUnderline={true}
                           name="address"
@@ -240,7 +262,7 @@ const TokenRedeemModal = ({ box, onClose }) => {
                       </FormControl>
                     </Grid>
                     <Grid item xs={12}>
-                      <Typography variant="p" sx={{ fontSize: '1rem', mb: 0 }}>
+                      <Typography variant="body2" sx={{ fontSize: '1rem', mb: 0 }}>
                         You can now redeem <b>{box ? box['Redeemable'] : 0} </b>
                         tokens.
                       </Typography>
@@ -248,10 +270,10 @@ const TokenRedeemModal = ({ box, onClose }) => {
                   </Grid>
                   <Button
                     type="submit"
-                    disabled={buttonDisabled || !dAppWallet.connected}
+                    disabled={buttonDisabled || box.type === 'mobile'}
                     variant="contained"
                     sx={{ mt: 3, color: '#fff', textTransform: 'none', mr: 1 }}
-                    onClick={handleSubmit}
+                    onClick={() => redeemWithNautilus(box.address)}
                   >
                     Claim with browser wallet
                     {loading && (
@@ -263,7 +285,7 @@ const TokenRedeemModal = ({ box, onClose }) => {
                   </Button>
                   <Button
                     type="submit"
-                    disabled={buttonDisabled}
+                    disabled={buttonDisabled || box.type === 'nautilus'}
                     variant="contained"
                     sx={{ mt: 3, color: '#fff', textTransform: 'none' }}
                     onClick={handleSubmitErgopay}

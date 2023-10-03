@@ -24,12 +24,12 @@ import axios from 'axios';
 
 const SortButton = styled(Button)({
   borderRadius: `20px`,
-  background: theme.palette.greyButton.background,
-  color: theme.palette.text.tertiary,
+  background: 'rgb(46, 46, 51)',
+  color: 'rgb(228, 228, 231)',
   fontSize: '1rem',
   textTransform: 'none',
   '&:hover': {
-    background: theme.palette.greyButton.hover,
+    background: 'rgba(63,62,68,255)',
   },
 });
 

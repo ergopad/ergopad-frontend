@@ -41,11 +41,11 @@ const Search = (props, { placeholder }) => {
             <Paper
                 component="form"
                 onSubmit={submitForm}
-                sx={{ 
-                    p: '8px', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    background: theme.palette.greyButton.background,
+                sx={{
+                    p: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    background: 'rgb(46, 46, 51)',
                     border: '1px solid',
                     borderColor: 'rgba(82,82,90,1)',
                     width: {
@@ -67,8 +67,8 @@ const Search = (props, { placeholder }) => {
                 />
 
             </Paper>
-                <div id="top"></div>
-            
+            <div id="top"></div>
+
         </>
     )
 }

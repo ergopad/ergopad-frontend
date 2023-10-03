@@ -69,13 +69,13 @@ const StakingTiers = () => {
       <Typography variant="h5" sx={{ fontWeight: '700' }}>
         Staking Tiers
       </Typography>
-      <Typography variant="p" sx={{ fontSize: '1rem' }}>
+      <Typography variant="body2" sx={{ fontSize: '1rem' }}>
         If you stake enough tokens to reach one of the following staking tiers, you will have an opportunity to get into reserved early contribution rounds to any of the projects that IDO through Ergopad. We will take a snapshot at a specific time and date, as outlined in that project&apos;s roadmap. In order to be considered for the snapshot, please remember to sign your wallet address up for the appropriate whitelist. 
       </Typography>
-      <Typography variant="p" sx={{ fontSize: '1rem' }}>
+      <Typography variant="body2" sx={{ fontSize: '1rem' }}>
         Note that you can meet more than one tier at once. For example, if you stake 75,000 tokens at one address, you will qualify for both Alpha and Beta tiers. 
       </Typography>
-      <Typography variant="p" sx={{ fontSize: '1rem' }}>
+      <Typography variant="body2" sx={{ fontSize: '1rem' }}>
         Be sure to follow our socials and check the announcement channels to keep informed about upcoming IDOs and important dates. 
       </Typography>
 

@@ -37,10 +37,10 @@ const Roadmap = ({ data }) => {
               <Typography variant="h5" sx={{ mt: '-3px' }}>
                 {item?.name}
               </Typography>
-              <Typography variant="p" sx={{ mb: 1 }}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
                 {itemTime.slice(0, 10) + ', ' + itemTime.slice(11, 16) + ' UTC'}
               </Typography>
-              <Typography variant="p" sx={{ fontSize: '1rem', mb: 1 }}>
+              <Typography variant="body2" sx={{ fontSize: '1rem', mb: 1 }}>
                 {item?.description}
               </Typography>
             </TimelineContent>

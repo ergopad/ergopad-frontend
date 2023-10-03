@@ -12,12 +12,12 @@ const faqItems = [];
 
 const SortButton = styled(Button)({
   borderRadius: `20px`,
-  background: theme.palette.greyButton.background,
-  color: theme.palette.text.tertiary,
+  background: 'rgb(46, 46, 51)',
+  color: 'rgb(228, 228, 231)',
   fontSize: '1rem',
   textTransform: 'none',
   '&:hover': {
-    background: theme.palette.greyButton.hover,
+    background: 'rgba(63,62,68,255)',
   },
 });
 
@@ -100,10 +100,10 @@ const Faq = () => {
             sx={
               tag === 'token'
                 ? {
-                    background: theme.palette.primary.active,
+                    background: 'rgba(49, 151, 149, 0.25)',
                     color: theme.palette.primary.main,
                     '&:hover': {
-                      background: theme.palette.primary.active,
+                      background: 'rgba(49, 151, 149, 0.25)',
                     },
                   }
                 : {}
@@ -119,10 +119,10 @@ const Faq = () => {
             sx={
               tag === 'Staking'
                 ? {
-                    background: theme.palette.secondary.active,
+                    background: 'rgba(128, 90, 213, 0.25)',
                     color: theme.palette.secondary.main,
                     '&:hover': {
-                      background: theme.palette.secondary.active,
+                      background: 'rgba(128, 90, 213, 0.25)',
                     },
                   }
                 : {}
@@ -138,10 +138,10 @@ const Faq = () => {
             sx={
               tag === 'company'
                 ? {
-                    background: theme.palette.tertiary.active,
+                    background: 'rgba(90, 103, 216, 0.25)',
                     color: theme.palette.tertiary.main,
                     '&:hover': {
-                      background: theme.palette.tertiary.active,
+                      background: 'rgba(90, 103, 216, 0.25)',
                     },
                   }
                 : {}
@@ -170,7 +170,7 @@ const Faq = () => {
             uniqueId="faq"
           />
         ) : (
-          <Typography variant="p">No questions found</Typography>
+          <Typography variant="body2">No questions found</Typography>
         )}
       </Section>
     </>

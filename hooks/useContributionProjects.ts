@@ -7,8 +7,8 @@ export const useContributionProjects = () => {
 
     const contributionProjectsActive = useMemo(() => {
         if (data) {
-            return data.filter(project => project.additionalDetails.add_to_footer)
-                .sort(((a, b) => a.id - b.id))
+            return data.filter((project: any) => project.additionalDetails.add_to_footer)
+                .sort(((a: { id: number; }, b: { id: number; }) => a.id - b.id))
         } else {
             return [];
         }

@@ -17,7 +17,6 @@ const ListActiveProjects = () => {
   useEffect(() => {
     projectList.push(whiteListProjectsActive)
     projectList.push(contributionProjectsActive)
-    console.log(projectList)
   }, [whiteListProjectsActive, contributionProjectsActive])
 }
 

@@ -18,6 +18,7 @@ import VestingTable from '@components/dashboard/VestingTable';
 import StakingTable from '@components/dashboard/StakingTable';
 import StackedAreaPortfolioHistory from '@components/dashboard/StackedAreaPortfolioHistory';
 import PieChart from '@components/dashboard/PieChart';
+import { trpc } from '@utils/trpc';
 
 // CONFIG for portfolio history
 // step size
@@ -79,7 +80,6 @@ const paperStyle = {
 };
 
 const Dashboard = () => {
-  const { wallet, dAppWallet } = useWallet();
   const [vestedTokens, setVestedTokens] = useState([]);
   const [vestedTokensNFT, setVestedTokensNFT] = useState({});
   const [stakedTokens, setStakedTokens] = useState(initStakedData);
@@ -103,6 +103,61 @@ const Dashboard = () => {
   const [loadingStakingTable, setLoadingStakingTable] = useState(false);
   const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
   const [navigatorLanguage, setNavigatorLanguage] = useState('en-US');
+const [walletAddresses, setWalletAddresses] = useState([])
+const [addressesWithType, setAddressesWithType] = useState([])
+
+
+  const { wallet, providerLoading, sessionStatus } = useWallet()
+  const walletsQuery = trpc.user.getWallets.useQuery(
+    undefined,
+    {
+      refetchOnWindowFocus: false,
+    }
+  )
+  const getWallets = async () => {
+    console.log('trigger')
+    if (sessionStatus !== 'authenticated') {
+      return []
+    }
+    const fetchResult = await walletsQuery?.refetch();
+    return fetchResult && fetchResult.data ? fetchResult.data.wallets : [];
+  };
+  useEffect(() => {
+    // load staked tokens for primary wallet address
+    const getStaked = async () => {
+      setLoading(true);
+      try {
+        const wallets = await getWallets();
+        let addressesWithType = [];
+  
+        if (wallets && wallets.length > 0) {
+          for (let thisWallet of wallets) {
+            const walletType = thisWallet.type; // Extracting the type from the wallet object
+            for (let address of thisWallet.unusedAddresses) {
+              addressesWithType.push({ address: address, type: walletType });
+            }
+            for (let address of thisWallet.usedAddresses) {
+              addressesWithType.push({ address: address, type: walletType });
+            }
+            addressesWithType.push({ address: thisWallet.changeAddress, type: walletType });
+          }
+        }
+  
+        // Extracting unique addresses
+        const uniqueAddresses = [...new Set(addressesWithType.map(a => a.address))];
+        setWalletAddresses(uniqueAddresses);
+        setAddressesWithType(addressesWithType);
+      } catch (e) {
+        console.log('ERROR FETCHING: ', e);
+      }
+      setLoading(false);
+    };
+  
+    if (wallet !== '') {
+      getStaked();
+    }
+  }, [wallet]);
+
 
   useEffect(() => {
     let mounted = true;
@@ -282,42 +337,53 @@ const Dashboard = () => {
           'Content-Type': 'application/json',
         },
       };
-
-      /**
-       * V1 vested ergopad
-       */
-      // const vested = await axios
-      //   .post(
-      //     `${process.env.API_URL}/vesting/v1/`,
-      //     { addresses: [...addresses] },
-      //     { ...defaultOptions }
-      //   )
-      //   .catch((e) => {
-      //     console.log('ERROR FETCHING', e);
-      //     return {
-      //       data: {},
-      //     };
-      //   });
-      // setVestedTokens(reduceVested(vested.data));
-
-      /**
-       * V2 vested with NFT
-       */
-      const vestedTokensNFTResponse = await axios
-        .post(
-          `${process.env.API_URL}/vesting/v2/`,
-          { addresses: [...addresses] },
-          { ...defaultOptions }
-        )
-        .catch((e) => {
-          console.log('ERROR FETCHING', e);
-          return {
-            data: [],
-          };
-        });
-      setVestedTokensNFT(vestedTokensNFTResponse.data);
-
-      const tokens = Object.keys(vestedTokensNFTResponse.data);
+    
+      // Function to fetch vested tokens for a single address
+      const fetchVestedTokensForAddress = async (addressObject) => {
+        const { address, type } = addressObject;
+        const vestedTokensNFTResponse = await axios
+          .post(
+            `${process.env.API_URL}/vesting/v2/`,
+            { addresses: [address] },
+            { ...defaultOptions }
+          )
+          .catch((e) => {
+            console.log('ERROR FETCHING', e);
+            return {
+              data: [],
+            };
+          });
+    
+        // Append the address and type to the data
+        for (let key in vestedTokensNFTResponse.data) {
+          vestedTokensNFTResponse.data[key].forEach((item) => {
+            item.address = address;
+            item.type = type; // Include the 'type' property
+          });
+        }
+    
+        return vestedTokensNFTResponse.data;
+      };
+    
+      // Fetch vested tokens for all addresses
+      const allVestedTokens = await Promise.all(
+        addresses.map(fetchVestedTokensForAddress)
+      );
+    
+      // Combine all responses
+      const combinedData = allVestedTokens.reduce((acc, currData) => {
+        for (let key in currData) {
+          if (!acc[key]) {
+            acc[key] = [];
+          }
+          acc[key].push(...currData[key]);
+        }
+        return acc;
+      }, {});
+      // console.log(combinedData);
+      setVestedTokensNFT(combinedData);
+    
+      const tokens = Object.keys(combinedData);
       try {
         const pricesObject = {};
         const tokenPrices = await axios.post(
@@ -398,17 +464,17 @@ const Dashboard = () => {
       setLoadingStakingTable(false);
     };
 
-    const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
-      (x, i, a) => a.indexOf(x) == i && x
-    );
+    // const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
+    //   (x, i, a) => a.indexOf(x) == i && x
+    // );
     if (walletAddresses?.length > 0) {
       getWalletData(walletAddresses);
-      getVestedTokenData(walletAddresses);
+      getVestedTokenData(addressesWithType);
       getStakedTokenData(walletAddresses);
     } else {
       noAssetSetup();
     }
-  }, [wallet, dAppWallet.addresses]);
+  }, [wallet, walletAddresses]);
 
   useEffect(() => {
     // previous state
@@ -537,7 +603,7 @@ const Dashboard = () => {
                 </>
               ) : (
                 <>
-                  <Typography variant="p">
+                  <Typography variant="body2">
                     Not all tokens are shown in this chart
                   </Typography>
                   <StackedAreaPortfolioHistory data={historyDataAggregated} />

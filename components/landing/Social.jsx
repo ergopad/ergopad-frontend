@@ -22,12 +22,12 @@ const Social = () => {
         
         <Grid item xs={12} md={6} sx={{ mb: 10 }}>
           <Typography variant="h2">Social</Typography>
-          <Typography variant="p">
+          <Typography variant="body2">
             The Ergopad Social lets you keep track of all your Ergo assets,
             and displays all your staked and vested tokens, even when
             they&apos;re locked in smart contracts and not in your wallet.
           </Typography>
-          <Typography variant="p">Other features include:</Typography>
+          <Typography variant="body2">Other features include:</Typography>
           <List
             sx={{
               mt: -4,
@@ -63,11 +63,11 @@ const Social = () => {
               textTransform: 'none',
               backgroundColor: theme.palette.secondary.main,
               '&:hover': {
-                backgroundColor: theme.palette.secondary.hover,
+                backgroundColor: '#B886F9',
                 boxShadow: 'none',
               },
               '&:active': {
-                backgroundColor: theme.palette.secondary.active,
+                backgroundColor: 'rgba(128, 90, 213, 0.25)',
               },
             }}
           >

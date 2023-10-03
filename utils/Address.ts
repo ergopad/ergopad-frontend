@@ -2,10 +2,9 @@ import * as blake from 'blakejs';
 import * as bs58 from 'bs58';
 import * as ec from 'elliptic';
 
-const { curve } = ec.ec('secp256k1');
+const { curve } = new ec.ec('secp256k1');
 
-declare const console;
-declare const Buffer;
+declare const Buffer: any;
 
 export enum Network {
   Mainnet = 0 << 4,
@@ -36,13 +35,13 @@ export class Address {
 
       const pk = ergoTree.slice(6, 72);
       const contentBytes = Buffer.from(pk, 'hex');
-      const checksum = Buffer.from(blake.blake2b(Buffer.concat([prefixByte, contentBytes]), null, 32), 'hex');
+      const checksum = Buffer.from(blake.blake2b(Buffer.concat([prefixByte, contentBytes]), undefined, 32), 'hex');
       const address = Buffer.concat([prefixByte, contentBytes, checksum]).slice(0, 38);
       return new Address(bs58.encode(address));
     } else {
       const prefixByte = Buffer.from([network + AddressKind.P2S]);
       const contentBytes = Buffer.from(ergoTree, 'hex');
-      const hash = blake.blake2b(Buffer.concat([prefixByte, contentBytes]), null, 32);
+      const hash = blake.blake2b(Buffer.concat([prefixByte, contentBytes]), undefined, 32);
       const checksum = Buffer.from(hash, 'hex').slice(0, 4);
       const address = Buffer.concat([prefixByte, contentBytes, checksum]);
       return new Address(bs58.encode(address));
@@ -52,7 +51,7 @@ export class Address {
   public static fromPk(pk: string, network: Network = Network.Mainnet): Address {
     const prefixByte = Buffer.from([network + AddressKind.P2PK]);
     const contentBytes = Buffer.from(pk, 'hex');
-    const checksum = Buffer.from(blake.blake2b(Buffer.concat([prefixByte, contentBytes]), null, 32), 'hex');
+    const checksum = Buffer.from(blake.blake2b(Buffer.concat([prefixByte, contentBytes]), undefined, 32), 'hex');
     const address = Buffer.concat([prefixByte, contentBytes, checksum]).slice(0, 38);
 
     return new Address(bs58.encode(address));
@@ -88,7 +87,7 @@ export class Address {
     const size = this.addrBytes.length;
     const script = this.addrBytes.slice(0, size - 4);
     const checksum = this.addrBytes.slice(size - 4, size);
-    const calculatedChecksum = Buffer.from(blake.blake2b(script, null, 32), 'hex').slice(0, 4);
+    const calculatedChecksum = Buffer.from(blake.blake2b(script, undefined, 32), 'hex').slice(0, 4);
     return calculatedChecksum.toString('hex') === checksum.toString('hex');
   }
 

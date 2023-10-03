@@ -283,7 +283,7 @@ const Token = () => {
                         </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                        <Typography variant="p">
+                        <Typography variant="body2">
                             Your tokens will give you a vote on certain decisions, such as which projects are launched on ErgoPad. 
                         </Typography>
                         </AccordionDetails>
@@ -302,13 +302,13 @@ const Token = () => {
                             <Typography variant="h6">
                                 Tiers
                             </Typography>
-                            <Typography variant="p">
+                            <Typography variant="body2">
                                 The more you stake, the higher the tier. More detail found on the <MuiNextLink href="/staking">Staking Page</MuiNextLink>. 
                             </Typography>
                             <Typography variant="h6">
                                 Allocations
                             </Typography>
-                            <Typography variant="p">
+                            <Typography variant="body2">
                                 Each new IDO we release on ErgoPad will have a pre-sale for ErgoPad token stakers. Staking in a higher tier gives you an opportunity to get more tokens at the pre-sale price. 
                             </Typography>
                         </AccordionDetails>
@@ -324,7 +324,7 @@ const Token = () => {
                         </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                        <Typography variant="p">
+                        <Typography variant="body2">
                             We will add deflationary mechanics to the ErgoPad token. Similar to other platforms, there will be a lottery and other ways to earn which will also burn tokens. Early unstaking fees will be burned, removing those from the supply. 
                         </Typography>
                         </AccordionDetails>
@@ -340,7 +340,7 @@ const Token = () => {
                         </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                        <Typography variant="p">
+                        <Typography variant="body2">
                             If you aren&apos;t interested in investing in IDOs and feel liquidity farming will provide a greater yield than the current staking rewards, you can provide liquidity on ErgoDex. We may even release a dex of our own!
                         </Typography>
                         </AccordionDetails>
