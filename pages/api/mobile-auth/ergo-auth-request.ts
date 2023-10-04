@@ -12,7 +12,8 @@ interface ErgoAuthRequest {
 }
 
 export default async function ergoauthLoginMobile(req: NextApiRequest, res: NextApiResponse) {
-  const { verificationId } = req.query;
+  const { verificationId, address } = req.query;
+  const addressString = address?.toString()
 
   // Fetch the login request using the verificationId
   const loginRequest = await prisma.loginRequest.findUnique({
@@ -31,16 +32,14 @@ export default async function ergoauthLoginMobile(req: NextApiRequest, res: Next
     return res.status(422).json({ error: 'User not found' });
   }
 
+  if (!addressString) {
+    if (user.status === 'pending') deleteEmptyUser(user.id)
+    return res.status(422).json({ error: 'No address provided' });
+  }
+
   if (!user.nonce) {
     if (user.status === 'pending') deleteEmptyUser(user.id)
     return res.status(422).json({ error: 'Signing message was not generated, please try again' });
-  }
-
-  const address = user.defaultAddress;
-
-  if (!address) {
-    if (user.status === 'pending') deleteEmptyUser(user.id)
-    return res.status(422).json({ error: 'User address not found' });
   }
 
   try {
@@ -67,7 +66,7 @@ export default async function ergoauthLoginMobile(req: NextApiRequest, res: Next
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        addresses: [address],
+        addresses: [addressString],
       }),
     });
 
@@ -89,7 +88,7 @@ export default async function ergoauthLoginMobile(req: NextApiRequest, res: Next
     // console.log('sigma boolean: ' + sigmaBoolean)
 
     const ergoAuthRequest: ErgoAuthRequest = {
-      address,
+      address: addressString,
       signingMessage: user.nonce,
       sigmaBoolean: sigmaBoolean,
       userMessage: 'Sign the message to sign in to Ergopad',

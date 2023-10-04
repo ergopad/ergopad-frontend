@@ -160,7 +160,7 @@ const MobileLogin: FC<IMobileLogin> = ({ setModalOpen }) => {
         </Box>
         {errorMessage && (
           <Typography color="error">
-            Address already in use by another account
+            {errorMessage}
           </Typography>
         )}
       </Collapse>
@@ -175,10 +175,10 @@ const MobileLogin: FC<IMobileLogin> = ({ setModalOpen }) => {
       <Collapse in={verificationId !== null && !isSignatureProcessed}>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 3 }}>
           <Typography sx={{ mb: 2 }}>
-            Scan the QR code or click <Link href={`${ergoAuthDomain}/api/mobile-auth/ergo-auth-request?verificationId=${verificationId}`}>this link</Link> to sign in.
+            Scan the QR code or click <Link href={`${ergoAuthDomain}/api/mobile-auth/ergo-auth-request?verificationId=${verificationId}&address=${address}`}>this link</Link> to sign in.
           </Typography>
           <Box sx={{ display: 'inline-block', p: 4, background: '#fff', borderRadius: '12px' }}>
-            <QRCode value={`${ergoAuthDomain}/api/mobile-auth/ergo-auth-request?verificationId=${verificationId}`} />
+            <QRCode value={`${ergoAuthDomain}/api/mobile-auth/ergo-auth-request?verificationId=${verificationId}&address=${address}`} />
           </Box>
         </Box>
       </Collapse>
