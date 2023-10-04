@@ -11,7 +11,7 @@ interface ErgoAuthRequest {
   replyTo: string;
 }
 
-export default async function ergoauthLoginMobile(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { verificationId, address } = req.query;
   const addressString = address?.toString()
 
