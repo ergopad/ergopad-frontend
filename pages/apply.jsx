@@ -206,7 +206,6 @@ const Apply = () => {
 			/>
 
 			<Grid container maxWidth='lg' sx={{ mx: 'auto', flexDirection: 'row-reverse', px: { xs: 2, md: 3 } }}>
-
 				<Grid item md={8}>
 					<Box component="form" noValidate onSubmit={handleSubmit}>
 						<Typography variant="h4" sx={{ mb: 4, fontWeight: '700' }}>
@@ -352,16 +351,6 @@ const Apply = () => {
 									helperText={formErrors.telegramGroup && 'Enter your project\'s Telegram group'}
 								/>
 							</Grid>
-							<Grid item xs={12}>
-								<FormGroup sx={{ color: theme.palette.text.secondary }}>
-									<FormControlLabel
-										control={<Checkbox onChange={handleChange} />}
-										label="Apply for the Ergodex/Ergopad project accelerator program"
-										name="accelerator"
-										id="accelerator"
-									/>
-								</FormGroup>
-							</Grid>
 						</Grid>
 
 						<Box sx={{ position: 'relative' }}>
@@ -392,21 +381,7 @@ const Apply = () => {
 
 				<Grid item md={4} sx={{ flexGrow: 1 }}>
 					<Box sx={{ mr: { md: 12, xs: 0 }, mt: { md: 0, xs: 4 } }}>
-						<Typography variant="h4" sx={{ fontWeight: '700', lineHeight: '1.2' }}>
-							What is the Ergodex/Ergopad Accelerator Program?
-						</Typography>
-
-						<Typography variant="body2" sx={{ fontSize: '1rem', mb: 3 }}>
-							The accelerator program will submit your project to our partners at ErgoDEX and if accepted, will provide various additional channels for you to market your project. 
-						</Typography>
-
-						<Typography variant="body2" sx={{ fontSize: '1rem', mb: 3 }}>
-							The ErgoPad and ErgoDEX teams will assist projects in creating relationships with investors, agencies and investment platforms relevant to their projects.
-						</Typography>
-
-						<Typography variant="body2" sx={{ fontSize: '1rem', mb: 3 }}>
-							ErgoDEX will provide the liquidity farming platform to projects launching through ErgoPad, which will encourage users to provide liquidity to the DEX, increasing the TVL of the platform and extending a projects marketing campaign beyond their IDO.
-						</Typography>
+						
 
 						<Typography variant="h4" sx={{ fontWeight: '700', lineHeight: '1.2' }}>
 							Not ready to apply?
