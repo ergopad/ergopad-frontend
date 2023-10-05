@@ -207,10 +207,12 @@ const ProjectStaking = () => {
   const [stakingConfig, setStakingConfig] = useState(defaultStakingConfig);
   // wallet
   const { wallet, sessionStatus } = useWallet()
+  const shouldFetch = sessionStatus === "authenticated";
   const walletsQuery = trpc.user.getWallets.useQuery(
     undefined,
     {
       refetchOnWindowFocus: false,
+      enabled: shouldFetch
     }
   )
   // const [aggregateWallet, setAggregateWallet] = useState(true);
@@ -364,7 +366,7 @@ const ProjectStaking = () => {
       setUnstakeTableLoading(false);
     };
 
-    if (project_id && wallet !== '') {
+    if (project_id && wallet !== '' && sessionStatus === 'authenticated') {
       getStaked();
     } else {
       if (!project_id) setStakingConfig(defaultStakingConfig);

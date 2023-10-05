@@ -146,10 +146,12 @@ const Whitelist = () => {
   // total staked
   const [totalStaked, setTotalStaked] = useState(0);
   const { wallet, sessionStatus, sessionData, fetchSessionData, setProviderLoading } = useWallet()
+  const shouldFetch = sessionStatus === "authenticated";
   const walletsQuery = trpc.user.getWallets.useQuery(
     undefined,
     {
       refetchOnWindowFocus: false,
+      enabled: shouldFetch
     }
   )
   const changeUserDetailsMutation = trpc.user.changeUserDetails.useMutation()
@@ -197,7 +199,7 @@ const Whitelist = () => {
         console.error("Error fetching wallets:", error);
       }
     };
-    if (wallet) {
+    if (wallet && sessionStatus === 'authenticated') {
       updateFormData({
         ...initialFormData,
         ergoAddress: wallet,

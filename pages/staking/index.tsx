@@ -216,10 +216,12 @@ const Staking = () => {
   // tabs
   const [tabValue, setTabValue] = useState(0);
   const { wallet, providerLoading, sessionStatus } = useWallet()
+  const shouldFetch = sessionStatus === "authenticated";
   const walletsQuery = trpc.user.getWallets.useQuery(
     undefined,
     {
       refetchOnWindowFocus: false,
+      enabled: shouldFetch
     }
   )
   const [currentWalletType, setCurrentWalletType] = useState<string | null>(null)
@@ -302,7 +304,7 @@ const Staking = () => {
       setUnstakeTableLoading(false);
     };
 
-    if (wallet !== '') {
+    if (wallet !== '' && sessionStatus === 'authenticated') {
       getStaked();
     } else {
       setStakedData(initStaked);

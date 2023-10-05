@@ -1,5 +1,6 @@
 import { prisma } from '@server/prisma';
 import { deleteEmptyUser } from '@server/utils/deleteEmptyUser';
+import bs58 from 'bs58';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 interface ErgoAuthRequest {
@@ -44,48 +45,13 @@ export default async function ergoauthLoginMobile(req: NextApiRequest, res: Next
 
   try {
     const replyTo = `${process.env.AUTH_DOMAIN}/api/mobile-auth/verify?verificationId=${verificationId}`;
-    // console.log(address)
-    // const rawBytes = Address.from_mainnet_str(address).content_bytes()
-    // console.log(rawBytes)
-    // const indexedBytes = rawBytes.slice(1)
-    // const resultBytes = [205, ...indexedBytes];
-    // const base64String = Buffer.from(resultBytes).toString('base64');
-    // console.log(resultBytes)
-    // console.log(base64String)
 
-    // decode address to bytes using base58
-    // copy the range from index 1 to index length - 4
-    // insert 205 at the beginning of the new array
-
-
-    // use paideia API to get the sigmaBoolean because there is no way to do it without accessing the appkit
-    // First API call
-    const loginResponse = await fetch('https://api.paideia.im/auth/login/mobile', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        addresses: [addressString],
-      }),
-    });
-
-    const loginData = await loginResponse.json();
-
-    // console.log(loginData)
-
-    // Extract requestId from the first response
-    const requestId = loginData.verificationId;
-
-    // Second API call
-    const signingRequestResponse = await fetch(`https://api.paideia.im/auth/signing_request/${requestId}`);
-    const signingRequestData = await signingRequestResponse.json();
-
-    // Extract sigmaBoolean from the second response
-    const sigmaBoolean = signingRequestData.sigmaBoolean;
-
-    // console.log('address: ' + address)
-    // console.log('sigma boolean: ' + sigmaBoolean)
+    const decodedBuffer = bs58.decode(addressString);
+    const rawBytes = Uint8Array.from(decodedBuffer);
+    const slicedBytes = rawBytes.subarray(2, rawBytes.length - 4);
+    const combinedBytes = new Uint8Array([0xCD, 0x03, ...slicedBytes]);
+    const sigmaBoolean = Buffer.from(combinedBytes).toString('base64');
+    // console.log('\x1b[32m', 'Base64 Encoded', '\x1b[0m', sigmaBoolean);
 
     const ergoAuthRequest: ErgoAuthRequest = {
       address: addressString,

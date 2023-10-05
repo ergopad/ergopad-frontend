@@ -11,23 +11,8 @@ import ActiveRound from '@components/landing/ActiveRound';
 import { useProjectList } from '@hooks/useProjectList'
 
 const Homepage = () => {
-  const router = useRouter();
-  let id = router.asPath.match(/#([a-z0-9]+)/gi);
   const { projectList, isLoading } = useProjectList();
   const [projects, SetProjects] = useState([])
-
-  useEffect(() => {
-    if (id) {
-      let element = document.querySelector(id);
-      if (element) {
-        element.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-          inline: 'nearest',
-        });
-      }
-    } else window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-  }, [id]);
 
   useEffect(() => {
     SetProjects(projectList)

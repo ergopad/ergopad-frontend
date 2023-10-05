@@ -16,7 +16,7 @@ import {
   Skeleton
 } from "@mui/material";
 import Link from "@components/Link";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import SocialIcons from "@components/svgs/SocialIcons";
 
 interface IUserProfileProps {
