@@ -152,9 +152,14 @@ const Contribute = () => {
   const [conversionRate, setConversionRate] = useState(1.0);
   const [currentWallet, setCurrentWallet] = useState({})
 
-  const walletsQuery = trpc.user.getWallets.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  });
+  const shouldFetch = sessionStatus === "authenticated";
+  const walletsQuery = trpc.user.getWallets.useQuery(
+    undefined,
+    {
+      refetchOnWindowFocus: false,
+      enabled: shouldFetch
+    }
+  )
   
   useEffect(() => {
     const getMatchingWallet = async () => {
@@ -187,7 +192,7 @@ const Contribute = () => {
       setLoading(false);
     };
   
-    if (wallet !== '') {
+    if (wallet !== '' && sessionStatus === 'authenticated') {
       getMatchingWallet();
     }
   }, [wallet]);

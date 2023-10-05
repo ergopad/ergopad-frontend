@@ -108,14 +108,15 @@ const [addressesWithType, setAddressesWithType] = useState([])
 
 
   const { wallet, providerLoading, sessionStatus } = useWallet()
+  const shouldFetch = sessionStatus === "authenticated";
   const walletsQuery = trpc.user.getWallets.useQuery(
     undefined,
     {
       refetchOnWindowFocus: false,
+      enabled: shouldFetch
     }
   )
   const getWallets = async () => {
-    console.log('trigger')
     if (sessionStatus !== 'authenticated') {
       return []
     }
@@ -153,7 +154,7 @@ const [addressesWithType, setAddressesWithType] = useState([])
       setLoading(false);
     };
   
-    if (wallet !== '') {
+    if (wallet !== '' && sessionStatus === 'authenticated') {
       getStaked();
     }
   }, [wallet]);

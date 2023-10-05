@@ -26,10 +26,12 @@ const ChangeDefaultAddress: FC<ChangeDefaultAddressProps> = ({
   const [defaultAddress, setDefaultAddress] = useState('');
   const changeLoginAddressMutation = trpc.user.changeLoginAddress.useMutation()
 
+  const shouldFetch = sessionStatus === "authenticated";
   const walletsQuery = trpc.user.getWallets.useQuery(
     undefined,
     {
       refetchOnWindowFocus: false,
+      enabled: shouldFetch
     }
   )
 

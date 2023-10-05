@@ -42,13 +42,14 @@ const ConnectedWallets: NextPage = () => {
   const [defaultAddressLoading, setDefaultAddressLoading] = useState(false)
   const [removeLoading, setRemoveLoading] = useState<number | undefined>(undefined)
   const { sessionData, sessionStatus, fetchSessionData, providerLoading, setProviderLoading } = useWallet()
+  const shouldFetch = sessionStatus === "authenticated";
   const walletsQuery = trpc.user.getWallets.useQuery(
     undefined,
     {
       refetchOnWindowFocus: false,
+      enabled: shouldFetch
     }
   )
-
   const updateLoginAddress = async (address: string) => {
     try {
       setDefaultAddressLoading(true)

@@ -10,7 +10,7 @@ const nextConfig = {
     SUMSUB_TOKEN: process.env.SUMSUB_TOKEN,
     SUMSUB_SECRET_KEY: process.env.SUMSUB_SECRET_KEY
   },
-  swcMinify: true,
+  // swcMinify: true,
   images: {
     domains: ['ergopad-public.s3.us-west-2.amazonaws.com'],
   },
