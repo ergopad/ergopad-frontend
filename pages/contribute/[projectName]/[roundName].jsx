@@ -120,7 +120,7 @@ const Contribute = () => {
   const router = useRouter();
   const { projectName, roundName } = router.query;
   // wallet
-  const { wallet, dAppWallet, providerLoading } = useWallet();
+  const { wallet, dAppWallet, providerLoading, sessionStatus } = useWallet();
   const { setAddWalletOpen } = useAddWallet();
   // contribute data
   const [contributeData, setContributeData] = useState(null);
