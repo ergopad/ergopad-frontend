@@ -1,5 +1,5 @@
 import { prisma } from '@server/prisma';
-// import { Address } from 'ergo-lib-wasm-nodejs';
+import bs58 from 'bs58';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 interface ErgoAuthRequest {
@@ -38,37 +38,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const replyTo = `${process.env.AUTH_DOMAIN}/api/mobile-auth/verify?verificationId=${verificationId}`;
-    // console.log(address)
-    // const rawBytes = Address.from_mainnet_str(address).to_ergo_tree().to_base16_bytes()
-    // const sigmaBoolean = Buffer.from(rawBytes).toString('base64');
 
-    // use paideia API to get the sigmaBoolean because there is no way to do it without accessing the appkit
-    // First API call
-    const loginResponse = await fetch('https://api.paideia.im/auth/login/mobile', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        addresses: [address],
-      }),
-    });
-
-    const loginData = await loginResponse.json();
-
-    // console.log(loginData)
-
-    // Extract requestId from the first response
-    const requestId = loginData.verificationId;
-
-    // Second API call
-    const signingRequestResponse = await fetch(`https://api.paideia.im/auth/signing_request/${requestId}`);
-    const signingRequestData = await signingRequestResponse.json();
-
-    // Extract sigmaBoolean from the second response
-    const sigmaBoolean = signingRequestData.sigmaBoolean;
-
-    // console.log('address boolean: ' + sigmaBoolean)
+    const decodedBuffer = bs58.decode(addressString);
+    const rawBytes = Uint8Array.from(decodedBuffer);
+    const slicedBytes = rawBytes.subarray(2, rawBytes.length - 4);
+    const combinedBytes = new Uint8Array([0xCD, 0x03, ...slicedBytes]);
+    const sigmaBoolean = Buffer.from(combinedBytes).toString('base64');
+    // console.log('\x1b[32m', 'Base64 Encoded', '\x1b[0m', sigmaBoolean);
 
     const ergoAuthRequest: ErgoAuthRequest = {
       address: addressString,

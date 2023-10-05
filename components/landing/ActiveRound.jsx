@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { useWhitelistProjects } from "@hooks/useWhitelistProjects";
 import { useContributionProjects } from "@hooks/useContributionProjects";
-import Image from 'next/image';
+import Image from 'next/legacy/image';
 import Link from 'next/link';
 
 var months = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
