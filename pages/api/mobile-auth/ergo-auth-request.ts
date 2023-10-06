@@ -1,6 +1,6 @@
+import { ErgoAddress, ErgoTree } from '@fleet-sdk/core';
 import { prisma } from '@server/prisma';
 import { deleteEmptyUser } from '@server/utils/deleteEmptyUser';
-import bs58 from 'bs58';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 interface ErgoAuthRequest {
@@ -46,12 +46,12 @@ export default async function ergoauthLoginMobile(req: NextApiRequest, res: Next
   try {
     const replyTo = `${process.env.AUTH_DOMAIN}/api/mobile-auth/verify?verificationId=${verificationId}`;
 
-    const decodedBuffer = bs58.decode(addressString);
-    const rawBytes = Uint8Array.from(decodedBuffer);
-    const slicedBytes = rawBytes.subarray(2, rawBytes.length - 4);
-    const combinedBytes = new Uint8Array([0xCD, 0x03, ...slicedBytes]);
-    const sigmaBoolean = Buffer.from(combinedBytes).toString('base64');
-    // console.log('\x1b[32m', 'Base64 Encoded', '\x1b[0m', sigmaBoolean);
+    const addr = ErgoAddress.fromBase58(addressString);
+    const tree = new ErgoTree(addr.ergoTree);
+    const treeBytes = Array.from(tree.toBytes());
+    treeBytes.shift();
+    treeBytes.shift();
+    const sigmaBoolean = Buffer.from(treeBytes).toString("base64");
 
     const ergoAuthRequest: ErgoAuthRequest = {
       address: addressString,
