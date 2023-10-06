@@ -20,6 +20,9 @@ dependencies:
   '@emotion/styled':
     specifier: ^11.3.0
     version: 11.11.0(@emotion/react@11.11.1)(@types/react@18.2.9)(react@18.2.0)
+  '@fleet-sdk/core':
+    specifier: ^0.2.3
+    version: 0.2.3
   '@mui/icons-material':
     specifier: latest
     version: 5.14.12(@mui/material@5.14.9)(@types/react@18.2.9)(react@18.2.0)
@@ -599,6 +602,37 @@ packages:
       - supports-color
     dev: true
 
+  /@fleet-sdk/common@0.2.3:
+    resolution: {integrity: sha512-pu0h/RnmEyvS6egs6sh7OCy+xKGdKC9FVYoKHmBScewpMX3DWMQSN7X5LPtWWS8u56tBPrGt8xwRJvofo4/7EA==}
+    engines: {node: '>=14'}
+    dev: false
+
+  /@fleet-sdk/core@0.2.3:
+    resolution: {integrity: sha512-jMS5Y/qjogHPqV5E3Qb/0RiMg6y5eobLHFBuSf4LFMFbFaMA6+JnWy7fyBelXy4wqkEjcrb84w58eBdPIAC5hA==}
+    engines: {node: '>=14'}
+    dependencies:
+      '@fleet-sdk/common': 0.2.3
+      '@fleet-sdk/crypto': 0.2.3
+      '@fleet-sdk/serializer': 0.2.3
+    dev: false
+
+  /@fleet-sdk/crypto@0.2.3:
+    resolution: {integrity: sha512-ETBRLYK7Y4buX2ua7/bqORb6GqAhlCjQtvSOyN6CvLvN0XfECumJoJzOU0/CMJolNwYpBwRcTfmyDTd5liniGg==}
+    engines: {node: '>=14'}
+    dependencies:
+      '@fleet-sdk/common': 0.2.3
+      '@noble/hashes': 1.3.2
+      '@scure/base': 1.1.3
+    dev: false
+
+  /@fleet-sdk/serializer@0.2.3:
+    resolution: {integrity: sha512-2puQMbmV3t2uRZ2rRaxXQyxUoVX5RC8RMW4TC3pnrzc4CXQUwcK4aVxTlOFSW4WEYc7FmOhuW93jkw7cpM4qHg==}
+    engines: {node: '>=14'}
+    dependencies:
+      '@fleet-sdk/common': 0.2.3
+      '@fleet-sdk/crypto': 0.2.3
+    dev: false
+
   /@floating-ui/core@1.4.1:
     resolution: {integrity: sha512-jk3WqquEJRlcyu7997NtR5PibI+y5bi+LS3hPmguVClypenMsCY3CBa3LAQnozRCtCrYWSEtAdiskpamuJRFOQ==}
     dependencies:
@@ -1055,6 +1089,11 @@ packages:
     requiresBuild: true
     optional: true
 
+  /@noble/hashes@1.3.2:
+    resolution: {integrity: sha512-MVC8EAQp7MvEcm30KWENFjgR+Mkmf+D189XJTkFIlwohU5hcBbn1ZkKq7KVTi2Hme3PMGF390DaL52beVrIihQ==}
+    engines: {node: '>= 16'}
+    dev: false
+
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -1109,6 +1148,10 @@ packages:
   /@rushstack/eslint-patch@1.3.3:
     resolution: {integrity: sha512-0xd7qez0AQ+MbHatZTlI1gu5vkG8r7MYRUJAHPAHJBmGLs16zpkrpAVLvjQKQOqaXPDUBwOiJzNc00znHSCVBw==}
     dev: true
+
+  /@scure/base@1.1.3:
+    resolution: {integrity: sha512-/+SgoRjLq7Xlf0CWuLHq2LUZeL/w65kfzAPG5NH9pcmBhs+nunQTn4gvdwgMTIXnt9b2C/1SeL2XiysZEyIC9Q==}
+    dev: false
 
   /@sumsub/websdk-react@2.0.1(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-PLbbGqTHvpGRjotytmNUl3AJOH6OVVo73UZtqmgBtX0OAT2REzwWjNDLjby3i3tFMCB8fxEgPW318NrgjCSBFA==}
