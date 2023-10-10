@@ -70,6 +70,8 @@ export const authOptions = (
   async function signUser(user: User, credentials: Credentials): Promise<User | null> {
     const walletParse: ParsedWallet = JSON.parse(credentials.wallet)
     const signatureParse = JSON.parse(credentials.signature)
+    // console.log('Signed Message: ' + signatureParse.signedMessage)
+    // console.log('Proof: ' + signatureParse.proof)
 
     if (walletParse.type === 'nautilus') {
       const signedMessageSplit = signatureParse.signedMessage.split(";");
@@ -88,17 +90,18 @@ export const authOptions = (
     }
     else if (walletParse.type === 'mobile') {
       const nonce = signatureParse.signedMessage.slice(20, 41);
-      const url = signatureParse.signedMessage.slice(41, -20);
-      // console.log('\x1b[32m', 'Nonce: ', '\x1b[0m', nonce);
-      // console.log('\x1b[32m', 'URL: ', '\x1b[0m', url);
+      // const url = signatureParse.signedMessage.slice(41, -20);
+
       if (nonce !== user.nonce) {
         console.error(`Nonce doesn't match`)
         throw new Error(`Nonce doesn't match`)
       }
-      if (url !== process.env.AUTH_DOMAIN) {
-        console.error(`Source domain is invalid`)
-        throw new Error('Source domain is invalid')
-      }
+      // CAN'T USE DOMAIN VERIFICATION BECAUSE ERGO MOBILE WALLET
+      // DOESN'T PROVIDE URL IN SIGNATURE FOR READ-ONLY WALLETS
+      // if (url !== process.env.AUTH_DOMAIN) {
+      //   console.error(`Source domain is invalid`)
+      //   throw new Error('Source domain is invalid')
+      // }
     }
     else {
       throw new Error('Unrecognized wallet type')
@@ -128,10 +131,44 @@ export const authOptions = (
     return null
   }
 
-  async function createNewUser(credentials: Credentials): Promise<User | null> {
+  async function createNewUser(user: User, credentials: Credentials): Promise<User | null> {
     const { nonce, userId, signature, wallet } = credentials;
     const walletParse: ParsedWallet = JSON.parse(wallet);
     const signatureParse = JSON.parse(signature);
+
+    if (walletParse.type === 'nautilus') {
+      const signedMessageSplit = signatureParse.signedMessage.split(";");
+      const nonce = signedMessageSplit[0];
+      const url = signedMessageSplit[1];
+      // console.log('\x1b[32m', 'Nonce: ', '\x1b[0m', nonce);
+      // console.log('\x1b[32m', 'URL: ', '\x1b[0m', url);
+      if (nonce !== user.nonce) {
+        console.error(`Nonce doesn't match`)
+        throw new Error(`Nonce doesn't match`)
+      }
+      if (process.env.AUTH_DOMAIN !== `https://${url}`) {
+        console.error(`Source domain is invalid`)
+        throw new Error('Source domain is invalid')
+      }
+    }
+    else if (walletParse.type === 'mobile') {
+      const nonce = signatureParse.signedMessage.slice(20, 41);
+      // const url = signatureParse.signedMessage.slice(41, -20);
+
+      if (nonce !== user.nonce) {
+        console.error(`Nonce doesn't match`)
+        throw new Error(`Nonce doesn't match`)
+      }
+      // CAN'T USE DOMAIN VERIFICATION BECAUSE ERGO MOBILE WALLET
+      // DOESN'T PROVIDE URL IN SIGNATURE FOR READ-ONLY WALLETS
+      // if (url !== process.env.AUTH_DOMAIN) {
+      //   console.error(`Source domain is invalid`)
+      //   throw new Error('Source domain is invalid')
+      // }
+    }
+    else {
+      throw new Error('Unrecognized wallet type')
+    }
 
     try {
       const result = verifySignature(walletParse.defaultAddress, signatureParse.signedMessage, signatureParse.proof, walletParse.type);
@@ -257,7 +294,7 @@ export const authOptions = (
               return signUser(user, credentials as Credentials)
             } else if (user && user.wallets.length === 0
             ) {
-              return createNewUser(credentials as Credentials)
+              return createNewUser(user, credentials as Credentials)
             } else throw new Error('Unable to verify user')
           } catch (error) {
             console.error(error)
@@ -293,7 +330,7 @@ export const authOptions = (
           return true
         }
 
-        // Check first if there is no user in the database. Then we can create new user with this OAuth credentials.
+        // Check first if there is no user in the database. Then we can create new user with these OAuth credentials.
         const profileExists = await prisma.user.findFirst({
           where: {
             email: user.email,
@@ -309,7 +346,7 @@ export const authOptions = (
         })
         if (accountExists) return true
 
-        // If there is no account in the database, we create a new account with this OAuth credentials.
+        // If there is no account in the database, we create a new account with these OAuth credentials.
         await prisma.account.create({
           data: {
             userId: profileExists.id,
@@ -324,7 +361,7 @@ export const authOptions = (
           },
         })
 
-        // Since a user is already exist in the database we can update user information.
+        // Since a user is already in the database we can update user information.
         await prisma.user.update({
           where: { id: profileExists.id },
           data: { name: user.name },

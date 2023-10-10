@@ -158,13 +158,10 @@ export const SignIn: FC<ISignIn> = ({ open, setOpen, setLoading }) => {
               </AccordionSummary>
               <AccordionDetails>
                 <Typography sx={{ mb: 2 }}>
-                  The auth provider you select will be your login on all devices. If you choose to create your account with an Ergo wallet, please make sure you have access to it on all devices.
+                  You may add multiple supported login wallets to your account.
                 </Typography>
-                <Typography sx={{ mb: 2 }}>
-                  It is OK to login with Nautilus on desktop and Ergo Mobile wallet or Terminus on your phone, as long as you have the same address available on both devices.
-                </Typography>
-                <Typography sx={{ mb: 2 }}>
-                  You may add multiple wallets to your account but only one address will be your master login. You can change it at any time on the Connected Wallets page.
+                <Typography>
+                  If you want to view your account from a device which doesn't have an Ergo wallet, choose an OAuth provider (Github)
                 </Typography>
               </AccordionDetails>
             </Accordion>
