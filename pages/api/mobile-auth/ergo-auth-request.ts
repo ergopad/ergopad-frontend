@@ -16,6 +16,9 @@ export default async function ergoauthLoginMobile(req: NextApiRequest, res: Next
   const { verificationId, address } = req.query;
   const addressString = address?.toString()
 
+  console.log('\x1b[32m', 'verificationID: ', '\x1b[0m', verificationId);
+  console.log('\x1b[32m', 'addressString: ', '\x1b[0m', addressString);
+
   // Fetch the login request using the verificationId
   const loginRequest = await prisma.loginRequest.findUnique({
     where: { verificationId: verificationId as string },
@@ -61,7 +64,7 @@ export default async function ergoauthLoginMobile(req: NextApiRequest, res: Next
       messageSeverity: 'INFORMATION',
       replyTo,
     };
-    // console.log(ergoAuthRequest)
+    console.log('\x1b[32m', 'Ergo auth request: ', '\x1b[0m', ergoAuthRequest);
     res.status(200).json(ergoAuthRequest);
   } catch (e: any) {
     if (user.status === 'pending') deleteEmptyUser(user.id)

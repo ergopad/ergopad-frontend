@@ -16,6 +16,7 @@ import { useWallet } from '@utils/WalletContext'
 import theme from '@styles/theme';
 import AddWalletModal from './AddWalletModal';
 import Link from 'next/link';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 interface IUserMenuProps {
 }
@@ -40,37 +41,37 @@ const UserMenu: FC<IUserMenuProps> = () => {
       setProviderLoading(false);
     }
 
-    if (sessionStatus === 'authenticated' && sessionData?.user.walletType === 'nautilus') {
-      const checkDappConnection = async () => {
-        const isNautilusConnected = await window.ergoConnector.nautilus.connect();
-        if (isNautilusConnected) {
-          // console.log('Nautilus is connected')
+    // if (sessionStatus === 'authenticated' && sessionData?.user.walletType === 'nautilus') {
+    //   const checkDappConnection = async () => {
+    //     const isNautilusConnected = await window.ergoConnector.nautilus.connect();
+    //     if (isNautilusConnected) {
+    //       // console.log('Nautilus is connected')
 
-          // @ts-ignore
-          const changeAddress = await ergo.get_change_address();
-          // @ts-ignore
-          const usedAddresses = await ergo.get_used_addresses();
-          // @ts-ignore
-          const unusedAddresses = await ergo.get_unused_addresses();
-          const addressArray = [changeAddress, ...usedAddresses, ...unusedAddresses]
+    //       // @ts-ignore
+    //       const changeAddress = await ergo.get_change_address();
+    //       // @ts-ignore
+    //       const usedAddresses = await ergo.get_used_addresses();
+    //       // @ts-ignore
+    //       const unusedAddresses = await ergo.get_unused_addresses();
+    //       const addressArray = [changeAddress, ...usedAddresses, ...unusedAddresses]
 
-          if (addressArray.includes(sessionData.user.address)) {
-            setDAppWallet({
-              connected: true,
-              name: 'nautilus',
-              addresses: addressArray
-            })
-          }
-          else {
-            // Notify they chose the wrong wallet
-            // Allow them to choose the correct one or log out
-            // signOut()
-          }
-        }
-        // else signOut()
-      }
-      checkDappConnection();
-    }
+    //       if (addressArray.includes(sessionData.user.address)) {
+    //         setDAppWallet({
+    //           connected: true,
+    //           name: 'nautilus',
+    //           addresses: addressArray
+    //         })
+    //       }
+    //       else {
+    //         // Notify they chose the wrong wallet
+    //         // Allow them to choose the correct one or log out
+    //         // signOut()
+    //       }
+    //     }
+    //     // else signOut()
+    //   }
+    //   checkDappConnection();
+    // }
 
     // if (sessionStatus === 'authenticated' && !sessionData.user.address) {
     //   console.log('User neeeds to add an address')
@@ -108,7 +109,7 @@ const UserMenu: FC<IUserMenuProps> = () => {
     // console.log('address changed')
     // console.log(sessionData?.user.address)
     // console.log(sessionStatus)
-    if (sessionStatus === 'authenticated' && typeof sessionData?.user.address !== 'string') {
+    if (sessionStatus === 'authenticated' && !sessionData?.user.address) {
       setAddWalletModal(true)
       setWallet('')
     }
@@ -139,9 +140,7 @@ const UserMenu: FC<IUserMenuProps> = () => {
             sx={walletButtonSx}
             variant="contained"
             disabled={providerLoading}
-            onClick={(e) => wallet
-              ? handleClick(e)
-              : setAddWalletModal(true)}
+            onClick={(e) => handleClick(e)}
           >
             {/* <Avatar src={sessionData.user.image} sx={{ width: '24px', height: '24px', mr: 1 }} variant="square" /> */}
             <Typography>
@@ -149,7 +148,7 @@ const UserMenu: FC<IUserMenuProps> = () => {
                 ? 'Loading...'
                 : wallet
                   ? getShortAddress(wallet)
-                  : 'Add wallet'
+                  : 'No wallet'
               }
             </Typography>
           </Button>
@@ -205,12 +204,23 @@ const UserMenu: FC<IUserMenuProps> = () => {
               Edit Profile
             </MenuItem> */}
             <Box sx={{ '&:hover a': { textDecoration: 'none!important' } }}>
-              <Link href="/connected-wallets" passHref>
+              <Link href="/user/connected-wallets" passHref>
                 <MenuItem >
                   <ListItemIcon>
                     <AccountBalanceWalletIcon fontSize="small" />
                   </ListItemIcon>
                   Connected wallets
+                </MenuItem>
+              </Link>
+            </Box>
+
+            <Box sx={{ '&:hover a': { textDecoration: 'none!important' } }}>
+              <Link href="/user/settings" passHref>
+                <MenuItem >
+                  <ListItemIcon>
+                    <SettingsIcon fontSize="small" />
+                  </ListItemIcon>
+                  Settings
                 </MenuItem>
               </Link>
             </Box>

@@ -5,18 +5,17 @@ import {
   Box,
   IconButton,
   useScrollTrigger,
-  Button,
-  Typography,
-  Dialog,
-  DialogActions,
+  // Button,
+  // Typography,
+  // Dialog,
+  // DialogActions,
   useTheme,
-  DialogTitle,
-  DialogContent
+  // DialogTitle,
+  // DialogContent
 } from '@mui/material';
 import Link from 'next/link';
 import Navbar from '@components/navigation/Navbar';
-import { useWallet } from '@utils/WalletContext';
-// import AddWallet from '@components/AddWallet';
+// import { useWallet } from '@utils/WalletContext';
 import Image from 'next/legacy/image';
 import NotificationBell from '@components/NotificationBell';
 import UserMenu from '@components/user/UserMenu';

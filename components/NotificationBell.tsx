@@ -69,8 +69,8 @@ const iconMap = {
 
 const NotificationBell = () => {
   // wallet addresses
-  const { wallet, dAppWallet } = useWallet();
-  const [lastState, setLastState] = useState<string[]>([]);
+  // const { wallet, dAppWallet } = useWallet();
+  // const [lastState, setLastState] = useState<string[]>([]);
   // menu
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);

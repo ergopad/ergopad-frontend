@@ -400,6 +400,36 @@ export const userRouter = createTRPCRouter({
         sumsubStatus: user.sumsubStatus,
       };
     }),
+  getUserDetails: protectedProcedure
+    .input(z.object({
+      name: z.boolean().optional(),
+      email: z.boolean().optional(),
+      whitelists: z.boolean().optional(),
+      wallets: z.boolean().optional(),
+      image: z.boolean().optional(),
+      sumsubStatus: z.boolean().optional()
+    }))
+    .query(async ({ input, ctx }) => {
+      const userId = ctx.session.user.id;
+      const { name, email, whitelists, wallets, image, sumsubStatus } = input
+      const user = await prisma.user.findFirst({
+        where: { id: userId },
+        select: {
+          name: !!name,
+          email: !!email,
+          image: !!image,
+          sumsubStatus: !!sumsubStatus,
+          wallets: !!wallets,
+          whitelists: !!whitelists
+        },
+      });
+
+      if (!user) {
+        throw new Error('Unable to find user in database');
+      }
+
+      return { user }
+    }),
   changeUserDetails: protectedProcedure
     .input(z.object({
       name: z.string().optional(),
@@ -448,5 +478,30 @@ export const userRouter = createTRPCRouter({
       const deleteUser = await deleteEmptyUser(input.userId)
       if (deleteUser.success) return { success: true }
       else return { error: deleteUser.error }
+    }),
+  deleteUserAccount: protectedProcedure
+    .mutation(async ({ ctx }) => {
+      const userId = ctx.session.user.id;
+
+      // clear all wallets associated with the user
+      await prisma.wallet.deleteMany({
+        where: {
+          user_id: userId
+        }
+      });
+
+      const deleteUser = await prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          status: 'deleted',
+          defaultAddress: '',
+        }
+      });
+      if (!deleteUser) {
+        throw new Error("Error deleting user")
+      }
+      return { success: true }; // Return a success response or any other relevant data
     })
 });
