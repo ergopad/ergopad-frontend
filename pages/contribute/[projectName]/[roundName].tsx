@@ -192,7 +192,7 @@ const Contribute: NextPage = () => {
 
         if (matchedWallet) {
           setCurrentWallet(matchedWallet);
-          console.log(matchedWallet)
+          // console.log(matchedWallet)
         }
 
       } catch (e) {
@@ -474,7 +474,7 @@ const Contribute: NextPage = () => {
           addresses: otherAddresses,
           txFormat: 'eip-12',
         }
-        console.log(body)
+        // console.log(body)
         const res = await axios.post(
           `${process.env.API_URL}/vesting/contribute`,
           body,
