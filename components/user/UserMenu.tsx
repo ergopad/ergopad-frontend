@@ -27,8 +27,6 @@ const UserMenu: FC<IUserMenuProps> = () => {
   const {
     wallet,
     setWallet,
-    dAppWallet,
-    setDAppWallet,
     sessionData,
     sessionStatus,
     providerLoading,

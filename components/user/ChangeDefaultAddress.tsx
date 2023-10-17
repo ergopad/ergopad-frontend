@@ -30,7 +30,7 @@ const ChangeDefaultAddress: FC<ChangeDefaultAddressProps> = ({
   const walletsQuery = trpc.user.getWallets.useQuery(
     undefined,
     {
-      refetchOnWindowFocus: false,
+
       enabled: shouldFetch
     }
   )

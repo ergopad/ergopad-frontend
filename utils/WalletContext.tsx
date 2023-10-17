@@ -92,7 +92,6 @@ const WalletProvider: FunctionComponent<{ children: ReactNode }> = ({ children }
   );
 };
 
-// template consumer
 const WalletConsumer: FunctionComponent<WalletConsumerProps> = ({ children }) => {
   return (
     <WalletContext.Consumer>
@@ -106,7 +105,6 @@ const WalletConsumer: FunctionComponent<WalletConsumerProps> = ({ children }) =>
   );
 };
 
-// useTemplate Hook
 const useWallet = (): WalletContextType => {
   const context = useContext(WalletContext);
   if (context === undefined) {

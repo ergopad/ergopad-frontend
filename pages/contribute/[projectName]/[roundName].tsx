@@ -1,4 +1,4 @@
-import { useState, useEffect, forwardRef } from 'react';
+import { useState, useEffect, forwardRef, ChangeEvent } from 'react';
 import { useRouter } from 'next/router';
 import {
   Typography,
@@ -20,12 +20,13 @@ import {
   CircularProgress,
   Modal,
   useMediaQuery,
-  Link
+  Link,
+  useTheme
 } from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-import { useWallet } from 'utils/WalletContext';
-import { useAddWallet } from 'utils/AddWalletContext';
+import { useWallet } from '@utils/WalletContext';
+import { useAddWallet } from '@utils/AddWalletContext';
 import PageTitle from '@components/PageTitle';
 import CenterTitle from '@components/CenterTitle';
 import TransactionSubmitted from '@components/TransactionSubmitted';
@@ -36,6 +37,7 @@ import axios from 'axios';
 import MuiNextLink from '@components/MuiNextLink';
 import ChangeDefaultAddress from '@components/user/ChangeDefaultAddress';
 import { trpc } from '@utils/trpc';
+import { NextPage } from 'next';
 
 const modalStyle = {
   position: 'absolute',
@@ -62,38 +64,38 @@ const modalStyle = {
 // const TOKEN_DECIMALS = 10000;
 // const NERG_FEES = 20 * 1000 * 1000;
 
-const initialFormData = Object.freeze({
+const initialFormData = {
   vestingAmount: 0,
   address: '',
   currency: 'erg',
-});
+}
 
-const initialFormErrors = Object.freeze({
+const initialFormErrors = {
   vestingAmount: false,
   address: false,
-});
+}
 
-const initialWalletBalance = Object.freeze({
+const initialWalletBalance = {
   whitelist: 0,
   sigusd: 0,
   ergs: 0,
-});
+};
 
-const formOpenState = Object.freeze({
+const formOpenState = {
   EARLY: 'EARLY',
   OPEN: 'OPEN',
   CLOSED: 'CLOSED',
-});
+}
 
-const transactionModalState = Object.freeze({
+const transactionModalState = {
   SUBMITTED: 'SUBMITTED',
   USER_PENDING: 'USER_PENDING',
   CLOSED: 'CLOSED',
-});
+};
 
-const initialRoundDetails = Object.freeze({
+const initialRoundDetails = {
   remaining: 0,
-});
+};
 
 const defaultOptions = {
   headers: {
@@ -114,8 +116,9 @@ const checkboxes = [
   }
 ]
 
-const Contribute = () => {
-  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
+const Contribute: NextPage = () => {
+  const theme = useTheme()
+  const checkSmall = useMediaQuery(theme.breakpoints.up('md'));
   // routing
   const router = useRouter();
   const { projectName, roundName } = router.query;
@@ -123,7 +126,7 @@ const Contribute = () => {
   const { wallet, dAppWallet, providerLoading, sessionStatus } = useWallet();
   const { setAddWalletOpen } = useAddWallet();
   // contribute data
-  const [contributeData, setContributeData] = useState(null);
+  const [contributeData, setContributeData] = useState<any | null>(null);
   const [contributeLoading, setContributeLoading] = useState(true);
   const [checkboxState, setCheckboxState] = useState(checkboxes);
   // submit button
@@ -150,7 +153,14 @@ const Contribute = () => {
   const [ergopayUrl, setErgopayUrl] = useState('');
   // erg conversion rate loading from backend
   const [conversionRate, setConversionRate] = useState(1.0);
-  const [currentWallet, setCurrentWallet] = useState({})
+  const [currentWallet, setCurrentWallet] = useState<{
+    id: number;
+    type: string | null;
+    changeAddress: string;
+    unusedAddresses: string[];
+    usedAddresses: string[];
+    user_id: string;
+  } | undefined>(undefined)
 
   const shouldFetch = sessionStatus === "authenticated";
   const walletsQuery = trpc.user.getWallets.useQuery(
@@ -160,39 +170,39 @@ const Contribute = () => {
       enabled: shouldFetch
     }
   )
-  
+
   useEffect(() => {
     const getMatchingWallet = async () => {
       setLoading(true);
-      
+
       try {
         const fetchResult = await walletsQuery.refetch();
         const wallets = fetchResult?.data?.wallets || [];
-        
+
         let matchedWallet = null;
-  
+
         for (let thisWallet of wallets) {
           const { unusedAddresses, usedAddresses, changeAddress } = thisWallet;
-  
-          if ([...unusedAddresses, ...usedAddresses, changeAddress].includes(wallet)) {
+
+          if ([...unusedAddresses, ...usedAddresses, changeAddress].includes(wallet!)) {
             matchedWallet = thisWallet;
             break;
           }
         }
-  
+
         if (matchedWallet) {
           setCurrentWallet(matchedWallet);
           // console.log(matchedWallet)
         }
-  
+
       } catch (e) {
         console.log('ERROR FETCHING: ', e);
       }
-  
+
       setLoading(false);
     };
-  
-    if (wallet !== '' && sessionStatus === 'authenticated') {
+
+    if (wallet !== undefined && wallet !== '' && sessionStatus === 'authenticated') {
       getMatchingWallet();
     }
   }, [wallet]);
@@ -224,9 +234,10 @@ const Contribute = () => {
     // todo: fix infinite promise
     try {
       if (dAppWallet.connected) {
-        // prettier-ignore
-        const whitelistBalance = await ergo.get_balance(contributeData.whitelistTokenId); // eslint-disable-line
-        // const sigUSDBalance = await ergo.get_balance(SIGUSD_TOKEN_ID); // eslint-disable-line
+        // @ts-ignore
+        const whitelistBalance = await ergo.get_balance(contributeData?.whitelistTokenId);
+        // const sigUSDBalance = await ergo.get_balance(SIGUSD_TOKEN_ID); 
+        // @ts-ignore
         const ergBalance = await ergo.get_balance(); // eslint-disable-line
         setWalletBalance({
           whitelist:
@@ -234,7 +245,7 @@ const Contribute = () => {
           sigusd: 0, // sigusd validation is disabled
           ergs: ergBalance / (1000 * 1000 * 1000),
         });
-      } else if (wallet !== '') {
+      } else if (wallet !== '' && wallet !== undefined) {
         const res = await axios.post(
           `${process.env.API_URL}/asset/balances/`,
           { addresses: [wallet] },
@@ -242,7 +253,7 @@ const Contribute = () => {
         );
         const ergs = res.data.addresses[wallet].balance;
         const token = res.data.addresses[wallet].tokens.filter(
-          (token) => token.tokenId === contributeData.whitelistTokenId
+          (token: any) => token.tokenId === contributeData.whitelistTokenId
         )[0];
         if (token) {
           setWalletBalance({
@@ -295,7 +306,7 @@ const Contribute = () => {
           defaultOptions
         );
         const round = res.data.activeRounds.filter(
-          (round) => round.proxyNFT === contributeData.proxyNFTId
+          (round: any) => round.proxyNFT === contributeData.proxyNFTId
         )[0];
         setRoundDetails(round ? round : initialRoundDetails);
       } catch (e) {
@@ -311,12 +322,13 @@ const Contribute = () => {
   }, [contributeData]);
 
   useEffect(() => {
-    updateFormData({
-      ...formData,
-      address: wallet,
-    });
-    setWalletBalance(initialWalletBalance);
-
+    if (wallet) {
+      updateFormData({
+        ...formData,
+        address: wallet,
+      });
+      setWalletBalance(initialWalletBalance);
+    }
     if (contributeData) {
       if (wallet !== '') {
         // wait till js injection?
@@ -350,10 +362,10 @@ const Contribute = () => {
     }
   }, [checkboxError, formState]);
 
-  const handleChecked = (e) => {
+  const handleChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCheckboxState(
       checkboxState.map((checkbox, index) => {
-        if (index == e.target.name) {
+        if (index.toString() === e.target.name) {
           return {
             ...checkbox,
             check: e.target.checked,
@@ -365,7 +377,7 @@ const Contribute = () => {
   };
 
   // snackbar for error reporting
-  const handleCloseError = (e, reason) => {
+  const handleCloseError = (e: any, reason: string) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -373,23 +385,23 @@ const Contribute = () => {
   };
 
   // snackbar for success
-  const handleCloseSuccessSnackbar = (e, reason) => {
+  const handleCloseSuccessSnackbar = (e: any, reason: string) => {
     if (reason === 'clickaway') {
       return;
     }
     setOpenSuccessSnackbar(false);
   };
 
-  const handleCurrencyChange = (e, newAlignment) => {
-    if (newAlignment !== null) {
+  const handleCurrencyChange = (event: React.MouseEvent, value: string) => {
+    if (value !== null) {
       updateFormData({
         ...formData,
-        currency: e.target.value,
+        currency: value,
       });
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     if (e.target.name === 'vestingAmount') {
       const amount = Number(e.target.value);
       if (amount > 0 && amount <= walletBalance.whitelist) {
@@ -405,34 +417,38 @@ const Contribute = () => {
       }
       updateFormData({
         ...formData,
-        vestingAmount: e.target.value,
+        vestingAmount: amount,
       });
     }
   };
 
-  const submitWithNautilus = async (walletAddress) => {
+  const submitWithNautilus = async (walletAddress: string) => {
+    // @ts-ignore
     const connected = await ergoConnector.nautilus.connect();
     if (connected) {
+      // @ts-ignore
       const address = await ergo.get_change_address();
+      // @ts-ignore
       const usedAddresses = await ergo.get_used_addresses();
+      // @ts-ignore
       const unusedAddresses = await ergo.get_unused_addresses();
       if (
-        address === currentWallet.changeAddress ||
-        usedAddresses.includes(currentWallet.changeAddress) ||
-        unusedAddresses.includes(currentWallet.changeAddress)
+        address === currentWallet?.changeAddress ||
+        usedAddresses.includes(currentWallet?.changeAddress) ||
+        unusedAddresses.includes(currentWallet?.changeAddress)
       ) {
         handleSubmit(address, [...usedAddresses, ...unusedAddresses])
       }
       else {
+        // @ts-ignore
         ergoConnector.nautilus.disconnect()
         setErrorMessage('Please connect the correct Nautilus wallet');
         setOpenError(true);
-        redeemWithNautilus(walletAddress)
       }
     }
   };
 
-  const handleSubmit = async (address, otherAddresses) => {
+  const handleSubmit = async (address: string, otherAddresses: string[]) => {
     setLoading(true);
     const emptyCheck = Object.values(formData).every(
       (v) => v !== '' && v !== 0
@@ -444,22 +460,24 @@ const Contribute = () => {
           formData.currency === 'erg'
             ? 0
             : Math.round(
-                formData.vestingAmount * contributeData.tokenPrice * 100
-              ) / 100;
+              formData.vestingAmount * contributeData.tokenPrice * 100
+            ) / 100;
         // const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
         //   (x, i, a) => a.indexOf(x) == i && x
         // );
+        const body = {
+          proxyNFT: contributeData.proxyNFTId,
+          vestingAmount: formData.vestingAmount,
+          sigUSDAmount: sigUSDAmount,
+          address: address,
+          utxos: [],
+          addresses: otherAddresses,
+          txFormat: 'eip-12',
+        }
+        // console.log(body)
         const res = await axios.post(
           `${process.env.API_URL}/vesting/contribute`,
-          {
-            proxyNFT: contributeData.proxyNFTId,
-            vestingAmount: formData.vestingAmount,
-            sigUSDAmount: sigUSDAmount,
-            address: address,
-            utxos: [],
-            addresses: [otherAddresses],
-            txFormat: 'eip-12',
-          },
+          body,
           defaultOptions
         );
         const unsignedtx = res.data;
@@ -467,14 +485,16 @@ const Contribute = () => {
         setSuccessMessageSnackbar('Form Submitted: Awaiting user confirmation');
         setOpenSuccessSnackbar(true);
         setOpenModal(transactionModalState.USER_PENDING);
-        const signedtx = await ergo.sign_tx(unsignedtx); // eslint-disable-line
-        const ok = await ergo.submit_tx(signedtx); // eslint-disable-line
+        // @ts-ignore
+        const signedtx = await ergo.sign_tx(unsignedtx);
+        // @ts-ignore
+        const ok = await ergo.submit_tx(signedtx);
         // await on dapp connector to sub
         setTransactionId(ok);
         setSuccessMessageSnackbar('Transaction Submitted: ' + ok);
         setOpenSuccessSnackbar(true);
         setOpenModal(transactionModalState.SUBMITTED);
-      } catch (e) {
+      } catch (e: any) {
         // snackbar for error message
         if (e.response) {
           setErrorMessage(
@@ -524,8 +544,8 @@ const Contribute = () => {
           formData.currency === 'erg'
             ? 0
             : Math.round(
-                formData.vestingAmount * contributeData.tokenPrice * 100
-              ) / 100;
+              formData.vestingAmount * contributeData.tokenPrice * 100
+            ) / 100;
         const res = await axios.post(
           `${process.env.API_URL}/vesting/contribute`,
           {
@@ -542,7 +562,7 @@ const Contribute = () => {
         setSuccessMessageSnackbar('Form Submitted');
         setOpenSuccessSnackbar(true);
         setOpenModal(transactionModalState.USER_PENDING);
-      } catch (e) {
+      } catch (e: any) {
         // snackbar for error message
         if (e.response) {
           setErrorMessage(
@@ -659,7 +679,7 @@ const Contribute = () => {
                                 contributeData.tokenDecimals,
                             }
                           )}{' '}
-                          whitelist tokens. 
+                          whitelist tokens.
                         </Typography>
                         {/* <FormControl
                           variant="filled"
@@ -737,7 +757,7 @@ const Contribute = () => {
                               handleChange({
                                 target: {
                                   name: 'vestingAmount',
-                                  value: walletBalance.whitelist,
+                                  value: walletBalance.whitelist.toString(),
                                 },
                               })
                             }
@@ -811,22 +831,22 @@ const Contribute = () => {
                           value={
                             formData.currency === 'erg'
                               ? Math.max(
-                                  0,
-                                  Math.round(
-                                    (contributeData.tokenPrice *
-                                      formData.vestingAmount *
-                                      Math.pow(
-                                        10,
-                                        contributeData.tokenDecimals
-                                      )) /
-                                      conversionRate
-                                  ) / Math.pow(10, contributeData.tokenDecimals)
-                                )
-                              : Math.round(
-                                  contributeData.tokenPrice *
+                                0,
+                                Math.round(
+                                  (contributeData.tokenPrice *
                                     formData.vestingAmount *
-                                    100
-                                ) / 100
+                                    Math.pow(
+                                      10,
+                                      contributeData.tokenDecimals
+                                    )) /
+                                  conversionRate
+                                ) / Math.pow(10, contributeData.tokenDecimals)
+                              )
+                              : Math.round(
+                                contributeData.tokenPrice *
+                                formData.vestingAmount *
+                                100
+                              ) / 100
                           }
                         />
                       </Grid>
@@ -840,7 +860,7 @@ const Contribute = () => {
                               <Checkbox
                                 checked={checkbox.check}
                                 onChange={handleChecked}
-                                name={index}
+                                name={index.toString()}
                               />
                             }
                             label={checkbox.text}
@@ -860,9 +880,9 @@ const Contribute = () => {
                       variant="body2"
                       sx={{ fontSize: '1rem', mb: '1rem' }}
                     >
-                      Once you receive your vesting key, 
+                      Once you receive your vesting key,
                       view the{' '}
-                      <MuiNextLink href="/dashboard">dashboard</MuiNextLink> to
+                      <Link href="/dashboard">dashboard</Link> to
                       redeem them after the unlock date.
                     </Typography>
                     {/* <Typography
@@ -879,14 +899,14 @@ const Contribute = () => {
                           type="submit"
                           fullWidth
                           disabled={
-                            buttonDisabled 
-                            || formErrors.address 
-                            || currentWallet.type !== 'nautilus' 
+                            buttonDisabled
+                            || formErrors.address
+                            || currentWallet?.type !== 'nautilus'
                             || providerLoading
                           }
                           variant="contained"
                           sx={{ mt: 3, mb: 3, textTransform: 'none', px: 0 }}
-                          onClick={() => submitWithNautilus(currentWallet.changeAddress)}
+                          onClick={() => submitWithNautilus(currentWallet?.changeAddress!)}
                         >
                           Send with Desktop Wallet
                         </Button>
@@ -896,9 +916,9 @@ const Contribute = () => {
                           type="submit"
                           fullWidth
                           disabled={
-                            buttonDisabled 
-                            || formErrors.address 
-                            || currentWallet.type !== 'mobile'
+                            buttonDisabled
+                            || formErrors.address
+                            || currentWallet?.type !== 'mobile'
                             || providerLoading
                           }
                           variant="contained"
@@ -925,9 +945,9 @@ const Contribute = () => {
                   <Typography sx={{ color: theme.palette.text.secondary }}>
                     {formState === formOpenState.EARLY &&
                       'This form is not yet active. The round will start at ' +
-                        new Date(
-                          Date.parse(contributeData.start_dtz)
-                        ).toTimeString()}
+                      new Date(
+                        Date.parse(contributeData.start_dtz)
+                      ).toTimeString()}
                   </Typography>
                   <Typography sx={{ color: theme.palette.text.secondary }}>
                     {formState === formOpenState.CLOSED &&
@@ -953,7 +973,7 @@ const Contribute = () => {
                   <Typography id="modal-title" variant="h6" component="h2">
                     Contribution
                   </Typography>
-                  {ergopayUrl && currentWallet.changeAddress ? (
+                  {ergopayUrl && currentWallet?.changeAddress ? (
                     <ErgopayModalBody ergopayUrl={ergopayUrl} address={currentWallet.changeAddress} />
                   ) : (
                     <TransactionSubmitted
@@ -969,7 +989,6 @@ const Contribute = () => {
                 onClose={handleCloseError}
               >
                 <Alert
-                  onClose={handleCloseError}
                   severity="error"
                   sx={{ width: '100%' }}
                 >
