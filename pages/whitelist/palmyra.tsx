@@ -1,5 +1,4 @@
-import { useState, useEffect, forwardRef } from 'react';
-import { useRouter } from 'next/router';
+import { useState, useEffect } from 'react';
 import {
   Typography,
   Grid,
@@ -7,32 +6,23 @@ import {
   TextField,
   Button,
   Container,
-  InputLabel,
   Checkbox,
   FormGroup,
   FormControlLabel,
   FormControl,
-  FilledInput,
   FormHelperText,
   CircularProgress,
   Alert,
   useTheme,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
   Link
 } from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-import TelegramIcon from '@mui/icons-material/Telegram';
-import DiscordIcon from '@components/svgs/DiscordIcon';
-import MarkdownRender from '@components/MarkdownRender';
 import axios from 'axios';
-import SumsubWebSdk from '@sumsub/websdk-react';
 import { useWallet } from '@utils/WalletContext';
 import { trpc } from '@utils/trpc';
 import { Wallet } from 'next-auth';
 import ChangeDefaultAddress from '@components/user/ChangeDefaultAddress';
+import Sumsub from '@components/whitelist/Sumsub';
 
 type FormData = {
   name: string;
@@ -419,110 +409,6 @@ const Whitelist = () => {
 
   const theme = useTheme()
 
-
-  // SUMSUB STUFF
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [userId, setUserId] = useState('')
-
-  const checkVerificationResult = trpc.user.getSumsubResult.useQuery(undefined, { enabled: false, retry: false })
-
-  useEffect(() => {
-    if (sessionStatus === 'authenticated' && sessionData?.user.id) {
-      const id = sessionData.user.id
-      setUserId(id)
-      // console.log(id)
-      // Fetch the access token from your API when the component mounts
-      fetch(`/api/sumsub/getAccessToken?userId=${id}`)
-        .then(response => response.json())
-        .then(data => setAccessToken(data.token))
-        .catch(error => console.error('Error fetching access token:', error));
-    }
-  }, [sessionStatus]);
-
-  const expirationHandler = async () => {
-    // Fetch a new access token from your API when the current token has expired
-    const response = await fetch(`/api/sumsub/getAccessToken?userId=${userId}`);
-    const data = await response.json();
-    setAccessToken(data.token);
-    return data.token;
-  }
-
-  const config = {
-    // Configuration settings for the SDK
-  };
-
-  const options = {
-    // Options for the SDK
-  };
-
-  const messageHandler = (message: any) => {
-    if (message.includes('applicantReviewComplete')) {
-      checkVerificationResult.refetch()
-        .then((response) => {
-          setSumsubStatus(response.data?.sumsubResult?.reviewAnswer)
-          setSumsubId(response.data?.sumsubId)
-        })
-        .catch((error: any) => {
-          console.error(error);
-        });
-    }
-    // console.log("Received message from SDK:", message);
-  }
-
-  const errorHandler = (error: any) => {
-    // Handle errors from the SDK
-    console.error("Received error from SDK:", error);
-  }
-
-  // WALLET UPDATE STUFF
-  const [defaultAddressLoading, setDefaultAddressLoading] = useState(false)
-  const [defaultAddress, setDefaultAddress] = useState('');
-  const [addressOptions, setAddressOptions] = useState<string[]>([]);
-  const changeLoginAddressMutation = trpc.user.changeLoginAddress.useMutation()
-  const updateLoginAddress = async (address: string) => {
-    try {
-      setDefaultAddressLoading(true)
-      setProviderLoading(true)
-      const changeLogin = await changeLoginAddressMutation.mutateAsync({
-        changeAddress: address
-      })
-      if (changeLogin) {
-        await fetchSessionData()
-        setDefaultAddressLoading(false)
-        setProviderLoading(false)
-      }
-    } catch (error) {
-      console.error("Error setting Login wallet", error);
-      setDefaultAddressLoading(false)
-      setProviderLoading(false)
-    }
-  }
-  useEffect(() => {
-    // console.log('fetch ' + sessionStatus)
-    if (sessionStatus === 'authenticated') {
-      getWallets()
-      updateWallets()
-    }
-  }, [sessionData, sessionStatus, fetchSessionData]);
-  const updateWallets = async () => {
-    if (walletsQuery.data) {
-      let changeAddresses = walletsQuery.data.wallets.map(wallet => wallet.changeAddress);
-
-      // If address exists, remove it from its current position and prepend it
-      if (sessionData?.user.address) {
-        const address = sessionData?.user.address
-        changeAddresses = changeAddresses.filter(addr => addr !== address);
-        changeAddresses.unshift(address);
-        setDefaultAddress(address);
-      }
-
-      setAddressOptions(changeAddresses);
-    }
-  }
-  const handleChangeAddress = (event: SelectChangeEvent) => {
-    setDefaultAddress(event.target.value);
-  };
-
   return (
     <>
       <Container maxWidth="md" sx={{ py: 12 }}>
@@ -554,42 +440,7 @@ const Whitelist = () => {
               <Typography sx={{ mb: 2, color: theme.palette.text.secondary }}>
                 Please fill out the KYC form before proceeding
               </Typography>
-              {accessToken ? (
-                <Box sx={{
-                  p: 4, pb: 0, background: '#ffffff', borderRadius: '16px',
-                  minHeight: { xs: '457px', md: '570px' },
-                }}>
-                  <SumsubWebSdk
-                    accessToken={accessToken}
-                    expirationHandler={expirationHandler}
-                    config={config}
-                    options={options}
-                    onMessage={messageHandler}
-                    onError={errorHandler}
-                  />
-                </Box>
-              ) : (
-                <Box sx={{
-                  p: 4,
-                  background: '#ffffff',
-                  borderRadius: '16px',
-                  height: { xs: '457px', md: '570px' },
-                  position: 'relative'
-                }}
-                >
-                  <Typography
-                    sx={{
-                      color: theme.palette.background.default,
-                      position: 'absolute',
-                      left: '50%',
-                      top: '50%',
-                      transform: 'translate(-50%,-50%)'
-                    }}
-                  >
-                    No KYC access token, please sign in first.
-                  </Typography>
-                </Box>
-              )}
+              <Sumsub setSumsubStatus={setSumsubStatus} />
             </Box>
             <Box sx={{ mb: 5 }}>
               <Typography variant="h4" sx={{ mb: 0 }}>
