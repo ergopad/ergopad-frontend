@@ -21,3 +21,4 @@ server.js
 package.json.local
 ssl.crt
 ssl.key
+/db
