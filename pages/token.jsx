@@ -101,9 +101,8 @@ const gridBox = {
 }
 
 const paperStyle = {
-    p: 3,
-    borderRadius: 2,
-    height: '100%',
+    p: 1,
+    borderRadius: 2
 };
 
 const Token = () => {
@@ -162,7 +161,6 @@ const Token = () => {
             desc: ergopadInCirculation
         },
     ]
-    
 
   return (
     <>
@@ -208,7 +206,14 @@ const Token = () => {
 
             <Grid item xs={12} md={12}>
                 <Paper sx={paperStyle}>
-                    <CandleStickChart />
+                    <iframe 
+                    src="https://cruxfinance.io/ergopad-chart"
+                    style={{
+                        width: '100%',
+                        border: 'none',
+                        minHeight: '600px'
+                    }}
+                    />
                 </Paper>
             </Grid>
 
