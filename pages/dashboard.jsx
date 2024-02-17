@@ -103,8 +103,8 @@ const Dashboard = () => {
   const [loadingStakingTable, setLoadingStakingTable] = useState(false);
   const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
   const [navigatorLanguage, setNavigatorLanguage] = useState('en-US');
-const [walletAddresses, setWalletAddresses] = useState([])
-const [addressesWithType, setAddressesWithType] = useState([])
+  const [walletAddresses, setWalletAddresses] = useState([])
+  const [addressesWithType, setAddressesWithType] = useState([])
 
 
   const { wallet, providerLoading, sessionStatus } = useWallet()
@@ -129,7 +129,7 @@ const [addressesWithType, setAddressesWithType] = useState([])
       setLoading(true);
       try {
         const wallets = await getWallets();
-        let addressesWithType = [];
+        const addressesWithType = [];
   
         if (wallets && wallets.length > 0) {
           for (let thisWallet of wallets) {
@@ -147,7 +147,14 @@ const [addressesWithType, setAddressesWithType] = useState([])
         // Extracting unique addresses
         const uniqueAddresses = [...new Set(addressesWithType.map(a => a.address))];
         setWalletAddresses(uniqueAddresses);
-        setAddressesWithType(addressesWithType);
+        setAddressesWithType(
+          addressesWithType.filter(
+            (elem, index) =>
+              addressesWithType.findIndex(
+                (obj) => obj.address === elem.address
+              ) === index
+          )
+        );
       } catch (e) {
         console.log('ERROR FETCHING: ', e);
       }
