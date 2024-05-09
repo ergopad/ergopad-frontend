@@ -1,4 +1,4 @@
-import { Box, CardContent, Grid, Typography } from '@mui/material';
+import { Box, CardContent, Grid, Typography } from '@mui/material'
 
 const Features = () => {
   return (
@@ -134,7 +134,7 @@ const Features = () => {
         </Grid>
       </Grid>
     </>
-  );
-};
+  )
+}
 
-export default Features;
+export default Features

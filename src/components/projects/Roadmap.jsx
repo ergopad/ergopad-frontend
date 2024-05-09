@@ -1,22 +1,22 @@
-import Timeline from '@mui/lab/Timeline';
-import TimelineItem from '@mui/lab/TimelineItem';
-import TimelineSeparator from '@mui/lab/TimelineSeparator';
-import TimelineConnector from '@mui/lab/TimelineConnector';
-import TimelineContent from '@mui/lab/TimelineContent';
-import TimelineDot from '@mui/lab/TimelineDot';
-import Typography from '@mui/material/Typography';
-import Icon from '@mui/material/Icon';
+import Timeline from '@mui/lab/Timeline'
+import TimelineItem from '@mui/lab/TimelineItem'
+import TimelineSeparator from '@mui/lab/TimelineSeparator'
+import TimelineConnector from '@mui/lab/TimelineConnector'
+import TimelineContent from '@mui/lab/TimelineContent'
+import TimelineDot from '@mui/lab/TimelineDot'
+import Typography from '@mui/material/Typography'
+import Icon from '@mui/material/Icon'
 
 const Roadmap = ({ data }) => {
   const timelineItems = data
     ? data.map((roadmap) => {
-        return { ...roadmap, date: Date.parse(roadmap.date) };
+        return { ...roadmap, date: Date.parse(roadmap.date) }
       })
-    : [];
+    : []
   return (
     <Timeline>
       {timelineItems.map((item) => {
-        const itemTime = new Date(item?.date).toISOString();
+        const itemTime = new Date(item?.date).toISOString()
         return (
           <TimelineItem
             key={item?.name}
@@ -45,10 +45,10 @@ const Roadmap = ({ data }) => {
               </Typography>
             </TimelineContent>
           </TimelineItem>
-        );
+        )
       })}
     </Timeline>
-  );
-};
+  )
+}
 
-export default Roadmap;
+export default Roadmap

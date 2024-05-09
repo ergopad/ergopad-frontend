@@ -1,12 +1,12 @@
-import { Box, CircularProgress, Typography } from '@mui/material';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
-import MuiNextLink from '@components/MuiNextLink';
+import { Box, CircularProgress, Typography } from '@mui/material'
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined'
+import MuiNextLink from '@components/MuiNextLink'
 
 const friendlyTransactionId = (addr, tot = 15) => {
-  if (addr === undefined || addr.slice === undefined) return '';
-  if (addr.length < 30) return addr;
-  return addr.slice(0, tot) + '...' + addr.slice(-tot);
-};
+  if (addr === undefined || addr.slice === undefined) return ''
+  if (addr.length < 30) return addr
+  return addr.slice(0, tot) + '...' + addr.slice(-tot)
+}
 
 const TransactionSubmitted = ({ transactionId, pending }) => {
   return (
@@ -50,7 +50,7 @@ const TransactionSubmitted = ({ transactionId, pending }) => {
         )}
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default TransactionSubmitted;
+export default TransactionSubmitted

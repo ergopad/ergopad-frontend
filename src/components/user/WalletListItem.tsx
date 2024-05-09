@@ -1,10 +1,10 @@
-import { Typography, Avatar, useTheme, Box, Button } from '@mui/material';
-import { FC } from 'react';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { Typography, Avatar, useTheme, Box, Button } from '@mui/material'
+import { FC } from 'react'
+import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 
 interface WalletListItemProps extends TWalletListItem {
-  link?: boolean;
-  handleConnect: (walletName: string) => void;
+  link?: boolean
+  handleConnect: (walletName: string) => void
 }
 
 export const WalletListItemComponent: FC<WalletListItemProps> = ({
@@ -17,7 +17,7 @@ export const WalletListItemComponent: FC<WalletListItemProps> = ({
   link = false,
   handleConnect,
 }) => {
-  const theme = useTheme();
+  const theme = useTheme()
   return (
     <Button
       endIcon={
@@ -92,5 +92,5 @@ export const WalletListItemComponent: FC<WalletListItemProps> = ({
           : () => handleConnect(connectName)
       }
     />
-  );
-};
+  )
+}

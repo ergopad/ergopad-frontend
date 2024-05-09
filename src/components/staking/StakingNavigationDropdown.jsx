@@ -4,15 +4,15 @@ import {
   MenuItem,
   Select,
   useMediaQuery,
-} from '@mui/material';
-import theme from '@styles/theme';
+} from '@mui/material'
+import theme from '@styles/theme'
 
 const StakingNavigationDropdown = ({
   tokenChoice,
   handleTokenChoiceChange,
   stakingTokenOptions,
 }) => {
-  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
+  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'))
   const formControlStyle = {
     '&:hover': {
       border: 'none',
@@ -28,7 +28,7 @@ const StakingNavigationDropdown = ({
       },
     },
     mb: 4,
-  };
+  }
 
   return (
     <FormControl variant="filled" fullWidth sx={formControlStyle}>
@@ -64,7 +64,7 @@ const StakingNavigationDropdown = ({
         </Select>
       )}
     </FormControl>
-  );
-};
+  )
+}
 
-export default StakingNavigationDropdown;
+export default StakingNavigationDropdown

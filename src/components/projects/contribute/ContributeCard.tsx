@@ -6,25 +6,25 @@ import {
   FormControlLabel,
   Typography,
   useTheme,
-} from '@mui/material';
-import React, { ChangeEvent, FC, useState } from 'react';
-import TokenInput from './TokenInput';
-import Link from '@components/Link';
-import ContributeConfirm from './ContributeConfirm';
-import { useWallet } from '@lib/contexts/WalletContext';
+} from '@mui/material'
+import React, { ChangeEvent, FC, useState } from 'react'
+import TokenInput from './TokenInput'
+import Link from '@components/Link'
+import ContributeConfirm from './ContributeConfirm'
+import { useWallet } from '@lib/contexts/WalletContext'
 
 interface IContributeCardProps {
-  projectName: string;
-  projectIcon: string;
-  roundName: string;
-  tokenTicker: string;
-  remainingTokens: number;
-  exchangeRate: number;
-  whitelisted: boolean;
-  live: boolean;
-  contributionRoundId: number;
-  recipientAddress: string | null;
-  allowed: boolean;
+  projectName: string
+  projectIcon: string
+  roundName: string
+  tokenTicker: string
+  remainingTokens: number
+  exchangeRate: number
+  whitelisted: boolean
+  live: boolean
+  contributionRoundId: number
+  recipientAddress: string | null
+  allowed: boolean
 }
 
 const ContributeCard: FC<IContributeCardProps> = ({
@@ -40,17 +40,17 @@ const ContributeCard: FC<IContributeCardProps> = ({
   recipientAddress,
   allowed,
 }) => {
-  const { sessionData } = useWallet();
+  const { sessionData } = useWallet()
 
-  const theme = useTheme();
-  const [termsCheck, setTermsCheck] = useState(false);
-  const [openContribution, setOpenContribution] = useState(false);
-  const [inputValue, setInputValue] = useState('');
-  const [outputValue, setOutputValue] = useState('');
+  const theme = useTheme()
+  const [termsCheck, setTermsCheck] = useState(false)
+  const [openContribution, setOpenContribution] = useState(false)
+  const [inputValue, setInputValue] = useState('')
+  const [outputValue, setOutputValue] = useState('')
 
   const handleCheckTerms = (e: ChangeEvent) => {
-    setTermsCheck(!termsCheck);
-  };
+    setTermsCheck(!termsCheck)
+  }
 
   return (
     <Box
@@ -203,7 +203,7 @@ const ContributeCard: FC<IContributeCardProps> = ({
         />
       )}
     </Box>
-  );
-};
+  )
+}
 
-export default ContributeCard;
+export default ContributeCard

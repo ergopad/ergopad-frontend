@@ -1,21 +1,21 @@
-import { useEffect, useState } from 'react';
-import Features from '@components/landing/Features';
-import Hero from '@components/landing/Hero';
-import { Container, Divider } from '@mui/material';
-import Dashboard from '@components/landing/Dashboard';
-import Projects from '@components/landing/Projects';
+import { useEffect, useState } from 'react'
+import Features from '@components/landing/Features'
+import Hero from '@components/landing/Hero'
+import { Container, Divider } from '@mui/material'
+import Dashboard from '@components/landing/Dashboard'
+import Projects from '@components/landing/Projects'
 // import Announcements from '@components/landing/Announcements';
 // import Social from '@components/landing/Social';
-import ActiveRound from '@components/landing/ActiveRound';
-import { useProjectList } from '@lib/hooks/useProjectList';
+import ActiveRound from '@components/landing/ActiveRound'
+import { useProjectList } from '@lib/hooks/useProjectList'
 
 const Homepage = () => {
-  const { projectList, isLoading } = useProjectList();
-  const [projects, SetProjects] = useState([]);
+  const { projectList, isLoading } = useProjectList()
+  const [projects, SetProjects] = useState([])
 
   useEffect(() => {
-    SetProjects(projectList);
-  }, [projectList]);
+    SetProjects(projectList)
+  }, [projectList])
 
   return (
     <>
@@ -39,7 +39,7 @@ const Homepage = () => {
         <Dashboard />
       </Container>
     </>
-  );
-};
+  )
+}
 
-export default Homepage;
+export default Homepage

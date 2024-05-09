@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react'
 import {
   Button,
   Dialog,
@@ -16,23 +16,23 @@ import {
   Box,
   Collapse,
   IconButton,
-} from '@mui/material';
-import { signIn } from 'next-auth/react';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MobileLogin from './MobileLogin';
-import NautilusLogin from './NautilusLogin';
-import CloseIcon from '@mui/icons-material/Close';
+} from '@mui/material'
+import { signIn } from 'next-auth/react'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import MobileLogin from './MobileLogin'
+import NautilusLogin from './NautilusLogin'
+import CloseIcon from '@mui/icons-material/Close'
 
 declare global {
   interface Window {
-    ergoConnector: any;
+    ergoConnector: any
   }
 }
 
 const wallets: {
-  name: Expanded;
-  icon: string;
-  description: string;
+  name: Expanded
+  icon: string
+  description: string
 }[] = [
   {
     name: 'Nautilus',
@@ -49,29 +49,29 @@ const wallets: {
     icon: '/icons/wallets/github-mark-white.png',
     description: 'Connect with your OAuth provider',
   },
-];
+]
 
-export type Expanded = 'Nautilus' | 'Mobile' | 'GitHub' | undefined;
+export type Expanded = 'Nautilus' | 'Mobile' | 'GitHub' | undefined
 
 interface ISignIn {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const SignIn: FC<ISignIn> = ({ open, setOpen, setLoading }) => {
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
-  const [isNautilusAvailable, setNautilusAvailable] = useState(false);
-  const [expanded, setExpanded] = useState<Expanded>(undefined);
+  const theme = useTheme()
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'))
+  const [isNautilusAvailable, setNautilusAvailable] = useState(false)
+  const [expanded, setExpanded] = useState<Expanded>(undefined)
 
   useEffect(() => {
-    setNautilusAvailable(!!window.ergoConnector?.nautilus);
-  }, []);
+    setNautilusAvailable(!!window.ergoConnector?.nautilus)
+  }, [])
 
   const handleClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   // const handleConnect = async (walletName: string) => {
   //   // setLoading(true)
@@ -83,41 +83,41 @@ export const SignIn: FC<ISignIn> = ({ open, setOpen, setLoading }) => {
   // }
 
   const handleProviderSignIn = (providerId: string) => {
-    setLoading(true);
+    setLoading(true)
     signIn(providerId)
       .then((result) => {
         // console.log(result)
       })
       .catch((error) => {
-        console.error(error);
-      });
-    handleClose();
-  };
+        console.error(error)
+      })
+    handleClose()
+  }
 
   const handleWalletChange = (wallet: Expanded) => {
-    setExpanded(wallet !== undefined ? wallet : undefined);
-    if (wallet === 'GitHub') handleProviderSignIn('github');
-    if (wallet === 'Nautilus') dappConnection();
-  };
+    setExpanded(wallet !== undefined ? wallet : undefined)
+    if (wallet === 'GitHub') handleProviderSignIn('github')
+    if (wallet === 'Nautilus') dappConnection()
+  }
 
-  const [nautilusLoading, setNautilusLoading] = useState(false);
-  const [dappConnected, setDappConnected] = useState(false);
+  const [nautilusLoading, setNautilusLoading] = useState(false)
+  const [dappConnected, setDappConnected] = useState(false)
   const dappConnection = async () => {
-    setNautilusLoading(true);
+    setNautilusLoading(true)
     try {
-      const connect = await window.ergoConnector.nautilus.connect();
+      const connect = await window.ergoConnector.nautilus.connect()
       if (connect) {
-        setDappConnected(true);
+        setDappConnected(true)
       } else {
-        console.log('error connecting nautilus');
-        setNautilusLoading(false);
-        setExpanded(undefined);
+        console.log('error connecting nautilus')
+        setNautilusLoading(false)
+        setExpanded(undefined)
       }
     } catch (error) {
-      console.error('Error connecting to dApp:', error);
-      setNautilusLoading(false);
+      console.error('Error connecting to dApp:', error)
+      setNautilusLoading(false)
     }
-  };
+  }
 
   return (
     <>
@@ -253,7 +253,7 @@ export const SignIn: FC<ISignIn> = ({ open, setOpen, setLoading }) => {
                   </Box>
                 </Button>
               </Collapse>
-            );
+            )
           })}
           <Collapse in={expanded === 'Mobile'} mountOnEnter unmountOnExit>
             <MobileLogin setModalOpen={setOpen} />
@@ -286,7 +286,7 @@ export const SignIn: FC<ISignIn> = ({ open, setOpen, setLoading }) => {
         </DialogActions>
       </Dialog>
     </>
-  );
-};
+  )
+}
 
-export default SignIn;
+export default SignIn

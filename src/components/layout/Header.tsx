@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 import {
   AppBar,
   Toolbar,
@@ -12,13 +12,13 @@ import {
   useTheme,
   // DialogTitle,
   // DialogContent
-} from '@mui/material';
-import Link from 'next/link';
-import Navbar from '@components/navigation/Navbar';
+} from '@mui/material'
+import Link from 'next/link'
+import Navbar from '@components/navigation/Navbar'
 // import { useWallet } from '@contexts/WalletContext';
-import Image from 'next/legacy/image';
-import NotificationBell from '@components/NotificationBell';
-import UserMenu from '@components/user/UserMenu';
+import Image from 'next/legacy/image'
+import NotificationBell from '@components/NotificationBell'
+import UserMenu from '@components/user/UserMenu'
 
 export const navLinks = [
   { title: `Whitepaper`, path: `/whitepaper` },
@@ -26,14 +26,14 @@ export const navLinks = [
   { title: `Projects`, path: `/projects` },
   { title: `Token`, path: `/token` },
   { title: `Staking`, path: `/staking` },
-];
+]
 
 const Header = () => {
-  const theme = useTheme();
+  const theme = useTheme()
   const trigger = useScrollTrigger({
     disableHysteresis: true,
     threshold: 0,
-  });
+  })
   // const [modalOpen, setModalOpen] = useState(true);
 
   // useEffect(() => {
@@ -206,7 +206,7 @@ const Header = () => {
         </DialogActions>
       </BootstrapDialog> */}
     </>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

@@ -1,15 +1,15 @@
-import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
-import Grid from '@mui/material/Grid';
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import TwitterIcon from '@mui/icons-material/Twitter';
-import Box from '@mui/material/Box';
-import MuiNextLink from '@components/MuiNextLink';
-import theme from '@styles/theme';
-import React from 'react';
+import Typography from '@mui/material/Typography'
+import Avatar from '@mui/material/Avatar'
+import Grid from '@mui/material/Grid'
+import LinkedInIcon from '@mui/icons-material/LinkedIn'
+import TwitterIcon from '@mui/icons-material/Twitter'
+import Box from '@mui/material/Box'
+import MuiNextLink from '@components/MuiNextLink'
+import theme from '@styles/theme'
+import React from 'react'
 
 const Team = ({ data }) => {
-  const teamMembers = data ? data : [];
+  const teamMembers = data ? data : []
   return (
     <>
       <Grid container spacing={3} direction="row" justifyContent="center">
@@ -71,7 +71,7 @@ const Team = ({ data }) => {
         ))}
       </Grid>
     </>
-  );
-};
+  )
+}
 
-export default Team;
+export default Team

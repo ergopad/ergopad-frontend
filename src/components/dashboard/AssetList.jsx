@@ -1,6 +1,6 @@
-import { Box, Typography } from '@mui/material';
-import React from 'react';
-import AssetItem from './AssetItem';
+import { Box, Typography } from '@mui/material'
+import React from 'react'
+import AssetItem from './AssetItem'
 
 /* const mockData = [
   { token: 'ERG', name: 'Ergo', amount: 400, amountUSD: '4320' },
@@ -35,11 +35,11 @@ const AssetList = ({ assets, title, type, navigatorLanguage }) => {
                 type={type}
                 navigatorLanguage={navigatorLanguage}
               />
-            );
+            )
         })}
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default AssetList;
+export default AssetList

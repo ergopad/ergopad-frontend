@@ -6,19 +6,19 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-} from '@mui/material';
-import Link from '@components/MuiNextLink';
+} from '@mui/material'
+import Link from '@components/MuiNextLink'
 import {
   VictoryChart,
   VictoryLine,
   VictoryAxis,
   VictoryTooltip,
   VictoryVoronoiContainer,
-} from 'victory';
-import theme from '@styles/theme';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import axios from 'axios';
+} from 'victory'
+import theme from '@styles/theme'
+import { useState } from 'react'
+import { useEffect } from 'react'
+import axios from 'axios'
 
 const stepUnitMapper = {
   '1h': {
@@ -41,12 +41,12 @@ const stepUnitMapper = {
     stepSize: 1,
     stepUnit: 'm',
   },
-};
+}
 
 const pairBaseCurrencyMapper = {
   ergopad_sigusd: ' SigUSD',
   ergopad_erg: ' Erg',
-};
+}
 
 const initHistoryData = {
   token: 'xyzpad_erg',
@@ -61,51 +61,51 @@ const initHistoryData = {
       price: 0,
     },
   ],
-};
+}
 
 const PriceChart = () => {
-  const mtheme = useTheme();
-  const matches = useMediaQuery(mtheme.breakpoints.up('md'));
-  const [rawData, setRawData] = useState(initHistoryData);
-  const [stepUnit, setStepUnit] = useState('1h');
-  const [pair, setPair] = useState('ergopad_sigusd');
+  const mtheme = useTheme()
+  const matches = useMediaQuery(mtheme.breakpoints.up('md'))
+  const [rawData, setRawData] = useState(initHistoryData)
+  const [stepUnit, setStepUnit] = useState('1h')
+  const [pair, setPair] = useState('ergopad_sigusd')
 
   useEffect(() => {
     const getData = async () => {
       try {
         const res = await axios.get(
-          `${process.env.API_URL}/asset/price/chart/${pair}?stepSize=${stepUnitMapper[stepUnit].stepSize}&stepUnit=${stepUnitMapper[stepUnit].stepUnit}`,
-        );
-        setRawData(res.data);
+          `${process.env.API_URL}/asset/price/chart/${pair}?stepSize=${stepUnitMapper[stepUnit].stepSize}&stepUnit=${stepUnitMapper[stepUnit].stepUnit}`
+        )
+        setRawData(res.data)
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
-    };
+    }
 
-    getData();
-  }, [stepUnit, pair]);
+    getData()
+  }, [stepUnit, pair])
 
   const priceData = rawData.history.map((dataPoint) => {
     return {
       x: dataPoint.timestamp,
       y: dataPoint.price,
-    };
-  });
+    }
+  })
   const lastPrice = priceData.length
     ? Math.round(priceData[0].y * 10000) / 10000
-    : 1;
+    : 1
 
   const handleStepChange = (e, newAlignment) => {
     if (newAlignment !== null) {
-      setStepUnit(newAlignment);
+      setStepUnit(newAlignment)
     }
-  };
+  }
 
   const handlePairChange = (e, newAlignment) => {
     if (newAlignment !== null) {
-      setPair(newAlignment);
+      setPair(newAlignment)
     }
-  };
+  }
 
   return (
     <>
@@ -168,7 +168,7 @@ const PriceChart = () => {
                 return (
                   Math.floor(d.datum.y * 10000) / 10000 +
                   pairBaseCurrencyMapper[pair]
-                );
+                )
               }}
             />
           }
@@ -184,7 +184,7 @@ const PriceChart = () => {
           <VictoryAxis
             dependentAxis
             tickFormat={(price) => {
-              return price;
+              return price
             }}
             style={{
               axis: { stroke: 'white' },
@@ -197,9 +197,9 @@ const PriceChart = () => {
             crossAxis
             invertAxis
             tickFormat={(timestamp) => {
-              let theDate = new Date(Date.parse(timestamp));
-              let parseDate = theDate.getMonth() + 1 + '/' + theDate.getDate();
-              return parseDate;
+              let theDate = new Date(Date.parse(timestamp))
+              let parseDate = theDate.getMonth() + 1 + '/' + theDate.getDate()
+              return parseDate
             }}
             style={{
               axis: { stroke: 'white' },
@@ -242,7 +242,7 @@ const PriceChart = () => {
         </Grid>
       </Grid>
     </>
-  );
-};
+  )
+}
 
-export default PriceChart;
+export default PriceChart

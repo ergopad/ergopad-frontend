@@ -1,28 +1,28 @@
-import React from 'react';
-import { useRouter } from 'next/router';
-import clsx from 'clsx';
-import NextLink from 'next/link';
-import { Link as MuiLink } from '@mui/material';
-import { SxProps } from '@mui/material';
+import React from 'react'
+import { useRouter } from 'next/router'
+import clsx from 'clsx'
+import NextLink from 'next/link'
+import { Link as MuiLink } from '@mui/material'
+import { SxProps } from '@mui/material'
 
 // This component will use NextLink for internal links and MuiLink for external
 // It will also skin internal links with the MuiLink wrapper
 
 interface INextLinkComposedProps {
-  to: URL | string;
-  as?: string;
-  replace?: boolean;
-  scroll?: boolean;
-  shallow?: boolean;
-  prefetch?: boolean;
-  className?: string;
+  to: URL | string
+  as?: string
+  replace?: boolean
+  scroll?: boolean
+  shallow?: boolean
+  prefetch?: boolean
+  className?: string
 }
 
 const NextLinkComposed = React.forwardRef<
   HTMLAnchorElement,
   INextLinkComposedProps
 >((props, ref) => {
-  const { to, replace, scroll, shallow, prefetch, ...other } = props;
+  const { to, replace, scroll, shallow, prefetch, ...other } = props
   return (
     <NextLink
       href={to}
@@ -33,19 +33,19 @@ const NextLinkComposed = React.forwardRef<
       prefetch={prefetch}
       {...other}
     />
-  );
-});
+  )
+})
 
-NextLinkComposed.displayName = 'NextLinkComposed';
+NextLinkComposed.displayName = 'NextLinkComposed'
 
 interface ILinkProps {
-  children: React.ReactNode;
-  className?: string;
-  href: URL | string;
-  noLinkStyle?: boolean;
-  activeClassName?: string;
-  sx?: SxProps;
-  target?: string;
+  children: React.ReactNode
+  className?: string
+  href: URL | string
+  noLinkStyle?: boolean
+  activeClassName?: string
+  sx?: SxProps
+  target?: string
 }
 
 const Link = React.forwardRef<HTMLAnchorElement, ILinkProps>((props, ref) => {
@@ -56,17 +56,17 @@ const Link = React.forwardRef<HTMLAnchorElement, ILinkProps>((props, ref) => {
     noLinkStyle,
     sx,
     ...other
-  } = props;
+  } = props
 
-  const router = useRouter();
-  const pathname = typeof href === 'string' ? href : href.pathname;
+  const router = useRouter()
+  const pathname = typeof href === 'string' ? href : href.pathname
   const className = clsx(classNameProps, {
     [activeClassName]: router.pathname === pathname && activeClassName,
-  });
+  })
 
   const isExternal =
     typeof href === 'string' &&
-    (href.indexOf('http') === 0 || href.indexOf('mailto:') === 0);
+    (href.indexOf('http') === 0 || href.indexOf('mailto:') === 0)
 
   if (isExternal) {
     if (noLinkStyle) {
@@ -79,7 +79,7 @@ const Link = React.forwardRef<HTMLAnchorElement, ILinkProps>((props, ref) => {
           rel="noreferrer"
           {...other}
         />
-      );
+      )
     }
 
     return (
@@ -92,13 +92,13 @@ const Link = React.forwardRef<HTMLAnchorElement, ILinkProps>((props, ref) => {
         rel="noreferrer"
         {...other}
       />
-    );
+    )
   }
 
   if (noLinkStyle) {
     return (
       <NextLinkComposed className={className} ref={ref} to={href} {...other} />
-    );
+    )
   }
 
   return (
@@ -110,9 +110,9 @@ const Link = React.forwardRef<HTMLAnchorElement, ILinkProps>((props, ref) => {
       sx={sx}
       {...other}
     />
-  );
-});
+  )
+})
 
-Link.displayName = 'Link';
+Link.displayName = 'Link'
 
-export default Link;
+export default Link

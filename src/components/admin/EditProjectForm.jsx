@@ -10,25 +10,25 @@ import {
   AccordionSummary,
   AccordionDetails,
   CircularProgress,
-} from '@mui/material';
-import { forwardRef, useEffect, useState } from 'react';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-import FileUploadS3 from '@components/FileUploadS3';
-import PaginatedTable from '@components/PaginatedTable';
+} from '@mui/material'
+import { forwardRef, useEffect, useState } from 'react'
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import FileUploadS3 from '@components/FileUploadS3'
+import PaginatedTable from '@components/PaginatedTable'
 import {
   RoadmapInput,
   TokenomicsInput,
   TeamInput,
-} from '@components/ListTextInput';
-import theme from '@styles/theme';
-import axios from 'axios';
+} from '@components/ListTextInput'
+import theme from '@styles/theme'
+import axios from 'axios'
 
 const Alert = forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
-const socials = ['telegram', 'discord', 'github', 'twitter', 'website'];
+const socials = ['telegram', 'discord', 'github', 'twitter', 'website']
 
 const initialFormData = Object.freeze({
   id: '',
@@ -59,76 +59,76 @@ const initialFormData = Object.freeze({
     tokenomics: [],
   },
   isDraft: false,
-});
+})
 
 const initialFormErrors = Object.freeze({
   name: false,
   shortDescription: false,
   fundsRaised: false,
   bannerImgUrl: false,
-});
+})
 
 const EditProjectForm = () => {
   // project data
-  const [projectData, setProjectData] = useState([]);
+  const [projectData, setProjectData] = useState([])
   // form data is all strings
-  const [formData, updateFormData] = useState(initialFormData);
+  const [formData, updateFormData] = useState(initialFormData)
   // form error object, all booleans
-  const [formErrors, setFormErrors] = useState(initialFormErrors);
+  const [formErrors, setFormErrors] = useState(initialFormErrors)
   // loading spinner for submit button
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false)
   // set true to disable submit button
-  const [buttonDisabled, setbuttonDisabled] = useState(false);
+  const [buttonDisabled, setbuttonDisabled] = useState(false)
   // open error snackbar
-  const [openError, setOpenError] = useState(false);
+  const [openError, setOpenError] = useState(false)
   // open success modal
-  const [openSuccess, setOpenSuccess] = useState(false);
+  const [openSuccess, setOpenSuccess] = useState(false)
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again',
-  );
+    'Please eliminate form errors and try again'
+  )
 
   useEffect(() => {
     if (isLoading) {
-      setbuttonDisabled(true);
+      setbuttonDisabled(true)
     } else {
-      setbuttonDisabled(false);
+      setbuttonDisabled(false)
     }
-  }, [isLoading]);
+  }, [isLoading])
 
   useEffect(() => {
     const getTableData = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
         const res = await axios.get(
-          `${process.env.API_URL}/projects/?include_drafts=true`,
-        );
-        res.data.sort((a, b) => a.id - b.id);
-        setProjectData(res.data);
+          `${process.env.API_URL}/projects/?include_drafts=true`
+        )
+        res.data.sort((a, b) => a.id - b.id)
+        setProjectData(res.data)
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
-    getTableData();
-  }, [openSuccess]);
+    getTableData()
+  }, [openSuccess])
 
   // snackbar for error reporting
   const handleCloseError = (event, reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
-    setOpenError(false);
-  };
+    setOpenError(false)
+  }
 
   // modal for success message
   const handleCloseSuccess = (reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
-    setOpenSuccess(false);
-  };
+    setOpenSuccess(false)
+  }
 
   const handleChange = (e) => {
     if (
@@ -138,12 +138,12 @@ const EditProjectForm = () => {
       setFormErrors({
         ...formErrors,
         [e.target.name]: true,
-      });
+      })
     } else if (Object.hasOwnProperty.call(formErrors, e.target.name)) {
       setFormErrors({
         ...formErrors,
         [e.target.name]: false,
-      });
+      })
     }
 
     if (e.target.name == 'fundsRaised') {
@@ -151,12 +151,12 @@ const EditProjectForm = () => {
         setFormErrors({
           ...formErrors,
           fundsRaised: true,
-        });
+        })
       } else {
         setFormErrors({
           ...formErrors,
           fundsRaised: false,
-        });
+        })
       }
     }
 
@@ -167,7 +167,7 @@ const EditProjectForm = () => {
           ...formData.socials,
           [e.target.name]: e.target.value,
         },
-      });
+      })
     } else if (
       ['tokenName', 'totalTokens', 'tokenTicker'].includes(e.target.name)
     ) {
@@ -177,93 +177,93 @@ const EditProjectForm = () => {
           ...formData.tokenomics,
           [e.target.name]: e.target.value,
         },
-      });
+      })
     } else {
       updateFormData({
         ...formData,
         [e.target.name]: ['isLaunched', 'isDraft'].includes(e.target.name)
           ? e.target.checked
           : e.target.value,
-      });
+      })
     }
-  };
+  }
 
   const fetchDetails = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setOpenError(false);
+    e.preventDefault()
+    setLoading(true)
+    setOpenError(false)
     try {
-      const projectId = formData.id;
+      const projectId = formData.id
       if (projectId) {
         const res = await axios.get(
-          `${process.env.API_URL}/projects/${projectId}`,
-        );
-        updateFormData({ ...res.data });
-        setFormErrors(initialFormErrors);
+          `${process.env.API_URL}/projects/${projectId}`
+        )
+        updateFormData({ ...res.data })
+        setFormErrors(initialFormErrors)
       }
     } catch (e) {
-      setErrorMessage('Project not found');
-      setOpenError(true);
+      setErrorMessage('Project not found')
+      setOpenError(true)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   const handleImageUpload = (res) => {
     if (res.status === 'success') {
-      updateFormData({ ...formData, bannerImgUrl: res.image_url });
-      setFormErrors({ ...formErrors, bannerImgUrl: false });
+      updateFormData({ ...formData, bannerImgUrl: res.image_url })
+      setFormErrors({ ...formErrors, bannerImgUrl: false })
     } else {
-      setErrorMessage('Image upload failed');
-      setOpenError(true);
+      setErrorMessage('Image upload failed')
+      setOpenError(true)
     }
-  };
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setOpenError(false);
-    setLoading(true);
-    const errorCheck = Object.values(formErrors).every((v) => v === false);
-    const emptyCheck = formData.bannerImgUrl !== '';
+    e.preventDefault()
+    setOpenError(false)
+    setLoading(true)
+    const errorCheck = Object.values(formErrors).every((v) => v === false)
+    const emptyCheck = formData.bannerImgUrl !== ''
     if (errorCheck && emptyCheck) {
-      const projectId = formData.id;
+      const projectId = formData.id
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422',
+            'jwt_token_login_422'
           )}`,
         },
-      };
-      const data = { ...formData };
+      }
+      const data = { ...formData }
       try {
         await axios.put(
           `${process.env.API_URL}/projects/${projectId}`,
           data,
-          defaultOptions,
-        );
-        setOpenSuccess(true);
-        updateFormData(initialFormData);
+          defaultOptions
+        )
+        setOpenSuccess(true)
+        updateFormData(initialFormData)
       } catch {
-        setErrorMessage('Invalid credentials or form data');
-        setOpenError(true);
+        setErrorMessage('Invalid credentials or form data')
+        setOpenError(true)
       }
     } else {
-      let updateErrors = {};
+      let updateErrors = {}
       Object.entries(formData).forEach((entry) => {
-        const [key, value] = entry;
+        const [key, value] = entry
         if (value === '' && Object.hasOwnProperty.call(formErrors, key)) {
-          let newEntry = { [key]: true };
-          updateErrors = { ...updateErrors, ...newEntry };
+          let newEntry = { [key]: true }
+          updateErrors = { ...updateErrors, ...newEntry }
         }
-      });
+      })
       setFormErrors({
         ...formErrors,
         ...updateErrors,
-      });
-      setErrorMessage('Please eliminate form errors and try again');
-      setOpenError(true);
+      })
+      setErrorMessage('Please eliminate form errors and try again')
+      setOpenError(true)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   return (
     <>
@@ -298,7 +298,7 @@ const EditProjectForm = () => {
               <PaginatedTable
                 rows={projectData}
                 onClick={(id) => {
-                  updateFormData({ ...formData, id: id });
+                  updateFormData({ ...formData, id: id })
                 }}
               />
             </AccordionDetails>
@@ -495,7 +495,7 @@ const EditProjectForm = () => {
                   ...formData.roadmap,
                   roadmap: [...updatedData],
                 },
-              });
+              })
             }}
           />
         </Grid>
@@ -515,7 +515,7 @@ const EditProjectForm = () => {
                   ...formData.team,
                   team: [...updatedData],
                 },
-              });
+              })
             }}
           />
         </Grid>
@@ -573,7 +573,7 @@ const EditProjectForm = () => {
                   ...formData.tokenomics,
                   tokenomics: [...updatedData],
                 },
-              });
+              })
             }}
           />
         </Grid>
@@ -652,7 +652,7 @@ const EditProjectForm = () => {
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}
 
-export default EditProjectForm;
+export default EditProjectForm

@@ -11,91 +11,91 @@ import {
   InputLabel,
   Select,
   MenuItem,
-} from '@mui/material';
-import { forwardRef } from 'react';
-import { useEffect, useState } from 'react';
-import CircularProgress from '@mui/material/CircularProgress';
-import axios from 'axios';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-import PaginatedTable from '@components/PaginatedTable';
+} from '@mui/material'
+import { forwardRef } from 'react'
+import { useEffect, useState } from 'react'
+import CircularProgress from '@mui/material/CircularProgress'
+import axios from 'axios'
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import PaginatedTable from '@components/PaginatedTable'
 
 const Alert = forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
-const tags = ['Default', 'Token', 'Staking', 'Company'];
+const tags = ['Default', 'Token', 'Staking', 'Company']
 
 const initialFormData = Object.freeze({
   id: '',
   question: '',
   solution: '',
   tag: 'default',
-});
+})
 
 const initialFormErrors = Object.freeze({
   question: false,
-});
+})
 
 const EditFaqForm = () => {
   // faq data
-  const [faqData, setFaqData] = useState([]);
+  const [faqData, setFaqData] = useState([])
   // form data is all strings
-  const [formData, updateFormData] = useState(initialFormData);
+  const [formData, updateFormData] = useState(initialFormData)
   // form error object, all booleans
-  const [formErrors, setFormErrors] = useState(initialFormErrors);
+  const [formErrors, setFormErrors] = useState(initialFormErrors)
   // loading spinner for submit button
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false)
   // set true to disable submit button
-  const [buttonDisabled, setbuttonDisabled] = useState(false);
+  const [buttonDisabled, setbuttonDisabled] = useState(false)
   // open error snackbar
-  const [openError, setOpenError] = useState(false);
+  const [openError, setOpenError] = useState(false)
   // open success modal
-  const [openSuccess, setOpenSuccess] = useState(false);
+  const [openSuccess, setOpenSuccess] = useState(false)
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again',
-  );
+    'Please eliminate form errors and try again'
+  )
 
   useEffect(() => {
     if (isLoading) {
-      setbuttonDisabled(true);
+      setbuttonDisabled(true)
     } else {
-      setbuttonDisabled(false);
+      setbuttonDisabled(false)
     }
-  }, [isLoading]);
+  }, [isLoading])
 
   useEffect(() => {
     const getTableData = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
-        const res = await axios.get(`${process.env.API_URL}/faq/`);
-        res.data.sort((a, b) => a.id - b.id);
-        setFaqData(res.data);
+        const res = await axios.get(`${process.env.API_URL}/faq/`)
+        res.data.sort((a, b) => a.id - b.id)
+        setFaqData(res.data)
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
-    getTableData();
-  }, [openSuccess]);
+    getTableData()
+  }, [openSuccess])
 
   // snackbar for error reporting
   const handleCloseError = (event, reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
-    setOpenError(false);
-  };
+    setOpenError(false)
+  }
 
   // modal for success message
   const handleCloseSuccess = (reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
-    setOpenSuccess(false);
-  };
+    setOpenSuccess(false)
+  }
 
   const handleChange = (e) => {
     if (
@@ -105,82 +105,82 @@ const EditFaqForm = () => {
       setFormErrors({
         ...formErrors,
         [e.target.name]: true,
-      });
+      })
     } else if (Object.hasOwnProperty.call(formErrors, e.target.name)) {
       setFormErrors({
         ...formErrors,
         [e.target.name]: false,
-      });
+      })
     }
 
     updateFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    });
-  };
+    })
+  }
 
   const fetchDetails = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setOpenError(false);
-    const id = formData.id;
-    const res = faqData.filter((faq) => faq.id === id);
+    e.preventDefault()
+    setLoading(true)
+    setOpenError(false)
+    const id = formData.id
+    const res = faqData.filter((faq) => faq.id === id)
     if (id && res.length) {
-      const data = res[0];
-      updateFormData({ ...data });
-      setFormErrors(initialFormErrors);
+      const data = res[0]
+      updateFormData({ ...data })
+      setFormErrors(initialFormErrors)
     } else {
-      setErrorMessage('FAQ not found');
-      setOpenError(true);
+      setErrorMessage('FAQ not found')
+      setOpenError(true)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setOpenError(false);
-    setLoading(true);
-    const errorCheck = Object.values(formErrors).every((v) => v === false);
+    e.preventDefault()
+    setOpenError(false)
+    setLoading(true)
+    const errorCheck = Object.values(formErrors).every((v) => v === false)
     if (errorCheck) {
-      const id = formData.id;
+      const id = formData.id
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422',
+            'jwt_token_login_422'
           )}`,
         },
-      };
-      const data = { ...formData };
+      }
+      const data = { ...formData }
       try {
         await axios.put(
           `${process.env.API_URL}/faq/${id}`,
           data,
-          defaultOptions,
-        );
-        setOpenSuccess(true);
-        updateFormData(initialFormData);
+          defaultOptions
+        )
+        setOpenSuccess(true)
+        updateFormData(initialFormData)
       } catch {
-        setErrorMessage('Invalid credentials or form data');
-        setOpenError(true);
+        setErrorMessage('Invalid credentials or form data')
+        setOpenError(true)
       }
     } else {
-      let updateErrors = {};
+      let updateErrors = {}
       Object.entries(formData).forEach((entry) => {
-        const [key, value] = entry;
+        const [key, value] = entry
         if (value === '' && Object.hasOwnProperty.call(formErrors, key)) {
-          let newEntry = { [key]: true };
-          updateErrors = { ...updateErrors, ...newEntry };
+          let newEntry = { [key]: true }
+          updateErrors = { ...updateErrors, ...newEntry }
         }
-      });
+      })
       setFormErrors({
         ...formErrors,
         ...updateErrors,
-      });
-      setErrorMessage('Please eliminate form errors and try again');
-      setOpenError(true);
+      })
+      setErrorMessage('Please eliminate form errors and try again')
+      setOpenError(true)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   return (
     <>
@@ -211,10 +211,10 @@ const EditFaqForm = () => {
             <AccordionDetails>
               <PaginatedTable
                 rows={faqData.map((faq) => {
-                  return { ...faq, name: faq.question };
+                  return { ...faq, name: faq.question }
                 })}
                 onClick={(id) => {
-                  updateFormData({ ...formData, id: id });
+                  updateFormData({ ...formData, id: id })
                 }}
               />
             </AccordionDetails>
@@ -306,7 +306,7 @@ const EditFaqForm = () => {
                   >
                     {tag}
                   </MenuItem>
-                );
+                )
               })}
             </Select>
           </FormControl>
@@ -361,7 +361,7 @@ const EditFaqForm = () => {
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}
 
-export default EditFaqForm;
+export default EditFaqForm

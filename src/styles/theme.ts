@@ -1,15 +1,15 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles'
 // import { Palette, PaletteOptions } from '@mui/material/styles';
 
 declare module '@mui/material/styles' {
   interface Palette {
-    tertiary?: Palette['primary'];
-    quaternary?: Palette['primary'];
+    tertiary?: Palette['primary']
+    quaternary?: Palette['primary']
   }
 
   interface PaletteOptions {
-    tertiary?: PaletteOptions['primary'];
-    quaternary?: PaletteOptions['primary'];
+    tertiary?: PaletteOptions['primary']
+    quaternary?: PaletteOptions['primary']
   }
 }
 
@@ -23,7 +23,7 @@ export const themeSetup = {
     dividerColor: 'rgba(255,255,255,0.08)',
     primaryMain: '#3ABAB4',
   },
-};
+}
 
 // Create a theme instance.
 let theme = createTheme({
@@ -156,7 +156,7 @@ let theme = createTheme({
       },
     },
   },
-});
+})
 
 theme.typography.h1 = {
   fontSize: '5rem',
@@ -174,7 +174,7 @@ theme.typography.h1 = {
   '@media (max-width:880px)': {
     fontSize: '3rem',
   },
-};
+}
 
 theme.typography.h2 = {
   color: theme.palette.text.primary,
@@ -186,7 +186,7 @@ theme.typography.h2 = {
   },
   lineHeight: '1.0',
   letterSpacing: '-0.02em',
-};
+}
 
 theme.typography.h3 = {
   color: theme.palette.text.primary,
@@ -194,7 +194,7 @@ theme.typography.h3 = {
   fontSize: '2.5rem',
   marginBottom: '1rem',
   fontWeight: '700',
-};
+}
 
 theme.typography.h4 = {
   color: theme.palette.text.primary,
@@ -202,7 +202,7 @@ theme.typography.h4 = {
   fontSize: '2rem',
   marginBottom: '1rem',
   fontWeight: '600',
-};
+}
 
 theme.typography.h5 = {
   color: theme.palette.text.primary,
@@ -210,7 +210,7 @@ theme.typography.h5 = {
   fontSize: '1.6rem',
   marginBottom: '1rem',
   fontWeight: '500',
-};
+}
 
 theme.typography.h6 = {
   color: theme.palette.text.primary,
@@ -218,7 +218,7 @@ theme.typography.h6 = {
   fontSize: '1.3rem',
   marginBottom: '1rem',
   fontWeight: '500',
-};
+}
 
 theme.typography.subtitle1 = {
   fontSize: '1.25rem',
@@ -228,13 +228,13 @@ theme.typography.subtitle1 = {
   fontWeight: '400',
   fontFamily: 'Inter, sans-serif',
   color: theme.palette.text.secondary,
-};
+}
 
 theme.typography.body2 = {
   color: theme.palette.text.secondary,
   fontSize: '1.125rem',
   marginBottom: '1rem',
   display: 'block',
-};
+}
 
-export default theme;
+export default theme

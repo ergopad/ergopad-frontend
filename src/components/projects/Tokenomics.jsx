@@ -1,7 +1,7 @@
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import LinearProgress from '@mui/material/LinearProgress';
-import React from 'react';
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
+import LinearProgress from '@mui/material/LinearProgress'
+import React from 'react'
 
 function LinearProgressWithLabel(props) {
   return (
@@ -11,22 +11,22 @@ function LinearProgressWithLabel(props) {
       </Box>
       <Box sx={{ minWidth: 35 }}>
         <Typography variant="body2" color="text.secondary">{`${Math.round(
-          props.value,
+          props.value
         )}%`}</Typography>
       </Box>
     </Box>
-  );
+  )
 }
 
 const Distribution = ({ data }) => {
-  const tokenomics = data ? data : [];
-  const total = tokenomics.reduce((a, data) => a + data.amount, 0);
+  const tokenomics = data ? data : []
+  const total = tokenomics.reduce((a, data) => a + data.amount, 0)
   const tokenSections = tokenomics.map((data) => {
     return {
       name: data.name,
       percent: (data.amount * 100) / total,
-    };
-  });
+    }
+  })
 
   return (
     <Box width="90%" sx={{ mx: 'auto' }}>
@@ -41,7 +41,7 @@ const Distribution = ({ data }) => {
         </React.Fragment>
       ))}
     </Box>
-  );
-};
+  )
+}
 
-export default Distribution;
+export default Distribution

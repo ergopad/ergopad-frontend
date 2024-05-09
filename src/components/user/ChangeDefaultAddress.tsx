@@ -1,4 +1,4 @@
-import { useState, useEffect, FC } from 'react';
+import { useState, useEffect, FC } from 'react'
 import {
   Box,
   Button,
@@ -8,14 +8,14 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
-} from '@mui/material';
-import { useWallet } from '@contexts/WalletContext';
-import { trpc } from '@utils/trpc';
-import { Wallet } from 'next-auth';
-import { getShorterAddress } from '@utils/general';
+} from '@mui/material'
+import { useWallet } from '@contexts/WalletContext'
+import { trpc } from '@utils/trpc'
+import { Wallet } from 'next-auth'
+import { getShorterAddress } from '@utils/general'
 
 interface ChangeDefaultAddressProps {
-  title: string;
+  title: string
 }
 
 const ChangeDefaultAddress: FC<ChangeDefaultAddressProps> = ({ title }) => {
@@ -25,67 +25,67 @@ const ChangeDefaultAddress: FC<ChangeDefaultAddressProps> = ({ title }) => {
     fetchSessionData,
     providerLoading,
     setProviderLoading,
-  } = useWallet();
-  const [addressOptions, setAddressOptions] = useState<string[]>([]);
-  const [defaultAddress, setDefaultAddress] = useState('');
-  const changeLoginAddressMutation = trpc.user.changeLoginAddress.useMutation();
+  } = useWallet()
+  const [addressOptions, setAddressOptions] = useState<string[]>([])
+  const [defaultAddress, setDefaultAddress] = useState('')
+  const changeLoginAddressMutation = trpc.user.changeLoginAddress.useMutation()
 
-  const shouldFetch = sessionStatus === 'authenticated';
+  const shouldFetch = sessionStatus === 'authenticated'
   const walletsQuery = trpc.user.getWallets.useQuery(undefined, {
     enabled: shouldFetch,
-  });
+  })
 
   const getWallets = async (): Promise<Wallet[]> => {
     if (sessionStatus !== 'authenticated') {
-      return [];
+      return []
     }
-    const fetchResult = await walletsQuery.refetch();
-    return fetchResult && fetchResult.data ? fetchResult.data.wallets : [];
-  };
+    const fetchResult = await walletsQuery.refetch()
+    return fetchResult && fetchResult.data ? fetchResult.data.wallets : []
+  }
 
   const updateLoginAddress = async (address: string) => {
     try {
-      setProviderLoading(true);
+      setProviderLoading(true)
       const changeLogin = await changeLoginAddressMutation.mutateAsync({
         changeAddress: address,
-      });
+      })
       if (changeLogin) {
-        await fetchSessionData();
-        setProviderLoading(false);
+        await fetchSessionData()
+        setProviderLoading(false)
       }
     } catch (error) {
-      console.error('Error setting Login wallet', error);
-      setProviderLoading(false);
+      console.error('Error setting Login wallet', error)
+      setProviderLoading(false)
     }
-  };
+  }
   useEffect(() => {
     // console.log('fetch ' + sessionStatus)
     if (sessionStatus === 'authenticated') {
-      getWallets();
-      updateWallets();
+      getWallets()
+      updateWallets()
     }
-  }, [sessionData, sessionStatus, fetchSessionData]);
+  }, [sessionData, sessionStatus, fetchSessionData])
   const updateWallets = async () => {
     if (walletsQuery.data) {
       let changeAddresses = walletsQuery.data.wallets.map(
-        (wallet) => wallet.changeAddress,
-      );
+        (wallet) => wallet.changeAddress
+      )
 
       // If address exists, remove it from its current position and prepend it
       if (sessionData?.user.address) {
-        const address = sessionData?.user.address;
-        changeAddresses = changeAddresses.filter((addr) => addr !== address);
-        changeAddresses.unshift(address);
-        setDefaultAddress(address);
+        const address = sessionData?.user.address
+        changeAddresses = changeAddresses.filter((addr) => addr !== address)
+        changeAddresses.unshift(address)
+        setDefaultAddress(address)
       }
 
-      setAddressOptions(changeAddresses);
+      setAddressOptions(changeAddresses)
     }
-  };
+  }
   const handleChangeAddress = (event: SelectChangeEvent) => {
-    setDefaultAddress(event.target.value);
-    updateLoginAddress(event.target.value);
-  };
+    setDefaultAddress(event.target.value)
+    updateLoginAddress(event.target.value)
+  }
 
   return (
     <Box
@@ -115,7 +115,7 @@ const ChangeDefaultAddress: FC<ChangeDefaultAddressProps> = ({ title }) => {
                 <MenuItem value={item} key={`address-option-${i}`}>
                   {getShorterAddress(item, 6)}
                 </MenuItem>
-              );
+              )
             })}
           </Select>
         </FormControl>
@@ -131,7 +131,7 @@ const ChangeDefaultAddress: FC<ChangeDefaultAddressProps> = ({ title }) => {
         </Button>
       </Box> */}
     </Box>
-  );
-};
+  )
+}
 
-export default ChangeDefaultAddress;
+export default ChangeDefaultAddress

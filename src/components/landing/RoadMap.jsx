@@ -1,13 +1,13 @@
-import Timeline from '@mui/lab/Timeline';
-import TimelineItem from '@mui/lab/TimelineItem';
-import TimelineSeparator from '@mui/lab/TimelineSeparator';
-import TimelineConnector from '@mui/lab/TimelineConnector';
-import TimelineContent from '@mui/lab/TimelineContent';
-import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
-import TimelineDot from '@mui/lab/TimelineDot';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import theme from '../styles/theme';
+import Timeline from '@mui/lab/Timeline'
+import TimelineItem from '@mui/lab/TimelineItem'
+import TimelineSeparator from '@mui/lab/TimelineSeparator'
+import TimelineConnector from '@mui/lab/TimelineConnector'
+import TimelineContent from '@mui/lab/TimelineContent'
+import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent'
+import TimelineDot from '@mui/lab/TimelineDot'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
+import theme from '../styles/theme'
 
 const timelineItems = [
   {
@@ -58,7 +58,7 @@ const timelineItems = [
     body: 'ErgoPad IDO where tokens will be available to trade on ErgoDex. ',
     passed: true,
   },
-];
+]
 
 const RoadMap = () => {
   return (
@@ -97,10 +97,10 @@ const RoadMap = () => {
               </TimelineContent>
             </TimelineItem>
           </Box>
-        );
+        )
       })}
     </Timeline>
-  );
-};
+  )
+}
 
-export default RoadMap;
+export default RoadMap

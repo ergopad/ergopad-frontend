@@ -6,18 +6,18 @@ import {
   Button,
   FormControlLabel,
   Checkbox,
-} from '@mui/material';
-import { forwardRef } from 'react';
-import { useEffect, useState } from 'react';
-import CircularProgress from '@mui/material/CircularProgress';
-import axios from 'axios';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-import ListTextInput from '@components/ListTextInput';
+} from '@mui/material'
+import { forwardRef } from 'react'
+import { useEffect, useState } from 'react'
+import CircularProgress from '@mui/material/CircularProgress'
+import axios from 'axios'
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import ListTextInput from '@components/ListTextInput'
 
 const Alert = forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 const initialFormData = Object.freeze({
   projectName: '',
@@ -39,7 +39,7 @@ const initialFormData = Object.freeze({
   individualCap: 0,
   start_dtz: new Date().toISOString(),
   end_dtz: new Date().toISOString(),
-});
+})
 
 const initialFormErrors = Object.freeze({
   projectName: false,
@@ -51,49 +51,49 @@ const initialFormErrors = Object.freeze({
   individualCap: false,
   start_dtz: false,
   end_dtz: false,
-});
+})
 
 const CreateWhitelistEventForm = () => {
   // form data is all strings
-  const [formData, updateFormData] = useState(initialFormData);
+  const [formData, updateFormData] = useState(initialFormData)
   // form error object, all booleans
-  const [formErrors, setFormErrors] = useState(initialFormErrors);
+  const [formErrors, setFormErrors] = useState(initialFormErrors)
   // loading spinner for submit button
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false)
   // set true to disable submit button
-  const [buttonDisabled, setbuttonDisabled] = useState(false);
+  const [buttonDisabled, setbuttonDisabled] = useState(false)
   // open error snackbar
-  const [openError, setOpenError] = useState(false);
+  const [openError, setOpenError] = useState(false)
   // open success modal
-  const [openSuccess, setOpenSuccess] = useState(false);
+  const [openSuccess, setOpenSuccess] = useState(false)
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again',
-  );
+    'Please eliminate form errors and try again'
+  )
 
   useEffect(() => {
     if (isLoading) {
-      setbuttonDisabled(true);
+      setbuttonDisabled(true)
     } else {
-      setbuttonDisabled(false);
+      setbuttonDisabled(false)
     }
-  }, [isLoading]);
+  }, [isLoading])
 
   // snackbar for error reporting
   const handleCloseError = (event, reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
-    setOpenError(false);
-  };
+    setOpenError(false)
+  }
 
   // modal for success message
   const handleCloseSuccess = (reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
-    setOpenSuccess(false);
-  };
+    setOpenSuccess(false)
+  }
 
   const handleChange = (e) => {
     if (
@@ -103,30 +103,30 @@ const CreateWhitelistEventForm = () => {
       setFormErrors({
         ...formErrors,
         [e.target.name]: true,
-      });
+      })
     } else if (Object.hasOwnProperty.call(formErrors, e.target.name)) {
       setFormErrors({
         ...formErrors,
         [e.target.name]: false,
-      });
+      })
     }
 
     if (
       ['total_sigusd', 'individualCap', 'buffer_sigusd'].includes(e.target.name)
     ) {
-      const numCheck = Number(e.target.value);
+      const numCheck = Number(e.target.value)
       setFormErrors({
         ...formErrors,
         [e.target.name]: isNaN(numCheck),
-      });
+      })
     }
 
     if (['start_dtz', 'end_dtz'].includes(e.target.name)) {
-      const dateCheck = Date.parse(e.target.value);
+      const dateCheck = Date.parse(e.target.value)
       setFormErrors({
         ...formErrors,
         [e.target.name]: isNaN(dateCheck),
-      });
+      })
     }
 
     if (
@@ -148,7 +148,7 @@ const CreateWhitelistEventForm = () => {
               ? 0
               : parseInt(e.target.value),
           },
-        });
+        })
       } else if (['early_bird'].includes(e.target.name)) {
         updateFormData({
           ...formData,
@@ -158,10 +158,10 @@ const CreateWhitelistEventForm = () => {
               ? { min_stake: 0, round_length__s: 3600 }
               : null,
           },
-        });
+        })
       } else if (
         ['early_bird_min_stake', 'early_bird_round_length__s'].includes(
-          e.target.name,
+          e.target.name
         )
       ) {
         updateFormData({
@@ -171,13 +171,13 @@ const CreateWhitelistEventForm = () => {
             early_bird: {
               ...formData.additionalDetails.early_bird,
               [e.target.name.replace('early_bird_', '')]: isNaN(
-                parseInt(e.target.value),
+                parseInt(e.target.value)
               )
                 ? 0
                 : parseInt(e.target.value),
             },
           },
-        });
+        })
       } else {
         updateFormData({
           ...formData,
@@ -185,66 +185,66 @@ const CreateWhitelistEventForm = () => {
             ...formData.additionalDetails,
             [e.target.name]: e.target.checked,
           },
-        });
+        })
       }
     } else {
       updateFormData({
         ...formData,
         [e.target.name]: e.target.value,
-      });
+      })
     }
-  };
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setOpenError(false);
-    setLoading(true);
-    const errorCheck = Object.values(formErrors).every((v) => v === false);
+    e.preventDefault()
+    setOpenError(false)
+    setLoading(true)
+    const errorCheck = Object.values(formErrors).every((v) => v === false)
     if (errorCheck) {
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422',
+            'jwt_token_login_422'
           )}`,
         },
-      };
-      const stakerRound = formData.additionalDetails.staker_snapshot_whitelist;
+      }
+      const stakerRound = formData.additionalDetails.staker_snapshot_whitelist
       const data = {
         ...formData,
         // random buffer to allow signups
         buffer_sigusd: stakerRound ? 0xc0ffee : formData.buffer_sigusd,
         individualCap: stakerRound ? 0xc0ffee : formData.individualCap,
-      };
+      }
       try {
         await axios.post(
           `${process.env.API_URL}/whitelist/events`,
           data,
-          defaultOptions,
-        );
-        setOpenSuccess(true);
-        updateFormData(initialFormData);
+          defaultOptions
+        )
+        setOpenSuccess(true)
+        updateFormData(initialFormData)
       } catch {
-        setErrorMessage('Invalid credentials or form data');
-        setOpenError(true);
+        setErrorMessage('Invalid credentials or form data')
+        setOpenError(true)
       }
     } else {
-      let updateErrors = {};
+      let updateErrors = {}
       Object.entries(formData).forEach((entry) => {
-        const [key, value] = entry;
+        const [key, value] = entry
         if (!value && Object.hasOwnProperty.call(formErrors, key)) {
-          let newEntry = { [key]: true };
-          updateErrors = { ...updateErrors, ...newEntry };
+          let newEntry = { [key]: true }
+          updateErrors = { ...updateErrors, ...newEntry }
         }
-      });
+      })
       setFormErrors({
         ...formErrors,
         ...updateErrors,
-      });
-      setErrorMessage('Please eliminate form errors and try again');
-      setOpenError(true);
+      })
+      setErrorMessage('Please eliminate form errors and try again')
+      setOpenError(true)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   return (
     <>
@@ -363,7 +363,7 @@ const CreateWhitelistEventForm = () => {
                   ...formData.checkBoxes,
                   checkBoxText: [...updatedData],
                 },
-              });
+              })
             }}
           />
         </Grid>
@@ -567,7 +567,7 @@ const CreateWhitelistEventForm = () => {
                 {new Date(
                   Date.parse(formData.start_dtz) +
                     formData.additionalDetails.early_bird?.round_length__s *
-                      1000,
+                      1000
                 ).toUTCString()}
               </Typography>
               <Typography color="text.secondary" fontSize={12}>
@@ -644,7 +644,7 @@ const CreateWhitelistEventForm = () => {
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}
 
-export default CreateWhitelistEventForm;
+export default CreateWhitelistEventForm

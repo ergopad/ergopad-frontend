@@ -1,40 +1,40 @@
-import PropTypes from 'prop-types';
-import { useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableFooter from '@mui/material/TableFooter';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import IconButton from '@mui/material/IconButton';
-import FirstPageIcon from '@mui/icons-material/FirstPage';
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import LastPageIcon from '@mui/icons-material/LastPage';
-import { useState } from 'react';
+import PropTypes from 'prop-types'
+import { useTheme } from '@mui/material/styles'
+import Box from '@mui/material/Box'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableFooter from '@mui/material/TableFooter'
+import TablePagination from '@mui/material/TablePagination'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import IconButton from '@mui/material/IconButton'
+import FirstPageIcon from '@mui/icons-material/FirstPage'
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft'
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight'
+import LastPageIcon from '@mui/icons-material/LastPage'
+import { useState } from 'react'
 
 const TablePaginationActions = (props) => {
-  const theme = useTheme();
-  const { count, page, rowsPerPage, onPageChange } = props;
+  const theme = useTheme()
+  const { count, page, rowsPerPage, onPageChange } = props
 
   const handleFirstPageButtonClick = (event) => {
-    onPageChange(event, 0);
-  };
+    onPageChange(event, 0)
+  }
 
   const handleBackButtonClick = (event) => {
-    onPageChange(event, page - 1);
-  };
+    onPageChange(event, page - 1)
+  }
 
   const handleNextButtonClick = (event) => {
-    onPageChange(event, page + 1);
-  };
+    onPageChange(event, page + 1)
+  }
 
   const handleLastPageButtonClick = (event) => {
-    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-  };
+    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1))
+  }
 
   return (
     <Box sx={{ flexShrink: 0, ml: 2.5 }}>
@@ -75,39 +75,39 @@ const TablePaginationActions = (props) => {
         {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
       </IconButton>
     </Box>
-  );
-};
+  )
+}
 
 TablePaginationActions.propTypes = {
   count: PropTypes.number.isRequired,
   onPageChange: PropTypes.func.isRequired,
   page: PropTypes.number.isRequired,
   rowsPerPage: PropTypes.number.isRequired,
-};
+}
 
 const PaginatedTable = (props) => {
   // props should have rows and onClick handler
 
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
   const rows = props.rows?.length
     ? props.rows
-    : [{ id: '0', name: 'No data found' }];
+    : [{ id: '0', name: 'No data found' }]
   // show extra pagination buttons only when required
-  const showPagination = rows.length > rowsPerPage;
+  const showPagination = rows.length > rowsPerPage
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0
 
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   return (
     <TableContainer component={Paper}>
@@ -120,7 +120,7 @@ const PaginatedTable = (props) => {
             <TableRow
               hover
               onClick={() => {
-                props.onClick ? props.onClick(row.id) : null;
+                props.onClick ? props.onClick(row.id) : null
               }}
               key={row.id}
               sx={{
@@ -167,7 +167,7 @@ const PaginatedTable = (props) => {
         </TableFooter>
       </Table>
     </TableContainer>
-  );
-};
+  )
+}
 
-export default PaginatedTable;
+export default PaginatedTable

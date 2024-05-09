@@ -1,6 +1,6 @@
-import React, { useEffect, useState, FC } from 'react';
-import { trpc } from '@utils/trpc';
-import QRCode from 'react-qr-code';
+import React, { useEffect, useState, FC } from 'react'
+import { trpc } from '@utils/trpc'
+import QRCode from 'react-qr-code'
 import {
   Box,
   Button,
@@ -10,17 +10,17 @@ import {
   TextField,
   Typography,
   useTheme,
-} from '@mui/material';
-import Link from '@components/Link';
-import { useWallet } from '@contexts/WalletContext';
-import { AddWalletExpanded } from './AddWalletModal';
-import { Signature } from '@lib/types';
+} from '@mui/material'
+import Link from '@components/Link'
+import { useWallet } from '@contexts/WalletContext'
+import { AddWalletExpanded } from './AddWalletModal'
+import { Signature } from '@lib/types'
 
 interface IAddMobileOpen {
-  localLoading: boolean;
-  setLocalLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setExpanded: React.Dispatch<React.SetStateAction<AddWalletExpanded>>;
+  localLoading: boolean
+  setLocalLoading: React.Dispatch<React.SetStateAction<boolean>>
+  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setExpanded: React.Dispatch<React.SetStateAction<AddWalletExpanded>>
 }
 
 const AddMobileOpen: FC<IAddMobileOpen> = ({
@@ -29,19 +29,19 @@ const AddMobileOpen: FC<IAddMobileOpen> = ({
   setModalOpen,
   setExpanded,
 }) => {
-  const theme = useTheme();
+  const theme = useTheme()
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
-    undefined,
-  );
-  const [address, setAddress] = useState<string>('');
-  const [verificationId, setVerificationId] = useState<string | null>(null);
-  const [nonce, setNonce] = useState<string | null>(null);
-  const [signature, setSignature] = useState<Signature | undefined>(undefined);
+    undefined
+  )
+  const [address, setAddress] = useState<string>('')
+  const [verificationId, setVerificationId] = useState<string | null>(null)
+  const [nonce, setNonce] = useState<string | null>(null)
+  const [signature, setSignature] = useState<Signature | undefined>(undefined)
   const [isSignatureProcessed, setIsSignatureProcessed] =
-    useState<boolean>(false);
-  const { setWallet } = useWallet();
-  const mutateAddAddress = trpc.user.addAddress.useMutation();
-  const loginMutation = trpc.user.initAddWallet.useMutation();
+    useState<boolean>(false)
+  const { setWallet } = useWallet()
+  const mutateAddAddress = trpc.user.addAddress.useMutation()
+  const loginMutation = trpc.user.initAddWallet.useMutation()
   trpc.auth.checkLoginStatus.useQuery(
     // @ts-ignore
     { verificationId },
@@ -50,18 +50,18 @@ const AddMobileOpen: FC<IAddMobileOpen> = ({
       refetchInterval: (
         data:
           | {
-              status: 'PENDING' | 'SIGNED';
-              signedMessage: string;
-              proof: string;
+              status: 'PENDING' | 'SIGNED'
+              signedMessage: string
+              proof: string
             }
-          | undefined,
+          | undefined
       ) => {
         // If the status is 'SIGNED', stop polling
         if (data?.status === 'SIGNED') {
-          return false;
+          return false
         }
         // Otherwise, continue polling every 2 seconds
-        return 2000;
+        return 2000
       },
       refetchIntervalInBackground: true,
       onSuccess: (data) => {
@@ -70,23 +70,23 @@ const AddMobileOpen: FC<IAddMobileOpen> = ({
           setSignature({
             signedMessage: data.signedMessage,
             proof: data.proof,
-          });
+          })
         }
       },
-    },
-  );
+    }
+  )
 
   const initiateLoginFlow = async () => {
     try {
-      setLocalLoading(true);
-      const response = await loginMutation.mutateAsync({ address });
-      setVerificationId(response.verificationId);
-      setNonce(response.nonce);
-      setIsSignatureProcessed(false); // Reset the processed state
+      setLocalLoading(true)
+      const response = await loginMutation.mutateAsync({ address })
+      setVerificationId(response.verificationId)
+      setNonce(response.nonce)
+      setIsSignatureProcessed(false) // Reset the processed state
     } catch (error: any) {
-      setErrorMessage(error.message);
+      setErrorMessage(error.message)
     }
-  };
+  }
 
   const addAddress = async () => {
     try {
@@ -99,50 +99,50 @@ const AddMobileOpen: FC<IAddMobileOpen> = ({
             type: 'mobile',
             defaultAddress: address,
           },
-        });
+        })
 
         if (response.defaultAddress) {
-          setWallet(response.defaultAddress);
-          setModalOpen(false);
-          setExpanded(undefined);
-          setLocalLoading(false);
+          setWallet(response.defaultAddress)
+          setModalOpen(false)
+          setExpanded(undefined)
+          setLocalLoading(false)
         } else {
-          setLocalLoading(false);
-          setErrorMessage('Error: address not added');
+          setLocalLoading(false)
+          setErrorMessage('Error: address not added')
         }
       }
     } catch (error: any) {
-      setLocalLoading(false);
+      setLocalLoading(false)
       if (error.message && error.message.includes("Nonce doesn't match")) {
         setErrorMessage(
-          "Error: Nonce doesn't match database, try again or contact support",
-        );
+          "Error: Nonce doesn't match database, try again or contact support"
+        )
       } else {
-        setErrorMessage('An unexpected error occurred.');
+        setErrorMessage('An unexpected error occurred.')
       }
     }
-  };
+  }
 
   useEffect(() => {
     if (!isSignatureProcessed && signature) {
       // console.log('proof received');
-      addAddress();
-      setIsSignatureProcessed(true); // Mark the signature as processed
+      addAddress()
+      setIsSignatureProcessed(true) // Mark the signature as processed
     }
-  }, [signature]);
+  }, [signature])
 
-  const authUrl = new URL(process.env.AUTH_DOMAIN || 'https://ergopad.io');
-  const ergoAuthDomain = `ergoauth://${authUrl.host}`;
+  const authUrl = new URL(process.env.AUTH_DOMAIN || 'https://ergopad.io')
+  const ergoAuthDomain = `ergoauth://${authUrl.host}`
 
   const resetForm = () => {
-    setLocalLoading(false);
-    setIsSignatureProcessed(false);
-    setSignature(undefined);
-    setVerificationId(null);
-    setNonce(null);
-    setAddress('');
-    setErrorMessage(undefined);
-  };
+    setLocalLoading(false)
+    setIsSignatureProcessed(false)
+    setSignature(undefined)
+    setVerificationId(null)
+    setNonce(null)
+    setAddress('')
+    setErrorMessage(undefined)
+  }
 
   return (
     <Box>
@@ -234,7 +234,7 @@ const AddMobileOpen: FC<IAddMobileOpen> = ({
         </Box>
       )}
     </Box>
-  );
-};
+  )
+}
 
-export default AddMobileOpen;
+export default AddMobileOpen

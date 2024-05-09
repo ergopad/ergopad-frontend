@@ -1,19 +1,19 @@
-import Container from '@mui/material/Container';
-import Timeline from '@mui/lab/Timeline';
-import TimelineItem from '@mui/lab/TimelineItem';
-import TimelineSeparator from '@mui/lab/TimelineSeparator';
-import TimelineConnector from '@mui/lab/TimelineConnector';
-import TimelineContent from '@mui/lab/TimelineContent';
-import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
-import TimelineDot from '@mui/lab/TimelineDot';
-import FastfoodIcon from '@mui/icons-material/Fastfood';
-import LaptopMacIcon from '@mui/icons-material/LaptopMac';
-import HotelIcon from '@mui/icons-material/Hotel';
-import RepeatIcon from '@mui/icons-material/Repeat';
-import Typography from '@mui/material/Typography';
-import CenterTitle from '@components/CenterTitle';
-import RelatedLinks from '@components/RelatedLinks/RelatedLinks';
-import theme from '@styles/theme';
+import Container from '@mui/material/Container'
+import Timeline from '@mui/lab/Timeline'
+import TimelineItem from '@mui/lab/TimelineItem'
+import TimelineSeparator from '@mui/lab/TimelineSeparator'
+import TimelineConnector from '@mui/lab/TimelineConnector'
+import TimelineContent from '@mui/lab/TimelineContent'
+import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent'
+import TimelineDot from '@mui/lab/TimelineDot'
+import FastfoodIcon from '@mui/icons-material/Fastfood'
+import LaptopMacIcon from '@mui/icons-material/LaptopMac'
+import HotelIcon from '@mui/icons-material/Hotel'
+import RepeatIcon from '@mui/icons-material/Repeat'
+import Typography from '@mui/material/Typography'
+import CenterTitle from '@components/CenterTitle'
+import RelatedLinks from '@components/RelatedLinks/RelatedLinks'
+import theme from '@styles/theme'
 
 const relatedLinkList = [
   {
@@ -40,7 +40,7 @@ const relatedLinkList = [
     href: 'https://github.com/ergo-pad/ergopad/blob/main/docs/README.md',
     background: theme.palette.tertiary.main,
   },
-];
+]
 
 const projectTimelines = [
   {
@@ -91,7 +91,7 @@ const projectTimelines = [
       },
     ],
   },
-];
+]
 
 const Roadmap = () => {
   return (
@@ -184,7 +184,7 @@ const Roadmap = () => {
 
       <RelatedLinks title="Learn More" subtitle="" links={relatedLinkList} />
     </>
-  );
-};
+  )
+}
 
-export default Roadmap;
+export default Roadmap

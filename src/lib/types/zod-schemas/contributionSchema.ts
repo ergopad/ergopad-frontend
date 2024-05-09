@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
 export const ZContributionRound = z.object({
   id: z.number().optional(),
@@ -16,18 +16,18 @@ export const ZContributionRound = z.object({
   whitelistSlug: z.string().nullable().optional(),
   recipientAddress: z.string().nullable().optional(),
   restrictedCountries: z.array(z.string()),
-});
+})
 
 export const ZPoolWeightItem = z.object({
   address: z.string(),
   uniqueNfts: z.number(),
   totalStake: z.string(),
   cummulativeWeight: z.number(),
-});
+})
 
 export const ZPoolWeightAPI = z.object({
   data: z.array(ZPoolWeightItem),
   totalStakers: z.number(),
   totalStake: z.string(),
   totalCummulativeWeight: z.string(),
-});
+})

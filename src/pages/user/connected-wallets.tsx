@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect } from 'react'
 import {
   Button,
   Icon,
@@ -16,156 +16,156 @@ import {
   Paper,
   InputAdornment,
   IconButton,
-} from '@mui/material';
-import Section from '@components/layout/Section';
-import { NextPage } from 'next';
-import { trpc } from '@utils/trpc';
-import Grid from '@mui/material/Unstable_Grid2';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { getShorterAddress } from '@utils/general';
-import AddIcon from '@mui/icons-material/Add';
-import AddWalletModal from '@components/user/AddWalletModal';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { useWallet } from '@contexts/WalletContext';
-import { Wallet } from 'next-auth';
+} from '@mui/material'
+import Section from '@components/layout/Section'
+import { NextPage } from 'next'
+import { trpc } from '@utils/trpc'
+import Grid from '@mui/material/Unstable_Grid2'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import { getShorterAddress } from '@utils/general'
+import AddIcon from '@mui/icons-material/Add'
+import AddWalletModal from '@components/user/AddWalletModal'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import { useWallet } from '@contexts/WalletContext'
+import { Wallet } from 'next-auth'
 
 const ConnectedWallets: NextPage = () => {
-  const theme = useTheme();
-  const desktop = useMediaQuery(theme.breakpoints.up('md'));
-  const [defaultAddress, setDefaultAddress] = useState('');
-  const [addressOptions, setAddressOptions] = useState<string[]>([]);
-  const removeWalletMutation = trpc.user.removeWallet.useMutation();
+  const theme = useTheme()
+  const desktop = useMediaQuery(theme.breakpoints.up('md'))
+  const [defaultAddress, setDefaultAddress] = useState('')
+  const [addressOptions, setAddressOptions] = useState<string[]>([])
+  const removeWalletMutation = trpc.user.removeWallet.useMutation()
   const changeDefaultAddressMutation =
-    trpc.user.changeDefaultAddress.useMutation();
-  const changeLoginAddressMutation = trpc.user.changeLoginAddress.useMutation();
-  const [addWalletModalOpen, setAddWalletModalOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [defaultAddressLoading, setDefaultAddressLoading] = useState(false);
+    trpc.user.changeDefaultAddress.useMutation()
+  const changeLoginAddressMutation = trpc.user.changeLoginAddress.useMutation()
+  const [addWalletModalOpen, setAddWalletModalOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [defaultAddressLoading, setDefaultAddressLoading] = useState(false)
   const [removeLoading, setRemoveLoading] = useState<number | undefined>(
-    undefined,
-  );
+    undefined
+  )
   const {
     sessionData,
     sessionStatus,
     fetchSessionData,
     providerLoading,
     setProviderLoading,
-  } = useWallet();
-  const shouldFetch = sessionStatus === 'authenticated';
+  } = useWallet()
+  const shouldFetch = sessionStatus === 'authenticated'
   const walletsQuery = trpc.user.getWallets.useQuery(undefined, {
     refetchOnWindowFocus: false,
     enabled: shouldFetch,
-  });
+  })
   const updateLoginAddress = async (address: string) => {
     try {
-      setDefaultAddressLoading(true);
-      setProviderLoading(true);
+      setDefaultAddressLoading(true)
+      setProviderLoading(true)
       const changeLogin = await changeLoginAddressMutation.mutateAsync({
         changeAddress: address,
-      });
+      })
       if (changeLogin) {
-        await fetchSessionData();
-        setDefaultAddressLoading(false);
-        setProviderLoading(false);
+        await fetchSessionData()
+        setDefaultAddressLoading(false)
+        setProviderLoading(false)
       }
     } catch (error) {
-      console.error('Error setting Login wallet', error);
-      setDefaultAddressLoading(false);
-      setProviderLoading(false);
+      console.error('Error setting Login wallet', error)
+      setDefaultAddressLoading(false)
+      setProviderLoading(false)
     }
-  };
+  }
 
   const updateWallets = async () => {
     if (walletsQuery.data) {
       let changeAddresses = walletsQuery.data.wallets.map(
-        (wallet) => wallet.changeAddress,
-      );
+        (wallet) => wallet.changeAddress
+      )
 
       // If address exists, remove it from its current position and prepend it
       if (sessionData?.user.address) {
-        const address = sessionData?.user.address;
-        changeAddresses = changeAddresses.filter((addr) => addr !== address);
-        changeAddresses.unshift(address);
-        setDefaultAddress(address);
+        const address = sessionData?.user.address
+        changeAddresses = changeAddresses.filter((addr) => addr !== address)
+        changeAddresses.unshift(address)
+        setDefaultAddress(address)
       }
 
-      setAddressOptions(changeAddresses);
+      setAddressOptions(changeAddresses)
     }
-  };
+  }
 
   useEffect(() => {
     // console.log('fetch ' + sessionStatus)
-    if (sessionStatus === 'authenticated') updateWallets();
-  }, [sessionData, sessionStatus, fetchSessionData]);
+    if (sessionStatus === 'authenticated') updateWallets()
+  }, [sessionData, sessionStatus, fetchSessionData])
 
   const handleChange = (event: SelectChangeEvent) => {
-    setDefaultAddress(event.target.value);
-  };
+    setDefaultAddress(event.target.value)
+  }
 
   const handleAddWalletModalClose = async () => {
-    setLoading(true);
+    setLoading(true)
     const fetching = async () => {
-      const fetch = await walletsQuery.refetch();
+      const fetch = await walletsQuery.refetch()
       if (!fetch.isLoading) {
-        updateWallets();
-        setLoading(false);
+        updateWallets()
+        setLoading(false)
       }
-    };
-    if (sessionStatus === 'authenticated') fetching();
-  };
+    }
+    if (sessionStatus === 'authenticated') fetching()
+  }
 
   // should run if the user adds another address, but also on page load when
   // nextauth verifies an authenticated session
   useEffect(() => {
     if (!addWalletModalOpen && sessionStatus === 'authenticated') {
-      handleAddWalletModalClose();
+      handleAddWalletModalClose()
     }
-  }, [addWalletModalOpen, sessionStatus]);
+  }, [addWalletModalOpen, sessionStatus])
 
   const removeItem = async (id: number, i: number) => {
     try {
-      setRemoveLoading(i);
+      setRemoveLoading(i)
 
       const removeWallet = await removeWalletMutation.mutateAsync({
         walletId: id,
-      });
+      })
 
       if (removeWallet.success) {
-        const fetch = await walletsQuery.refetch();
+        const fetch = await walletsQuery.refetch()
         if (!fetch.isLoading) {
-          setRemoveLoading(undefined);
+          setRemoveLoading(undefined)
         }
       } else {
-        throw new Error('Failed to remove the wallet');
+        throw new Error('Failed to remove the wallet')
       }
     } catch (error) {
-      console.error('Error removing wallet:', error);
-      setRemoveLoading(undefined);
+      console.error('Error removing wallet:', error)
+      setRemoveLoading(undefined)
     }
-  };
+  }
 
-  const [loadingAddress, setLoadingAddress] = useState<string | null>(null);
+  const [loadingAddress, setLoadingAddress] = useState<string | null>(null)
   const handleDefaultAddressChange = async (
     walletId: number,
-    address: string,
+    address: string
   ) => {
-    setLoadingAddress(address);
-    await changeDefaultAddress(walletId, address);
-    await fetchSessionData();
-    setLoadingAddress(null);
-  };
+    setLoadingAddress(address)
+    await changeDefaultAddress(walletId, address)
+    await fetchSessionData()
+    setLoadingAddress(null)
+  }
   const changeDefaultAddress = async (id: number, address: string) => {
     const changeAddress = await changeDefaultAddressMutation.mutateAsync({
       walletId: id,
       newDefault: address,
-    });
+    })
     if (changeAddress.success) {
-      const fetch = await walletsQuery.refetch();
-      return fetch;
+      const fetch = await walletsQuery.refetch()
+      return fetch
     }
-  };
+  }
 
-  const [sortedWallets, setSortedWallets] = useState<Wallet[]>([]);
+  const [sortedWallets, setSortedWallets] = useState<Wallet[]>([])
   useEffect(() => {
     if (
       walletsQuery.data?.wallets &&
@@ -173,12 +173,12 @@ const ConnectedWallets: NextPage = () => {
       sessionStatus === 'authenticated'
     ) {
       const newSorted = walletsQuery.data?.wallets.sort((a, b) => {
-        return a.id - b.id;
-      });
-      updateWallets();
-      setSortedWallets(newSorted);
+        return a.id - b.id
+      })
+      updateWallets()
+      setSortedWallets(newSorted)
     }
-  }, [walletsQuery.data?.wallets, sessionStatus]);
+  }, [walletsQuery.data?.wallets, sessionStatus])
 
   return (
     <>
@@ -232,7 +232,7 @@ const ConnectedWallets: NextPage = () => {
                       <MenuItem value={item} key={`address-option-${i}`}>
                         {desktop ? item : getShorterAddress(item, 8)}
                       </MenuItem>
-                    );
+                    )
                   })}
                 </Select>
               </FormControl>
@@ -268,7 +268,7 @@ const ConnectedWallets: NextPage = () => {
                 const addresses = [
                   ...wallet.usedAddresses,
                   ...wallet.unusedAddresses,
-                ];
+                ]
                 return (
                   <Grid xs={12} sm={6} md={4} key={`wallet-${i}`}>
                     <Paper sx={{ p: 2, height: '100%', minHeight: '250px' }}>
@@ -372,12 +372,12 @@ const ConnectedWallets: NextPage = () => {
                                 )}
                               </Button>
                             </Box>
-                          );
+                          )
                         })}
                       </Box>
                     </Paper>
                   </Grid>
-                );
+                )
               })}
               <Grid xs={12} sm={6} md={4}>
                 <Button
@@ -399,7 +399,7 @@ const ConnectedWallets: NextPage = () => {
         setLoading={setLoading}
       />
     </>
-  );
-};
+  )
+}
 
-export default ConnectedWallets;
+export default ConnectedWallets

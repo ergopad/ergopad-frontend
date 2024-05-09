@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import {
   Button,
   Icon,
@@ -9,89 +9,89 @@ import {
   useMediaQuery,
   Link as MuiLink,
   Grid,
-} from '@mui/material';
-import Section from '@components/layout/Section';
-import { NextPage } from 'next';
-import { trpc } from '@utils/trpc';
-import { useWallet } from '@contexts/WalletContext';
-import Link from 'next/link';
+} from '@mui/material'
+import Section from '@components/layout/Section'
+import { NextPage } from 'next'
+import { trpc } from '@utils/trpc'
+import { useWallet } from '@contexts/WalletContext'
+import Link from 'next/link'
 
 const Settings: NextPage = () => {
-  const theme = useTheme();
-  const desktop = useMediaQuery(theme.breakpoints.up('md'));
-  const [loading, setLoading] = useState(true);
+  const theme = useTheme()
+  const desktop = useMediaQuery(theme.breakpoints.up('md'))
+  const [loading, setLoading] = useState(true)
   const userDetails = trpc.user.getUserDetails.useQuery({
     name: true,
     email: true,
     whitelists: true,
     image: true,
     sumsubStatus: true,
-  });
-  const { sessionStatus, providerLoading } = useWallet();
+  })
+  const { sessionStatus, providerLoading } = useWallet()
   const [formErrors, setFormErrors] = useState<{
-    name: boolean;
-    email: boolean;
-  }>({ name: false, email: false });
+    name: boolean
+    email: boolean
+  }>({ name: false, email: false })
   const [formInput, setFormInput] = useState<{ name: string; email: string }>({
     name: '',
     email: '',
-  });
+  })
 
   useEffect(() => {
     if (
       sessionStatus === 'authenticated' ||
       sessionStatus === 'unauthenticated'
     ) {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [sessionStatus]);
+  }, [sessionStatus])
 
   useEffect(() => {
     if (sessionStatus === 'authenticated' && userDetails.status === 'success') {
-      console.log('edit');
+      console.log('edit')
       setFormInput((prev) => {
         return {
           ...prev,
           name: userDetails.data.user.name ?? '',
           email: userDetails.data.user.email ?? '',
-        };
-      });
+        }
+      })
     }
-  }, [sessionStatus, userDetails.status]);
+  }, [sessionStatus, userDetails.status])
 
   const handleChange = (e: any) => {
     if (e.target.value == '' && e.target.name !== 'email') {
       setFormErrors({
         ...formErrors,
         [e.target.name]: true,
-      });
+      })
     } else {
       setFormErrors({
         ...formErrors,
         [e.target.name]: false,
-      });
+      })
     }
 
-    const emailRegex = /\S+@\S+\.\S+/;
+    const emailRegex = /\S+@\S+\.\S+/
 
     if (e.target.name === 'email') {
       if (emailRegex.test(e.target.value) || e.target.value === '') {
         setFormErrors({
           ...formErrors,
           email: false,
-        });
+        })
       } else {
         setFormErrors({
           ...formErrors,
           email: true,
-        });
+        })
       }
     }
 
     setFormInput((prev) => {
-      return { ...prev, [e.target.name]: e.target.value };
-    });
-  };
+      return { ...prev, [e.target.name]: e.target.value }
+    })
+  }
 
   return (
     <>
@@ -161,7 +161,7 @@ const Settings: NextPage = () => {
         </>
       )}
     </>
-  );
-};
+  )
+}
 
-export default Settings;
+export default Settings

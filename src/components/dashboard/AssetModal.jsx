@@ -6,9 +6,9 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-} from '@mui/material';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
+} from '@mui/material'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { useTheme } from '@mui/material/styles'
 
 const style = {
   position: 'absolute',
@@ -22,49 +22,49 @@ const style = {
   p: 4,
   maxHeight: '80vh',
   overflowY: 'scroll',
-};
+}
 
 const flattenJSON = (jsonData) => {
   const _flattenJSON = (obj = {}, res = {}) => {
     Object.keys(obj).forEach((key) => {
       if (typeof obj[key] !== 'object') {
-        res[key] = obj[key];
+        res[key] = obj[key]
       } else {
-        _flattenJSON(obj[key], res);
+        _flattenJSON(obj[key], res)
       }
-    });
-    return res;
-  };
-  return _flattenJSON(jsonData);
-};
+    })
+    return res
+  }
+  return _flattenJSON(jsonData)
+}
 
 const parseDescription = (description) => {
   try {
-    return flattenJSON(JSON.parse(description));
+    return flattenJSON(JSON.parse(description))
   } catch (e) {
     try {
       // parse error some descriptions have unicode escape characters as the first character
-      return flattenJSON(JSON.parse(description.slice(1)));
+      return flattenJSON(JSON.parse(description.slice(1)))
     } catch (e) {
       // description is a string
-      return { Description: description ? description : '' };
+      return { Description: description ? description : '' }
     }
   }
-};
+}
 
 const getAveragePrice = (amount, amountUSD) => {
   try {
-    const val = amountUSD / amount;
-    return Math.round(val * 10000) / 10000;
+    const val = amountUSD / amount
+    return Math.round(val * 10000) / 10000
   } catch {
-    return 0;
+    return 0
   }
-};
+}
 
 const AssetModal = ({ open, handleClose, asset, type, navigatorLanguage }) => {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.up('md'));
-  const metadata = parseDescription(asset?.description);
+  const theme = useTheme()
+  const matches = useMediaQuery(theme.breakpoints.up('md'))
+  const metadata = parseDescription(asset?.description)
 
   return (
     <Modal
@@ -101,7 +101,7 @@ const AssetModal = ({ open, handleClose, asset, type, navigatorLanguage }) => {
               <strong>Average Price:</strong> $
               {getAveragePrice(asset?.amount, asset?.amountUSD).toLocaleString(
                 navigatorLanguage,
-                { maximumFractionDigits: 4 },
+                { maximumFractionDigits: 4 }
               )}{' '}
               USD
             </pre>
@@ -131,7 +131,7 @@ const AssetModal = ({ open, handleClose, asset, type, navigatorLanguage }) => {
         ) : null}
       </Box>
     </Modal>
-  );
-};
+  )
+}
 
-export default AssetModal;
+export default AssetModal

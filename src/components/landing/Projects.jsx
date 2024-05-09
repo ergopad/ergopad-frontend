@@ -6,15 +6,15 @@ import {
   Grid,
   Typography,
   Skeleton,
-} from '@mui/material';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useRouter } from 'next/router';
-import theme from '@styles/theme';
+} from '@mui/material'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
+import { useRouter } from 'next/router'
+import theme from '@styles/theme'
 
 const Projects = ({ projects, isLoading }) => {
-  const router = useRouter();
-  const [upcomingProjects, setUpcomingProjects] = useState([]);
+  const router = useRouter()
+  const [upcomingProjects, setUpcomingProjects] = useState([])
 
   useEffect(() => {
     if (projects?.length !== 0) {
@@ -23,12 +23,12 @@ const Projects = ({ projects, isLoading }) => {
           ?.filter(
             (project) =>
               !project.isLaunched &&
-              !project.name.toLowerCase().startsWith('cardano-'),
+              !project.name.toLowerCase().startsWith('cardano-')
           )
-          .slice(0, 3),
-      );
+          .slice(0, 3)
+      )
     }
-  }, [projects]);
+  }, [projects])
 
   const projectCard = (project) => {
     return (
@@ -51,8 +51,8 @@ const Projects = ({ projects, isLoading }) => {
                   project.name
                     .toLowerCase()
                     .replaceAll(' ', '')
-                    .replaceAll(/[^a-zA-Z0-9]/g, ''),
-              );
+                    .replaceAll(/[^a-zA-Z0-9]/g, '')
+              )
             }}
           >
             <CardContent>
@@ -85,16 +85,16 @@ const Projects = ({ projects, isLoading }) => {
           </CardActionArea>
         </Box>
       </Grid>
-    );
-  };
+    )
+  }
 
   const SkeletonCard = () => {
     return (
       <Grid item xs={12} sm={6} md={4}>
         <Skeleton variant="rectangular" height={400} />
       </Grid>
-    );
-  };
+    )
+  }
 
   return (
     <>
@@ -151,7 +151,7 @@ const Projects = ({ projects, isLoading }) => {
         </Box>
       </Box>
     </>
-  );
-};
+  )
+}
 
-export default Projects;
+export default Projects

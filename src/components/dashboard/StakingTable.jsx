@@ -1,20 +1,20 @@
-import React from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import theme from '@styles/theme';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import React from 'react'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
+import theme from '@styles/theme'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
 const stakedHeading = {
   boxId: 'Box Id',
   stakeAmount: 'Number of Tokens',
   penaltyPct: 'Penalty %',
   penaltyEndTime: 'Penalty End Time',
-};
+}
 
 // const sampleData = Object.freeze({
 //   totalStaked: 14140410,
@@ -82,14 +82,14 @@ const stakedHeading = {
 // });
 
 const friendlyAddress = (addr, tot = 9) => {
-  if (addr === undefined || addr.slice === undefined) return '';
-  if (addr.length < 30) return addr;
-  return addr.slice(0, tot) + '...' + addr.slice(-tot);
-};
+  if (addr === undefined || addr.slice === undefined) return ''
+  if (addr.length < 30) return addr
+  return addr.slice(0, tot) + '...' + addr.slice(-tot)
+}
 
 const StakingTable = ({ data }) => {
-  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
-  const stakedData = [...data];
+  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'))
+  const stakedData = [...data]
 
   if (stakedData.length === 0) {
     return (
@@ -105,7 +105,7 @@ const StakingTable = ({ data }) => {
           </Typography>
         </Box>
       </>
-    );
+    )
   }
 
   return (
@@ -153,7 +153,7 @@ const StakingTable = ({ data }) => {
                 >
                   {stakeObject.addresses[address].totalStaked?.toLocaleString(
                     navigator.language,
-                    { maximumFractionDigits: 2 },
+                    { maximumFractionDigits: 2 }
                   )}
                 </Typography>
               </Typography>
@@ -192,7 +192,7 @@ const StakingTable = ({ data }) => {
                                 navigator.language,
                                 {
                                   maximumFractionDigits: 2,
-                                },
+                                }
                               )}
                             </TableCell>
                             <TableCell
@@ -210,8 +210,8 @@ const StakingTable = ({ data }) => {
                                 : '-'}
                             </TableCell>
                           </TableRow>
-                        );
-                      },
+                        )
+                      }
                     )}
                   </TableBody>
                 </Table>
@@ -238,7 +238,7 @@ const StakingTable = ({ data }) => {
                                   navigator.language,
                                   {
                                     maximumFractionDigits: 2,
-                                  },
+                                  }
                                 )}
                               </TableCell>
                             </TableRow>
@@ -275,8 +275,8 @@ const StakingTable = ({ data }) => {
                               </TableCell>
                             </TableRow>
                           </React.Fragment>
-                        );
-                      },
+                        )
+                      }
                     )}
                   </TableBody>
                 </Table>
@@ -286,7 +286,7 @@ const StakingTable = ({ data }) => {
         </React.Fragment>
       ))}
     </>
-  );
-};
+  )
+}
 
-export default StakingTable;
+export default StakingTable

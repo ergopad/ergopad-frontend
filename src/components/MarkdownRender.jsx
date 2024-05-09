@@ -1,9 +1,9 @@
-import { Typography, List, ListItem } from '@mui/material';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { styled } from '@mui/system';
-import theme from '@styles/theme';
-import MuiNextLink from '@components/MuiNextLink';
+import { Typography, List, ListItem } from '@mui/material'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import { styled } from '@mui/system'
+import theme from '@styles/theme'
+import MuiNextLink from '@components/MuiNextLink'
 
 const MarkdownList = styled(List)({
   listStyle: 'disc',
@@ -16,13 +16,13 @@ const MarkdownList = styled(List)({
     display: 'list-item',
     paddingLeft: '6px',
   },
-});
+})
 
 const MarkdownListItem = styled(ListItem)({
   display: 'list-item',
   color: theme.palette.text.secondary,
   paddingTop: 0,
-});
+})
 
 const MarkdownRender = ({ description }) => {
   return (
@@ -44,7 +44,7 @@ const MarkdownRender = ({ description }) => {
     >
       {description}
     </ReactMarkdown>
-  );
-};
+  )
+}
 
-export default MarkdownRender;
+export default MarkdownRender

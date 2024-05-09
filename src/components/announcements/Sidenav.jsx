@@ -5,11 +5,11 @@ import {
   ListItemText,
   ListItem,
   ListItemIcon,
-} from '@mui/material';
-import CampaignIcon from '@mui/icons-material/Campaign';
-import axios from 'axios';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+} from '@mui/material'
+import CampaignIcon from '@mui/icons-material/Campaign'
+import axios from 'axios'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 
 const Sidenav = () => {
   const listItemSx = {
@@ -17,28 +17,28 @@ const Sidenav = () => {
     '&:hover': {
       backgroundColor: 'rgba(255, 255, 255, 0.1)',
     },
-  };
-  const router = useRouter();
+  }
+  const router = useRouter()
   const [announcements, setAnnouncements] = useState([
     { id: 0, title: 'Loading...' },
-  ]);
-  const [loading, setLoading] = useState(false);
+  ])
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const getData = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
-        const res = await axios.get(`${process.env.API_URL}/announcements/`);
-        res.data.reverse();
-        setAnnouncements(res.data);
+        const res = await axios.get(`${process.env.API_URL}/announcements/`)
+        res.data.reverse()
+        setAnnouncements(res.data)
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
-    getData();
-  }, []);
+    getData()
+  }, [])
 
   return (
     <Box sx={{ mr: { md: 12, xs: 0 }, mt: { md: 0, xs: 4 } }}>
@@ -58,8 +58,8 @@ const Sidenav = () => {
                     announcement.title
                       .toLowerCase()
                       .replaceAll(' ', '_')
-                      .replaceAll(/[^a-zA-Z0-9_]/g, ''),
-                );
+                      .replaceAll(/[^a-zA-Z0-9_]/g, '')
+                )
             }}
           >
             <ListItemIcon>
@@ -70,7 +70,7 @@ const Sidenav = () => {
         ))}
       </List>
     </Box>
-  );
-};
+  )
+}
 
-export default Sidenav;
+export default Sidenav

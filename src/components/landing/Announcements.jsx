@@ -9,33 +9,33 @@ import {
   useMediaQuery,
   useTheme,
   Skeleton,
-} from '@mui/material';
-import axios from 'axios';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+} from '@mui/material'
+import axios from 'axios'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 
 const Announcements = () => {
-  const router = useRouter();
-  const mtheme = useTheme();
-  const matches = useMediaQuery(mtheme.breakpoints.up('md'));
-  const [announcements, setAnnouncements] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const router = useRouter()
+  const mtheme = useTheme()
+  const matches = useMediaQuery(mtheme.breakpoints.up('md'))
+  const [announcements, setAnnouncements] = useState([])
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const getData = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
-        const res = await axios.get(`${process.env.API_URL}/announcements/`);
-        res.data.reverse();
-        setAnnouncements(res.data.slice(0, 2));
+        const res = await axios.get(`${process.env.API_URL}/announcements/`)
+        res.data.reverse()
+        setAnnouncements(res.data.slice(0, 2))
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
-    getData();
-  }, []);
+    getData()
+  }, [])
 
   const annoucementCard = (announcement) => {
     return (
@@ -58,7 +58,7 @@ const Announcements = () => {
                   announcement.title
                     .toLowerCase()
                     .replaceAll(' ', '_')
-                    .replaceAll(/[^a-zA-Z0-9_]/g, ''),
+                    .replaceAll(/[^a-zA-Z0-9_]/g, '')
               )
             }
           >
@@ -88,8 +88,8 @@ const Announcements = () => {
           </CardActionArea>
         </Card>
       </Grid>
-    );
-  };
+    )
+  }
 
   const SkeletonCard = () => {
     return (
@@ -100,8 +100,8 @@ const Announcements = () => {
           sx={{ borderRadius: '10px' }}
         />
       </Grid>
-    );
-  };
+    )
+  }
 
   return (
     <>
@@ -128,7 +128,7 @@ const Announcements = () => {
         )}
       </Grid>
     </>
-  );
-};
+  )
+}
 
-export default Announcements;
+export default Announcements

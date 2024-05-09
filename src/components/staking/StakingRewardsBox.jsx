@@ -1,12 +1,12 @@
-import { Box, CircularProgress, Typography } from '@mui/material';
-import Stack from '@mui/material/Stack';
-import Switch from '@mui/material/Switch';
-import theme from '@styles/theme';
-import InfoIcon from '@mui/icons-material/Info';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import { useState } from 'react';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
+import { Box, CircularProgress, Typography } from '@mui/material'
+import Stack from '@mui/material/Stack'
+import Switch from '@mui/material/Switch'
+import theme from '@styles/theme'
+import InfoIcon from '@mui/icons-material/Info'
+import IconButton from '@mui/material/IconButton'
+import Tooltip from '@mui/material/Tooltip'
+import { useState } from 'react'
+import ClickAwayListener from '@mui/material/ClickAwayListener'
 
 const gridBox = {
   background: 'rgba(35, 35, 39, 0.7)',
@@ -22,7 +22,7 @@ const gridBox = {
   width: '100%',
   minWidth: '240px',
   maxWidth: '380px',
-};
+}
 
 const StakingRewardsBox = ({
   tokenName,
@@ -107,7 +107,7 @@ const StakingRewardsBox = ({
         </Stack>
       </Box> */}
     </>
-  );
-};
+  )
+}
 
-export default StakingRewardsBox;
+export default StakingRewardsBox

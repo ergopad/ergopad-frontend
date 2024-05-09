@@ -4,7 +4,7 @@ import React, {
   SyntheticEvent,
   useEffect,
   useState,
-} from 'react';
+} from 'react'
 import {
   Dialog,
   DialogTitle,
@@ -19,24 +19,24 @@ import {
   IconButton,
   Avatar,
   Link,
-} from '@mui/material';
-import { useWallet } from '@lib/contexts/WalletContext';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import CloseIcon from '@mui/icons-material/Close';
-import { WalletListItemComponent } from '@components/user/WalletListItem';
-import { getShorterAddress } from '@utils/general';
-import { useAlert } from '@lib/contexts/AlertContext';
-import { trpc } from '@utils/trpc';
+} from '@mui/material'
+import { useWallet } from '@lib/contexts/WalletContext'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import CloseIcon from '@mui/icons-material/Close'
+import { WalletListItemComponent } from '@components/user/WalletListItem'
+import { getShorterAddress } from '@utils/general'
+import { useAlert } from '@lib/contexts/AlertContext'
+import { trpc } from '@utils/trpc'
 
 interface IContributeConfirmProps {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  paymentAmount: string;
-  paymentCurrency?: string;
-  receiveAmount: string;
-  receiveCurrency: string;
-  contributionRoundId: number;
-  recipientAddress: string;
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  paymentAmount: string
+  paymentCurrency?: string
+  receiveAmount: string
+  receiveCurrency: string
+  contributionRoundId: number
+  recipientAddress: string
 }
 
 const ContributeConfirm: FC<IContributeConfirmProps> = ({
@@ -49,124 +49,124 @@ const ContributeConfirm: FC<IContributeConfirmProps> = ({
   contributionRoundId,
   recipientAddress,
 }) => {
-  const { addAlert } = useAlert();
-  const theme = useTheme();
-  const { sessionData } = useWallet();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
-  const [openAlternativeWallet, setOpenAlternativeWallet] = useState(false);
-  const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(false);
+  const { addAlert } = useAlert()
+  const theme = useTheme()
+  const { sessionData } = useWallet()
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'))
+  const [openAlternativeWallet, setOpenAlternativeWallet] = useState(false)
+  const [buttonDisabled, setButtonDisabled] = useState(false)
+  const [errorMessage, setErrorMessage] = useState(false)
   const [alternateWalletType, setAlternateWalletType] = useState<
     TWalletListItem | undefined
-  >(undefined);
+  >(undefined)
   const [changeAddress, setChangeAddress] = useState<string | undefined>(
-    undefined,
-  );
-  const createTransaction = trpc.contributions.createTransaction.useMutation();
+    undefined
+  )
+  const createTransaction = trpc.contributions.createTransaction.useMutation()
 
   const handleOpenAlternativeWallet = () => {
-    setOpenAlternativeWallet(!openAlternativeWallet);
-  };
+    setOpenAlternativeWallet(!openAlternativeWallet)
+  }
 
   const handleClose = (event: SyntheticEvent, reason?: string) => {
     if (reason !== 'backdropClick') {
-      setOpen(false);
+      setOpen(false)
     }
-  };
+  }
 
   const handleConnect = async (walletName: string) => {
     try {
-      setButtonDisabled(true);
-      disconnect();
+      setButtonDisabled(true)
+      disconnect()
     } catch (e: any) {
       addAlert(
         'error',
-        'Unable to disconnect from connected wallet. Please refresh the page',
-      );
+        'Unable to disconnect from connected wallet. Please refresh the page'
+      )
     }
 
     try {
-      console.log(`Connecting to ${walletName}`);
-      await connect(walletName);
+      console.log(`Connecting to ${walletName}`)
+      await connect(walletName)
     } catch (e: any) {
       // NOTE meshJS resolves the Promise, even with an error, so you never hit this catch block
       addAlert(
         'error',
-        'Unable to connect to selected wallet. Please try again',
-      );
+        'Unable to connect to selected wallet. Please try again'
+      )
     } finally {
       const niceName = walletsList.find(
-        (wallet) => wallet.connectName === walletName,
-      );
+        (wallet) => wallet.connectName === walletName
+      )
       if (niceName) {
-        setAlternateWalletType(niceName);
+        setAlternateWalletType(niceName)
       }
-      setOpenAlternativeWallet(false);
+      setOpenAlternativeWallet(false)
     }
-  };
+  }
 
   const updateChangeAddress = async () => {
     try {
-      const thisChangeAddress = await wallet.getChangeAddress();
-      setChangeAddress(thisChangeAddress);
-      const balance = await wallet.getLovelace();
+      const thisChangeAddress = await wallet.getChangeAddress()
+      setChangeAddress(thisChangeAddress)
+      const balance = await wallet.getLovelace()
       if (Number(paymentAmount) * 1000000 > Number(balance)) {
         // addAlert('error', `Wallet doesn't have ${Number(paymentAmount)} ADA available, please choose another wallet. `)
-        setButtonDisabled(true);
-        setErrorMessage(true);
+        setButtonDisabled(true)
+        setErrorMessage(true)
       } else {
-        setButtonDisabled(false);
-        setErrorMessage(false);
+        setButtonDisabled(false)
+        setErrorMessage(false)
       }
     } catch (e: any) {
       addAlert(
         'error',
-        `Error connecting to wallet. Please try again, or contact support for help. `,
-      );
+        `Error connecting to wallet. Please try again, or contact support for help. `
+      )
     }
-  };
+  }
 
   useEffect(() => {
     if (alternateWalletType && !openAlternativeWallet) {
-      updateChangeAddress();
+      updateChangeAddress()
     }
-  }, [alternateWalletType, openAlternativeWallet]);
+  }, [alternateWalletType, openAlternativeWallet])
 
   useEffect(() => {
     if (open && sessionData?.user.walletType) {
-      handleConnect(sessionData.user.walletType);
-    } else setAlternateWalletType(undefined);
-  }, [open]);
+      handleConnect(sessionData.user.walletType)
+    } else setAlternateWalletType(undefined)
+  }, [open])
 
   const handleSubmit = async () => {
     if (changeAddress || sessionData?.user.address) {
       try {
         const tx = new Transaction({ initiator: wallet }).sendLovelace(
           recipientAddress,
-          (Number(paymentAmount) * 1000000).toString(),
-        );
+          (Number(paymentAmount) * 1000000).toString()
+        )
 
-        let unsignedTx, signedTx, txHash;
+        let unsignedTx, signedTx, txHash
 
         try {
-          unsignedTx = await tx.build();
+          unsignedTx = await tx.build()
         } catch (error) {
-          console.error('Error building the transaction:', error);
+          console.error('Error building the transaction:', error)
           addAlert(
             'error',
-            'Failed to build the transaction. Please try again.',
-          );
-          return;
+            'Failed to build the transaction. Please try again.'
+          )
+          return
         }
 
         try {
-          signedTx = await wallet.signTx(unsignedTx);
+          signedTx = await wallet.signTx(unsignedTx)
           try {
-            txHash = await wallet.submitTx(signedTx);
+            txHash = await wallet.submitTx(signedTx)
             console.log(
               'Transaction submitted successfully. Transaction Hash: ',
-              txHash,
-            );
+              txHash
+            )
             addAlert(
               'success',
               <>
@@ -177,9 +177,9 @@ const ContributeConfirm: FC<IContributeConfirmProps> = ({
                 >
                   {txHash}
                 </Link>
-              </>,
-            );
-            const integerValue = parseInt(paymentAmount, 10).toString();
+              </>
+            )
+            const integerValue = parseInt(paymentAmount, 10).toString()
             try {
               await createTransaction.mutateAsync({
                 amount: integerValue,
@@ -187,31 +187,28 @@ const ContributeConfirm: FC<IContributeConfirmProps> = ({
                 address: (changeAddress || sessionData?.user.address)!,
                 txId: txHash,
                 contributionId: contributionRoundId,
-              });
+              })
             } catch (e: any) {
-              console.log(e);
+              console.log(e)
             }
-            setOpen(false);
+            setOpen(false)
           } catch (error) {
-            console.error('Error submitting the transaction:', error);
-            addAlert('error', `Error submitting the transaction: ${error}`);
+            console.error('Error submitting the transaction:', error)
+            addAlert('error', `Error submitting the transaction: ${error}`)
           }
         } catch (error) {
-          console.error('Error signing the transaction:', error);
-          addAlert(
-            'error',
-            'Failed to sign the transaction. Please try again.',
-          );
+          console.error('Error signing the transaction:', error)
+          addAlert('error', 'Failed to sign the transaction. Please try again.')
         }
       } catch (error) {
         // Handle the final error
-        console.error('Transaction failed:', error);
-        addAlert('error', `Transaction failed: ${error}`);
+        console.error('Transaction failed:', error)
+        addAlert('error', `Transaction failed: ${error}`)
       }
     }
-  };
+  }
 
-  const installedWallets = filterInstalledWallets(wallets);
+  const installedWallets = filterInstalledWallets(wallets)
 
   return (
     <Dialog
@@ -369,7 +366,7 @@ const ContributeConfirm: FC<IContributeConfirmProps> = ({
         </Button>
       </DialogActions>
     </Dialog>
-  );
-};
+  )
+}
 
-export default ContributeConfirm;
+export default ContributeConfirm

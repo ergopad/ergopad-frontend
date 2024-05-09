@@ -1,5 +1,5 @@
-import { Button, Grid, TextField } from '@mui/material';
-import FileUploadS3 from '@components/FileUploadS3';
+import { Button, Grid, TextField } from '@mui/material'
+import FileUploadS3 from '@components/FileUploadS3'
 
 export const RoadmapInput = ({ data, setData }) => {
   const handleChange = (e, index) => {
@@ -8,13 +8,13 @@ export const RoadmapInput = ({ data, setData }) => {
         return {
           ...roadmap,
           [e.target.name]: e.target.value,
-        };
+        }
       } else {
-        return roadmap;
+        return roadmap
       }
-    });
-    setData(updatedData);
-  };
+    })
+    setData(updatedData)
+  }
   return (
     <>
       {data.map((roadmap, index) => (
@@ -62,9 +62,9 @@ export const RoadmapInput = ({ data, setData }) => {
               sx={{ textTransform: 'none' }}
               onClick={() => {
                 const updatedData = data.filter((roadmap, i) => {
-                  return index !== i;
-                });
-                setData(updatedData);
+                  return index !== i
+                })
+                setData(updatedData)
               }}
             >
               Remove
@@ -84,30 +84,30 @@ export const RoadmapInput = ({ data, setData }) => {
         Add Row
       </Button>
     </>
-  );
-};
+  )
+}
 
 export const TeamInput = ({ data, setData }) => {
   const handleChange = (e, index) => {
-    console.log(e);
+    console.log(e)
     const updatedData = data.map((member, i) => {
       if (index === i) {
         if (['linkedin', 'twitter'].includes(e.target.name)) {
           return {
             ...member,
             socials: { ...member.socials, [e.target.name]: e.target.value },
-          };
+          }
         }
         return {
           ...member,
           [e.target.name]: e.target.value,
-        };
+        }
       } else {
-        return member;
+        return member
       }
-    });
-    setData(updatedData);
-  };
+    })
+    setData(updatedData)
+  }
 
   const handleImageUpload = (res, index) => {
     if (res.status === 'success') {
@@ -118,8 +118,8 @@ export const TeamInput = ({ data, setData }) => {
             value: res.image_url,
           },
         },
-        index,
-      );
+        index
+      )
     } else {
       handleChange(
         {
@@ -128,10 +128,10 @@ export const TeamInput = ({ data, setData }) => {
             value: 'upload_error',
           },
         },
-        index,
-      );
+        index
+      )
     }
-  };
+  }
 
   return (
     <>
@@ -187,7 +187,7 @@ export const TeamInput = ({ data, setData }) => {
                       value: '',
                     },
                   },
-                  index,
+                  index
                 )
               }
             >
@@ -229,9 +229,9 @@ export const TeamInput = ({ data, setData }) => {
               sx={{ textTransform: 'none' }}
               onClick={() => {
                 const updatedData = data.filter((member, i) => {
-                  return index !== i;
-                });
-                setData(updatedData);
+                  return index !== i
+                })
+                setData(updatedData)
               }}
             >
               Remove
@@ -256,8 +256,8 @@ export const TeamInput = ({ data, setData }) => {
         Add Row
       </Button>
     </>
-  );
-};
+  )
+}
 
 export const TokenomicsInput = ({ data, setData }) => {
   const handleChange = (e, index) => {
@@ -266,13 +266,13 @@ export const TokenomicsInput = ({ data, setData }) => {
         return {
           ...elem,
           [e.target.name]: e.target.value,
-        };
+        }
       } else {
-        return elem;
+        return elem
       }
-    });
-    setData(updatedData);
-  };
+    })
+    setData(updatedData)
+  }
   return (
     <>
       {data.map((elem, index) => (
@@ -364,9 +364,9 @@ export const TokenomicsInput = ({ data, setData }) => {
               sx={{ textTransform: 'none' }}
               onClick={() => {
                 const updatedData = data.filter((data, i) => {
-                  return index !== i;
-                });
-                setData(updatedData);
+                  return index !== i
+                })
+                setData(updatedData)
               }}
             >
               Remove
@@ -394,8 +394,8 @@ export const TokenomicsInput = ({ data, setData }) => {
         Add Row
       </Button>
     </>
-  );
-};
+  )
+}
 
 const ListTextInput = ({ label, data, setData }) => {
   return (
@@ -414,12 +414,12 @@ const ListTextInput = ({ label, data, setData }) => {
               onChange={(e) => {
                 const updatedData = data.map((text, i) => {
                   if (index === i) {
-                    return e.target.value;
+                    return e.target.value
                   } else {
-                    return text;
+                    return text
                   }
-                });
-                setData(updatedData);
+                })
+                setData(updatedData)
               }}
             />
           </Grid>
@@ -433,9 +433,9 @@ const ListTextInput = ({ label, data, setData }) => {
               sx={{ textTransform: 'none' }}
               onClick={() => {
                 const updatedData = data.filter((text, i) => {
-                  return index !== i;
-                });
-                setData(updatedData);
+                  return index !== i
+                })
+                setData(updatedData)
               }}
             >
               Remove
@@ -450,7 +450,7 @@ const ListTextInput = ({ label, data, setData }) => {
         Add Row
       </Button>
     </>
-  );
-};
+  )
+}
 
-export default ListTextInput;
+export default ListTextInput

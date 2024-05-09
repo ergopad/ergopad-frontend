@@ -1,18 +1,18 @@
-import { useState } from 'react';
+import { useState } from 'react'
 import {
   Typography,
   Accordion,
   AccordionSummary,
   AccordionDetails,
-} from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+} from '@mui/material'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 const AccordionComponent = ({ accordionItems, uniqueId }) => {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(false)
 
   const handleChange = (panel) => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
-  };
+    setExpanded(isExpanded ? panel : false)
+  }
 
   return (
     <>
@@ -39,10 +39,10 @@ const AccordionComponent = ({ accordionItems, uniqueId }) => {
               </AccordionDetails>
             </Accordion>
           </>
-        );
+        )
       })}
     </>
-  );
-};
+  )
+}
 
-export default AccordionComponent;
+export default AccordionComponent

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 import {
   Typography,
   Container,
@@ -12,14 +12,14 @@ import {
   CardContent,
   CardActions,
   IconButton,
-} from '@mui/material';
-import ShareIcon from '@mui/icons-material/Share';
-import { styled } from '@mui/system';
-import PageTitle from '@components/PageTitle';
-import Search from '@components/Search';
-import CopyToClipboard from '@components/CopyToClipboard';
-import { useSearch } from '../utils/SearchContext';
-import axios from 'axios';
+} from '@mui/material'
+import ShareIcon from '@mui/icons-material/Share'
+import { styled } from '@mui/system'
+import PageTitle from '@components/PageTitle'
+import Search from '@components/Search'
+import CopyToClipboard from '@components/CopyToClipboard'
+import { useSearch } from '../utils/SearchContext'
+import axios from 'axios'
 
 const SortButton = styled(Button)({
   borderRadius: `20px`,
@@ -30,46 +30,46 @@ const SortButton = styled(Button)({
   '&:hover': {
     background: 'rgba(63,62,68,255)',
   },
-});
+})
 
 const generateYoutubeBannerUrl = (link) => {
-  const params = new URLSearchParams(link.split('?')[1]);
-  const v = params.get('v') ? params.get('v') : 'default';
-  return `https://img.youtube.com/vi/${v}/hqdefault.jpg`;
-};
+  const params = new URLSearchParams(link.split('?')[1])
+  const v = params.get('v') ? params.get('v') : 'default'
+  return `https://img.youtube.com/vi/${v}/hqdefault.jpg`
+}
 
 const Guides = () => {
-  const [category, setCategory] = useState('all');
-  const [categories, setCategories] = useState([]);
-  const [tutorials, setTutorials] = useState([]);
-  const { search } = useSearch();
-  const [isLoading, setLoading] = useState(true);
+  const [category, setCategory] = useState('all')
+  const [categories, setCategories] = useState([])
+  const [tutorials, setTutorials] = useState([])
+  const { search } = useSearch()
+  const [isLoading, setLoading] = useState(true)
 
   useEffect(() => {
     const getData = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
         const tutorials = (await axios.get(`${process.env.API_URL}/tutorials/`))
-          .data;
+          .data
         const categories = (
           await axios.get(`${process.env.API_URL}/tutorials/categories`)
-        ).data;
-        setTutorials(tutorials);
-        setCategories(categories);
+        ).data
+        setTutorials(tutorials)
+        setCategories(categories)
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
-    getData();
-  }, []);
+    getData()
+  }, [])
 
   const filteredTutorials = tutorials.filter(
     (tutorial) =>
       tutorial.title.toLowerCase().includes(search.toLowerCase()) &&
-      (category === 'all' || tutorial.category === category),
-  );
+      (category === 'all' || tutorial.category === category)
+  )
 
   const tutorialCard = (tutorial) => {
     return (
@@ -84,7 +84,7 @@ const Guides = () => {
         >
           <CardActionArea
             onClick={() => {
-              window.open(tutorial.link, '_blank');
+              window.open(tutorial.link, '_blank')
             }}
           >
             <CardMedia
@@ -121,8 +121,8 @@ const Guides = () => {
           </CardActions>
         </Card>
       </Grid>
-    );
-  };
+    )
+  }
 
   return (
     <>
@@ -186,7 +186,7 @@ const Guides = () => {
         </Grid>
       </Container>
     </>
-  );
-};
+  )
+}
 
-export default Guides;
+export default Guides

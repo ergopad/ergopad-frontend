@@ -13,26 +13,26 @@ import {
   ListItemIcon,
   Icon,
   Paper,
-} from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useState, useEffect } from 'react';
-import { VictoryContainer, VictoryPie } from 'victory';
-import CenterTitle from '@components/CenterTitle';
-import RelatedLinks from '@components/RelatedLinks/RelatedLinks';
-import theme from '@styles/theme';
-import MuiNextLink from '@components/MuiNextLink';
-import axios from 'axios';
-import dynamic from 'next/dynamic';
+} from '@mui/material'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { useState, useEffect } from 'react'
+import { VictoryContainer, VictoryPie } from 'victory'
+import CenterTitle from '@components/CenterTitle'
+import RelatedLinks from '@components/RelatedLinks/RelatedLinks'
+import theme from '@styles/theme'
+import MuiNextLink from '@components/MuiNextLink'
+import axios from 'axios'
+import dynamic from 'next/dynamic'
 
 const CandleStickChart = dynamic(
   () => import('@components/token/CandleStickChart'),
   {
     ssr: false,
-  },
-);
+  }
+)
 
 const TOKEN_ID =
-  'd71693c49a84fbbecd4908c94813b46514b18b67a99952dc1e6e4791556de413';
+  'd71693c49a84fbbecd4908c94813b46514b18b67a99952dc1e6e4791556de413'
 
 const relatedLinkList = [
   {
@@ -59,7 +59,7 @@ const relatedLinkList = [
     href: '/whitepaper',
     background: theme.palette.tertiary.main,
   },
-];
+]
 
 const tokenAllocation = [
   {
@@ -87,7 +87,7 @@ const tokenAllocation = [
     y: 30,
     color: '#36A9DA',
   },
-];
+]
 
 const gridBox = {
   background: 'rgba(35, 35, 39, 0.7)',
@@ -100,69 +100,66 @@ const gridBox = {
   borderRadius: 2,
   border: 1,
   borderColor: 'rgba(46,46,51,1)',
-};
+}
 
 const paperStyle = {
   p: 1,
   borderRadius: 2,
-};
+}
 
 const Token = () => {
-  const [expanded, setExpanded] = useState(false);
-  const [initialErgopadSupply, setInitialErgopadSupply] =
-    useState('Loading...');
-  const [currentErgopadSupply, setCurrentErgopadSupply] =
-    useState('Loading...');
-  const [ergopadBurned, setErgopadBurned] = useState('Loading...');
-  const [ergopadInCirculation, setErgopadInCirculation] =
-    useState('Loading...');
-  const [marketCap, setMarketCap] = useState('Loading...');
+  const [expanded, setExpanded] = useState(false)
+  const [initialErgopadSupply, setInitialErgopadSupply] = useState('Loading...')
+  const [currentErgopadSupply, setCurrentErgopadSupply] = useState('Loading...')
+  const [ergopadBurned, setErgopadBurned] = useState('Loading...')
+  const [ergopadInCirculation, setErgopadInCirculation] = useState('Loading...')
+  const [marketCap, setMarketCap] = useState('Loading...')
 
   const handleChange = (panel) => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
-  };
+    setExpanded(isExpanded ? panel : false)
+  }
 
   useEffect(() => {
     const getTokenomics = async () => {
       try {
-        const initialSupply = 400000000.0;
+        const initialSupply = 400000000.0
         setInitialErgopadSupply(
           initialSupply.toLocaleString(window.navigator.language, {
             maximumFractionDigits: 0,
-          }),
-        );
+          })
+        )
         const res = await axios.get(
-          `${process.env.API_URL}/blockchain/tokenomics/${TOKEN_ID}`,
-        );
+          `${process.env.API_URL}/blockchain/tokenomics/${TOKEN_ID}`
+        )
         setCurrentErgopadSupply(
           res.data.current_total_supply.toLocaleString(
             window.navigator.language,
-            { maximumFractionDigits: 0 },
-          ),
-        );
+            { maximumFractionDigits: 0 }
+          )
+        )
         setErgopadBurned(
           res.data.burned.toLocaleString(window.navigator.language, {
             maximumFractionDigits: 0,
-          }),
-        );
+          })
+        )
         setErgopadInCirculation(
           res.data.in_circulation.toLocaleString(window.navigator.language, {
             maximumFractionDigits: 0,
-          }),
-        );
+          })
+        )
         setMarketCap(
           '$' +
             res.data.market_cap.toLocaleString(window.navigator.language, {
               maximumFractionDigits: 0,
-            }),
-        );
+            })
+        )
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
-    };
+    }
 
-    getTokenomics();
-  }, []);
+    getTokenomics()
+  }, [])
 
   const tokenCards = [
     {
@@ -189,7 +186,7 @@ const Token = () => {
       title: 'Ergopad in Circulation:',
       desc: ergopadInCirculation,
     },
-  ];
+  ]
 
   return (
     <>
@@ -263,7 +260,7 @@ const Token = () => {
               innerRadius={50}
               data={tokenAllocation}
               colorScale={tokenAllocation.map((value) => {
-                return value.color;
+                return value.color
               })}
               style={{ labels: { fill: 'white' } }}
               containerComponent={
@@ -414,7 +411,7 @@ const Token = () => {
 
       <RelatedLinks title="Learn More" subtitle="" links={relatedLinkList} />
     </>
-  );
-};
+  )
+}
 
-export default Token;
+export default Token

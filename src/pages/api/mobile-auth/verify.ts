@@ -1,21 +1,21 @@
-import { prisma } from '@server/prisma';
-import { NextApiRequest, NextApiResponse } from 'next';
+import { prisma } from '@server/prisma'
+import { NextApiRequest, NextApiResponse } from 'next'
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse
 ) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
+    return res.status(405).json({ error: 'Method Not Allowed' })
   }
 
-  const { verificationId } = req.query;
-  const { signedMessage, proof } = req.body;
+  const { verificationId } = req.query
+  const { signedMessage, proof } = req.body
 
   if (!verificationId || !signedMessage || !proof) {
     return res
       .status(400)
-      .json({ error: 'Bad Request: Missing required fields.' });
+      .json({ error: 'Bad Request: Missing required fields.' })
   }
 
   try {
@@ -26,15 +26,15 @@ export default async function handler(
         signedMessage,
         proof,
       },
-    });
+    })
 
     return res.status(200).json({
       status: 'SIGNED',
       signedMessage,
       proof,
-    });
+    })
   } catch (error) {
-    console.error('Error updating login request:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error updating login request:', error)
+    return res.status(500).json({ error: 'Internal Server Error' })
   }
 }

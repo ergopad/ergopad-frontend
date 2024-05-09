@@ -1,57 +1,54 @@
-import { FC } from 'react';
-import { Typography, SvgIcon, Box } from '@mui/material';
-import AudiotrackIcon from '@mui/icons-material/Audiotrack';
-import { styled } from '@mui/system';
-import AssetModal from './AssetModal';
-import {
-  getNautilusAddressMapper,
-  ASSET_URL,
-} from '../../lib/utils/LogoMapper';
-import { useEffect, useState } from 'react';
-import { formatNumber } from '@utils/general';
+import { FC } from 'react'
+import { Typography, SvgIcon, Box } from '@mui/material'
+import AudiotrackIcon from '@mui/icons-material/Audiotrack'
+import { styled } from '@mui/system'
+import AssetModal from './AssetModal'
+import { getNautilusAddressMapper, ASSET_URL } from '../../lib/utils/LogoMapper'
+import { useEffect, useState } from 'react'
+import { formatNumber } from '@utils/general'
 
 const SIGUSD_TOKEN_ID =
-  '03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04';
+  '03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04'
 
 const AssetIcon = styled('img')(() => ({
   width: '40px',
   height: '40px',
   borderRadius: '12px',
-}));
+}))
 
 const TokenIcon = styled('img')(() => ({
   width: '40px',
   height: '40px',
   borderRadius: '12px',
-}));
+}))
 
 const IconWrapper = styled('div')(() => ({
   width: '40px',
   height: '40px',
   borderRadius: '12px',
   background: 'rgba(102, 102, 102, 0.3)',
-}));
+}))
 
 const AssetItem: FC<{
-  asset: any;
-  stableDenominator: string;
-  type: any;
-  navigatorLanguage: any;
+  asset: any
+  stableDenominator: string
+  type: any
+  navigatorLanguage: any
 }> = ({ asset, stableDenominator = 'USD', type, navigatorLanguage }) => {
-  const [showModal, setShowModal] = useState(false);
-  const [assetMapper, setAssetMapper] = useState<{ [key: string]: string }>({});
+  const [showModal, setShowModal] = useState(false)
+  const [assetMapper, setAssetMapper] = useState<{ [key: string]: string }>({})
 
   useEffect(() => {
-    let isMounted = true;
+    let isMounted = true
     const loadMapper = async () => {
-      const mapper = await getNautilusAddressMapper();
-      if (isMounted) setAssetMapper(mapper);
-    };
-    loadMapper();
+      const mapper = await getNautilusAddressMapper()
+      if (isMounted) setAssetMapper(mapper)
+    }
+    loadMapper()
     return () => {
-      isMounted = false;
-    };
-  }, []);
+      isMounted = false
+    }
+  }, [])
 
   const AssetImage: FC = () => {
     if (type === 'AudioNFT') {
@@ -59,9 +56,9 @@ const AssetItem: FC<{
         <IconWrapper>
           <AudiotrackIcon fontSize="large" sx={{ mt: '3px', ml: '2px' }} />
         </IconWrapper>
-      );
+      )
     } else if (asset?.r9) {
-      return <AssetIcon src={asset?.r9} />;
+      return <AssetIcon src={asset?.r9} />
     } else {
       return assetMapper[asset.id] ? (
         <TokenIcon src={ASSET_URL + '/' + assetMapper[asset.id]} />
@@ -69,9 +66,9 @@ const AssetItem: FC<{
         <IconWrapper>
           <SvgIcon fontSize="large" />
         </IconWrapper>
-      );
+      )
     }
-  };
+  }
 
   return (
     <>
@@ -155,7 +152,7 @@ const AssetItem: FC<{
         navigatorLanguage={navigatorLanguage}
       />
     </>
-  );
-};
+  )
+}
 
-export default AssetItem;
+export default AssetItem

@@ -6,8 +6,8 @@ import {
   TableHead,
   TableRow,
   Typography,
-} from '@mui/material';
-import theme from '@styles/theme';
+} from '@mui/material'
+import theme from '@styles/theme'
 
 const unstakeFees = [
   {
@@ -30,7 +30,7 @@ const unstakeFees = [
     fee: '0%',
     time: 'More than 8 weeks',
   },
-];
+]
 
 const UnstakingFeesTable = () => {
   return (
@@ -67,13 +67,13 @@ const UnstakingFeesTable = () => {
                   </TableCell>
                   <TableCell>{fee.time}</TableCell>
                 </TableRow>
-              );
+              )
             })}
           </TableBody>
         </Table>
       </Box>
     </>
-  );
-};
+  )
+}
 
-export default UnstakingFeesTable;
+export default UnstakingFeesTable

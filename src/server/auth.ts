@@ -1,4 +1,4 @@
-import { ProviderType } from 'next-auth/providers/index';
+import { ProviderType } from 'next-auth/providers/index'
 
 /**
  * Module augmentation for `next-auth` types.
@@ -10,51 +10,51 @@ import { ProviderType } from 'next-auth/providers/index';
 declare module 'next-auth' {
   interface Session {
     user: {
-      id: string;
-      name?: string;
-      address?: string;
-      image?: string;
-      walletType?: string;
-      isAdmin?: boolean;
-    };
+      id: string
+      name?: string
+      address?: string
+      image?: string
+      walletType?: string
+      isAdmin?: boolean
+    }
   }
   interface User {
-    id: string;
-    name: string | null;
-    defaultAddress: string | null;
-    nonce: string | null;
-    email: string | null;
-    emailVerified: Date | null;
-    image: string | null;
+    id: string
+    name: string | null
+    defaultAddress: string | null
+    nonce: string | null
+    email: string | null
+    emailVerified: Date | null
+    image: string | null
   }
   interface Session {
-    walletType?: string;
+    walletType?: string
   }
   interface JWT {
-    walletType?: string;
+    walletType?: string
   }
   interface Account {
-    id: string;
-    userId?: string;
-    type: ProviderType;
-    provider: string;
-    providerAccountId: string;
-    refresh_token?: string | null;
-    access_token?: string | null;
-    expires_at?: number | null;
-    token_type?: string | null;
-    scope?: string | null;
-    id_token?: string | null;
-    session_state?: string | null;
-    user: User;
+    id: string
+    userId?: string
+    type: ProviderType
+    provider: string
+    providerAccountId: string
+    refresh_token?: string | null
+    access_token?: string | null
+    expires_at?: number | null
+    token_type?: string | null
+    scope?: string | null
+    id_token?: string | null
+    session_state?: string | null
+    user: User
   }
   interface Wallet {
-    id: number;
-    changeAddress: string;
-    unusedAddresses: string[];
-    usedAddresses: string[];
-    userId: string;
-    type: string | null;
+    id: number
+    changeAddress: string
+    unusedAddresses: string[]
+    usedAddresses: string[]
+    userId: string
+    type: string | null
   }
 }
 

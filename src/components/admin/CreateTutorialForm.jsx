@@ -11,19 +11,19 @@ import {
   CircularProgress,
   FormControlLabel,
   Checkbox,
-} from '@mui/material';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-import { useEffect, useState, forwardRef } from 'react';
-import FileUploadS3 from '@components/FileUploadS3';
-import AutoCompleteSelect from '@components/AutoCompleteSelect';
-import axios from 'axios';
+} from '@mui/material'
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import { useEffect, useState, forwardRef } from 'react'
+import FileUploadS3 from '@components/FileUploadS3'
+import AutoCompleteSelect from '@components/AutoCompleteSelect'
+import axios from 'axios'
 
 const Alert = forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
-const linkTypes = ['YouTube', 'Medium', 'Others'];
+const linkTypes = ['YouTube', 'Medium', 'Others']
 
 const initialFormData = Object.freeze({
   title: '',
@@ -36,70 +36,70 @@ const initialFormData = Object.freeze({
   config: {
     use_youtube_banner: false,
   },
-});
+})
 
 const initialFormErrors = Object.freeze({
   title: false,
-});
+})
 
 const CreateTutorialForm = () => {
   // form data is all strings
-  const [formData, updateFormData] = useState(initialFormData);
+  const [formData, updateFormData] = useState(initialFormData)
   // form error object, all booleans
-  const [formErrors, setFormErrors] = useState(initialFormErrors);
+  const [formErrors, setFormErrors] = useState(initialFormErrors)
   // loading spinner for submit button
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false)
   // set true to disable submit button
-  const [buttonDisabled, setbuttonDisabled] = useState(false);
+  const [buttonDisabled, setbuttonDisabled] = useState(false)
   // open error snackbar
-  const [openError, setOpenError] = useState(false);
+  const [openError, setOpenError] = useState(false)
   // open success modal
-  const [openSuccess, setOpenSuccess] = useState(false);
+  const [openSuccess, setOpenSuccess] = useState(false)
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again',
-  );
+    'Please eliminate form errors and try again'
+  )
   // categories
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState([])
 
   useEffect(() => {
     const getCategories = async () => {
       try {
         const res = await axios.get(
-          `${process.env.API_URL}/tutorials/categories`,
-        );
-        setCategories(res.data);
+          `${process.env.API_URL}/tutorials/categories`
+        )
+        setCategories(res.data)
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
-    };
+    }
 
-    getCategories();
-  }, [openSuccess]);
+    getCategories()
+  }, [openSuccess])
 
   useEffect(() => {
     if (isLoading) {
-      setbuttonDisabled(true);
+      setbuttonDisabled(true)
     } else {
-      setbuttonDisabled(false);
+      setbuttonDisabled(false)
     }
-  }, [isLoading]);
+  }, [isLoading])
 
   // snackbar for error reporting
   const handleCloseError = (event, reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
-    setOpenError(false);
-  };
+    setOpenError(false)
+  }
 
   // modal for success message
   const handleCloseSuccess = (reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
-    setOpenSuccess(false);
-  };
+    setOpenSuccess(false)
+  }
 
   const handleChange = (e) => {
     if (
@@ -109,12 +109,12 @@ const CreateTutorialForm = () => {
       setFormErrors({
         ...formErrors,
         [e.target.name]: true,
-      });
+      })
     } else if (Object.hasOwnProperty.call(formErrors, e.target.name)) {
       setFormErrors({
         ...formErrors,
         [e.target.name]: false,
-      });
+      })
     }
 
     if (['use_youtube_banner'].includes(e.target.name)) {
@@ -124,71 +124,71 @@ const CreateTutorialForm = () => {
           ...formData.config,
           [e.target.name]: e.target.checked,
         },
-      });
+      })
     } else {
       updateFormData({
         ...formData,
         [e.target.name]: e.target.value,
-      });
+      })
     }
-  };
+  }
 
   const handleImageUpload = (res) => {
     if (res.status === 'success') {
-      updateFormData({ ...formData, bannerImgUrl: res.image_url });
+      updateFormData({ ...formData, bannerImgUrl: res.image_url })
     } else {
-      setErrorMessage('Image upload failed');
-      setOpenError(true);
+      setErrorMessage('Image upload failed')
+      setOpenError(true)
     }
-  };
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setOpenError(false);
-    setLoading(true);
-    const errorCheck = Object.values(formErrors).every((v) => v === false);
+    e.preventDefault()
+    setOpenError(false)
+    setLoading(true)
+    const errorCheck = Object.values(formErrors).every((v) => v === false)
     if (errorCheck) {
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422',
+            'jwt_token_login_422'
           )}`,
         },
-      };
+      }
       const data = {
         ...formData,
         category: formData.category ? formData.category : 'default',
-      };
+      }
       try {
         await axios.post(
           `${process.env.API_URL}/tutorials/`,
           data,
-          defaultOptions,
-        );
-        setOpenSuccess(true);
-        updateFormData(initialFormData);
+          defaultOptions
+        )
+        setOpenSuccess(true)
+        updateFormData(initialFormData)
       } catch {
-        setErrorMessage('Invalid credentials or form data');
-        setOpenError(true);
+        setErrorMessage('Invalid credentials or form data')
+        setOpenError(true)
       }
     } else {
-      let updateErrors = {};
+      let updateErrors = {}
       Object.entries(formData).forEach((entry) => {
-        const [key, value] = entry;
+        const [key, value] = entry
         if (value === '' && Object.hasOwnProperty.call(formErrors, key)) {
-          let newEntry = { [key]: true };
-          updateErrors = { ...updateErrors, ...newEntry };
+          let newEntry = { [key]: true }
+          updateErrors = { ...updateErrors, ...newEntry }
         }
-      });
+      })
       setFormErrors({
         ...formErrors,
         ...updateErrors,
-      });
-      setErrorMessage('Please eliminate form errors and try again');
-      setOpenError(true);
+      })
+      setErrorMessage('Please eliminate form errors and try again')
+      setOpenError(true)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   return (
     <>
@@ -272,7 +272,7 @@ const CreateTutorialForm = () => {
                     >
                       {type}
                     </MenuItem>
-                  );
+                  )
                 })}
               </Select>
             </FormControl>
@@ -320,7 +320,7 @@ const CreateTutorialForm = () => {
             options={categories.map((category) => {
               return {
                 title: category,
-              };
+              }
             })}
             label="Category"
             value={{ title: formData.category }}
@@ -384,7 +384,7 @@ const CreateTutorialForm = () => {
         </Alert>
       </Snackbar>
     </>
-  );
-};
+  )
+}
 
-export default CreateTutorialForm;
+export default CreateTutorialForm

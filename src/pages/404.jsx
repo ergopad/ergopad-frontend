@@ -1,6 +1,6 @@
-import { Typography, Container, Box } from '@mui/material';
-import CenterTitle from '@components/CenterTitle';
-import MuiNextLink from '@components/MuiNextLink';
+import { Typography, Container, Box } from '@mui/material'
+import CenterTitle from '@components/CenterTitle'
+import MuiNextLink from '@components/MuiNextLink'
 
 const Terms = () => {
   return (
@@ -17,7 +17,7 @@ const Terms = () => {
         </Box>
       </Container>
     </>
-  );
-};
+  )
+}
 
-export default Terms;
+export default Terms

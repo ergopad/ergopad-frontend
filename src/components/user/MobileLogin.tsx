@@ -1,6 +1,6 @@
-import React, { useEffect, useState, FC } from 'react';
-import { trpc } from '@utils/trpc';
-import QRCode from 'react-qr-code';
+import React, { useEffect, useState, FC } from 'react'
+import { trpc } from '@utils/trpc'
+import QRCode from 'react-qr-code'
 import {
   Box,
   Button,
@@ -10,32 +10,32 @@ import {
   TextField,
   Typography,
   useTheme,
-} from '@mui/material';
-import Link from '@components/Link';
-import { signIn } from 'next-auth/react';
-import { NonceResponse, Signature } from '@lib/types';
-import { isErgoMainnetAddress } from '@utils/general';
-import { useWallet } from '@contexts/WalletContext';
+} from '@mui/material'
+import Link from '@components/Link'
+import { signIn } from 'next-auth/react'
+import { NonceResponse, Signature } from '@lib/types'
+import { isErgoMainnetAddress } from '@utils/general'
+import { useWallet } from '@contexts/WalletContext'
 
 interface IMobileLogin {
-  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const MobileLogin: FC<IMobileLogin> = ({ setModalOpen }) => {
-  const theme = useTheme();
-  const [localLoading, setLocalLoading] = useState(false);
-  const [address, setAddress] = useState<string>('');
-  const [verificationId, setVerificationId] = useState<string | null>(null);
-  const [nonce, setNonce] = useState<NonceResponse | undefined>(undefined);
-  const [signature, setSignature] = useState<Signature | undefined>(undefined);
+  const theme = useTheme()
+  const [localLoading, setLocalLoading] = useState(false)
+  const [address, setAddress] = useState<string>('')
+  const [verificationId, setVerificationId] = useState<string | null>(null)
+  const [nonce, setNonce] = useState<NonceResponse | undefined>(undefined)
+  const [signature, setSignature] = useState<Signature | undefined>(undefined)
   const [isSignatureProcessed, setIsSignatureProcessed] =
-    useState<boolean>(false);
+    useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
-    undefined,
-  );
-  const { fetchSessionData, providerLoading, setProviderLoading } = useWallet();
+    undefined
+  )
+  const { fetchSessionData, providerLoading, setProviderLoading } = useWallet()
 
-  const loginMutation = trpc.auth.initiateLogin.useMutation();
+  const loginMutation = trpc.auth.initiateLogin.useMutation()
   trpc.auth.checkLoginStatus.useQuery(
     // @ts-ignore
     { verificationId },
@@ -44,18 +44,18 @@ const MobileLogin: FC<IMobileLogin> = ({ setModalOpen }) => {
       refetchInterval: (
         data:
           | {
-              status: 'PENDING' | 'SIGNED';
-              signedMessage: string;
-              proof: string;
+              status: 'PENDING' | 'SIGNED'
+              signedMessage: string
+              proof: string
             }
-          | undefined,
+          | undefined
       ) => {
         // If the status is 'SIGNED', stop polling
         if (data?.status === 'SIGNED') {
-          return false;
+          return false
         }
         // Otherwise, continue polling every 2 seconds
-        return 2000;
+        return 2000
       },
       refetchIntervalInBackground: true,
       onSuccess: (data) => {
@@ -63,28 +63,28 @@ const MobileLogin: FC<IMobileLogin> = ({ setModalOpen }) => {
           setSignature({
             signedMessage: data.signedMessage,
             proof: data.proof,
-          });
+          })
         }
       },
-    },
-  );
+    }
+  )
 
   const initiateLoginFlow = async () => {
     try {
-      setProviderLoading(true);
-      setLocalLoading(true);
-      const response = await loginMutation.mutateAsync({ address });
-      setVerificationId(response.verificationId);
-      setNonce(response.nonce);
-      setIsSignatureProcessed(false); // Reset the processed state
+      setProviderLoading(true)
+      setLocalLoading(true)
+      const response = await loginMutation.mutateAsync({ address })
+      setVerificationId(response.verificationId)
+      setNonce(response.nonce)
+      setIsSignatureProcessed(false) // Reset the processed state
     } catch (error: any) {
-      setLocalLoading(false);
-      setIsSignatureProcessed(false);
-      setErrorMessage(error.message);
-      setAddress('');
-      console.error('Error initiating login flow:', error);
+      setLocalLoading(false)
+      setIsSignatureProcessed(false)
+      setErrorMessage(error.message)
+      setAddress('')
+      console.error('Error initiating login flow:', error)
     }
-  };
+  }
 
   const authSignIn = async () => {
     // console.log(signature)
@@ -99,27 +99,27 @@ const MobileLogin: FC<IMobileLogin> = ({ setModalOpen }) => {
         unusedAddresses: [],
       }),
       redirect: false,
-    });
+    })
     if (!response?.status || response.status !== 200) {
-      console.log('error logging in');
+      console.log('error logging in')
     }
     // console.log(response);
-    await fetchSessionData();
-    setProviderLoading(false);
-    setModalOpen(false);
-    setLocalLoading(false);
-  };
+    await fetchSessionData()
+    setProviderLoading(false)
+    setModalOpen(false)
+    setLocalLoading(false)
+  }
 
   useEffect(() => {
     if (!isSignatureProcessed && signature && nonce) {
       // console.log('proof received');
-      authSignIn();
-      setIsSignatureProcessed(true); // Mark the signature as processed
+      authSignIn()
+      setIsSignatureProcessed(true) // Mark the signature as processed
     }
-  }, [signature]);
+  }, [signature])
 
-  const authUrl = new URL(process.env.AUTH_DOMAIN || 'https://ergopad.io');
-  const ergoAuthDomain = `ergoauth://${authUrl.host}`;
+  const authUrl = new URL(process.env.AUTH_DOMAIN || 'https://ergopad.io')
+  const ergoAuthDomain = `ergoauth://${authUrl.host}`
 
   return (
     <Box>
@@ -137,8 +137,8 @@ const MobileLogin: FC<IMobileLogin> = ({ setModalOpen }) => {
             <TextField
               value={address}
               onChange={(e) => {
-                setAddress(e.target.value);
-                setErrorMessage(undefined);
+                setAddress(e.target.value)
+                setErrorMessage(undefined)
               }}
               placeholder="Enter your wallet address"
               variant="filled"
@@ -216,7 +216,7 @@ const MobileLogin: FC<IMobileLogin> = ({ setModalOpen }) => {
         </Box>
       </Collapse>
     </Box>
-  );
-};
+  )
+}
 
-export default MobileLogin;
+export default MobileLogin

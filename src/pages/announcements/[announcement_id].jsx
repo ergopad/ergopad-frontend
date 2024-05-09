@@ -1,12 +1,12 @@
-import { CircularProgress, Grid, useMediaQuery } from '@mui/material';
-import CenterTitle from '@components/CenterTitle';
-import Sidenav from '@components/announcements/Sidenav';
-import AnnouncementBody from '@components/announcements/AnnouncementBody';
-import RelatedLinks from '@components/RelatedLinks/RelatedLinks';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import theme from '@styles/theme';
+import { CircularProgress, Grid, useMediaQuery } from '@mui/material'
+import CenterTitle from '@components/CenterTitle'
+import Sidenav from '@components/announcements/Sidenav'
+import AnnouncementBody from '@components/announcements/AnnouncementBody'
+import RelatedLinks from '@components/RelatedLinks/RelatedLinks'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
+import theme from '@styles/theme'
 
 const relatedLinkList = [
   {
@@ -33,33 +33,33 @@ const relatedLinkList = [
     href: '/apply',
     background: theme.palette.tertiary.main,
   },
-];
+]
 
 const Announcement = () => {
-  const smallCheck = useMediaQuery((theme) => theme.breakpoints.up('md'));
-  const router = useRouter();
-  const { announcement_id } = router.query;
-  const [announcement, setAnnouncement] = useState({});
-  const [loading, setLoading] = useState(false);
+  const smallCheck = useMediaQuery((theme) => theme.breakpoints.up('md'))
+  const router = useRouter()
+  const { announcement_id } = router.query
+  const [announcement, setAnnouncement] = useState({})
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const getData = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
         const res = await axios.get(
-          `${process.env.API_URL}/announcements/${announcement_id}`,
-        );
-        setAnnouncement(res.data);
+          `${process.env.API_URL}/announcements/${announcement_id}`
+        )
+        setAnnouncement(res.data)
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
     if (announcement_id && announcement_id !== '') {
-      getData();
+      getData()
     }
-  }, [announcement_id]);
+  }, [announcement_id])
 
   return (
     <>
@@ -106,7 +106,7 @@ const Announcement = () => {
       </Grid>
       <RelatedLinks title="Learn More" subtitle="" links={relatedLinkList} />
     </>
-  );
-};
+  )
+}
 
-export default Announcement;
+export default Announcement

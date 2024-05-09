@@ -1,26 +1,26 @@
-import * as React from 'react';
-import { useState } from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Drawer from '@mui/material/Drawer';
-import MuiNextLink from '@components/MuiNextLink';
-import { MenuOutlined } from '@mui/icons-material';
+import * as React from 'react'
+import { useState } from 'react'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import Drawer from '@mui/material/Drawer'
+import MuiNextLink from '@components/MuiNextLink'
+import { MenuOutlined } from '@mui/icons-material'
 
 const SideDrawer = ({ navLinks }) => {
   const [state, setState] = useState({
     left: false,
-  });
+  })
 
   const toggleDrawer = (anchor, open) => (event) => {
     if (
       event.type === 'keydown' &&
       (event.key === 'Tab' || event.key === 'Shift')
     ) {
-      return;
+      return
     }
 
-    setState({ ...state, [anchor]: open });
-  };
+    setState({ ...state, [anchor]: open })
+  }
 
   const list = (anchor) => (
     <Box
@@ -43,7 +43,7 @@ const SideDrawer = ({ navLinks }) => {
         </Typography>
       ))}
     </Box>
-  );
+  )
 
   return (
     <>
@@ -62,7 +62,7 @@ const SideDrawer = ({ navLinks }) => {
         {list('left')}
       </Drawer>
     </>
-  );
-};
+  )
+}
 
-export default SideDrawer;
+export default SideDrawer

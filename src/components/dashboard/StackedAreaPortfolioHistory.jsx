@@ -1,4 +1,4 @@
-import { useMediaQuery } from '@mui/material';
+import { useMediaQuery } from '@mui/material'
 import {
   VictoryArea,
   VictoryAxis,
@@ -6,20 +6,20 @@ import {
   VictoryContainer,
   VictoryLegend,
   VictoryStack,
-} from 'victory';
+} from 'victory'
 
 const toValueText = (value) => {
   if (value < 1000) {
-    return `$${Math.round(value * 100) / 100}`;
+    return `$${Math.round(value * 100) / 100}`
   } else if (value < 1000000) {
-    return `$${Math.round(value / 100) / 10}k`;
+    return `$${Math.round(value / 100) / 10}k`
   } else {
-    return `$${Math.round(value / 100000) / 10}m`;
+    return `$${Math.round(value / 100000) / 10}m`
   }
-};
+}
 
 const StackedAreaPortfolioHistory = (props) => {
-  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
+  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'))
 
   return (
     <VictoryChart
@@ -46,7 +46,7 @@ const StackedAreaPortfolioHistory = (props) => {
           return {
             id: index,
             name: priceHistory.token,
-          };
+          }
         })}
         style={{ labels: { fill: 'white' } }}
         name="legend"
@@ -64,7 +64,7 @@ const StackedAreaPortfolioHistory = (props) => {
               return {
                 x: dataPoint.timestamp,
                 y: dataPoint.value,
-              };
+              }
             })}
           />
         ))}
@@ -72,8 +72,8 @@ const StackedAreaPortfolioHistory = (props) => {
       <VictoryAxis
         dependentAxis
         tickFormat={(value) => {
-          const formatted = toValueText(value);
-          return formatted;
+          const formatted = toValueText(value)
+          return formatted
         }}
         style={{
           axis: { stroke: 'white' },
@@ -86,7 +86,7 @@ const StackedAreaPortfolioHistory = (props) => {
         crossAxis
         invertAxis
         tickFormat={(timestamp) => {
-          return new Date(Date.parse(timestamp)).toDateString();
+          return new Date(Date.parse(timestamp)).toDateString()
         }}
         style={{
           axis: { stroke: 'white' },
@@ -95,7 +95,7 @@ const StackedAreaPortfolioHistory = (props) => {
         }}
       />
     </VictoryChart>
-  );
-};
+  )
+}
 
-export default StackedAreaPortfolioHistory;
+export default StackedAreaPortfolioHistory

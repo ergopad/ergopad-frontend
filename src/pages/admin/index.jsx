@@ -1,61 +1,61 @@
-import { useState, forwardRef, useEffect } from 'react';
-import CenterTitle from '@components/CenterTitle';
-import { Typography, Grid, Box, TextField, Button } from '@mui/material';
-import axios from 'axios';
-import CircularProgress from '@mui/material/CircularProgress';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-import Home from '@components/admin/Home';
-import Sidenav from '@components/admin/Sidenav';
+import { useState, forwardRef, useEffect } from 'react'
+import CenterTitle from '@components/CenterTitle'
+import { Typography, Grid, Box, TextField, Button } from '@mui/material'
+import axios from 'axios'
+import CircularProgress from '@mui/material/CircularProgress'
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import Home from '@components/admin/Home'
+import Sidenav from '@components/admin/Sidenav'
 
 const Alert = forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 const initialFormData = Object.freeze({
   email: '',
   password: '',
-});
+})
 
 const initialFormErrors = Object.freeze({
   email: false,
   password: false,
-});
+})
 
 const Admin = () => {
   const JWT_TOKEN =
     typeof window !== 'undefined'
       ? sessionStorage.getItem('jwt_token_login_422')
-      : null;
+      : null
 
-  const [isLoggedIn, setIsLoggedIn] = useState(JWT_TOKEN);
+  const [isLoggedIn, setIsLoggedIn] = useState(JWT_TOKEN)
   // form data is all strings
-  const [formData, updateFormData] = useState(initialFormData);
+  const [formData, updateFormData] = useState(initialFormData)
   // form error object, all booleans
-  const [formErrors, setFormErrors] = useState(initialFormErrors);
+  const [formErrors, setFormErrors] = useState(initialFormErrors)
   // loading spinner for submit button
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false)
   // set true to disable submit button
-  const [buttonDisabled, setbuttonDisabled] = useState(true);
+  const [buttonDisabled, setbuttonDisabled] = useState(true)
   // open error snackbar
-  const [openError, setOpenError] = useState(false);
+  const [openError, setOpenError] = useState(false)
   // change error message for error snackbar
-  const [errorMessage] = useState('Invalid crendentials. Please try again');
+  const [errorMessage] = useState('Invalid crendentials. Please try again')
   // show home page page when logged in
-  const [showHome, setShowHome] = useState(false);
+  const [showHome, setShowHome] = useState(false)
 
   useEffect(() => {
-    setbuttonDisabled(isLoading);
-  }, [isLoading]);
+    setbuttonDisabled(isLoading)
+  }, [isLoading])
 
   useEffect(() => {
     setbuttonDisabled(
       formData.email === '' ||
         formData.password === '' ||
         formErrors.email ||
-        formErrors.password,
-    );
-  }, [formData, formErrors]);
+        formErrors.password
+    )
+  }, [formData, formErrors])
 
   const handleChange = (e) => {
     if (
@@ -65,84 +65,84 @@ const Admin = () => {
       setFormErrors({
         ...formErrors,
         [e.target.name]: true,
-      });
+      })
     } else if (Object.hasOwnProperty.call(formErrors, e.target.name)) {
       setFormErrors({
         ...formErrors,
         [e.target.name]: false,
-      });
+      })
     }
 
     updateFormData({
       ...formData,
       // Trimming any whitespace
       [e.target.name]: e.target.value.trim(),
-    });
-  };
+    })
+  }
 
   // snackbar for error reporting
   const handleCloseError = (event, reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
-    setOpenError(false);
-  };
+    setOpenError(false)
+  }
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    setOpenError(false);
-    setLoading(true);
-    const errorCheck = Object.values(formErrors).every((v) => v === false);
+    e.preventDefault()
+    setOpenError(false)
+    setLoading(true)
+    const errorCheck = Object.values(formErrors).every((v) => v === false)
     const defaultOptions = {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-    };
+    }
     const form = {
       username: formData.email,
       password: formData.password,
-    };
+    }
 
     const data = Object.keys(form)
       .map((key) => `${key}=${encodeURIComponent(form[key])}`)
-      .join('&');
+      .join('&')
 
     if (errorCheck) {
       axios
         .post(`${process.env.API_URL}/auth/token`, data, defaultOptions)
         .then((res) => {
-          if (res.data.permissions !== 'admin') throw 401;
-          sessionStorage.setItem('jwt_token_login_422', res.data.access_token);
-          setIsLoggedIn(true);
-          setLoading(false);
+          if (res.data.permissions !== 'admin') throw 401
+          sessionStorage.setItem('jwt_token_login_422', res.data.access_token)
+          setIsLoggedIn(true)
+          setLoading(false)
         })
         .catch(() => {
           // snackbar for error message
-          setOpenError(true);
-          setLoading(false);
-        });
+          setOpenError(true)
+          setLoading(false)
+        })
     } else {
-      let updateErrors = {};
+      let updateErrors = {}
       Object.entries(formData).forEach((entry) => {
-        const [key, value] = entry;
+        const [key, value] = entry
         if (value == '' && Object.hasOwnProperty.call(formErrors, key)) {
-          let newEntry = { [key]: true };
-          updateErrors = { ...updateErrors, ...newEntry };
+          let newEntry = { [key]: true }
+          updateErrors = { ...updateErrors, ...newEntry }
         }
-      });
+      })
       setFormErrors({
         ...formErrors,
         ...updateErrors,
-      });
-      setOpenError(true);
+      })
+      setOpenError(true)
       // turn off loading spinner for submit button
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    setShowHome(true);
-  }, []);
+    setShowHome(true)
+  }, [])
 
   return (
     <>
@@ -263,7 +263,7 @@ const Admin = () => {
         </>
       )}
     </>
-  );
-};
+  )
+}
 
-export default Admin;
+export default Admin

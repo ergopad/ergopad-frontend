@@ -6,16 +6,16 @@ import {
   TableRow,
   Typography,
   useMediaQuery,
-} from '@mui/material';
-import theme from '@styles/theme';
-import { Fragment } from 'react';
+} from '@mui/material'
+import theme from '@styles/theme'
+import { Fragment } from 'react'
 
 const stakingHeading = {
   tier: 'Tier',
   value: 'Amount',
   requirements: 'Staking Requirements',
   weight: 'Allocation Weight',
-};
+}
 
 const stakingTiers = [
   {
@@ -60,10 +60,10 @@ const stakingTiers = [
     requirements: 'none',
     weight: 1500,
   },
-];
+]
 
 const StakingTiers = () => {
-  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
+  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'))
   return (
     <>
       <Typography variant="h5" sx={{ fontWeight: '700' }}>
@@ -121,7 +121,7 @@ const StakingTiers = () => {
                     })}
                   </TableCell>
                 </TableRow>
-              );
+              )
             })}
           </TableBody>
         </Table>
@@ -179,12 +179,12 @@ const StakingTiers = () => {
                   </TableCell>
                 </TableRow>
               </Fragment>
-            );
+            )
           })}
         </Table>
       )}
     </>
-  );
-};
+  )
+}
 
-export default StakingTiers;
+export default StakingTiers

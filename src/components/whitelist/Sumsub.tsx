@@ -1,75 +1,73 @@
-import { trpc } from '@utils/trpc';
-import React, { FC, useEffect, useState } from 'react';
-import { useWallet } from '@contexts/WalletContext';
-import SumsubWebSdk from '@sumsub/websdk-react';
-import { Box, Typography, useTheme } from '@mui/material';
+import { trpc } from '@utils/trpc'
+import React, { FC, useEffect, useState } from 'react'
+import { useWallet } from '@contexts/WalletContext'
+import SumsubWebSdk from '@sumsub/websdk-react'
+import { Box, Typography, useTheme } from '@mui/material'
 
 interface SumsubProps {
-  setSumsubStatus: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setSumsubStatus: React.Dispatch<React.SetStateAction<string | undefined>>
 }
 
 const Sumsub: FC<SumsubProps> = ({ setSumsubStatus }) => {
-  const theme = useTheme();
-  const [sumsubId, setSumsubId] = useState<string | undefined | null>(
-    undefined,
-  );
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [userId, setUserId] = useState('');
-  const { sessionStatus, sessionData } = useWallet();
+  const theme = useTheme()
+  const [sumsubId, setSumsubId] = useState<string | undefined | null>(undefined)
+  const [accessToken, setAccessToken] = useState<string | null>(null)
+  const [userId, setUserId] = useState('')
+  const { sessionStatus, sessionData } = useWallet()
 
   const checkVerificationResult = trpc.user.getSumsubResult.useQuery(
     undefined,
-    { enabled: false, retry: false },
-  );
+    { enabled: false, retry: false }
+  )
 
   useEffect(() => {
     if (sessionStatus === 'authenticated' && sessionData?.user.id) {
-      const id = sessionData.user.id;
-      setUserId(id);
+      const id = sessionData.user.id
+      setUserId(id)
       // console.log(id)
       // Fetch the access token from your API when the component mounts
       fetch(`/api/sumsub/getAccessToken?userId=${id}`)
         .then((response) => response.json())
         .then((data) => setAccessToken(data.token))
-        .catch((error) => console.error('Error fetching access token:', error));
+        .catch((error) => console.error('Error fetching access token:', error))
     }
-  }, [sessionStatus]);
+  }, [sessionStatus])
 
   const expirationHandler = async () => {
     // Fetch a new access token from your API when the current token has expired
-    const response = await fetch(`/api/sumsub/getAccessToken?userId=${userId}`);
-    const data = await response.json();
-    setAccessToken(data.token);
-    return data.token;
-  };
+    const response = await fetch(`/api/sumsub/getAccessToken?userId=${userId}`)
+    const data = await response.json()
+    setAccessToken(data.token)
+    return data.token
+  }
 
   const config = {
     // Configuration settings for the SDK
-  };
+  }
 
   const options = {
     // Options for the SDK
-  };
+  }
 
   const messageHandler = (message: any) => {
     if (message.includes('applicantReviewComplete')) {
       checkVerificationResult
         .refetch()
         .then((response) => {
-          setSumsubStatus(response.data?.sumsubResult?.reviewAnswer);
-          setSumsubId(response.data?.sumsubId);
+          setSumsubStatus(response.data?.sumsubResult?.reviewAnswer)
+          setSumsubId(response.data?.sumsubId)
         })
         .catch((error: any) => {
-          console.error(error);
-        });
+          console.error(error)
+        })
     }
     // console.log("Received message from SDK:", message);
-  };
+  }
 
   const errorHandler = (error: any) => {
     // Handle errors from the SDK
-    console.error('Received error from SDK:', error);
-  };
+    console.error('Received error from SDK:', error)
+  }
 
   return (
     <>
@@ -116,7 +114,7 @@ const Sumsub: FC<SumsubProps> = ({ setSumsubStatus }) => {
         </Box>
       )}
     </>
-  );
-};
+  )
+}
 
-export default Sumsub;
+export default Sumsub

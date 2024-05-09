@@ -5,8 +5,8 @@ import {
   List,
   ListItemText,
   ListItem,
-} from '@mui/material';
-import { useRouter } from 'next/router';
+} from '@mui/material'
+import { useRouter } from 'next/router'
 
 const Sidenav = () => {
   const listItemSx = {
@@ -14,8 +14,8 @@ const Sidenav = () => {
     '&:hover': {
       backgroundColor: 'rgba(255, 255, 255, 0.1)',
     },
-  };
-  const router = useRouter();
+  }
+  const router = useRouter()
   return (
     <Grid item md={3} xs={12} sx={{ flexGrow: 1, mt: 12 }}>
       <Box sx={{ mr: { md: 12, xs: 0 }, mt: { md: 0, xs: 4 } }}>
@@ -27,7 +27,7 @@ const Sidenav = () => {
             button
             sx={{ mb: 2, ...listItemSx }}
             onClick={() => {
-              router.push('/admin');
+              router.push('/admin')
             }}
           >
             <ListItemText primary="Admin Home" />
@@ -43,7 +43,7 @@ const Sidenav = () => {
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/edit_user');
+              router.push('/admin/edit_user')
             }}
           >
             <ListItemText primary="Change Password" />
@@ -52,7 +52,7 @@ const Sidenav = () => {
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/manage_user');
+              router.push('/admin/manage_user')
             }}
           >
             <ListItemText primary="Manage Users" />
@@ -68,7 +68,7 @@ const Sidenav = () => {
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/create_announcement');
+              router.push('/admin/create_announcement')
             }}
           >
             <ListItemText primary="Create Announcements" />
@@ -77,7 +77,7 @@ const Sidenav = () => {
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/edit_announcement');
+              router.push('/admin/edit_announcement')
             }}
           >
             <ListItemText primary="Edit Announcements" />
@@ -86,7 +86,7 @@ const Sidenav = () => {
             button
             sx={{ mb: 2, ...listItemSx }}
             onClick={() => {
-              router.push('/admin/delete_announcement');
+              router.push('/admin/delete_announcement')
             }}
           >
             <ListItemText primary="Delete Announcements" />
@@ -102,7 +102,7 @@ const Sidenav = () => {
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/whitelist_event_summary');
+              router.push('/admin/whitelist_event_summary')
             }}
           >
             <ListItemText primary="Whitelist Events Summary" />
@@ -111,7 +111,7 @@ const Sidenav = () => {
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/create_whitelist_event');
+              router.push('/admin/create_whitelist_event')
             }}
           >
             <ListItemText primary="Create Whitelist Events" />
@@ -120,7 +120,7 @@ const Sidenav = () => {
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/edit_whitelist_event');
+              router.push('/admin/edit_whitelist_event')
             }}
           >
             <ListItemText primary="Edit Whitelist Events" />
@@ -129,7 +129,7 @@ const Sidenav = () => {
             button
             sx={{ mb: 2, ...listItemSx }}
             onClick={() => {
-              router.push('/admin/delete_whitelist_event');
+              router.push('/admin/delete_whitelist_event')
             }}
           >
             <ListItemText primary="Delete Whitelist Events" />
@@ -145,7 +145,7 @@ const Sidenav = () => {
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/create_contribution_event');
+              router.push('/admin/create_contribution_event')
             }}
           >
             <ListItemText primary="Create Contribution Events" />
@@ -154,7 +154,7 @@ const Sidenav = () => {
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/edit_contribution_event');
+              router.push('/admin/edit_contribution_event')
             }}
           >
             <ListItemText primary="Edit Contribution Events" />
@@ -163,7 +163,7 @@ const Sidenav = () => {
             button
             sx={{ mb: 2, ...listItemSx }}
             onClick={() => {
-              router.push('/admin/delete_contribution_event');
+              router.push('/admin/delete_contribution_event')
             }}
           >
             <ListItemText primary="Delete Contribution Events" />
@@ -179,7 +179,7 @@ const Sidenav = () => {
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/create_staking_config');
+              router.push('/admin/create_staking_config')
             }}
           >
             <ListItemText primary="Create Staking Config" />
@@ -188,7 +188,7 @@ const Sidenav = () => {
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/edit_staking_config');
+              router.push('/admin/edit_staking_config')
             }}
           >
             <ListItemText primary="Edit Staking Config" />
@@ -197,7 +197,7 @@ const Sidenav = () => {
             button
             sx={{ mb: 2, ...listItemSx }}
             onClick={() => {
-              router.push('/admin/delete_staking_config');
+              router.push('/admin/delete_staking_config')
             }}
           >
             <ListItemText primary="Delete Staking Config" />
@@ -213,7 +213,7 @@ const Sidenav = () => {
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/create_project');
+              router.push('/admin/create_project')
             }}
           >
             <ListItemText primary="Create Projects" />
@@ -222,7 +222,7 @@ const Sidenav = () => {
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/edit_project');
+              router.push('/admin/edit_project')
             }}
           >
             <ListItemText primary="Edit Projects" />
@@ -231,7 +231,7 @@ const Sidenav = () => {
             button
             sx={{ mb: 2, ...listItemSx }}
             onClick={() => {
-              router.push('/admin/delete_project');
+              router.push('/admin/delete_project')
             }}
           >
             <ListItemText primary="Delete Projects" />
@@ -247,7 +247,7 @@ const Sidenav = () => {
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/create_tutorial');
+              router.push('/admin/create_tutorial')
             }}
           >
             <ListItemText primary="Add Tutorials" />
@@ -256,7 +256,7 @@ const Sidenav = () => {
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/edit_tutorial');
+              router.push('/admin/edit_tutorial')
             }}
           >
             <ListItemText primary="Edit Tutorials" />
@@ -265,7 +265,7 @@ const Sidenav = () => {
             button
             sx={{ mb: 2, ...listItemSx }}
             onClick={() => {
-              router.push('/admin/delete_tutorial');
+              router.push('/admin/delete_tutorial')
             }}
           >
             <ListItemText primary="Delete Tutorials" />
@@ -281,7 +281,7 @@ const Sidenav = () => {
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/create_job');
+              router.push('/admin/create_job')
             }}
           >
             <ListItemText primary="Create Job Listings" />
@@ -290,7 +290,7 @@ const Sidenav = () => {
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/edit_job');
+              router.push('/admin/edit_job')
             }}
           >
             <ListItemText primary="Edit Job Listings" />
@@ -299,7 +299,7 @@ const Sidenav = () => {
             button
             sx={{ mb: 2, ...listItemSx }}
             onClick={() => {
-              router.push('/admin/delete_job');
+              router.push('/admin/delete_job')
             }}
           >
             <ListItemText primary="Delete Job Listings" />
@@ -315,7 +315,7 @@ const Sidenav = () => {
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/create_faq');
+              router.push('/admin/create_faq')
             }}
           >
             <ListItemText primary="Add FAQs" />
@@ -324,7 +324,7 @@ const Sidenav = () => {
             button
             sx={{ ...listItemSx }}
             onClick={() => {
-              router.push('/admin/edit_faq');
+              router.push('/admin/edit_faq')
             }}
           >
             <ListItemText primary="Edit FAQs" />
@@ -333,7 +333,7 @@ const Sidenav = () => {
             button
             sx={{ mb: 2, ...listItemSx }}
             onClick={() => {
-              router.push('/admin/delete_faq');
+              router.push('/admin/delete_faq')
             }}
           >
             <ListItemText primary="Delete FAQs" />
@@ -349,7 +349,7 @@ const Sidenav = () => {
             button
             sx={{ mb: 2, ...listItemSx }}
             onClick={() => {
-              router.push('/admin/bootstrap');
+              router.push('/admin/bootstrap')
             }}
           >
             <ListItemText primary="Bootstrap" />
@@ -357,7 +357,7 @@ const Sidenav = () => {
         </List>
       </Box>
     </Grid>
-  );
-};
+  )
+}
 
-export default Sidenav;
+export default Sidenav

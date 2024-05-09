@@ -8,10 +8,10 @@ import {
   useTheme,
   useMediaQuery,
   TableBody,
-} from '@mui/material';
-import theme from '@styles/theme';
-import { FC, Fragment } from 'react';
-import { StakedData, Staked } from '@pages/staking/[project_id]';
+} from '@mui/material'
+import theme from '@styles/theme'
+import { FC, Fragment } from 'react'
+import { StakedData, Staked } from '@pages/staking/[project_id]'
 
 const stakedHeading = {
   boxId: 'Box Id',
@@ -19,37 +19,37 @@ const stakedHeading = {
   penaltyPct: 'Penalty %',
   penaltyEndTime: 'Penalty End',
   unstake: '',
-};
+}
 
 export type Unstake = {
-  boxId: string;
-  stakeKeyId: string;
-  stakeAmount: number;
-  penaltyPct: number;
-  address: string;
-};
+  boxId: string
+  stakeKeyId: string
+  stakeAmount: number
+  penaltyPct: number
+  address: string
+}
 
 type StakeFunction = (
   boxId: string,
   stakeKeyId: string,
   stakeAmount: number,
   penaltyPct: number,
-  address: string,
-) => void;
+  address: string
+) => void
 
 const friendlyAddress = (addr: string, tot = 8) => {
-  if (addr === undefined || addr.slice === undefined) return '';
-  if (addr.length < 30) return addr;
-  return addr.slice(0, tot) + '...' + addr.slice(-tot);
-};
+  if (addr === undefined || addr.slice === undefined) return ''
+  if (addr.length < 30) return addr
+  return addr.slice(0, tot) + '...' + addr.slice(-tot)
+}
 
 type UnstakingTableProps = {
-  data: StakedData;
-  unstake: StakeFunction;
-  addstake: StakeFunction | null;
-  disableUnstaking?: boolean;
-  disableAddStake?: boolean;
-};
+  data: StakedData
+  unstake: StakeFunction
+  addstake: StakeFunction | null
+  disableUnstaking?: boolean
+  disableAddStake?: boolean
+}
 
 const UnstakingTable: FC<UnstakingTableProps> = ({
   data,
@@ -58,9 +58,9 @@ const UnstakingTable: FC<UnstakingTableProps> = ({
   disableUnstaking,
   disableAddStake,
 }) => {
-  const theme = useTheme();
-  const checkSmall = useMediaQuery(theme.breakpoints.up('md'));
-  const stakeObject = { ...data };
+  const theme = useTheme()
+  const checkSmall = useMediaQuery(theme.breakpoints.up('md'))
+  const stakeObject = { ...data }
 
   if (stakeObject.totalStaked === 0) {
     return (
@@ -78,7 +78,7 @@ const UnstakingTable: FC<UnstakingTableProps> = ({
           </Typography>
         </Box>
       </>
-    );
+    )
   }
 
   return (
@@ -133,7 +133,7 @@ const UnstakingTable: FC<UnstakingTableProps> = ({
             >
               {stakeObject.addresses[address].totalStaked?.toLocaleString(
                 navigator.language,
-                { maximumFractionDigits: 2 },
+                { maximumFractionDigits: 2 }
               )}
             </Typography>
           </Typography>
@@ -235,7 +235,7 @@ const UnstakingTable: FC<UnstakingTableProps> = ({
                                   stake.stakeKeyId,
                                   stake.stakeAmount,
                                   stake.penaltyPct ?? 0,
-                                  address,
+                                  address
                                 )
                               }
                               disabled={disableAddStake}
@@ -265,7 +265,7 @@ const UnstakingTable: FC<UnstakingTableProps> = ({
                                 stake.stakeKeyId,
                                 stake.stakeAmount,
                                 stake.penaltyPct ?? 0,
-                                address,
+                                address
                               )
                             }
                           >
@@ -275,7 +275,7 @@ const UnstakingTable: FC<UnstakingTableProps> = ({
                       </TableCell>
                     </TableRow>
                   </Fragment>
-                );
+                )
               })}
             </TableBody>
           </Table>
@@ -287,7 +287,7 @@ const UnstakingTable: FC<UnstakingTableProps> = ({
         </Typography>
       )}
     </>
-  );
-};
+  )
+}
 
-export default UnstakingTable;
+export default UnstakingTable

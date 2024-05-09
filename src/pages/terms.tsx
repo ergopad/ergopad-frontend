@@ -1,6 +1,6 @@
-import React from 'react';
-import { Typography, Box, List, ListItem, Container } from '@mui/material';
-import { themeSetup } from '@styles/theme';
+import React from 'react'
+import { Typography, Box, List, ListItem, Container } from '@mui/material'
+import { themeSetup } from '@styles/theme'
 
 const listStyle = {
   mt: '-18px',
@@ -17,7 +17,7 @@ const listStyle = {
     pl: 0,
     pb: 0,
   },
-};
+}
 
 const ErgopadTermsOfService = () => {
   return (
@@ -443,7 +443,7 @@ const ErgopadTermsOfService = () => {
         </Typography>
       </Box>
     </Container>
-  );
-};
+  )
+}
 
-export default ErgopadTermsOfService;
+export default ErgopadTermsOfService

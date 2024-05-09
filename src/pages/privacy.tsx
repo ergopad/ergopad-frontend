@@ -1,6 +1,6 @@
-import React from 'react';
-import { Typography, Box, List, ListItem, Container } from '@mui/material';
-import { themeSetup } from '@styles/theme';
+import React from 'react'
+import { Typography, Box, List, ListItem, Container } from '@mui/material'
+import { themeSetup } from '@styles/theme'
 
 const listStyle = {
   mt: '-24px',
@@ -17,7 +17,7 @@ const listStyle = {
     pl: 0,
     pb: 0,
   },
-};
+}
 
 const PrivacyPolicy = () => {
   return (
@@ -252,7 +252,7 @@ const PrivacyPolicy = () => {
         </Typography>
       </Box>
     </Container>
-  );
-};
+  )
+}
 
-export default PrivacyPolicy;
+export default PrivacyPolicy

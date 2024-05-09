@@ -1,5 +1,5 @@
-import { useEffect, useState, Fragment, useMemo } from 'react';
-import { useRouter } from 'next/router';
+import { useEffect, useState, Fragment, useMemo } from 'react'
+import { useRouter } from 'next/router'
 import {
   Container,
   Typography,
@@ -19,90 +19,90 @@ import {
   ListItemButton,
   useTheme,
   Link,
-} from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
-import CenterTitle from '@components/CenterTitle';
-import TelegramIcon from '@mui/icons-material/Telegram';
-import TwitterIcon from '@mui/icons-material/Twitter';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import PublicIcon from '@mui/icons-material/Public';
-import ShareIcon from '@mui/icons-material/Share';
-import MenuIcon from '@mui/icons-material/Menu';
-import CopyToClipboard from '@components/CopyToClipboard';
-import MarkdownRender from '@components/MarkdownRender';
-import Roadmap from '@components/projects/Roadmap';
-import Team from '@components/projects/Team';
-import Tokenomics from '@components/projects/Tokenomics';
-import Distribution from '@components/projects/Distribution';
-import axios from 'axios';
-import { useWhitelistProjects } from '../../lib/hooks/useWhitelistProjects';
-import { useContributionProjects } from '../../lib/hooks/useContributionProjects';
-import { scroller } from 'react-scroll';
+} from '@mui/material'
+import CircularProgress from '@mui/material/CircularProgress'
+import CenterTitle from '@components/CenterTitle'
+import TelegramIcon from '@mui/icons-material/Telegram'
+import TwitterIcon from '@mui/icons-material/Twitter'
+import GitHubIcon from '@mui/icons-material/GitHub'
+import PublicIcon from '@mui/icons-material/Public'
+import ShareIcon from '@mui/icons-material/Share'
+import MenuIcon from '@mui/icons-material/Menu'
+import CopyToClipboard from '@components/CopyToClipboard'
+import MarkdownRender from '@components/MarkdownRender'
+import Roadmap from '@components/projects/Roadmap'
+import Team from '@components/projects/Team'
+import Tokenomics from '@components/projects/Tokenomics'
+import Distribution from '@components/projects/Distribution'
+import axios from 'axios'
+import { useWhitelistProjects } from '../../lib/hooks/useWhitelistProjects'
+import { useContributionProjects } from '../../lib/hooks/useContributionProjects'
+import { scroller } from 'react-scroll'
 
 export interface Project {
-  name: string;
-  shortDescription: string;
-  description: string;
-  fundsRaised: number;
-  bannerImgUrl: string;
-  isLaunched: boolean;
-  socials: Socials;
-  roadmap: Roadmap;
-  team: Team;
-  tokenomics: Tokenomics;
-  isDraft: boolean;
-  id: number;
+  name: string
+  shortDescription: string
+  description: string
+  fundsRaised: number
+  bannerImgUrl: string
+  isLaunched: boolean
+  socials: Socials
+  roadmap: Roadmap
+  team: Team
+  tokenomics: Tokenomics
+  isDraft: boolean
+  id: number
 }
 
 interface Socials {
-  telegram: string;
-  twitter: string;
-  discord: string;
-  github: string;
-  website: string;
+  telegram: string
+  twitter: string
+  discord: string
+  github: string
+  website: string
 }
 
 interface Roadmap {
-  roadmap: RoadmapItem[];
+  roadmap: RoadmapItem[]
 }
 
 interface RoadmapItem {
-  name: string;
-  description: string;
-  date: string;
+  name: string
+  description: string
+  date: string
 }
 
 interface Team {
-  team: TeamMember[];
+  team: TeamMember[]
 }
 
 interface TeamMember {
-  name: string;
-  description: string;
-  profileImgUrl: string;
-  socials: TeamMemberSocials;
+  name: string
+  description: string
+  profileImgUrl: string
+  socials: TeamMemberSocials
 }
 
 interface TeamMemberSocials {
-  twitter: string;
-  linkedin: string;
+  twitter: string
+  linkedin: string
 }
 
 interface Tokenomics {
-  tokenName: string;
-  totalTokens: number;
-  tokenTicker: string;
-  tokenomics: TokenomicsItem[];
+  tokenName: string
+  totalTokens: number
+  tokenTicker: string
+  tokenomics: TokenomicsItem[]
 }
 
 interface TokenomicsItem {
-  name: string;
-  amount: number;
-  value: string;
-  tge: string;
-  freq: string;
-  length: string;
-  lockup: string;
+  name: string
+  amount: number
+  value: string
+  tge: string
+  freq: string
+  length: string
+  lockup: string
 }
 
 const navBarLinks = [
@@ -131,56 +131,56 @@ const navBarLinks = [
     icon: 'toc',
     link: 'distribution',
   },
-];
+]
 
 const headingStyle = {
   fontWeight: '800',
   mt: { xs: '-100px', sm: '-110px', md: '-70px' },
   pt: { xs: '100px', sm: '110px', md: '70px' },
-};
+}
 
 const Project = () => {
-  const theme = useTheme();
-  const router = useRouter();
-  const { project_id } = router.query;
-  const [isLoading, setLoading] = useState(true);
-  const [project, setProject] = useState<Project | undefined>(undefined);
-  const [mobileMenu, setMobileMenu] = useState(false);
+  const theme = useTheme()
+  const router = useRouter()
+  const { project_id } = router.query
+  const [isLoading, setLoading] = useState(true)
+  const [project, setProject] = useState<Project | undefined>(undefined)
+  const [mobileMenu, setMobileMenu] = useState(false)
 
   const { whiteListProjectsActive, isLoading: whiteListProjectsIsLoading } =
-    useWhitelistProjects();
+    useWhitelistProjects()
   const {
     contributionProjectsActive,
     isLoading: contributionProjectsIsLoading,
-  } = useContributionProjects();
+  } = useContributionProjects()
 
   const activeRound = useMemo(() => {
     const whiteListActive = whiteListProjectsActive?.find(
-      (listedProject: any) => listedProject.projectName === project_id,
-    );
+      (listedProject: any) => listedProject.projectName === project_id
+    )
     if (whiteListActive) {
       return {
         title: `${whiteListActive.roundName[0].toUpperCase()}${whiteListActive.roundName.slice(1).toLowerCase()} round`,
         link: `/whitelist/${whiteListActive.projectName}/${whiteListActive.roundName}`,
-      };
+      }
     }
 
     const contributionActive = contributionProjectsActive?.find(
-      (listedProject: any) => listedProject.projectName === project_id,
-    );
+      (listedProject: any) => listedProject.projectName === project_id
+    )
     if (contributionActive) {
       return {
         title: `${contributionActive.roundName[0].toUpperCase()}${contributionActive.roundName
           .slice(1)
           .toLowerCase()} round`,
         link: `/contribute/${contributionActive.projectName}/${contributionActive.roundName}`,
-      };
+      }
     }
 
-    return null;
-  }, [whiteListProjectsActive, contributionProjectsActive]);
+    return null
+  }, [whiteListProjectsActive, contributionProjectsActive])
 
-  const checkSmall = useMediaQuery(() => theme.breakpoints.up('md'));
+  const checkSmall = useMediaQuery(() => theme.breakpoints.up('md'))
 
   const toggleDrawer = (open: boolean) => (event: any) => {
     if (
@@ -188,40 +188,40 @@ const Project = () => {
       event.type === 'keydown' &&
       (event.key === 'Tab' || event.key === 'Shift')
     ) {
-      return;
+      return
     }
 
-    setMobileMenu(open);
-  };
+    setMobileMenu(open)
+  }
 
   useEffect(() => {
     const getProject = async () => {
       try {
         const res = await axios.get(
-          `${process.env.API_URL}/projects/${project_id}`,
-        );
-        setProject(res.data);
+          `${process.env.API_URL}/projects/${project_id}`
+        )
+        setProject(res.data)
       } catch {
-        setProject(undefined);
+        setProject(undefined)
       }
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
-    if (project_id) getProject();
-  }, [project_id]);
+    if (project_id) getProject()
+  }, [project_id])
 
   const listItemSx = {
     borderRadius: '5px',
     '&:hover': {
       backgroundColor: 'rgba(255, 255, 255, 0.1)',
     },
-  };
+  }
   const listItemButtonSx = {
     borderRadius: '5px',
     '&:hover': {
       backgroundColor: '#3abab4',
     },
-  };
+  }
 
   const navBarList = (
     <List>
@@ -229,7 +229,7 @@ const Project = () => {
         <ListItemButton
           sx={{ ...listItemButtonSx, backgroundColor: '#3abab4' }}
           onClick={() => {
-            router.push(activeRound.link);
+            router.push(activeRound.link)
           }}
         >
           <ListItemIcon>
@@ -252,7 +252,7 @@ const Project = () => {
             key={`scroller${i}`}
             sx={{ ...listItemSx }}
             onClick={() => {
-              scroller.scrollTo(link, { duration: 500, smooth: true });
+              scroller.scrollTo(link, { duration: 500, smooth: true })
             }}
           >
             <ListItemIcon>
@@ -260,10 +260,10 @@ const Project = () => {
             </ListItemIcon>
             <ListItemText primary={name} />
           </ListItemButton>
-        ) : null,
+        ) : null
       )}
     </List>
-  );
+  )
 
   return (
     <>
@@ -512,7 +512,7 @@ const Project = () => {
         />
       )}
     </>
-  );
-};
+  )
+}
 
-export default Project;
+export default Project

@@ -1,8 +1,8 @@
-import TextField from '@mui/material/TextField';
-import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
-import { ListItem } from '@mui/material';
+import TextField from '@mui/material/TextField'
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
+import { ListItem } from '@mui/material'
 
-const filter = createFilterOptions();
+const filter = createFilterOptions()
 
 const AutoCompleteSelect = ({ label, options, value, setValue }) => {
   return (
@@ -12,32 +12,30 @@ const AutoCompleteSelect = ({ label, options, value, setValue }) => {
         if (typeof newValue === 'string') {
           setValue({
             title: newValue,
-          });
+          })
         } else if (newValue && newValue.inputValue) {
           // Create a new value from the user input
           setValue({
             title: newValue.inputValue,
-          });
+          })
         } else {
-          setValue(newValue);
+          setValue(newValue)
         }
       }}
       filterOptions={(options, params) => {
-        const filtered = filter(options, params);
+        const filtered = filter(options, params)
 
-        const { inputValue } = params;
+        const { inputValue } = params
         // Suggest the creation of a new value
-        const isExisting = options.some(
-          (option) => inputValue === option.title,
-        );
+        const isExisting = options.some((option) => inputValue === option.title)
         if (inputValue !== '' && !isExisting) {
           filtered.push({
             inputValue,
             title: `Add "${inputValue}"`,
-          });
+          })
         }
 
-        return filtered;
+        return filtered
       }}
       selectOnFocus
       clearOnBlur
@@ -47,19 +45,19 @@ const AutoCompleteSelect = ({ label, options, value, setValue }) => {
       getOptionLabel={(option) => {
         // Value selected with enter, right from the input
         if (typeof option === 'string') {
-          return option;
+          return option
         }
         // Add "xxx" option created dynamically
         if (option.inputValue) {
-          return option.inputValue;
+          return option.inputValue
         }
         // Regular option
-        return option.title;
+        return option.title
       }}
       renderOption={(props, option) => {
         // css patch
-        props.onMouseOver = null;
-        props.onTouchStart = null;
+        props.onMouseOver = null
+        props.onTouchStart = null
         return (
           <ListItem
             {...props}
@@ -71,7 +69,7 @@ const AutoCompleteSelect = ({ label, options, value, setValue }) => {
           >
             {option.title}
           </ListItem>
-        );
+        )
       }}
       freeSolo
       renderInput={(params) => {
@@ -81,13 +79,13 @@ const AutoCompleteSelect = ({ label, options, value, setValue }) => {
             ...params.InputProps,
             disableUnderline: true,
           },
-        };
+        }
         return (
           <TextField {...params} fullWidth label={label} variant="filled" />
-        );
+        )
       }}
     />
-  );
-};
+  )
+}
 
-export default AutoCompleteSelect;
+export default AutoCompleteSelect

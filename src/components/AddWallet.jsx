@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 import {
   Button,
   Dialog,
@@ -15,17 +15,17 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-} from '@mui/material';
-import PaginatedTable from '@components/PaginatedTable';
-import { useWallet } from '@contexts/WalletContext';
-import { useAddWallet } from '@contexts/AddWalletContext';
-import { Address } from '@utils/Address';
-import theme from '@styles/theme';
+} from '@mui/material'
+import PaginatedTable from '@components/PaginatedTable'
+import { useWallet } from '@contexts/WalletContext'
+import { useAddWallet } from '@contexts/AddWalletContext'
+import { Address } from '@utils/Address'
+import theme from '@styles/theme'
 
-const WALLET_ADDRESS = 'wallet_address_7621';
-const WALLET_ADDRESS_LIST = 'wallet_address_list_1283';
-const DAPP_CONNECTED = 'dapp_connected_6329';
-const DAPP_NAME = 'dapp_name_8930';
+const WALLET_ADDRESS = 'wallet_address_7621'
+const WALLET_ADDRESS_LIST = 'wallet_address_list_1283'
+const DAPP_CONNECTED = 'dapp_connected_6329'
+const DAPP_NAME = 'dapp_name_8930'
 
 /**
  * Note on es-lint disable lines:
@@ -40,12 +40,12 @@ const DAPP_NAME = 'dapp_name_8930';
  * - window.ergoConnector
  */
 export const AddWallet = () => {
-  const router = useRouter();
-  const [walletInput, setWalletInput] = useState('');
-  const { addWalletOpen, setAddWalletOpen } = useAddWallet();
-  const { wallet, setWallet, dAppWallet, setDAppWallet } = useWallet();
-  const [init, setInit] = useState(false);
-  const [mobileAdd, setMobileAdd] = useState(false);
+  const router = useRouter()
+  const [walletInput, setWalletInput] = useState('')
+  const { addWalletOpen, setAddWalletOpen } = useAddWallet()
+  const { wallet, setWallet, dAppWallet, setDAppWallet } = useWallet()
+  const [init, setInit] = useState(false)
+  const [mobileAdd, setMobileAdd] = useState(false)
 
   /**
    * dapp state
@@ -55,15 +55,15 @@ export const AddWallet = () => {
    * dAppError: show error message
    * dAppAddressTableData: list available addresses from wallet
    */
-  const [loading, setLoading] = useState(false);
-  const [dAppError, setDAppError] = useState(false);
-  const [dAppAddressTableData, setdAppAddressTableData] = useState([]); // table data
+  const [loading, setLoading] = useState(false)
+  const [dAppError, setDAppError] = useState(false)
+  const [dAppAddressTableData, setdAppAddressTableData] = useState([]) // table data
 
   useEffect(() => {
     // load primary address
     if (localStorage.getItem(WALLET_ADDRESS)) {
-      setWallet(localStorage.getItem(WALLET_ADDRESS));
-      setWalletInput(localStorage.getItem(WALLET_ADDRESS));
+      setWallet(localStorage.getItem(WALLET_ADDRESS))
+      setWalletInput(localStorage.getItem(WALLET_ADDRESS))
     }
     // load dApp state
     if (
@@ -76,7 +76,7 @@ export const AddWallet = () => {
           localStorage.getItem(DAPP_CONNECTED) === 'true' ? true : false,
         name: localStorage.getItem(DAPP_NAME),
         addresses: JSON.parse(localStorage.getItem(WALLET_ADDRESS_LIST)),
-      });
+      })
     }
     // refresh connection
     try {
@@ -88,71 +88,71 @@ export const AddWallet = () => {
               window.ergoConnector[localStorage.getItem(DAPP_NAME)]
                 .connect()
                 .then((res) => {
-                  if (!res) clearWallet();
-                });
-          });
+                  if (!res) clearWallet()
+                })
+          })
       }
     } catch (e) {
-      console.log(e);
+      console.log(e)
     }
-    setInit(true);
-  }, []); // eslint-disable-line
+    setInit(true)
+  }, []) // eslint-disable-line
 
   /**
    * update persist storage
    */
   useEffect(() => {
     if (init) {
-      localStorage.setItem(DAPP_CONNECTED, dAppWallet.connected);
-      localStorage.setItem(DAPP_NAME, dAppWallet.name);
+      localStorage.setItem(DAPP_CONNECTED, dAppWallet.connected)
+      localStorage.setItem(DAPP_NAME, dAppWallet.name)
       localStorage.setItem(
         WALLET_ADDRESS_LIST,
-        JSON.stringify(dAppWallet.addresses),
-      );
+        JSON.stringify(dAppWallet.addresses)
+      )
     }
-  }, [dAppWallet, init]);
+  }, [dAppWallet, init])
 
   useEffect(() => {
-    if (init) localStorage.setItem(WALLET_ADDRESS, wallet);
-  }, [wallet, init]);
+    if (init) localStorage.setItem(WALLET_ADDRESS, wallet)
+  }, [wallet, init])
 
   const handleClose = () => {
     // reset unsaved changes
-    setAddWalletOpen(false);
-    setWalletInput(wallet);
-    setDAppError(false);
-  };
+    setAddWalletOpen(false)
+    setWalletInput(wallet)
+    setDAppError(false)
+  }
 
   const handleSubmitWallet = () => {
     // add read only wallet
-    setAddWalletOpen(false);
-    setWallet(walletInput);
+    setAddWalletOpen(false)
+    setWallet(walletInput)
     // clear dApp state
-    setDAppError(false);
+    setDAppError(false)
     setDAppWallet({
       connected: false,
       name: '',
       addresses: [],
-    });
-  };
+    })
+  }
 
   const clearWallet = (hardRefresh = false) => {
     // clear state and local storage
-    setWalletInput('');
-    setWallet('');
+    setWalletInput('')
+    setWallet('')
     // clear dApp state
-    setDAppError(false);
+    setDAppError(false)
     setDAppWallet({
       connected: false,
       name: '',
       addresses: [],
-    });
-    if (hardRefresh) router.reload();
-  };
+    })
+    if (hardRefresh) router.reload()
+  }
 
   const handleWalletFormChange = (e) => {
-    setWalletInput(e.target.value);
-  };
+    setWalletInput(e.target.value)
+  }
 
   /**
    * dapp connector
@@ -161,78 +161,78 @@ export const AddWallet = () => {
     const walletMapper = {
       nautilus: window.ergoConnector?.nautilus,
       safew: window.ergoConnector?.safew,
-    };
-    setLoading(true);
+    }
+    setLoading(true)
     try {
       if (await walletMapper[wallet].isConnected()) {
-        await dAppLoad(wallet);
-        setLoading(false);
-        return;
+        await dAppLoad(wallet)
+        setLoading(false)
+        return
       } else if (await walletMapper[wallet].connect()) {
-        await dAppLoad(wallet);
-        setLoading(false);
-        return;
+        await dAppLoad(wallet)
+        setLoading(false)
+        return
       }
-      setDAppError(true);
+      setDAppError(true)
     } catch (e) {
-      setDAppError(true);
-      console.log(e);
+      setDAppError(true)
+      console.log(e)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   const dAppLoad = async (wallet) => {
     try {
-      const address_used = await ergo.get_used_addresses(); // eslint-disable-line
-      const address_unused = await ergo.get_unused_addresses(); // eslint-disable-line
-      const addresses = [...address_used, ...address_unused];
+      const address_used = await ergo.get_used_addresses() // eslint-disable-line
+      const address_unused = await ergo.get_unused_addresses() // eslint-disable-line
+      const addresses = [...address_used, ...address_unused]
       // use the first used address if available or the first unused one if not as default
-      const address = addresses.length ? addresses[0] : '';
-      setWallet(address);
-      setWalletInput(address);
+      const address = addresses.length ? addresses[0] : ''
+      setWallet(address)
+      setWalletInput(address)
       // update dApp state
       setDAppWallet({
         connected: true,
         name: wallet,
         addresses: addresses,
-      });
-      setDAppError(false);
+      })
+      setDAppError(false)
     } catch (e) {
-      console.log(e);
+      console.log(e)
       // update dApp state
       setDAppWallet({
         connected: false,
         name: '',
         addresses: [],
-      });
-      setDAppError(true);
+      })
+      setDAppError(true)
     }
-  };
+  }
 
   const changeWalletAddress = (address) => {
-    setWallet(address);
-    setWalletInput(address);
-  };
+    setWallet(address)
+    setWalletInput(address)
+  }
 
   const loadAddresses = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const address_used = await ergo.get_used_addresses(); // eslint-disable-line
-      const address_unused = await ergo.get_unused_addresses(); // eslint-disable-line
-      const addresses = [...address_used, ...address_unused];
+      const address_used = await ergo.get_used_addresses() // eslint-disable-line
+      const address_unused = await ergo.get_unused_addresses() // eslint-disable-line
+      const addresses = [...address_used, ...address_unused]
       const addressData = addresses.map((address, index) => {
-        return { id: index, name: address };
-      });
+        return { id: index, name: address }
+      })
       setDAppWallet({
         ...dAppWallet,
         addresses: addresses,
-      });
-      setdAppAddressTableData(addressData);
+      })
+      setdAppAddressTableData(addressData)
     } catch (e) {
-      console.log(e);
+      console.log(e)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   return (
     <>
@@ -395,15 +395,15 @@ export const AddWallet = () => {
         </DialogActions>
       </Dialog>
     </>
-  );
-};
+  )
+}
 
 function isAddressValid(address) {
   try {
-    return new Address(address).isValid();
+    return new Address(address).isValid()
   } catch (_) {
-    return false;
+    return false
   }
 }
 
-export default AddWallet;
+export default AddWallet

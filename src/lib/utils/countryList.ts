@@ -1,6 +1,6 @@
 export interface ICountryList {
-  label: string;
-  code: string;
+  label: string
+  code: string
 }
 
 export const countryList: ICountryList[] = [
@@ -253,4 +253,4 @@ export const countryList: ICountryList[] = [
   { label: 'Yemen', code: 'YE' },
   { label: 'Zambia', code: 'ZM' },
   { label: 'Zimbabwe', code: 'ZW' },
-];
+]

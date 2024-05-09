@@ -7,89 +7,89 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-} from '@mui/material';
-import PaginatedTable from '@components/PaginatedTable';
-import { forwardRef } from 'react';
-import { useEffect, useState } from 'react';
-import CircularProgress from '@mui/material/CircularProgress';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-import axios from 'axios';
-import { CSVDownload } from 'react-csv';
+} from '@mui/material'
+import PaginatedTable from '@components/PaginatedTable'
+import { forwardRef } from 'react'
+import { useEffect, useState } from 'react'
+import CircularProgress from '@mui/material/CircularProgress'
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import axios from 'axios'
+import { CSVDownload } from 'react-csv'
 
 const Alert = forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 const initialFormData = Object.freeze({
   id: '',
-});
+})
 
 const initialFormErrors = Object.freeze({
   id: false,
-});
+})
 
 const GenerateWhitelistEventReportForm = () => {
   // table data
-  const [tableData, setTableData] = useState([]);
+  const [tableData, setTableData] = useState([])
   // csv data
-  const [csvData, setCsvData] = useState(null);
+  const [csvData, setCsvData] = useState(null)
   // form data is all strings
-  const [formData, updateFormData] = useState(initialFormData);
+  const [formData, updateFormData] = useState(initialFormData)
   // form error object, all booleans
-  const [formErrors, setFormErrors] = useState(initialFormErrors);
+  const [formErrors, setFormErrors] = useState(initialFormErrors)
   // loading spinner for submit button
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false)
   // set true to disable submit button
-  const [buttonDisabled, setbuttonDisabled] = useState(false);
+  const [buttonDisabled, setbuttonDisabled] = useState(false)
   // open error snackbar
-  const [openError, setOpenError] = useState(false);
+  const [openError, setOpenError] = useState(false)
   // open success modal
-  const [openSuccess, setOpenSuccess] = useState(false);
+  const [openSuccess, setOpenSuccess] = useState(false)
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again',
-  );
+    'Please eliminate form errors and try again'
+  )
 
   useEffect(() => {
     if (isLoading) {
-      setbuttonDisabled(true);
+      setbuttonDisabled(true)
     } else {
-      setbuttonDisabled(false);
+      setbuttonDisabled(false)
     }
-  }, [isLoading]);
+  }, [isLoading])
 
   useEffect(() => {
     const getTableData = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
-        const res = await axios.get(`${process.env.API_URL}/whitelist/events`);
-        res.data.sort((a, b) => a.id - b.id);
-        setTableData(res.data);
+        const res = await axios.get(`${process.env.API_URL}/whitelist/events`)
+        res.data.sort((a, b) => a.id - b.id)
+        setTableData(res.data)
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
-    getTableData();
-  }, [openSuccess]);
+    getTableData()
+  }, [openSuccess])
 
   // snackbar for error reporting
   const handleCloseError = (event, reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
-    setOpenError(false);
-  };
+    setOpenError(false)
+  }
 
   // modal for success message
   const handleCloseSuccess = (reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
-    setOpenSuccess(false);
-  };
+    setOpenSuccess(false)
+  }
 
   const handleChange = (e) => {
     if (
@@ -99,72 +99,72 @@ const GenerateWhitelistEventReportForm = () => {
       setFormErrors({
         ...formErrors,
         [e.target.name]: true,
-      });
+      })
     } else if (Object.hasOwnProperty.call(formErrors, e.target.name)) {
       setFormErrors({
         ...formErrors,
         [e.target.name]: false,
-      });
+      })
     }
 
     updateFormData({
       ...formData,
       // Trimming any whitespace
       [e.target.name]: e.target.value.trim(),
-    });
-  };
+    })
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setOpenError(false);
-    setLoading(true);
-    setCsvData(null);
-    const errorCheck = Object.values(formErrors).every((v) => v === false);
+    e.preventDefault()
+    setOpenError(false)
+    setLoading(true)
+    setCsvData(null)
+    const errorCheck = Object.values(formErrors).every((v) => v === false)
     if (errorCheck) {
-      const event = tableData.filter((event) => event.id === formData.id)[0];
+      const event = tableData.filter((event) => event.id === formData.id)[0]
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422',
+            'jwt_token_login_422'
           )}`,
         },
-      };
+      }
       try {
         const res = await axios.get(
           `${process.env.API_URL}/whitelist/events/${event.projectName}/${event.roundName}`,
-          defaultOptions,
-        );
-        const eventName = res.data.eventName;
+          defaultOptions
+        )
+        const eventName = res.data.eventName
         const csv = await axios.get(
           `${process.env.API_URL}/whitelist/summary/${eventName}`,
-          defaultOptions,
-        );
-        setCsvData(csv.data.data);
-        setOpenSuccess(true);
-        updateFormData(initialFormData);
+          defaultOptions
+        )
+        setCsvData(csv.data.data)
+        setOpenSuccess(true)
+        updateFormData(initialFormData)
       } catch (e) {
-        console.log(e);
-        setErrorMessage('Invalid credentials or form data');
-        setOpenError(true);
+        console.log(e)
+        setErrorMessage('Invalid credentials or form data')
+        setOpenError(true)
       }
     } else {
-      let updateErrors = {};
+      let updateErrors = {}
       Object.entries(formData).forEach((entry) => {
-        const [key, value] = entry;
+        const [key, value] = entry
         if (value == '' && Object.hasOwnProperty.call(formErrors, key)) {
-          let newEntry = { [key]: true };
-          updateErrors = { ...updateErrors, ...newEntry };
+          let newEntry = { [key]: true }
+          updateErrors = { ...updateErrors, ...newEntry }
         }
-      });
+      })
       setFormErrors({
         ...formErrors,
         ...updateErrors,
-      });
-      setErrorMessage('Please eliminate form errors and try again');
-      setOpenError(true);
+      })
+      setErrorMessage('Please eliminate form errors and try again')
+      setOpenError(true)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   return (
     <>
@@ -198,10 +198,10 @@ const GenerateWhitelistEventReportForm = () => {
             <AccordionDetails>
               <PaginatedTable
                 rows={tableData.map((event) => {
-                  return { ...event };
+                  return { ...event }
                 })}
                 onClick={(id) => {
-                  updateFormData({ ...formData, id: id });
+                  updateFormData({ ...formData, id: id })
                 }}
               />
             </AccordionDetails>
@@ -258,7 +258,7 @@ const GenerateWhitelistEventReportForm = () => {
       </Snackbar>
       {csvData && <CSVDownload data={csvData} target="_blank" />}
     </>
-  );
-};
+  )
+}
 
-export default GenerateWhitelistEventReportForm;
+export default GenerateWhitelistEventReportForm

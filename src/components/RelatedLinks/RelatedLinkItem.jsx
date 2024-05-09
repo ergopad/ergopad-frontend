@@ -1,6 +1,6 @@
-import { Typography, Icon, Box, Grid } from '@mui/material';
+import { Typography, Icon, Box, Grid } from '@mui/material'
 // import { styled } from '@mui/system';
-import MuiNextLink from '@components/MuiNextLink';
+import MuiNextLink from '@components/MuiNextLink'
 
 /* const LinkIcon = styled('div')(({ theme }) => ({
 
@@ -42,7 +42,7 @@ const RelatedLinkItem = ({ link }) => {
         transform: 'rotate(0deg)',
       },
     },
-  };
+  }
 
   return (
     <Grid item md={4} xs={12} sx={{ maxWidth: '320px' }}>
@@ -67,7 +67,7 @@ const RelatedLinkItem = ({ link }) => {
         </Box>
       </MuiNextLink>
     </Grid>
-  );
-};
+  )
+}
 
-export default RelatedLinkItem;
+export default RelatedLinkItem

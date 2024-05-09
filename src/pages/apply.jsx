@@ -1,6 +1,6 @@
-import CenterTitle from '@components/CenterTitle';
-import theme from '../styles/theme';
-import { useState, useEffect, forwardRef } from 'react';
+import CenterTitle from '@components/CenterTitle'
+import theme from '../styles/theme'
+import { useState, useEffect, forwardRef } from 'react'
 import {
   Typography,
   Grid,
@@ -10,15 +10,15 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
-} from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
-import axios from 'axios';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
+} from '@mui/material'
+import CircularProgress from '@mui/material/CircularProgress'
+import axios from 'axios'
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
 
 const Alert = forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 const initialFormData = Object.freeze({
   projectName: '',
@@ -32,7 +32,7 @@ const initialFormData = Object.freeze({
   telegramHandle: '',
   telegramGroup: '',
   accelerator: false,
-});
+})
 
 const initialFormErrors = Object.freeze({
   projectName: false,
@@ -42,41 +42,41 @@ const initialFormErrors = Object.freeze({
   email: false,
   telegramHandle: false,
   telegramGroup: false,
-});
+})
 
-const emailRegex = /\S+@\S+\.\S+/;
+const emailRegex = /\S+@\S+\.\S+/
 
 const Apply = () => {
   // form data is all strings
-  const [formData, updateFormData] = useState(initialFormData);
+  const [formData, updateFormData] = useState(initialFormData)
 
   // form error object, all booleans
-  const [formErrors, setFormErrors] = useState(initialFormErrors);
+  const [formErrors, setFormErrors] = useState(initialFormErrors)
 
   // loading spinner for submit button
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false)
 
   // set true to disable submit button
-  const [buttonDisabled, setbuttonDisabled] = useState(false);
+  const [buttonDisabled, setbuttonDisabled] = useState(false)
 
   // open error snackbar
-  const [openError, setOpenError] = useState(false);
+  const [openError, setOpenError] = useState(false)
 
   // open success modal
-  const [openSuccess, setOpenSuccess] = useState(false);
+  const [openSuccess, setOpenSuccess] = useState(false)
 
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again',
-  );
+    'Please eliminate form errors and try again'
+  )
 
   useEffect(() => {
     if (isLoading) {
-      setbuttonDisabled(true);
+      setbuttonDisabled(true)
     } else {
-      setbuttonDisabled(false);
+      setbuttonDisabled(false)
     }
-  }, [isLoading]);
+  }, [isLoading])
 
   const handleChange = (e) => {
     if (
@@ -86,12 +86,12 @@ const Apply = () => {
       setFormErrors({
         ...formErrors,
         [e.target.name]: true,
-      });
+      })
     } else if (Object.hasOwnProperty.call(formErrors, e.target.name)) {
       setFormErrors({
         ...formErrors,
         [e.target.name]: false,
-      });
+      })
     }
 
     // console.log(formErrors)
@@ -101,12 +101,12 @@ const Apply = () => {
         setFormErrors({
           ...formErrors,
           email: false,
-        });
+        })
       } else {
         setFormErrors({
           ...formErrors,
           email: true,
-        });
+        })
       }
     }
 
@@ -118,44 +118,44 @@ const Apply = () => {
         e.target.name === 'accelerator'
           ? e.target.checked
           : e.target.value.trim(),
-    });
-  };
+    })
+  }
 
   // snackbar for error reporting
   const handleCloseError = (event, reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
-    setOpenError(false);
-  };
+    setOpenError(false)
+  }
 
   // modal for success message
   const handleCloseSuccess = (reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
-    setOpenSuccess(false);
-  };
+    setOpenSuccess(false)
+  }
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    setLoading(true);
+    e.preventDefault()
+    setLoading(true)
     // console.log(formData)
 
-    const errorCheck = Object.values(formErrors).every((v) => v === false);
+    const errorCheck = Object.values(formErrors).every((v) => v === false)
 
     const defaultOptions = {
       headers: {
         'Content-Type': 'application/json',
         // Authorization: auth?.accessToken ? `Bearer ${auth.accessToken}` : '',
       },
-    };
+    }
 
     const form = {
       to: process.env.FORM_EMAIL,
       subject: 'ErgoPad Project Application',
       body: JSON.stringify(formData),
-    };
+    }
 
     // console.log(emptyCheck)
 
@@ -168,43 +168,43 @@ const Apply = () => {
         .then((res) => {
           // console.log(res);
           // console.log(res.data);
-          setLoading(false);
+          setLoading(false)
 
           // modal for success message
-          setOpenSuccess(true);
+          setOpenSuccess(true)
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err)
           // snackbar for error message
           setErrorMessage(
-            'There was an API error. Please contact the team on Telegram or Discord',
-          );
-          setOpenError(true);
-          setLoading(false);
-        });
+            'There was an API error. Please contact the team on Telegram or Discord'
+          )
+          setOpenError(true)
+          setLoading(false)
+        })
     } else {
-      let updateErrors = {};
+      let updateErrors = {}
       Object.entries(formData).forEach((entry) => {
-        const [key, value] = entry;
+        const [key, value] = entry
         if (value == '' && Object.hasOwnProperty.call(formErrors, key)) {
-          let newEntry = { [key]: true };
-          updateErrors = { ...updateErrors, ...newEntry };
+          let newEntry = { [key]: true }
+          updateErrors = { ...updateErrors, ...newEntry }
         }
-      });
+      })
 
       setFormErrors({
         ...formErrors,
         ...updateErrors,
-      });
+      })
 
       // snackbar for error message
-      setErrorMessage('Please eliminate form errors and try again');
-      setOpenError(true);
+      setErrorMessage('Please eliminate form errors and try again')
+      setOpenError(true)
 
       // turn off loading spinner for submit button
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <>
@@ -508,7 +508,7 @@ const Apply = () => {
         </Snackbar>
       </Grid>
     </>
-  );
-};
+  )
+}
 
-export default Apply;
+export default Apply

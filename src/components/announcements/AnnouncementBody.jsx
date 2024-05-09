@@ -6,12 +6,12 @@ import {
   IconButton,
   Link,
   Typography,
-} from '@mui/material';
-import TelegramIcon from '@mui/icons-material/Telegram';
-import ShareIcon from '@mui/icons-material/Share';
-import CopyToClipboard from '@components/CopyToClipboard';
-import DiscordIcon from '@components/DiscordIcon';
-import MarkdownRender from '@components/MarkdownRender';
+} from '@mui/material'
+import TelegramIcon from '@mui/icons-material/Telegram'
+import ShareIcon from '@mui/icons-material/Share'
+import CopyToClipboard from '@components/CopyToClipboard'
+import DiscordIcon from '@components/DiscordIcon'
+import MarkdownRender from '@components/MarkdownRender'
 
 const AnnouncementBody = ({ announcement }) => {
   return (
@@ -77,7 +77,7 @@ const AnnouncementBody = ({ announcement }) => {
         </CopyToClipboard>
       </Grid>
     </Container>
-  );
-};
+  )
+}
 
-export default AnnouncementBody;
+export default AnnouncementBody

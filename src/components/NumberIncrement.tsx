@@ -1,12 +1,12 @@
-import React, { FC } from 'react';
-import { Grid, Icon, TextField, useTheme, Button } from '@mui/material';
+import React, { FC } from 'react'
+import { Grid, Icon, TextField, useTheme, Button } from '@mui/material'
 
 interface INumberIncrementProps {
-  value: number;
-  setValue: React.Dispatch<React.SetStateAction<number>>;
-  max?: number;
-  name?: string;
-  label?: string;
+  value: number
+  setValue: React.Dispatch<React.SetStateAction<number>>
+  max?: number
+  name?: string
+  label?: string
 }
 
 const NumberIncrement: FC<INumberIncrementProps> = ({
@@ -16,23 +16,23 @@ const NumberIncrement: FC<INumberIncrementProps> = ({
   name,
   label,
 }) => {
-  const theme = useTheme();
+  const theme = useTheme()
   const handleChangeNum = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    var regex = /^[0-9]+$/;
+    var regex = /^[0-9]+$/
     if (e.target.value.match(regex) && Number(e.target.value) != 0) {
-      setValue(Number(e.target.value));
+      setValue(Number(e.target.value))
     }
-  };
+  }
   const handleNumberIncrement = (direction: 'up' | 'down') => {
     if (direction === 'up' && ((max && value < max) || max === undefined)) {
-      setValue(value + 1);
+      setValue(value + 1)
     }
     if (direction === 'down' && value > 1) {
-      setValue(value - 1);
+      setValue(value - 1)
     }
-  };
+  }
   return (
     <Grid container sx={{ flexWrap: 'nowrap' }}>
       <Grid item sx={{ flexGrow: '0' }}>
@@ -84,7 +84,7 @@ const NumberIncrement: FC<INumberIncrementProps> = ({
         </Button>
       </Grid>
     </Grid>
-  );
-};
+  )
+}
 
-export default NumberIncrement;
+export default NumberIncrement

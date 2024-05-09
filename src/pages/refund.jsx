@@ -1,77 +1,77 @@
-import { useState, useEffect, forwardRef } from 'react';
-import { Typography, Grid, Box, TextField, Button } from '@mui/material';
-import FilledInput from '@mui/material/FilledInput';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import FormHelperText from '@mui/material/FormHelperText';
-import axios from 'axios';
-import { useWallet } from '@contexts/WalletContext';
-import { useAddWallet } from '@contexts/AddWalletContext';
-import CircularProgress from '@mui/material/CircularProgress';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-import CenterTitle from '@components/CenterTitle';
+import { useState, useEffect, forwardRef } from 'react'
+import { Typography, Grid, Box, TextField, Button } from '@mui/material'
+import FilledInput from '@mui/material/FilledInput'
+import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
+import FormHelperText from '@mui/material/FormHelperText'
+import axios from 'axios'
+import { useWallet } from '@contexts/WalletContext'
+import { useAddWallet } from '@contexts/AddWalletContext'
+import CircularProgress from '@mui/material/CircularProgress'
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import CenterTitle from '@components/CenterTitle'
 
 const Alert = forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 const initialFormData = Object.freeze({
   wallet: '',
   smartContract: '',
-});
+})
 
 const initialFormErrors = Object.freeze({
   wallet: false,
   smartContract: false,
-});
+})
 
 const defaultOptions = {
   headers: {
     'Content-Type': 'application/json',
   },
-};
+}
 
 const Refund = () => {
   // form data
-  const [formData, updateFormData] = useState(initialFormData);
-  const [formErrors, setFormErrors] = useState(initialFormErrors);
-  const { wallet } = useWallet();
-  const { setAddWalletOpen } = useAddWallet();
+  const [formData, updateFormData] = useState(initialFormData)
+  const [formErrors, setFormErrors] = useState(initialFormErrors)
+  const { wallet } = useWallet()
+  const { setAddWalletOpen } = useAddWallet()
   // loading spinner for submit button
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false)
   // set true to disable submit button
-  const [buttonDisabled, setbuttonDisabled] = useState(true);
+  const [buttonDisabled, setbuttonDisabled] = useState(true)
   // error snackbar
-  const [openError, setOpenError] = useState(false);
+  const [openError, setOpenError] = useState(false)
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again',
-  );
+    'Please eliminate form errors and try again'
+  )
   // success snackbar
-  const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
+  const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false)
   const [successMessageSnackbar, setSuccessMessageSnackbar] =
-    useState('OK processing...');
+    useState('OK processing...')
 
   useEffect(() => {
-    setbuttonDisabled(isLoading);
-  }, [isLoading]);
+    setbuttonDisabled(isLoading)
+  }, [isLoading])
 
   useEffect(() => {
     setbuttonDisabled(
       formData.wallet === '' ||
         formData.smartContract === '' ||
         formErrors.wallet ||
-        formErrors.smartContract,
-    );
-  }, [formData, formErrors]);
+        formErrors.smartContract
+    )
+  }, [formData, formErrors])
 
   useEffect(() => {
-    updateFormData({ ...formData, wallet: wallet });
-  }, [wallet]);
+    updateFormData({ ...formData, wallet: wallet })
+  }, [wallet])
 
   const openWalletAdd = () => {
-    setAddWalletOpen(true);
-  };
+    setAddWalletOpen(true)
+  }
 
   const handleChange = (e) => {
     if (
@@ -81,77 +81,77 @@ const Refund = () => {
       setFormErrors({
         ...formErrors,
         [e.target.name]: true,
-      });
+      })
     } else if (Object.hasOwnProperty.call(formErrors, e.target.name)) {
       setFormErrors({
         ...formErrors,
         [e.target.name]: false,
-      });
+      })
     }
 
     updateFormData({
       ...formData,
       // Trimming any whitespace
       [e.target.name]: e.target.value.trim(),
-    });
-  };
+    })
+  }
 
   const handleCloseError = (e, reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
-    setOpenError(false);
-  };
+    setOpenError(false)
+  }
 
   const handleCloseSuccessSnackbar = (e, reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
-    setOpenSuccessSnackbar(false);
-  };
+    setOpenSuccessSnackbar(false)
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setOpenError(false);
-    setLoading(true);
+    e.preventDefault()
+    setOpenError(false)
+    setLoading(true)
 
-    const errorCheck = Object.values(formErrors).every((v) => v === false);
+    const errorCheck = Object.values(formErrors).every((v) => v === false)
 
     if (errorCheck) {
       try {
         const res = await axios.get(
           `${process.env.API_URL}/assembler/return/${formData.wallet}/${formData.smartContract}`,
-          defaultOptions,
-        );
-        setOpenSuccessSnackbar(true);
+          defaultOptions
+        )
+        setOpenSuccessSnackbar(true)
         // console.log(res);
       } catch (e) {
         if (e?.response?.data?.detail) {
-          setErrorMessage('Error: ' + e.response.data.detail);
+          setErrorMessage('Error: ' + e.response.data.detail)
         } else {
-          setErrorMessage('Error: Network Error');
+          setErrorMessage('Error: Network Error')
         }
-        setOpenError(true);
+        setOpenError(true)
       }
     } else {
-      let updateErrors = {};
+      let updateErrors = {}
       Object.entries(formData).forEach((entry) => {
-        const [key, value] = entry;
+        const [key, value] = entry
         if (value == '' && Object.hasOwnProperty.call(formErrors, key)) {
-          let newEntry = { [key]: true };
-          updateErrors = { ...updateErrors, ...newEntry };
+          let newEntry = { [key]: true }
+          updateErrors = { ...updateErrors, ...newEntry }
         }
-      });
+      })
       setFormErrors({
         ...formErrors,
         ...updateErrors,
-      });
-      setErrorMessage('Please eliminate form errors and try again');
-      setOpenError(true);
+      })
+      setErrorMessage('Please eliminate form errors and try again')
+      setOpenError(true)
     }
 
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   return (
     <>
@@ -284,7 +284,7 @@ const Refund = () => {
         </Snackbar>
       </Grid>
     </>
-  );
-};
+  )
+}
 
-export default Refund;
+export default Refund

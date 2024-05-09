@@ -3,27 +3,27 @@ import {
   VictoryLabel,
   VictoryPie,
   VictoryTooltip,
-} from 'victory';
+} from 'victory'
 
 const toValueText = (value) => {
   if (value < 1000) {
-    return `$${Math.round(value * 100) / 100} USD`;
+    return `$${Math.round(value * 100) / 100} USD`
   } else if (value < 1000000) {
-    return `$${Math.round(value / 100) / 10}k USD`;
+    return `$${Math.round(value / 100) / 10}k USD`
   } else {
-    return `$${Math.round(value / 10000) / 100}m USD`;
+    return `$${Math.round(value / 10000) / 100}m USD`
   }
-};
+}
 
 const PieChart = (props) => {
   const totalValue = props.holdingData
     .map((data) => data.y)
-    .reduce((a, c) => a + c, 0);
+    .reduce((a, c) => a + c, 0)
 
   const holdingData =
     totalValue === 0
       ? props.holdingData
-      : props.holdingData.filter((data) => (data.y * 100) / totalValue > 1);
+      : props.holdingData.filter((data) => (data.y * 100) / totalValue > 1)
 
   return (
     <svg viewBox="0 0 400 400">
@@ -65,7 +65,7 @@ const PieChart = (props) => {
         text={toValueText(totalValue)}
       />
     </svg>
-  );
-};
+  )
+}
 
-export default PieChart;
+export default PieChart

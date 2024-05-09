@@ -18,33 +18,33 @@ import {
   useMediaQuery,
   useTheme,
   Alert,
-} from '@mui/material';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import CenterTitle from '@components/CenterTitle';
-import MarkdownRender from '@components/MarkdownRender';
-import { StakingItem } from '@components/staking/StakingSummary';
-import StakingNavigationDropdown from '@components/staking/StakingNavigationDropdown';
-import StakingSummary from '@components/staking/StakingSummary';
-import StakingRewardsBox from '@components/staking/StakingRewardsBox';
-import UnstakingFeesTable from '@components/staking/UnstakingFeesTable';
-import UnstakingTable from '@components/staking/UnstakingTable';
-import TransactionSubmitted from '@components/TransactionSubmitted';
-import ErgopayModalBody from '@components/ErgopayModalBody';
-import MuiNextLink from '@components/MuiNextLink';
-import { useWallet } from '@contexts/WalletContext';
-import { SetStateAction, forwardRef, useEffect, useState } from 'react';
-import axios from 'axios';
-import { useRouter } from 'next/router';
-import { trpc } from '@utils/trpc';
-import { Wallet } from 'next-auth';
-import Link from 'next/link';
-import ChangeDefaultAddress from '@components/user/ChangeDefaultAddress';
-import { unique } from 'next/dist/build/utils';
+} from '@mui/material'
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import Tabs from '@mui/material/Tabs'
+import Tab from '@mui/material/Tab'
+import CenterTitle from '@components/CenterTitle'
+import MarkdownRender from '@components/MarkdownRender'
+import { StakingItem } from '@components/staking/StakingSummary'
+import StakingNavigationDropdown from '@components/staking/StakingNavigationDropdown'
+import StakingSummary from '@components/staking/StakingSummary'
+import StakingRewardsBox from '@components/staking/StakingRewardsBox'
+import UnstakingFeesTable from '@components/staking/UnstakingFeesTable'
+import UnstakingTable from '@components/staking/UnstakingTable'
+import TransactionSubmitted from '@components/TransactionSubmitted'
+import ErgopayModalBody from '@components/ErgopayModalBody'
+import MuiNextLink from '@components/MuiNextLink'
+import { useWallet } from '@contexts/WalletContext'
+import { SetStateAction, forwardRef, useEffect, useState } from 'react'
+import axios from 'axios'
+import { useRouter } from 'next/router'
+import { trpc } from '@utils/trpc'
+import { Wallet } from 'next-auth'
+import Link from 'next/link'
+import ChangeDefaultAddress from '@components/user/ChangeDefaultAddress'
+import { unique } from 'next/dist/build/utils'
 
-const STAKING_TOKEN_OPTIONS = [{ title: 'ErgoPad', project: 'default' }];
+const STAKING_TOKEN_OPTIONS = [{ title: 'ErgoPad', project: 'default' }]
 
 const modalStyle = {
   position: 'absolute',
@@ -56,20 +56,20 @@ const modalStyle = {
   border: '2px solid #000',
   boxShadow: 24,
   p: 4,
-};
+}
 
 type StakingConfig = {
-  project: string;
-  title: string;
-  tokenId: string;
-  tokenDecimals: number;
-  stakingInfo: string;
+  project: string
+  title: string
+  tokenId: string
+  tokenDecimals: number
+  stakingInfo: string
   additionalDetails: {
-    stakingV1: boolean;
-    disableStaking?: boolean;
-    disableUnstaking?: boolean;
-  };
-};
+    stakingV1: boolean
+    disableStaking?: boolean
+    disableUnstaking?: boolean
+  }
+}
 
 const defaultStakingConfig: StakingConfig = {
   project: 'ergopad',
@@ -80,77 +80,77 @@ const defaultStakingConfig: StakingConfig = {
   additionalDetails: {
     stakingV1: false,
   },
-};
+}
 
 type StakingForm = {
-  wallet: string;
-  tokenAmount: number;
-};
+  wallet: string
+  tokenAmount: number
+}
 const initStakingForm: StakingForm = {
   wallet: '',
   tokenAmount: 0,
-};
+}
 
 type StakingFormErrors = {
-  wallet: boolean;
-  tokenAmount: boolean;
-};
+  wallet: boolean
+  tokenAmount: boolean
+}
 
 const initStakingFormErrors: StakingFormErrors = {
   wallet: false,
   tokenAmount: false,
-};
+}
 
 const initUnstakingForm = {
   tokenAmount: 0,
-};
+}
 
 const initUnstakingFormErrors = {
   wallet: false,
   tokenAmount: false,
-};
+}
 
 const initAddstakeForm = {
   tokenAmount: 0,
-};
+}
 
 const initAddstakeFormErrors = {
   wallet: false,
   tokenAmount: false,
-};
+}
 
 export type StakedData = {
-  project: string;
-  tokenName: string;
-  totalStaked: number;
+  project: string
+  tokenName: string
+  totalStaked: number
   addresses: {
     [address: string]: {
-      totalStaked: number;
+      totalStaked: number
       stakeBoxes: {
-        boxId: string;
-        stakeKeyId: string;
-        stakeAmount: number;
-        penaltyPct?: number;
-        penaltyEndTime?: number;
-      }[];
-    };
-  };
-};
+        boxId: string
+        stakeKeyId: string
+        stakeAmount: number
+        penaltyPct?: number
+        penaltyEndTime?: number
+      }[]
+    }
+  }
+}
 
 const initStaked: StakedData = {
   project: '',
   tokenName: '',
   totalStaked: 0,
   addresses: {},
-};
+}
 
 export type Staked = {
-  boxId: string;
-  stakeKeyId: string;
-  stakeAmount: number;
-  penaltyPct: number;
-  address: string;
-};
+  boxId: string
+  stakeKeyId: string
+  stakeAmount: number
+  penaltyPct: number
+  address: string
+}
 
 const initUnstaked: Staked = {
   boxId: '',
@@ -158,7 +158,7 @@ const initUnstaked: Staked = {
   stakeAmount: 0,
   penaltyPct: 25,
   address: '',
-};
+}
 
 const initAddstaked: Staked = {
   boxId: '',
@@ -166,21 +166,21 @@ const initAddstaked: Staked = {
   stakeAmount: 0,
   penaltyPct: 0,
   address: '',
-};
+}
 
 const defaultOptions = {
   headers: {
     'Content-Type': 'application/json',
   },
-};
+}
 
 function TabPanel(props: {
-  [x: string]: any;
-  children: any;
-  value: any;
-  index: any;
+  [x: string]: any
+  children: any
+  value: any
+  index: any
 }) {
-  const { children, value, index, ...other } = props;
+  const { children, value, index, ...other } = props
 
   return (
     <div
@@ -192,219 +192,219 @@ function TabPanel(props: {
     >
       {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
     </div>
-  );
+  )
 }
 
 function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`,
-  };
+  }
 }
 
 const ProjectStaking = () => {
-  const theme = useTheme();
-  const checkSmall = useMediaQuery(() => theme.breakpoints.up('md'));
-  const router = useRouter();
-  const { project_id } = router.query;
-  const [pageLoading, setPageLoading] = useState(true);
-  const [tokenChoice, setTokenChoice] = useState('Loading...');
-  const [tokenChoiceList, setTokenChoiceList] = useState(STAKING_TOKEN_OPTIONS);
-  const [stakingConfig, setStakingConfig] = useState(defaultStakingConfig);
+  const theme = useTheme()
+  const checkSmall = useMediaQuery(() => theme.breakpoints.up('md'))
+  const router = useRouter()
+  const { project_id } = router.query
+  const [pageLoading, setPageLoading] = useState(true)
+  const [tokenChoice, setTokenChoice] = useState('Loading...')
+  const [tokenChoiceList, setTokenChoiceList] = useState(STAKING_TOKEN_OPTIONS)
+  const [stakingConfig, setStakingConfig] = useState(defaultStakingConfig)
   // wallet
-  const { wallet, sessionStatus } = useWallet();
-  const shouldFetch = sessionStatus === 'authenticated';
+  const { wallet, sessionStatus } = useWallet()
+  const shouldFetch = sessionStatus === 'authenticated'
   const walletsQuery = trpc.user.getWallets.useQuery(undefined, {
     refetchOnWindowFocus: false,
     enabled: shouldFetch,
-  });
+  })
   // const [aggregateWallet, setAggregateWallet] = useState(true);
   // stake modal
-  const [tokenBalance, setTokenBalance] = useState(0);
-  const [openModal, setOpenModal] = useState(false);
-  const [stakingForm, setStakingForm] = useState(initStakingForm);
+  const [tokenBalance, setTokenBalance] = useState(0)
+  const [openModal, setOpenModal] = useState(false)
+  const [stakingForm, setStakingForm] = useState(initStakingForm)
   const [stakingFormErrors, setStakingFormErrors] = useState(
-    initStakingFormErrors,
-  );
-  const [stakeLoading, setStakeLoading] = useState(false);
-  const [stakeErgopayLoading, setStakeErgopayLoading] = useState(false);
+    initStakingFormErrors
+  )
+  const [stakeLoading, setStakeLoading] = useState(false)
+  const [stakeErgopayLoading, setStakeErgopayLoading] = useState(false)
   // unstake table
-  const [unstakeTableLoading, setUnstakeTableLoading] = useState(false);
-  const [stakedData, setStakedData] = useState(initStaked);
+  const [unstakeTableLoading, setUnstakeTableLoading] = useState(false)
+  const [stakedData, setStakedData] = useState(initStaked)
   // unstake modal
-  const [openUnstakeModal, setOpenUnstakeModal] = useState(false);
-  const [unstakeModalLoading, setUnstakeModalLoading] = useState(false);
-  const [unstakeErgopayLoading, setUnstakeErgopayLoading] = useState(false);
-  const [unstakeModalData, setUnstakeModalData] = useState(initUnstaked);
-  const [unstakingForm, setUnstakingForm] = useState(initUnstakingForm);
+  const [openUnstakeModal, setOpenUnstakeModal] = useState(false)
+  const [unstakeModalLoading, setUnstakeModalLoading] = useState(false)
+  const [unstakeErgopayLoading, setUnstakeErgopayLoading] = useState(false)
+  const [unstakeModalData, setUnstakeModalData] = useState(initUnstaked)
+  const [unstakingForm, setUnstakingForm] = useState(initUnstakingForm)
   const [unstakingFormErrors, setUnstakingFormErrors] = useState(
-    initStakingFormErrors,
-  );
-  const [unstakePenalty, setUnstakePenalty] = useState(-1);
+    initStakingFormErrors
+  )
+  const [unstakePenalty, setUnstakePenalty] = useState(-1)
   // add stake modal
-  const [openAddstakeModal, setOpenAddstakeModal] = useState(false);
-  const [addstakeModalLoading, setAddstakeModalLoading] = useState(false);
-  const [addstakeErgopayLoading, setAddstakeErgopayLoading] = useState(false);
-  const [addstakeModalData, setAddstakeModalData] = useState(initAddstaked);
-  const [addstakeForm, setAddstakeForm] = useState(initAddstakeForm);
+  const [openAddstakeModal, setOpenAddstakeModal] = useState(false)
+  const [addstakeModalLoading, setAddstakeModalLoading] = useState(false)
+  const [addstakeErgopayLoading, setAddstakeErgopayLoading] = useState(false)
+  const [addstakeModalData, setAddstakeModalData] = useState(initAddstaked)
+  const [addstakeForm, setAddstakeForm] = useState(initAddstakeForm)
   const [addstakeFormErrors, setAddstakeFormErrors] = useState(
-    initAddstakeFormErrors,
-  );
+    initAddstakeFormErrors
+  )
   // error snackbar
-  const [openError, setOpenError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('Something went wrong');
+  const [openError, setOpenError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('Something went wrong')
   // success snackbar
-  const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
+  const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false)
   const [successMessageSnackbar, setSuccessMessageSnackbar] =
-    useState('Form submitted');
-  const [checkBox, setCheckBox] = useState(false);
-  const stakeButtonEnabled = checkBox; // use other conditions to enable this
+    useState('Form submitted')
+  const [checkBox, setCheckBox] = useState(false)
+  const stakeButtonEnabled = checkBox // use other conditions to enable this
   // transaction submitted
-  const [transactionSubmitted, setTransactionSubmitted] = useState(null);
-  const [ergopayUrl, setErgopayUrl] = useState(null);
+  const [transactionSubmitted, setTransactionSubmitted] = useState(null)
+  const [ergopayUrl, setErgopayUrl] = useState(null)
   // tabs
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useState(0)
   const [currentWalletType, setCurrentWalletType] = useState<string | null>(
-    null,
-  );
-  const [dappWalletAddresses, setDappWalletAddresses] = useState<string[]>([]);
-  const [getTokenBalanceLoading, setGetTokenBalanceLoading] = useState(false);
+    null
+  )
+  const [dappWalletAddresses, setDappWalletAddresses] = useState<string[]>([])
+  const [getTokenBalanceLoading, setGetTokenBalanceLoading] = useState(false)
   const [currentModalWalletType, setCurrentModalWalletType] = useState<
     string | null
-  >(null);
+  >(null)
   const [currentDappWalletAddresses, setCurrentDappWalletAddresses] = useState<
     string[]
-  >([]);
+  >([])
 
   const handleTabChange = (event: any, newValue: SetStateAction<number>) => {
-    setTabValue(newValue);
-  };
+    setTabValue(newValue)
+  }
 
   useEffect(() => {
     const getPageConfig = async () => {
-      setPageLoading(true);
+      setPageLoading(true)
       try {
-        const res = await axios.get(`${process.env.API_URL}/staking/config`);
+        const res = await axios.get(`${process.env.API_URL}/staking/config`)
         setTokenChoiceList([
           ...STAKING_TOKEN_OPTIONS,
           ...res.data.map((option: { project: any; title: any }) => {
-            return { project: option.project, title: option.title };
+            return { project: option.project, title: option.title }
           }),
-        ]);
+        ])
         const config = res.data.filter(
           (config: { project: string | string[] | undefined }) =>
-            config.project === project_id,
-        )[0];
-        setStakingConfig(config ?? defaultStakingConfig);
+            config.project === project_id
+        )[0]
+        setStakingConfig(config ?? defaultStakingConfig)
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
-      setPageLoading(false);
-    };
+      setPageLoading(false)
+    }
 
     if (project_id) {
-      setTokenChoice(project_id.toString());
-      getPageConfig();
+      setTokenChoice(project_id.toString())
+      getPageConfig()
     }
-  }, [project_id]);
+  }, [project_id])
 
   const getWalletType = (address: string) => {
-    const wallets = walletsQuery?.data?.wallets;
+    const wallets = walletsQuery?.data?.wallets
     if (wallets && wallets.length > 0) {
       const wallet = wallets.find(
         (w) =>
           w.changeAddress === address ||
           w.unusedAddresses.includes(address) ||
-          w.usedAddresses.includes(address),
-      );
+          w.usedAddresses.includes(address)
+      )
       if (wallet && wallet.type === 'nautilus')
         setCurrentDappWalletAddresses([
           ...wallet?.unusedAddresses,
           ...wallet.usedAddresses,
-        ]);
-      return wallet ? wallet.type : null;
-    } else return null;
-  };
+        ])
+      return wallet ? wallet.type : null
+    } else return null
+  }
 
   const getWallets = async (): Promise<Wallet[]> => {
     if (sessionStatus !== 'authenticated') {
-      return [];
+      return []
     }
-    const fetchResult = await walletsQuery?.refetch();
-    return fetchResult && fetchResult.data ? fetchResult.data.wallets : [];
-  };
+    const fetchResult = await walletsQuery?.refetch()
+    return fetchResult && fetchResult.data ? fetchResult.data.wallets : []
+  }
 
   useEffect(() => {
     // load staked tokens for primary wallet address
     const getStaked = async () => {
-      setUnstakeTableLoading(true);
+      setUnstakeTableLoading(true)
       try {
-        const wallets = await getWallets();
+        const wallets = await getWallets()
         if (wallets) {
-          let uniqueAddresses: string[] = [];
-          if (wallet) uniqueAddresses = [wallet];
+          let uniqueAddresses: string[] = []
+          if (wallet) uniqueAddresses = [wallet]
 
           if (wallets && wallets.length > 0) {
-            let addressSet: Set<string> = new Set();
+            let addressSet: Set<string> = new Set()
             for (let thisWallet of wallets) {
               for (let address of thisWallet.unusedAddresses) {
-                addressSet.add(address);
+                addressSet.add(address)
               }
               for (let address of thisWallet.usedAddresses) {
-                addressSet.add(address);
+                addressSet.add(address)
               }
-              addressSet.add(thisWallet.changeAddress);
+              addressSet.add(thisWallet.changeAddress)
               if (thisWallet.changeAddress === wallet) {
-                setCurrentWalletType(thisWallet.type);
+                setCurrentWalletType(thisWallet.type)
                 if (thisWallet.type === 'nautilus')
                   setDappWalletAddresses([
                     ...thisWallet.usedAddresses,
                     ...thisWallet.unusedAddresses,
-                  ]);
+                  ])
               }
             }
 
-            uniqueAddresses = [...addressSet];
+            uniqueAddresses = [...addressSet]
           }
           const request = {
             addresses: uniqueAddresses,
-          };
-          const url = `${process.env.API_URL}/staking/${project_id}/staked/`;
-          const res = await axios.post(url, request, { ...defaultOptions });
-          setStakedData(res.data);
+          }
+          const url = `${process.env.API_URL}/staking/${project_id}/staked/`
+          const res = await axios.post(url, request, { ...defaultOptions })
+          setStakedData(res.data)
         }
       } catch (e) {
-        console.log('ERROR FETCHING: ', e);
+        console.log('ERROR FETCHING: ', e)
       }
-      setUnstakeTableLoading(false);
-    };
+      setUnstakeTableLoading(false)
+    }
 
     if (project_id && wallet !== '' && sessionStatus === 'authenticated') {
-      getStaked();
+      getStaked()
     } else {
-      if (!project_id) setStakingConfig(defaultStakingConfig);
-      setStakedData(initStaked);
+      if (!project_id) setStakingConfig(defaultStakingConfig)
+      setStakedData(initStaked)
     }
-  }, [wallet, project_id]);
+  }, [wallet, project_id])
 
   useEffect(() => {
     // reset staking Form on wallet change
     if (wallet) {
-      setStakingForm({ ...initStakingForm, wallet: wallet });
-    } else setStakingForm({ ...initStakingForm });
+      setStakingForm({ ...initStakingForm, wallet: wallet })
+    } else setStakingForm({ ...initStakingForm })
     setStakingFormErrors({
       ...initStakingFormErrors,
       wallet: wallet === '',
-    });
+    })
     setUnstakingFormErrors({
       ...initUnstakingFormErrors,
       wallet: wallet === '',
-    });
+    })
     setAddstakeFormErrors({
       ...initAddstakeFormErrors,
       wallet: wallet === '',
-    });
-  }, [wallet]);
+    })
+  }, [wallet])
 
   useEffect(() => {
     // get token balance
@@ -415,38 +415,38 @@ const ProjectStaking = () => {
         //   setTokenBalance(balance / Math.pow(10, stakingConfig.tokenDecimals));
         // } else
 
-        setGetTokenBalanceLoading(true);
+        setGetTokenBalanceLoading(true)
         if (address !== '') {
           const res = await axios.post(
             `${process.env.API_URL}/asset/balances/`,
             { addresses: [address] },
-            { ...defaultOptions },
-          );
+            { ...defaultOptions }
+          )
           const token = res.data.addresses[address].tokens.filter(
             (token: { tokenId: string }) =>
-              token.tokenId === stakingConfig.tokenId,
-          )[0];
+              token.tokenId === stakingConfig.tokenId
+          )[0]
           if (token && token.amount > 0) {
             setTokenBalance(
-              token.amount / Math.pow(10, stakingConfig.tokenDecimals),
-            );
+              token.amount / Math.pow(10, stakingConfig.tokenDecimals)
+            )
           } else {
-            setTokenBalance(0);
+            setTokenBalance(0)
           }
         } else {
-          setTokenBalance(0);
+          setTokenBalance(0)
         }
-        setGetTokenBalanceLoading(false);
+        setGetTokenBalanceLoading(false)
       } catch (e) {
-        console.log('ERROR: ', e);
-        setGetTokenBalanceLoading(false);
+        console.log('ERROR: ', e)
+        setGetTokenBalanceLoading(false)
       }
-    };
+    }
     if (openAddstakeModal) {
-      setCurrentModalWalletType(getWalletType(addstakeModalData.address));
+      setCurrentModalWalletType(getWalletType(addstakeModalData.address))
     }
     if (openUnstakeModal) {
-      setCurrentModalWalletType(getWalletType(unstakeModalData.address));
+      setCurrentModalWalletType(getWalletType(unstakeModalData.address))
     }
     if (openModal || openAddstakeModal || openUnstakeModal) {
       getTokenBalance(
@@ -454,8 +454,8 @@ const ProjectStaking = () => {
           ? addstakeModalData.address
           : openUnstakeModal
             ? unstakeModalData.address
-            : wallet!,
-      );
+            : wallet!
+      )
     }
   }, [
     openModal,
@@ -464,198 +464,198 @@ const ProjectStaking = () => {
     wallet,
     // dAppWallet.connected,
     stakingConfig,
-  ]);
+  ])
 
   const StakeNautilus = async (walletAddress: string) => {
-    setStakeLoading(true);
+    setStakeLoading(true)
     const emptyCheck = Object.values(stakingForm).every(
-      (v) => v !== '' && v !== 0,
-    );
+      (v) => v !== '' && v !== 0
+    )
     const errorCheck = Object.values(stakingFormErrors).every(
-      (v) => v === false,
-    );
+      (v) => v === false
+    )
     if (emptyCheck && errorCheck) {
       try {
         const tokenAmount = Math.round(
-          stakingForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals),
-        );
+          stakingForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals)
+        )
         const walletAddresses = [walletAddress, ...dappWalletAddresses].filter(
-          (x, i, a) => a.indexOf(x) == i && x,
-        );
+          (x, i, a) => a.indexOf(x) == i && x
+        )
         const request = {
           wallet: walletAddress,
           amount: tokenAmount / Math.pow(10, stakingConfig.tokenDecimals),
           utxos: [],
           txFormat: 'eip-12',
           addresses: [...walletAddresses],
-        };
+        }
         const res = await axios.post(
           `${process.env.API_URL}/staking/${project_id}/stake/`,
           request,
-          { ...defaultOptions },
-        );
-        const unsignedtx = res.data;
+          { ...defaultOptions }
+        )
+        const unsignedtx = res.data
         // @ts-ignore
-        const signedtx = await ergo.sign_tx(unsignedtx);
+        const signedtx = await ergo.sign_tx(unsignedtx)
         // @ts-ignore
-        const ok = await ergo.submit_tx(signedtx);
-        setSuccessMessageSnackbar('Transaction Submitted: ' + ok);
-        setTransactionSubmitted(ok);
-        setOpenSuccessSnackbar(true);
+        const ok = await ergo.submit_tx(signedtx)
+        setSuccessMessageSnackbar('Transaction Submitted: ' + ok)
+        setTransactionSubmitted(ok)
+        setOpenSuccessSnackbar(true)
       } catch (e: any) {
         if (e.response) {
           setErrorMessage(
-            'Error: ' + e.response.status + ' - ' + e.response.data,
-          );
+            'Error: ' + e.response.status + ' - ' + e.response.data
+          )
         } else {
-          setErrorMessage('Error: Failed to build transaction');
+          setErrorMessage('Error: Failed to build transaction')
         }
-        setOpenError(true);
+        setOpenError(true)
       }
     } else {
-      let updateErrors = {};
+      let updateErrors = {}
       Object.entries(stakingForm).forEach((entry) => {
-        const [key, value] = entry;
+        const [key, value] = entry
         if (value == '') {
           if (Object.hasOwn(stakingFormErrors, key)) {
-            let newEntry = { [key]: true };
-            updateErrors = { ...updateErrors, ...newEntry };
+            let newEntry = { [key]: true }
+            updateErrors = { ...updateErrors, ...newEntry }
           }
         }
-      });
+      })
       setStakingFormErrors({
         ...stakingFormErrors,
         ...updateErrors,
-      });
+      })
       // snackbar for error message
-      setErrorMessage('Please eliminate form errors and try again');
-      setOpenError(true);
+      setErrorMessage('Please eliminate form errors and try again')
+      setOpenError(true)
     }
-    setStakeLoading(false);
-  };
+    setStakeLoading(false)
+  }
 
   const stakeWithDappConnector = async (walletAddress: string) => {
     // @ts-ignore
-    const connected = await ergoConnector.nautilus.connect();
+    const connected = await ergoConnector.nautilus.connect()
     if (connected) {
       // @ts-ignore
-      const address = await ergo.get_change_address();
+      const address = await ergo.get_change_address()
       if (address === walletAddress) {
-        StakeNautilus(address);
+        StakeNautilus(address)
       } else {
         // @ts-ignore
-        ergoConnector.nautilus.disconnect();
-        setErrorMessage('Please connect the correct Nautilus wallet');
-        setOpenError(true);
-        stakeWithDappConnector(walletAddress);
+        ergoConnector.nautilus.disconnect()
+        setErrorMessage('Please connect the correct Nautilus wallet')
+        setOpenError(true)
+        stakeWithDappConnector(walletAddress)
       }
     }
-  };
+  }
 
   const stakeErgopay = async () => {
-    setStakeErgopayLoading(true);
+    setStakeErgopayLoading(true)
     const emptyCheck = Object.values(stakingForm).every(
-      (v) => v !== '' && v !== 0,
-    );
+      (v) => v !== '' && v !== 0
+    )
     const errorCheck = Object.values(stakingFormErrors).every(
-      (v) => v === false,
-    );
+      (v) => v === false
+    )
     if (emptyCheck && errorCheck) {
       try {
         const tokenAmount = Math.round(
-          stakingForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals),
-        );
+          stakingForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals)
+        )
         const request = {
           wallet: stakingForm.wallet,
           amount: tokenAmount / Math.pow(10, stakingConfig.tokenDecimals),
           utxos: [],
           txFormat: 'ergo_pay',
           addresses: [stakingForm.wallet],
-        };
+        }
         const res = await axios.post(
           `${process.env.API_URL}/staking/${project_id}/stake/`,
           request,
-          { ...defaultOptions },
-        );
-        setErgopayUrl(res.data.url);
-        setSuccessMessageSnackbar('Form Submitted');
-        setOpenSuccessSnackbar(true);
+          { ...defaultOptions }
+        )
+        setErgopayUrl(res.data.url)
+        setSuccessMessageSnackbar('Form Submitted')
+        setOpenSuccessSnackbar(true)
       } catch (e: any) {
         if (e.response) {
           setErrorMessage(
-            'Error: ' + e.response.status + ' - ' + e.response.data,
-          );
+            'Error: ' + e.response.status + ' - ' + e.response.data
+          )
         } else {
-          setErrorMessage('Error: Failed to build transaction');
+          setErrorMessage('Error: Failed to build transaction')
         }
-        setOpenError(true);
+        setOpenError(true)
       }
     } else {
-      let updateErrors = {};
+      let updateErrors = {}
       Object.entries(stakingForm).forEach((entry) => {
-        const [key, value] = entry;
+        const [key, value] = entry
         if (value == '') {
           if (Object.hasOwn(stakingFormErrors, key)) {
-            let newEntry = { [key]: true };
-            updateErrors = { ...updateErrors, ...newEntry };
+            let newEntry = { [key]: true }
+            updateErrors = { ...updateErrors, ...newEntry }
           }
         }
-      });
+      })
       setStakingFormErrors({
         ...stakingFormErrors,
         ...updateErrors,
-      });
+      })
       // snackbar for error message
-      setErrorMessage('Please eliminate form errors and try again');
-      setOpenError(true);
+      setErrorMessage('Please eliminate form errors and try again')
+      setOpenError(true)
     }
-    setStakeErgopayLoading(false);
-  };
+    setStakeErgopayLoading(false)
+  }
 
   const initUnstake = () => {
-    setTransactionSubmitted(null);
-    setErgopayUrl(null);
-    setUnstakePenalty(-1);
-    setUnstakingForm(initUnstakingForm);
+    setTransactionSubmitted(null)
+    setErgopayUrl(null)
+    setUnstakePenalty(-1)
+    setUnstakingForm(initUnstakingForm)
     setUnstakingFormErrors({
       tokenAmount: false,
       wallet: wallet === '',
-    });
-  };
+    })
+  }
 
   const unstakeWithDappConnector = async (walletAddress: string) => {
     // @ts-ignore
-    const connected = await ergoConnector.nautilus.connect();
+    const connected = await ergoConnector.nautilus.connect()
     if (connected) {
       // @ts-ignore
-      const address = await ergo.get_change_address();
+      const address = await ergo.get_change_address()
       if (address === walletAddress) {
-        unstakeNautilus(address);
+        unstakeNautilus(address)
       } else {
         // @ts-ignore
-        ergoConnector.nautilus.disconnect();
-        setErrorMessage('Please connect the correct Nautilus wallet');
-        setOpenError(true);
-        unstakeWithDappConnector(walletAddress);
+        ergoConnector.nautilus.disconnect()
+        setErrorMessage('Please connect the correct Nautilus wallet')
+        setOpenError(true)
+        unstakeWithDappConnector(walletAddress)
       }
     }
-  };
+  }
 
   const unstakeNautilus = async (walletAddress: string) => {
-    setUnstakeModalLoading(true);
+    setUnstakeModalLoading(true)
     const emptyCheck = Object.values(unstakingForm).every(
-      (v) => v !== undefined && v !== 0,
-    );
+      (v) => v !== undefined && v !== 0
+    )
     const errorCheck = Object.values(unstakingFormErrors).every(
-      (v) => v === false,
-    );
+      (v) => v === false
+    )
     if (emptyCheck && errorCheck) {
       try {
         const tokenAmount =
-          unstakingForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals);
+          unstakingForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals)
         const walletAddresses = [walletAddress, ...dappWalletAddresses].filter(
-          (x, i, a) => a.indexOf(x) == i && x,
-        );
+          (x, i, a) => a.indexOf(x) == i && x
+        )
         const request = {
           stakeBox: unstakeModalData.boxId,
           amount: tokenAmount / Math.pow(10, stakingConfig.tokenDecimals),
@@ -663,70 +663,70 @@ const ProjectStaking = () => {
           utxos: [],
           txFormat: 'eip-12',
           addresses: [...walletAddresses],
-        };
+        }
         const res = await axios.post(
           `${process.env.API_URL}/staking/${project_id}/unstake/`,
           request,
-          { ...defaultOptions },
-        );
+          { ...defaultOptions }
+        )
         // staked v1 has a response different format
-        const penalty = res.data.penalty ?? 0;
-        setUnstakePenalty(penalty);
+        const penalty = res.data.penalty ?? 0
+        setUnstakePenalty(penalty)
         const unsignedtx = stakingConfig.additionalDetails.stakingV1
           ? res.data.unsignedTX
-          : res.data;
+          : res.data
         // @ts-ignore
-        const signedtx = await ergo.sign_tx(unsignedtx); // eslint-disable-line
+        const signedtx = await ergo.sign_tx(unsignedtx) // eslint-disable-line
         // @ts-ignore
-        const ok = await ergo.submit_tx(signedtx); // eslint-disable-line
-        setSuccessMessageSnackbar('Transaction Submitted: ' + ok);
-        setTransactionSubmitted(ok);
-        setOpenSuccessSnackbar(true);
+        const ok = await ergo.submit_tx(signedtx) // eslint-disable-line
+        setSuccessMessageSnackbar('Transaction Submitted: ' + ok)
+        setTransactionSubmitted(ok)
+        setOpenSuccessSnackbar(true)
       } catch (e: any) {
         if (e.response) {
           setErrorMessage(
-            'Error: ' + e.response.status + ' - ' + e.response.data,
-          );
+            'Error: ' + e.response.status + ' - ' + e.response.data
+          )
         } else {
-          setErrorMessage('Error: Failed to build transaction');
+          setErrorMessage('Error: Failed to build transaction')
         }
-        initUnstake();
-        setOpenError(true);
+        initUnstake()
+        setOpenError(true)
       }
     } else {
-      let updateErrors = {};
+      let updateErrors = {}
       Object.entries(unstakingForm).forEach((entry) => {
-        const [key, value] = entry;
+        const [key, value] = entry
         if (value === 0) {
           if (Object.hasOwn(unstakingFormErrors, key)) {
-            let newEntry = { [key]: true };
-            updateErrors = { ...updateErrors, ...newEntry };
+            let newEntry = { [key]: true }
+            updateErrors = { ...updateErrors, ...newEntry }
           }
         }
-      });
+      })
       setUnstakingFormErrors({
         ...unstakingFormErrors,
         ...updateErrors,
-      });
+      })
       // snackbar for error message
-      setErrorMessage('Please eliminate form errors and try again');
-      setOpenError(true);
+      setErrorMessage('Please eliminate form errors and try again')
+      setOpenError(true)
     }
-    setUnstakeModalLoading(false);
-  };
+    setUnstakeModalLoading(false)
+  }
 
   const unstakeErgopay = async () => {
-    setUnstakeErgopayLoading(true);
+    setUnstakeErgopayLoading(true)
     const emptyCheck = Object.values(unstakingForm).every(
-      (v) => v !== undefined && v !== 0,
-    );
+      (v) => v !== undefined && v !== 0
+    )
     const errorCheck = Object.values(unstakingFormErrors).every(
-      (v) => v === false,
-    );
+      (v) => v === false
+    )
     if (emptyCheck && errorCheck) {
       try {
         const tokenAmount =
-          unstakingForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals);
+          unstakingForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals)
         const request = {
           stakeBox: unstakeModalData.boxId,
           amount: tokenAmount / Math.pow(10, stakingConfig.tokenDecimals),
@@ -734,96 +734,96 @@ const ProjectStaking = () => {
           utxos: [],
           addresses: [unstakeModalData.address],
           txFormat: 'ergo_pay',
-        };
+        }
         const res = await axios.post(
           `${process.env.API_URL}/staking/${project_id}/unstake/`,
           request,
-          { ...defaultOptions },
-        );
-        const penalty = res.data.penalty ?? 0;
-        setUnstakePenalty(penalty);
-        setErgopayUrl(res.data.url);
-        setSuccessMessageSnackbar('Form Submitted');
-        setOpenSuccessSnackbar(true);
+          { ...defaultOptions }
+        )
+        const penalty = res.data.penalty ?? 0
+        setUnstakePenalty(penalty)
+        setErgopayUrl(res.data.url)
+        setSuccessMessageSnackbar('Form Submitted')
+        setOpenSuccessSnackbar(true)
       } catch (e: any) {
         if (e.response) {
           setErrorMessage(
-            'Error: ' + e.response.status + ' - ' + e.response.data,
-          );
+            'Error: ' + e.response.status + ' - ' + e.response.data
+          )
         } else {
-          setErrorMessage('Error: Failed to build transaction');
+          setErrorMessage('Error: Failed to build transaction')
         }
-        initUnstake();
-        setOpenError(true);
+        initUnstake()
+        setOpenError(true)
       }
     } else {
-      let updateErrors = {};
+      let updateErrors = {}
       Object.entries(unstakingForm).forEach((entry) => {
-        const [key, value] = entry;
+        const [key, value] = entry
         if (value === 0) {
           if (Object.hasOwn(unstakingFormErrors, key)) {
-            let newEntry = { [key]: true };
-            updateErrors = { ...updateErrors, ...newEntry };
+            let newEntry = { [key]: true }
+            updateErrors = { ...updateErrors, ...newEntry }
           }
         }
-      });
+      })
       setUnstakingFormErrors({
         ...unstakingFormErrors,
         ...updateErrors,
-      });
+      })
       // snackbar for error message
-      setErrorMessage('Please eliminate form errors and try again');
-      setOpenError(true);
+      setErrorMessage('Please eliminate form errors and try again')
+      setOpenError(true)
     }
-    setUnstakeErgopayLoading(false);
-  };
+    setUnstakeErgopayLoading(false)
+  }
 
   const initAddstake = () => {
-    setTransactionSubmitted(null);
-    setErgopayUrl(null);
-    setAddstakeForm(initAddstakeForm);
+    setTransactionSubmitted(null)
+    setErgopayUrl(null)
+    setAddstakeForm(initAddstakeForm)
     setAddstakeFormErrors({
       tokenAmount: false,
       wallet: wallet === '',
-    });
-  };
+    })
+  }
 
   const addStakeWithDappConnector = async () => {
     // @ts-ignore
-    const connected = await ergoConnector.nautilus.connect();
+    const connected = await ergoConnector.nautilus.connect()
     if (connected) {
       // @ts-ignore
-      const address = await ergo.get_change_address();
+      const address = await ergo.get_change_address()
       if (address === addstakeModalData.address) {
-        addstake();
+        addstake()
       } else {
         // @ts-ignore
-        ergoConnector.nautilus.disconnect();
+        ergoConnector.nautilus.disconnect()
         setErrorMessage(
-          `Please connect the wallet with address ${addstakeModalData.address} `,
-        );
-        setOpenError(true);
-        addStakeWithDappConnector();
+          `Please connect the wallet with address ${addstakeModalData.address} `
+        )
+        setOpenError(true)
+        addStakeWithDappConnector()
       }
     }
-  };
+  }
 
   const addstake = async () => {
-    setAddstakeModalLoading(true);
+    setAddstakeModalLoading(true)
     const emptyCheck = Object.values(addstakeForm).every(
-      (v) => v !== undefined && v !== 0,
-    );
+      (v) => v !== undefined && v !== 0
+    )
     const errorCheck = Object.values(addstakeFormErrors).every(
-      (v) => v === false,
-    );
+      (v) => v === false
+    )
     if (emptyCheck && errorCheck) {
       try {
         const tokenAmount =
-          addstakeForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals);
+          addstakeForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals)
         const walletAddresses = [
           addstakeModalData.address,
           ...currentDappWalletAddresses,
-        ].filter((x, i, a) => a.indexOf(x) == i && x);
+        ].filter((x, i, a) => a.indexOf(x) == i && x)
         const request = {
           stakeBox: addstakeModalData.boxId,
           amount: tokenAmount / Math.pow(10, stakingConfig.tokenDecimals),
@@ -831,65 +831,65 @@ const ProjectStaking = () => {
           utxos: [],
           txFormat: 'eip-12',
           addresses: [...walletAddresses],
-        };
+        }
         const res = await axios.post(
           `${process.env.API_URL}/staking/${project_id}/addstake/`,
           request,
-          { ...defaultOptions },
-        );
-        const unsignedtx = res.data;
+          { ...defaultOptions }
+        )
+        const unsignedtx = res.data
         // @ts-ignore
-        const signedtx = await ergo.sign_tx(unsignedtx); // eslint-disable-line
+        const signedtx = await ergo.sign_tx(unsignedtx) // eslint-disable-line
         // @ts-ignore
-        const ok = await ergo.submit_tx(signedtx); // eslint-disable-line
-        setSuccessMessageSnackbar('Transaction Submitted: ' + ok);
-        setTransactionSubmitted(ok);
-        setOpenSuccessSnackbar(true);
+        const ok = await ergo.submit_tx(signedtx) // eslint-disable-line
+        setSuccessMessageSnackbar('Transaction Submitted: ' + ok)
+        setTransactionSubmitted(ok)
+        setOpenSuccessSnackbar(true)
       } catch (e: any) {
         if (e.response) {
           setErrorMessage(
-            'Error: ' + e.response.status + ' - ' + e.response.data,
-          );
+            'Error: ' + e.response.status + ' - ' + e.response.data
+          )
         } else {
-          setErrorMessage('Error: Failed to build transaction');
+          setErrorMessage('Error: Failed to build transaction')
         }
-        initAddstake();
-        setOpenError(true);
+        initAddstake()
+        setOpenError(true)
       }
     } else {
-      let updateErrors = {};
+      let updateErrors = {}
       Object.entries(addstakeForm).forEach((entry) => {
-        const [key, value] = entry;
+        const [key, value] = entry
         if (value === undefined || value === 0) {
           if (Object.hasOwn(addstakeFormErrors, key)) {
-            let newEntry = { [key]: true };
-            updateErrors = { ...updateErrors, ...newEntry };
+            let newEntry = { [key]: true }
+            updateErrors = { ...updateErrors, ...newEntry }
           }
         }
-      });
+      })
       setAddstakeFormErrors({
         ...addstakeFormErrors,
         ...updateErrors,
-      });
+      })
       // snackbar for error message
-      setErrorMessage('Please eliminate form errors and try again');
-      setOpenError(true);
+      setErrorMessage('Please eliminate form errors and try again')
+      setOpenError(true)
     }
-    setAddstakeModalLoading(false);
-  };
+    setAddstakeModalLoading(false)
+  }
 
   const addstakeErgopay = async () => {
-    setAddstakeErgopayLoading(true);
+    setAddstakeErgopayLoading(true)
     const emptyCheck = Object.values(addstakeForm).every(
-      (v) => v !== undefined && v !== 0,
-    );
+      (v) => v !== undefined && v !== 0
+    )
     const errorCheck = Object.values(addstakeFormErrors).every(
-      (v) => v === false,
-    );
+      (v) => v === false
+    )
     if (emptyCheck && errorCheck) {
       try {
         const tokenAmount =
-          addstakeForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals);
+          addstakeForm.tokenAmount * Math.pow(10, stakingConfig.tokenDecimals)
         const request = {
           stakeBox: addstakeModalData.boxId,
           amount: tokenAmount / Math.pow(10, stakingConfig.tokenDecimals),
@@ -897,156 +897,156 @@ const ProjectStaking = () => {
           utxos: [],
           addresses: [addstakeModalData.address],
           txFormat: 'ergo_pay',
-        };
+        }
         const res = await axios.post(
           `${process.env.API_URL}/staking/${project_id}/addstake/`,
           request,
-          { ...defaultOptions },
-        );
-        setErgopayUrl(res.data.url);
-        setSuccessMessageSnackbar('Form Submitted');
-        setOpenSuccessSnackbar(true);
+          { ...defaultOptions }
+        )
+        setErgopayUrl(res.data.url)
+        setSuccessMessageSnackbar('Form Submitted')
+        setOpenSuccessSnackbar(true)
       } catch (e: any) {
         if (e.response) {
           setErrorMessage(
-            'Error: ' + e.response.status + ' - ' + e.response.data,
-          );
+            'Error: ' + e.response.status + ' - ' + e.response.data
+          )
         } else {
-          setErrorMessage('Error: Failed to build transaction');
+          setErrorMessage('Error: Failed to build transaction')
         }
-        initAddstake();
-        setOpenError(true);
+        initAddstake()
+        setOpenError(true)
       }
     } else {
-      let updateErrors = {};
+      let updateErrors = {}
       Object.entries(addstakeForm).forEach((entry) => {
-        const [key, value] = entry;
+        const [key, value] = entry
         if (value === 0) {
           if (Object.hasOwn(addstakeFormErrors, key)) {
-            let newEntry = { [key]: true };
-            updateErrors = { ...updateErrors, ...newEntry };
+            let newEntry = { [key]: true }
+            updateErrors = { ...updateErrors, ...newEntry }
           }
         }
-      });
+      })
       setAddstakeFormErrors({
         ...addstakeFormErrors,
         ...updateErrors,
-      });
+      })
       // snackbar for error message
-      setErrorMessage('Please eliminate form errors and try again');
-      setOpenError(true);
+      setErrorMessage('Please eliminate form errors and try again')
+      setOpenError(true)
     }
-    setAddstakeErgopayLoading(false);
-  };
+    setAddstakeErgopayLoading(false)
+  }
 
   // snackbar for error reporting
   const handleCloseError = (e: any, reason: string) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
-    setOpenError(false);
-  };
+    setOpenError(false)
+  }
 
   // snackbar for success
   const handleCloseSuccessSnackbar = (e: any, reason: string) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
-    setOpenSuccessSnackbar(false);
-  };
+    setOpenSuccessSnackbar(false)
+  }
 
   const handleTokenChoiceChange = (event: {
-    target: { value: SetStateAction<string> };
+    target: { value: SetStateAction<string> }
   }) => {
-    setTokenChoice(event.target.value);
-    if (event.target.value === 'default') router.push('/staking');
-    else router.push(`/staking/${event.target.value}`);
-  };
+    setTokenChoice(event.target.value)
+    if (event.target.value === 'default') router.push('/staking')
+    else router.push(`/staking/${event.target.value}`)
+  }
 
   const handleStakingFormChange = (e: { target: any }) => {
     if (e.target.name === 'stakingAmount') {
-      const amount = Number(e.target.value);
+      const amount = Number(e.target.value)
       if (amount >= 10 && amount <= tokenBalance) {
         setStakingFormErrors({
           ...stakingFormErrors,
           tokenAmount: false,
-        });
+        })
         setStakingForm({
           ...stakingForm,
           tokenAmount: e.target.value,
-        });
+        })
       } else {
         setStakingFormErrors({
           ...stakingFormErrors,
           tokenAmount: true,
-        });
+        })
         setStakingForm({
           ...stakingForm,
           tokenAmount: e.target.value,
-        });
+        })
       }
     }
-  };
+  }
 
   const handleUnstakingFormChange = (e: { target: any }) => {
     const calcPenalty = (value: number, penaltyPct: number) => {
-      return Math.round(value * penaltyPct) / 100;
-    };
+      return Math.round(value * penaltyPct) / 100
+    }
     if (e.target.name === 'unstakingAmount') {
-      const amount = Number(e.target.value);
+      const amount = Number(e.target.value)
       if (amount > 0 && amount <= unstakeModalData.stakeAmount) {
         setUnstakingFormErrors({
           ...unstakingFormErrors,
           tokenAmount: false,
-        });
+        })
         setUnstakingForm({
           ...unstakingForm,
           tokenAmount: e.target.value,
-        });
-        const penalty = calcPenalty(amount, unstakeModalData.penaltyPct);
-        setUnstakePenalty(penalty);
+        })
+        const penalty = calcPenalty(amount, unstakeModalData.penaltyPct)
+        setUnstakePenalty(penalty)
       } else {
         setUnstakingFormErrors({
           ...unstakingFormErrors,
           tokenAmount: true,
-        });
+        })
         setUnstakingForm({
           ...unstakingForm,
           tokenAmount: e.target.value,
-        });
-        setUnstakePenalty(-1);
+        })
+        setUnstakePenalty(-1)
       }
     }
-  };
+  }
 
   const handleAddstakeFormChange = (e: { target: any }) => {
     if (e.target.name === 'tokenAmount') {
-      const amount = Number(e.target.value);
+      const amount = Number(e.target.value)
       if (amount > 0 && amount <= tokenBalance) {
         setAddstakeFormErrors({
           ...addstakeFormErrors,
           tokenAmount: false,
-        });
+        })
         setAddstakeForm({
           ...addstakeForm,
           tokenAmount: e.target.value,
-        });
+        })
       } else {
         setAddstakeFormErrors({
           ...addstakeFormErrors,
           tokenAmount: true,
-        });
+        })
         setAddstakeForm({
           ...addstakeForm,
           tokenAmount: e.target.value,
-        });
+        })
       }
     }
-  };
+  }
 
   const projectName =
     tokenChoiceList.filter((option) => option.project === project_id)[0]
-      ?.title ?? '';
+      ?.title ?? ''
 
   return (
     <>
@@ -1161,8 +1161,8 @@ const ProjectStaking = () => {
                           },
                         }}
                         onClick={() => {
-                          setOpenModal(true);
-                          setTransactionSubmitted(null);
+                          setOpenModal(true)
+                          setTransactionSubmitted(null)
                         }}
                       >
                         Stake Now
@@ -1203,17 +1203,17 @@ const ProjectStaking = () => {
                             stakeKeyId: string,
                             stakeAmount: number,
                             penaltyPct: number,
-                            address: string,
+                            address: string
                           ) => {
-                            initUnstake();
-                            setOpenUnstakeModal(true);
+                            initUnstake()
+                            setOpenUnstakeModal(true)
                             setUnstakeModalData({
                               boxId,
                               stakeKeyId,
                               stakeAmount,
                               penaltyPct,
                               address,
-                            });
+                            })
                           }}
                           addstake={
                             stakingConfig.additionalDetails.stakingV1 ||
@@ -1224,17 +1224,17 @@ const ProjectStaking = () => {
                                   stakeKeyId: string,
                                   stakeAmount: number,
                                   penaltyPct: number,
-                                  address: string,
+                                  address: string
                                 ) => {
-                                  initAddstake();
-                                  setOpenAddstakeModal(true);
+                                  initAddstake()
+                                  setOpenAddstakeModal(true)
                                   setAddstakeModalData({
                                     boxId,
                                     stakeKeyId,
                                     stakeAmount,
                                     penaltyPct,
                                     address,
-                                  });
+                                  })
                                 }
                           }
                           disableUnstaking={
@@ -1264,10 +1264,10 @@ const ProjectStaking = () => {
           <Modal
             open={openModal}
             onClose={() => {
-              setOpenModal(false);
-              setTransactionSubmitted(null);
-              setErgopayUrl(null);
-              setStakingFormErrors(initStakingFormErrors);
+              setOpenModal(false)
+              setTransactionSubmitted(null)
+              setErgopayUrl(null)
+              setStakingFormErrors(initStakingFormErrors)
             }}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
@@ -1337,7 +1337,7 @@ const ProjectStaking = () => {
                                 name: 'stakingAmount',
                                 value: tokenBalance,
                               },
-                            });
+                            })
                           }}
                         >
                           Max Amount
@@ -1432,10 +1432,10 @@ const ProjectStaking = () => {
           <Modal
             open={openUnstakeModal}
             onClose={() => {
-              setOpenUnstakeModal(false);
-              setTransactionSubmitted(null);
-              setErgopayUrl(null);
-              setUnstakingFormErrors(initUnstakingFormErrors);
+              setOpenUnstakeModal(false)
+              setTransactionSubmitted(null)
+              setErgopayUrl(null)
+              setUnstakingFormErrors(initUnstakingFormErrors)
             }}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
@@ -1485,9 +1485,9 @@ const ProjectStaking = () => {
                       },
                     ].map((item) => {
                       if (checkSmall) {
-                        return StakingItem(item, 6);
+                        return StakingItem(item, 6)
                       } else {
-                        return StakingItem(item, 6, true);
+                        return StakingItem(item, 6, true)
                       }
                     })}
                   </Grid>
@@ -1526,7 +1526,7 @@ const ProjectStaking = () => {
                                 name: 'unstakingAmount',
                                 value: unstakeModalData.stakeAmount,
                               },
-                            });
+                            })
                           }}
                         >
                           Max Amount
@@ -1626,10 +1626,10 @@ const ProjectStaking = () => {
           <Modal
             open={openAddstakeModal}
             onClose={() => {
-              setOpenAddstakeModal(false);
-              setTransactionSubmitted(null);
-              setErgopayUrl(null);
-              setAddstakeFormErrors(initAddstakeFormErrors);
+              setOpenAddstakeModal(false)
+              setTransactionSubmitted(null)
+              setErgopayUrl(null)
+              setAddstakeFormErrors(initAddstakeFormErrors)
             }}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
@@ -1689,7 +1689,7 @@ const ProjectStaking = () => {
                                 name: 'tokenAmount',
                                 value: tokenBalance,
                               },
-                            });
+                            })
                           }}
                         >
                           Max Amount
@@ -1833,7 +1833,7 @@ const ProjectStaking = () => {
         </>
       )}
     </>
-  );
-};
+  )
+}
 
-export default ProjectStaking;
+export default ProjectStaking

@@ -1,4 +1,4 @@
-import AssetList from '@components/dashboard/AssetList';
+import AssetList from '@components/dashboard/AssetList'
 import {
   Grid,
   Typography,
@@ -9,25 +9,25 @@ import {
   useMediaQuery,
   FormHelperText,
   FormGroup,
-} from '@mui/material';
-import React, { useState, useEffect, useMemo } from 'react';
-import axios from 'axios';
-import { useWallet } from '@contexts/WalletContext';
-import CenterTitle from '@components/CenterTitle';
-import VestingTable from '@components/dashboard/VestingTable';
-import StakingTable from '@components/dashboard/StakingTable';
-import StackedAreaPortfolioHistory from '@components/dashboard/StackedAreaPortfolioHistory';
-import PieChart from '@components/dashboard/PieChart';
-import { trpc } from '@utils/trpc';
+} from '@mui/material'
+import React, { useState, useEffect, useMemo } from 'react'
+import axios from 'axios'
+import { useWallet } from '@contexts/WalletContext'
+import CenterTitle from '@components/CenterTitle'
+import VestingTable from '@components/dashboard/VestingTable'
+import StakingTable from '@components/dashboard/StakingTable'
+import StackedAreaPortfolioHistory from '@components/dashboard/StackedAreaPortfolioHistory'
+import PieChart from '@components/dashboard/PieChart'
+import { trpc } from '@utils/trpc'
 
 // CONFIG for portfolio history
 // step size
-const STEP_SIZE = 2;
-const STEP_UNIT = 'w';
+const STEP_SIZE = 2
+const STEP_UNIT = 'w'
 
 // token
 const ERGOPAD_TOKEN =
-  'd71693c49a84fbbecd4908c94813b46514b18b67a99952dc1e6e4791556de413';
+  'd71693c49a84fbbecd4908c94813b46514b18b67a99952dc1e6e4791556de413'
 
 // placeholder data
 const rawData2 = {
@@ -42,7 +42,7 @@ const rawData2 = {
     },
   ],
   price: 1,
-};
+}
 
 const initHistoryData = [
   {
@@ -59,125 +59,125 @@ const initHistoryData = [
       },
     ],
   },
-];
+]
 
-const initStakedData = [];
-const wantedHoldingData = tokenDataArray(rawData2);
-const portfolioValue = sumTotals(wantedHoldingData);
+const initStakedData = []
+const wantedHoldingData = tokenDataArray(rawData2)
+const portfolioValue = sumTotals(wantedHoldingData)
 const defaultHoldingData = wantedHoldingData.map((item) => {
-  const container = {};
-  container.x = item.x;
-  container.y = 0;
-  return container;
-});
+  const container = {}
+  container.x = item.x
+  container.y = 0
+  return container
+})
 
-defaultHoldingData[defaultHoldingData.length - 1].y = portfolioValue;
+defaultHoldingData[defaultHoldingData.length - 1].y = portfolioValue
 
 const paperStyle = {
   p: 3,
   borderRadius: 2,
   height: '100%',
-};
+}
 
 const Dashboard = () => {
-  const [vestedTokens, setVestedTokens] = useState([]);
-  const [vestedTokensNFT, setVestedTokensNFT] = useState({});
-  const [stakedTokens, setStakedTokens] = useState(initStakedData);
-  const [holdingData, setHoldingData] = useState(defaultHoldingData);
+  const [vestedTokens, setVestedTokens] = useState([])
+  const [vestedTokensNFT, setVestedTokensNFT] = useState({})
+  const [stakedTokens, setStakedTokens] = useState(initStakedData)
+  const [holdingData, setHoldingData] = useState(defaultHoldingData)
   const [holdingDataAggregated, setHoldingDataAggregated] =
-    useState(defaultHoldingData);
-  const [historyData, setHistoryData] = useState(initHistoryData);
+    useState(defaultHoldingData)
+  const [historyData, setHistoryData] = useState(initHistoryData)
   const [historyDataAggregated, setHistoryDataAggregated] =
-    useState(initHistoryData);
-  const [assetList, setAssetList] = useState(assetListArray(rawData2));
-  const [imgNftList, setImgNftList] = useState([]);
-  const [audNftList, setAudNftList] = useState([]);
-  const [priceDataErgopad, setPriceDataErgopad] = useState({});
-  const [priceDataVested, setPriceDataVested] = useState({});
-  const [priceDataStaked, setPriceDataStaked] = useState({});
-  const [priceHistoryData, setPriceHistoryData] = useState([]);
-  const [addVestingTableTokens, setAddVestingTable] = useState(true);
-  const [addStakingTableTokens, setAddStakingTable] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [loadingVestingTable, setLoadingVestingTable] = useState(false);
-  const [loadingStakingTable, setLoadingStakingTable] = useState(false);
-  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
-  const [navigatorLanguage, setNavigatorLanguage] = useState('en-US');
-  const [walletAddresses, setWalletAddresses] = useState([]);
-  const [addressesWithType, setAddressesWithType] = useState([]);
+    useState(initHistoryData)
+  const [assetList, setAssetList] = useState(assetListArray(rawData2))
+  const [imgNftList, setImgNftList] = useState([])
+  const [audNftList, setAudNftList] = useState([])
+  const [priceDataErgopad, setPriceDataErgopad] = useState({})
+  const [priceDataVested, setPriceDataVested] = useState({})
+  const [priceDataStaked, setPriceDataStaked] = useState({})
+  const [priceHistoryData, setPriceHistoryData] = useState([])
+  const [addVestingTableTokens, setAddVestingTable] = useState(true)
+  const [addStakingTableTokens, setAddStakingTable] = useState(true)
+  const [loading, setLoading] = useState(false)
+  const [loadingVestingTable, setLoadingVestingTable] = useState(false)
+  const [loadingStakingTable, setLoadingStakingTable] = useState(false)
+  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'))
+  const [navigatorLanguage, setNavigatorLanguage] = useState('en-US')
+  const [walletAddresses, setWalletAddresses] = useState([])
+  const [addressesWithType, setAddressesWithType] = useState([])
 
-  const { wallet, providerLoading, sessionStatus } = useWallet();
-  const shouldFetch = sessionStatus === 'authenticated';
+  const { wallet, providerLoading, sessionStatus } = useWallet()
+  const shouldFetch = sessionStatus === 'authenticated'
   const walletsQuery = trpc.user.getWallets.useQuery(undefined, {
     refetchOnWindowFocus: false,
     enabled: shouldFetch,
-  });
+  })
   const getWallets = async () => {
     if (sessionStatus !== 'authenticated') {
-      return [];
+      return []
     }
-    const fetchResult = await walletsQuery?.refetch();
-    return fetchResult && fetchResult.data ? fetchResult.data.wallets : [];
-  };
+    const fetchResult = await walletsQuery?.refetch()
+    return fetchResult && fetchResult.data ? fetchResult.data.wallets : []
+  }
   useEffect(() => {
     // load staked tokens for primary wallet address
     const getStaked = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
-        const wallets = await getWallets();
-        const addressesWithType = [];
+        const wallets = await getWallets()
+        const addressesWithType = []
 
         if (wallets && wallets.length > 0) {
           for (let thisWallet of wallets) {
-            const walletType = thisWallet.type; // Extracting the type from the wallet object
+            const walletType = thisWallet.type // Extracting the type from the wallet object
             for (let address of thisWallet.unusedAddresses) {
-              addressesWithType.push({ address: address, type: walletType });
+              addressesWithType.push({ address: address, type: walletType })
             }
             for (let address of thisWallet.usedAddresses) {
-              addressesWithType.push({ address: address, type: walletType });
+              addressesWithType.push({ address: address, type: walletType })
             }
             addressesWithType.push({
               address: thisWallet.changeAddress,
               type: walletType,
-            });
+            })
           }
         }
 
         // Extracting unique addresses
         const uniqueAddresses = [
           ...new Set(addressesWithType.map((a) => a.address)),
-        ];
-        setWalletAddresses(uniqueAddresses);
+        ]
+        setWalletAddresses(uniqueAddresses)
         setAddressesWithType(
           addressesWithType.filter(
             (elem, index) =>
               addressesWithType.findIndex(
-                (obj) => obj.address === elem.address,
-              ) === index,
-          ),
-        );
+                (obj) => obj.address === elem.address
+              ) === index
+          )
+        )
       } catch (e) {
-        console.log('ERROR FETCHING: ', e);
+        console.log('ERROR FETCHING: ', e)
       }
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
     if (wallet !== '' && sessionStatus === 'authenticated') {
-      getStaked();
+      getStaked()
     }
-  }, [wallet]);
+  }, [wallet])
 
   useEffect(() => {
-    let mounted = true;
+    let mounted = true
     if (mounted) {
-      setNavigatorLanguage(navigator.language);
+      setNavigatorLanguage(navigator.language)
     }
-    return () => (mounted = false);
-  }, []);
+    return () => (mounted = false)
+  }, [])
 
   useEffect(() => {
-    setHoldingData(wantedHoldingData); // Setting the data that we want to display
-  }, []);
+    setHoldingData(wantedHoldingData) // Setting the data that we want to display
+  }, [])
 
   const noAssetSetup = () => {
     const noAssetList = [
@@ -185,17 +185,17 @@ const Dashboard = () => {
         id: 0,
         name: 'No assets',
       },
-    ];
-    setAssetList(noAssetList);
-    setAudNftList(noAssetList);
-    setImgNftList(noAssetList);
-    const noAssetArray = tokenDataArray(rawData2);
-    setHoldingData(noAssetArray);
-    setHistoryData(initHistoryData);
-    setStakedTokens(initStakedData);
-    setVestedTokens([]);
-    setVestedTokensNFT({});
-  };
+    ]
+    setAssetList(noAssetList)
+    setAudNftList(noAssetList)
+    setImgNftList(noAssetList)
+    const noAssetArray = tokenDataArray(rawData2)
+    setHoldingData(noAssetArray)
+    setHistoryData(initHistoryData)
+    setStakedTokens(initStakedData)
+    setVestedTokens([])
+    setVestedTokensNFT({})
+  }
 
   useMemo(() => {
     async function getWalletData(addresses) {
@@ -204,63 +204,63 @@ const Dashboard = () => {
           'Content-Type': 'application/json',
           // Authorization: auth?.accessToken ? `Bearer ${auth.accessToken}` : '',
         },
-      };
+      }
 
-      setLoading(true);
+      setLoading(true)
       const balances = await axios
         .post(`${process.env.API_URL}/asset/balances/`, {
           addresses: addresses,
         })
         .catch((err) => {
-          console.log('ERROR FETCHING: ', err);
+          console.log('ERROR FETCHING: ', err)
           return {
             data: {},
-          };
-        });
-      const balance = reduceBalances(balances.data);
+          }
+        })
+      const balance = reduceBalances(balances.data)
 
       if (balance) {
-        const victoryData = tokenDataArray(balance);
+        const victoryData = tokenDataArray(balance)
         // create list of assets
-        const initialAssetList = assetListArray(balance);
+        const initialAssetList = assetListArray(balance)
 
-        const newImgNftList = [];
-        const newAudNftList = [];
-        const newAssetList = [];
+        const newImgNftList = []
+        const newAudNftList = []
+        const newAssetList = []
 
         /**
          * Collect promises from ergoplatform and resolve them asynchronously
          */
-        const assetListPromises = [];
-        const indexMapper = {};
+        const assetListPromises = []
+        const indexMapper = {}
         for (let i = 0; i < initialAssetList.length; i++) {
           if (initialAssetList[i].id != 'ergid') {
-            const promise = getIssuingBoxPromise(initialAssetList[i].id);
-            indexMapper[initialAssetList[i].id] = i;
-            assetListPromises.push(promise);
+            const promise = getIssuingBoxPromise(initialAssetList[i].id)
+            indexMapper[initialAssetList[i].id] = i
+            assetListPromises.push(promise)
           } else {
-            newAssetList[newAssetList.length] = initialAssetList[i];
+            newAssetList[newAssetList.length] = initialAssetList[i]
           }
         }
 
         // resolve the promises
-        const resolvedAssetList = await Promise.all(assetListPromises);
+        const resolvedAssetList = await Promise.all(assetListPromises)
         resolvedAssetList.forEach((res) => {
           if (res?.data) {
-            const data = res?.data;
-            const i = indexMapper[data[0].assets[0].tokenId];
+            const data = res?.data
+            const i = indexMapper[data[0].assets[0].tokenId]
             // cache issuing box
-            setIssuingBox(initialAssetList[i].id, res);
+            setIssuingBox(initialAssetList[i].id, res)
             const tokenObject = {
               name: data[0].assets[0].name,
               ch: data[0].creationHeight,
               description: toUtf8String(
-                data[0].additionalRegisters.R5,
+                data[0].additionalRegisters.R5
               ).substring(2),
               r7: data[0].additionalRegisters.R7,
               r9: data[0].additionalRegisters?.R9
                 ? resolveIpfs(
-                    toUtf8String(data[0].additionalRegisters?.R9).substring(2),
+                    toUtf8String(data[0].additionalRegisters?.R9).substring(2)
                   )
                 : undefined,
               r5: toUtf8String(data[0].additionalRegisters.R5).substring(2),
@@ -273,7 +273,7 @@ const Dashboard = () => {
               amountUSD: initialAssetList[i].amountUSD
                 ? initialAssetList[i].amountUSD
                 : '',
-            };
+            }
 
             // if audio NFT
             if (
@@ -285,7 +285,7 @@ const Dashboard = () => {
               tokenObject.ext == 'aiff' ||
               tokenObject.r7 == '0e020102'
             ) {
-              newAudNftList[newAudNftList.length] = tokenObject;
+              newAudNftList[newAudNftList.length] = tokenObject
             }
             // if image NFT
             else if (
@@ -300,138 +300,138 @@ const Dashboard = () => {
               tokenObject.r7 == '0e020101' ||
               tokenObject.r7 == '0e0430313031'
             ) {
-              newImgNftList[newImgNftList.length] = tokenObject;
+              newImgNftList[newImgNftList.length] = tokenObject
             } else {
-              newAssetList[newAssetList.length] = tokenObject;
+              newAssetList[newAssetList.length] = tokenObject
             }
           }
-        });
+        })
 
         try {
           const res = await axios.get(
             `${process.env.API_URL}/asset/price/history/all?stepSize=${STEP_SIZE}&stepUnit=${STEP_UNIT}&limit=26`,
-            { ...defaultOptions },
-          );
-          const priceHistory = res.data;
-          const amountData = historyDataArray(balance);
-          const orderingData = historyDataOrdering(balance);
+            { ...defaultOptions }
+          )
+          const priceHistory = res.data
+          const amountData = historyDataArray(balance)
+          const orderingData = historyDataOrdering(balance)
           const totals = calculateHistoricTotal(
             priceHistory,
             amountData,
-            orderingData,
-          );
-          setHistoryData(totals);
+            orderingData
+          )
+          setHistoryData(totals)
           // store current ergopad price
           const ergopadPrice = res.data
             .filter((pt) => pt.token === 'ergopad')
-            .map((token) => token.history[0].price);
+            .map((token) => token.history[0].price)
           setPriceDataErgopad({
             ergopad: ergopadPrice.length ? ergopadPrice[0] : 0,
-          });
-          setPriceHistoryData([...res.data]);
+          })
+          setPriceHistoryData([...res.data])
         } catch (e) {
-          console.log('Error: building history', e);
+          console.log('Error: building history', e)
         }
 
-        setHoldingData(victoryData);
-        setAssetList(newAssetList);
-        setAudNftList(newAudNftList);
-        setImgNftList(newImgNftList);
+        setHoldingData(victoryData)
+        setAssetList(newAssetList)
+        setAudNftList(newAudNftList)
+        setImgNftList(newImgNftList)
       }
 
-      setLoading(false);
+      setLoading(false)
     }
 
     const getVestedTokenData = async (addresses) => {
-      setLoadingVestingTable(true);
+      setLoadingVestingTable(true)
       const defaultOptions = {
         headers: {
           'Content-Type': 'application/json',
         },
-      };
+      }
 
       // Function to fetch vested tokens for a single address
       const fetchVestedTokensForAddress = async (addressObject) => {
-        const { address, type } = addressObject;
+        const { address, type } = addressObject
         const vestedTokensNFTResponse = await axios
           .post(
             `${process.env.API_URL}/vesting/v2/`,
             { addresses: [address] },
-            { ...defaultOptions },
+            { ...defaultOptions }
           )
           .catch((e) => {
-            console.log('ERROR FETCHING', e);
+            console.log('ERROR FETCHING', e)
             return {
               data: [],
-            };
-          });
+            }
+          })
 
         // Append the address and type to the data
         for (let key in vestedTokensNFTResponse.data) {
           vestedTokensNFTResponse.data[key].forEach((item) => {
-            item.address = address;
-            item.type = type; // Include the 'type' property
-          });
+            item.address = address
+            item.type = type // Include the 'type' property
+          })
         }
 
-        return vestedTokensNFTResponse.data;
-      };
+        return vestedTokensNFTResponse.data
+      }
 
       // Fetch vested tokens for all addresses
       const allVestedTokens = await Promise.all(
-        addresses.map(fetchVestedTokensForAddress),
-      );
+        addresses.map(fetchVestedTokensForAddress)
+      )
 
       // Combine all responses
       const combinedData = allVestedTokens.reduce((acc, currData) => {
         for (let key in currData) {
           if (!acc[key]) {
-            acc[key] = [];
+            acc[key] = []
           }
-          acc[key].push(...currData[key]);
+          acc[key].push(...currData[key])
         }
-        return acc;
-      }, {});
+        return acc
+      }, {})
       // console.log(combinedData);
-      setVestedTokensNFT(combinedData);
+      setVestedTokensNFT(combinedData)
 
-      const tokens = Object.keys(combinedData);
+      const tokens = Object.keys(combinedData)
       try {
-        const pricesObject = {};
+        const pricesObject = {}
         const tokenPrices = await axios.post(
           `${process.env.API_URL}/asset/prices`,
-          { tokens: tokens },
-        );
+          { tokens: tokens }
+        )
         tokenPrices.data.forEach((price) => {
-          pricesObject[price.name] = price.price;
-        });
-        setPriceDataVested(pricesObject);
+          pricesObject[price.name] = price.price
+        })
+        setPriceDataVested(pricesObject)
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
-      setLoadingVestingTable(false);
-    };
+      setLoadingVestingTable(false)
+    }
 
     const getStakedTokenData = async (addresses) => {
-      setLoadingStakingTable(true);
+      setLoadingStakingTable(true)
       const defaultOptions = {
         headers: {
           'Content-Type': 'application/json',
         },
-      };
+      }
 
       const stakedTokens = await axios
         .post(
           `${process.env.API_URL}/staking/staked-all/`,
           { addresses: [...addresses] },
-          { ...defaultOptions },
+          { ...defaultOptions }
         )
         .catch((e) => {
-          console.log('ERROR FETCHING', e);
+          console.log('ERROR FETCHING', e)
           return {
             data: [],
-          };
-        });
+          }
+        })
 
       // stakedTokens.data
       //
@@ -457,69 +457,69 @@ const Dashboard = () => {
       //   ],
       // }
       if (stakedTokens.data.length > 0) {
-        setStakedTokens(stakedTokens.data);
-        const tokens = stakedTokens.data.map((token) => token.tokenName);
+        setStakedTokens(stakedTokens.data)
+        const tokens = stakedTokens.data.map((token) => token.tokenName)
         try {
-          const pricesObject = {};
+          const pricesObject = {}
           const tokenPrices = await axios.post(
             `${process.env.API_URL}/asset/prices`,
-            { tokens: tokens },
-          );
+            { tokens: tokens }
+          )
           tokenPrices.data.forEach((price) => {
-            pricesObject[price.name] = price.price;
-          });
-          setPriceDataStaked(pricesObject);
+            pricesObject[price.name] = price.price
+          })
+          setPriceDataStaked(pricesObject)
         } catch (e) {
-          console.log(e);
+          console.log(e)
         }
       }
-      setLoadingStakingTable(false);
-    };
+      setLoadingStakingTable(false)
+    }
 
     // const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
     //   (x, i, a) => a.indexOf(x) == i && x
     // );
     if (walletAddresses?.length > 0) {
-      getWalletData(walletAddresses);
-      getVestedTokenData(addressesWithType);
-      getStakedTokenData(walletAddresses);
+      getWalletData(walletAddresses)
+      getVestedTokenData(addressesWithType)
+      getStakedTokenData(walletAddresses)
     } else {
-      noAssetSetup();
+      noAssetSetup()
     }
-  }, [wallet, walletAddresses]);
+  }, [wallet, walletAddresses])
 
   useEffect(() => {
     // previous state
-    const holdingState = JSON.parse(JSON.stringify(holdingData));
-    const historyState = JSON.parse(JSON.stringify(historyData));
+    const holdingState = JSON.parse(JSON.stringify(holdingData))
+    const historyState = JSON.parse(JSON.stringify(historyData))
     // build new state
     if (addVestingTableTokens) {
       if (priceDataErgopad?.ergopad) {
         try {
           // vesting ergopad
           const ergopadValueOpt = vestedTokens.filter(
-            (token) => token.tokenId === ERGOPAD_TOKEN,
-          );
+            (token) => token.tokenId === ERGOPAD_TOKEN
+          )
           if (ergopadValueOpt.length) {
             const ergopadValue =
-              ergopadValueOpt[0].totalVested * priceDataErgopad.ergopad;
-            holdingState.push({ x: 'ergopad (vesting)', y: ergopadValue });
+              ergopadValueOpt[0].totalVested * priceDataErgopad.ergopad
+            holdingState.push({ x: 'ergopad (vesting)', y: ergopadValue })
           }
           // vesting ergopad history
           const ergopadHistoryOpt = priceHistoryData.filter(
-            (token) => token.token === 'ergopad',
-          );
+            (token) => token.token === 'ergopad'
+          )
           if (ergopadValueOpt.length && ergopadHistoryOpt.length) {
             const history = ergopadHistoryOpt[0].history.map((pt) => {
               return {
                 timestamp: pt.timestamp,
                 value: pt.price * ergopadValueOpt[0].totalVested,
-              };
-            });
-            historyState.push({ token: 'ergopad (vesting)', history: history });
+              }
+            })
+            historyState.push({ token: 'ergopad (vesting)', history: history })
           }
         } catch (e) {
-          console.log(e);
+          console.log(e)
         }
       }
       // vested with NFT
@@ -527,9 +527,9 @@ const Dashboard = () => {
         return {
           x: price.name + ' (vesting)',
           y: price.amount * (priceDataVested[price.name] ?? 0),
-        };
-      });
-      holdingState.push(...reducedVestedNFT);
+        }
+      })
+      holdingState.push(...reducedVestedNFT)
     }
     if (addStakingTableTokens) {
       // staked
@@ -538,35 +538,35 @@ const Dashboard = () => {
           return {
             x: price.name + ' (staked)',
             y: price.amount * (priceDataStaked[price.name] ?? 0),
-          };
-        });
-        holdingState.push(...reducedStaked);
+          }
+        })
+        holdingState.push(...reducedStaked)
       }
       // staked ergopad history
       const ergopadHistoryOpt = priceHistoryData.filter(
-        (token) => token.token === 'ergopad',
-      );
+        (token) => token.token === 'ergopad'
+      )
 
       if (stakedTokens.length > 0) {
         const ergopadValueOpt = reduceStaked(stakedTokens).filter((price) =>
-          price.name.toLowerCase().includes('ergopad'),
-        );
+          price.name.toLowerCase().includes('ergopad')
+        )
         if (ergopadValueOpt.length > 0 && ergopadHistoryOpt.length > 0) {
           const history = ergopadHistoryOpt[0].history.map((pt) => {
             return {
               timestamp: pt.timestamp,
               value: pt.price * ergopadValueOpt[0].amount,
-            };
-          });
+            }
+          })
           historyState.push({
             token: ergopadValueOpt[0].name + ' (staked)',
             history: history,
-          });
+          })
         }
       }
     }
-    setHoldingDataAggregated(holdingState);
-    setHistoryDataAggregated(historyState);
+    setHoldingDataAggregated(holdingState)
+    setHistoryDataAggregated(historyState)
   }, [
     addVestingTableTokens,
     addStakingTableTokens,
@@ -579,7 +579,7 @@ const Dashboard = () => {
     priceDataVested,
     priceDataStaked,
     priceHistoryData,
-  ]);
+  ])
 
   return (
     <>
@@ -751,75 +751,75 @@ const Dashboard = () => {
         </Grid>
       </Container>
     </>
-  );
-};
+  )
+}
 
 function tokenDataArray(data) {
-  const tokenObject = data.tokens;
-  const keys = Object.keys(tokenObject);
-  const res = [];
+  const tokenObject = data.tokens
+  const keys = Object.keys(tokenObject)
+  const res = []
   for (let i = 0; i < keys.length; i++) {
-    const token = tokenObject[keys[i]];
+    const token = tokenObject[keys[i]]
     const obj = {
       x: token.name,
       y: token.price * (token.amount * Math.pow(10, -token.decimals)),
-    };
-    if (token.price > 0) res.push(obj);
+    }
+    if (token.price > 0) res.push(obj)
   }
   const ergoValue = {
     x: 'Ergo',
     y: data.price * data.balance,
-  };
-  if (ergoValue.y > 0) res.unshift(ergoValue);
-  return res;
+  }
+  if (ergoValue.y > 0) res.unshift(ergoValue)
+  return res
 }
 
 const historyDataOrdering = (data) => {
-  const tokenObject = data.tokens;
-  const keys = Object.keys(tokenObject);
-  const res = {};
+  const tokenObject = data.tokens
+  const keys = Object.keys(tokenObject)
+  const res = {}
   for (let i = 0; i < keys.length; i++) {
-    const token = tokenObject[keys[i]];
-    if (token.price > 0) res[token.name.toLowerCase()] = i;
+    const token = tokenObject[keys[i]]
+    if (token.price > 0) res[token.name.toLowerCase()] = i
   }
-  const ergoValue = data.balance;
-  if (ergoValue > 0) res['ergo'] = -1;
-  return res;
-};
+  const ergoValue = data.balance
+  if (ergoValue > 0) res['ergo'] = -1
+  return res
+}
 
 const historyDataArray = (data) => {
-  const tokenObject = data.tokens;
-  const keys = Object.keys(tokenObject);
-  const res = {};
+  const tokenObject = data.tokens
+  const keys = Object.keys(tokenObject)
+  const res = {}
   for (let i = 0; i < keys.length; i++) {
-    const token = tokenObject[keys[i]];
+    const token = tokenObject[keys[i]]
     if (token.price > 0)
       res[token.name.toLowerCase()] = {
         name: token.name,
         amount: token.amount * Math.pow(10, -token.decimals),
-      };
+      }
   }
-  const ergoValue = data.balance;
-  if (ergoValue > 0) res['ergo'] = { name: 'Ergo', amount: ergoValue };
-  return res;
-};
+  const ergoValue = data.balance
+  if (ergoValue > 0) res['ergo'] = { name: 'Ergo', amount: ergoValue }
+  return res
+}
 
 function assetListArray(data) {
-  const tokenObject = data.tokens;
-  const keys = Object.keys(tokenObject);
-  const res = [];
+  const tokenObject = data.tokens
+  const keys = Object.keys(tokenObject)
+  const res = []
   for (let i = 0; i < keys.length; i++) {
-    const token = tokenObject[keys[i]];
-    const amount = +parseFloat(token.amount * Math.pow(10, -token.decimals));
-    const price = token.price * amount;
+    const token = tokenObject[keys[i]]
+    const amount = +parseFloat(token.amount * Math.pow(10, -token.decimals))
+    const price = token.price * amount
     const obj = {
       token: token.name ? token.name.substring(0, 3).toUpperCase() : '',
       name: token.name ? token.name : '',
       id: token.tokenId,
       amount: amount,
       amountUSD: price,
-    };
-    res.push(obj);
+    }
+    res.push(obj)
   }
   const ergoValue = {
     token: 'ERG',
@@ -827,33 +827,33 @@ function assetListArray(data) {
     id: 'ergid',
     amount: data.balance,
     amountUSD: data.price * data.balance,
-  };
-  res.unshift(ergoValue);
-  return res;
+  }
+  res.unshift(ergoValue)
+  return res
 }
 
 function sumTotals(data) {
-  const value = data.map((item) => item.y).reduce((a, b) => a + b, 0);
-  return value;
+  const value = data.map((item) => item.y).reduce((a, b) => a + b, 0)
+  return value
 }
 
 function toUtf8String(hex) {
   if (!hex) {
-    hex = '';
+    hex = ''
   }
-  var str = '';
+  var str = ''
   for (var i = 0; i < hex.length; i += 2) {
-    str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+    str += String.fromCharCode(parseInt(hex.substr(i, 2), 16))
   }
-  return str;
+  return str
 }
 
 function resolveIpfs(url) {
-  const ipfsPrefix = 'ipfs://';
+  const ipfsPrefix = 'ipfs://'
   if (!url.startsWith(ipfsPrefix) && url.startsWith('http://'))
-    return 'https://' + url.substring(7);
-  else if (!url.startsWith(ipfsPrefix)) return url;
-  else return url.replace(ipfsPrefix, `https://cloudflare-ipfs.com/ipfs/`);
+    return 'https://' + url.substring(7)
+  else if (!url.startsWith(ipfsPrefix)) return url
+  else return url.replace(ipfsPrefix, `https://cloudflare-ipfs.com/ipfs/`)
 }
 
 const calculateHistoricTotal = (priceHistory, amountData, orderingData) => {
@@ -868,53 +868,53 @@ const calculateHistoricTotal = (priceHistory, amountData, orderingData) => {
             value:
               dataPoint.price *
               amountData[tokenData.token.toLowerCase()].amount,
-          };
+          }
         }),
-      };
-    });
+      }
+    })
   ret.sort(
     (a, b) =>
-      orderingData[a.token.toLowerCase()] - orderingData[b.token.toLowerCase()],
-  );
-  return ret;
-};
+      orderingData[a.token.toLowerCase()] - orderingData[b.token.toLowerCase()]
+  )
+  return ret
+}
 
 const reduceBalances = (balances) => {
   try {
     if (Object.keys(balances).length === 0) {
-      return null;
+      return null
     }
     const ret = {
       balance: 0,
       tokens: [],
       price: 1,
-    };
+    }
     // aggregate
     const ergo = Object.keys(balances.addresses)
       .map((address) => balances.addresses[address].balance ?? 0.0)
-      .reduce((a, c) => a + c, 0);
-    ret.balance = ergo;
-    ret.price = balances.price;
+      .reduce((a, c) => a + c, 0)
+    ret.balance = ergo
+    ret.price = balances.price
     // aggregate tokens
-    const tokenMap = {};
+    const tokenMap = {}
     Object.keys(balances.addresses).forEach((address) => {
-      const tokens = balances.addresses[address].tokens ?? [];
+      const tokens = balances.addresses[address].tokens ?? []
       tokens.forEach((token) => {
         if (tokenMap[token.tokenId]) {
-          tokenMap[token.tokenId].amount += token.amount;
+          tokenMap[token.tokenId].amount += token.amount
         } else {
-          tokenMap[token.tokenId] = token;
+          tokenMap[token.tokenId] = token
         }
-      });
-    });
-    const tokens = Object.values(tokenMap);
-    ret.tokens = tokens;
-    return ret;
+      })
+    })
+    const tokens = Object.values(tokenMap)
+    ret.tokens = tokens
+    return ret
   } catch (e) {
-    console.log(e);
-    return null;
+    console.log(e)
+    return null
   }
-};
+}
 
 // const reduceVested = (vestedData) => {
 //   const vested = JSON.parse(JSON.stringify(vestedData));
@@ -940,42 +940,39 @@ const reduceVestedNFT = (vestedData) => {
       amount: vestedData[token]
         .map((box) => box.Remaining)
         .reduce((a, c) => a + c, 0),
-    };
-  });
-};
+    }
+  })
+}
 
 const reduceStaked = (stakedData) => {
   return stakedData.map((data) => {
     return {
       name: data.tokenName,
       amount: data.totalStaked,
-    };
-  });
-};
+    }
+  })
+}
 
 const generateIssueingBoxStorageKey = (id) => {
-  return `issuing_box_${id}_87126`;
-};
+  return `issuing_box_${id}_87126`
+}
 
 const getIssuingBoxPromise = (id) => {
-  const box = localStorage.getItem(generateIssueingBoxStorageKey(id));
+  const box = localStorage.getItem(generateIssueingBoxStorageKey(id))
   if (box === null) {
     return axios
       .get(`https://api.ergoplatform.com/api/v0/assets/${id}/issuingBox`)
       .catch((err) => {
-        console.log('ERROR FETCHING: ', err);
-      });
+        console.log('ERROR FETCHING: ', err)
+      })
   }
-  return JSON.parse(box);
-};
+  return JSON.parse(box)
+}
 
 const setIssuingBox = (id, res) => {
   if (res?.data) {
-    localStorage.setItem(
-      generateIssueingBoxStorageKey(id),
-      JSON.stringify(res),
-    );
+    localStorage.setItem(generateIssueingBoxStorageKey(id), JSON.stringify(res))
   }
-};
+}
 
-export default Dashboard;
+export default Dashboard

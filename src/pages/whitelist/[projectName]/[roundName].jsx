@@ -1,5 +1,5 @@
-import { useState, useEffect, forwardRef } from 'react';
-import { useRouter } from 'next/router';
+import { useState, useEffect, forwardRef } from 'react'
+import { useRouter } from 'next/router'
 import {
   Typography,
   Grid,
@@ -15,112 +15,112 @@ import {
   FilledInput,
   FormHelperText,
   CircularProgress,
-} from '@mui/material';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-import TelegramIcon from '@mui/icons-material/Telegram';
-import DiscordIcon from '@components/DiscordIcon';
-import PageTitle from '@components/PageTitle';
-import CenterTitle from '@components/CenterTitle';
-import MarkdownRender from '@components/MarkdownRender';
-import theme from '@styles/theme';
-import { useWallet } from '@contexts/WalletContext';
-import { useAddWallet } from '@contexts/AddWalletContext';
-import axios from 'axios';
+} from '@mui/material'
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import TelegramIcon from '@mui/icons-material/Telegram'
+import DiscordIcon from '@components/DiscordIcon'
+import PageTitle from '@components/PageTitle'
+import CenterTitle from '@components/CenterTitle'
+import MarkdownRender from '@components/MarkdownRender'
+import theme from '@styles/theme'
+import { useWallet } from '@contexts/WalletContext'
+import { useAddWallet } from '@contexts/AddWalletContext'
+import axios from 'axios'
 
 const Alert = forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 // states
-const NOT_STARTED = 'NOT_STARTED';
-const PUBLIC = 'PUBLIC';
-const ROUND_END = 'ROUND_END';
+const NOT_STARTED = 'NOT_STARTED'
+const PUBLIC = 'PUBLIC'
+const ROUND_END = 'ROUND_END'
 
 const initialFormData = Object.freeze({
   email: '',
   ergoAddress: '',
   sigValue: 0,
-});
+})
 
 const initialFormErrors = Object.freeze({
   email: false,
   ergoAddress: false,
   sigValue: false,
-});
+})
 
 const defaultOptions = {
   headers: {
     'Content-Type': 'application/json',
   },
-};
+}
 
-const emailRegex = /\S+@\S+\.\S+/;
+const emailRegex = /\S+@\S+\.\S+/
 
 const Whitelist = () => {
   // routing
-  const router = useRouter();
-  const { projectName, roundName } = router.query;
+  const router = useRouter()
+  const { projectName, roundName } = router.query
   // whitelist data
-  const [whitelistData, setWhitelistData] = useState(null);
-  const [whitelistState, setWhitelistState] = useState(NOT_STARTED);
-  const [whitelistLoading, setWhitelistLoading] = useState(true);
-  const [checkboxState, setCheckboxState] = useState([]);
+  const [whitelistData, setWhitelistData] = useState(null)
+  const [whitelistState, setWhitelistState] = useState(NOT_STARTED)
+  const [whitelistLoading, setWhitelistLoading] = useState(true)
+  const [checkboxState, setCheckboxState] = useState([])
   // set true to disable submit button
-  const [buttonDisabled, setbuttonDisabled] = useState(true);
+  const [buttonDisabled, setbuttonDisabled] = useState(true)
   // form data
-  const [formErrors, setFormErrors] = useState(initialFormErrors);
-  const [formData, updateFormData] = useState(initialFormData);
+  const [formErrors, setFormErrors] = useState(initialFormErrors)
+  const [formData, updateFormData] = useState(initialFormData)
   // loading spinner for submit button
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false)
   // open success modal
-  const [openSuccess, setOpenSuccess] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('Saved');
+  const [openSuccess, setOpenSuccess] = useState(false)
+  const [successMessage, setSuccessMessage] = useState('Saved')
   // change error message for error snackbar
-  const [openError, setOpenError] = useState(false);
+  const [openError, setOpenError] = useState(false)
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again',
-  );
+    'Please eliminate form errors and try again'
+  )
   // total staked
-  const [totalStaked, setTotalStaked] = useState(0);
+  const [totalStaked, setTotalStaked] = useState(0)
   // brings wallet data from AddWallet modal component. Will load from localStorage if wallet is set
-  const { wallet } = useWallet();
-  const { setAddWalletOpen } = useAddWallet();
+  const { wallet } = useWallet()
+  const { setAddWalletOpen } = useAddWallet()
 
   const openWalletAdd = () => {
-    setAddWalletOpen(true);
-  };
+    setAddWalletOpen(true)
+  }
 
   useEffect(() => {
     const getWhitelistData = async () => {
-      setWhitelistLoading(true);
+      setWhitelistLoading(true)
       try {
         const res = await axios.get(
-          `${process.env.API_URL}/whitelist/events/${projectName}/${roundName}?format=adjust_early_bird`,
-        );
-        setWhitelistData(res.data);
+          `${process.env.API_URL}/whitelist/events/${projectName}/${roundName}?format=adjust_early_bird`
+        )
+        setWhitelistData(res.data)
         setCheckboxState(
           res.data.checkBoxes.checkBoxText.map((text) => {
-            return { text: text, check: false };
-          }),
-        );
-        const startTime = Date.parse(res.data.start_dtz);
-        const endTime = Date.parse(res.data.end_dtz);
+            return { text: text, check: false }
+          })
+        )
+        const startTime = Date.parse(res.data.start_dtz)
+        const endTime = Date.parse(res.data.end_dtz)
         if (Date.now() < startTime) {
-          setWhitelistState(NOT_STARTED);
+          setWhitelistState(NOT_STARTED)
         } else if (Date.now() > endTime) {
-          setWhitelistState(ROUND_END);
+          setWhitelistState(ROUND_END)
         } else {
-          setWhitelistState(PUBLIC);
+          setWhitelistState(PUBLIC)
         }
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
-      setWhitelistLoading(false);
-    };
+      setWhitelistLoading(false)
+    }
 
-    if (projectName && roundName) getWhitelistData();
-  }, [projectName, roundName]);
+    if (projectName && roundName) getWhitelistData()
+  }, [projectName, roundName])
 
   useEffect(() => {
     const getErgoPadStaked = async () => {
@@ -130,65 +130,65 @@ const Whitelist = () => {
           {
             addresses: [wallet],
           },
-          defaultOptions,
-        );
-        setTotalStaked(Math.round(res.data.totalStaked * 100) / 100);
+          defaultOptions
+        )
+        setTotalStaked(Math.round(res.data.totalStaked * 100) / 100)
       } catch (e) {
-        setTotalStaked(0);
-        console.log(e);
+        setTotalStaked(0)
+        console.log(e)
       }
-    };
+    }
 
     updateFormData({
       ...initialFormData,
       ergoAddress: wallet,
-    });
+    })
     if (wallet) {
       // get ergopad staked from address
-      getErgoPadStaked();
+      getErgoPadStaked()
       setFormErrors({
         ...initialFormErrors,
         ergoAddress: false,
-      });
+      })
     } else {
-      setTotalStaked(0);
+      setTotalStaked(0)
       setFormErrors({
         ...initialFormErrors,
         ergoAddress: true,
-      });
+      })
     }
-  }, [wallet]);
+  }, [wallet])
 
   useEffect(() => {
     if (isLoading) {
-      setbuttonDisabled(true);
+      setbuttonDisabled(true)
     } else {
-      setbuttonDisabled(false);
+      setbuttonDisabled(false)
     }
-  }, [isLoading]);
+  }, [isLoading])
 
   const checkboxError =
-    checkboxState.filter((checkBoxes) => !checkBoxes.check).length !== 0;
+    checkboxState.filter((checkBoxes) => !checkBoxes.check).length !== 0
 
   useEffect(() => {
     if (!checkboxError && whitelistState === PUBLIC) {
-      setbuttonDisabled(false);
+      setbuttonDisabled(false)
     } else {
-      setbuttonDisabled(true);
+      setbuttonDisabled(true)
     }
-  }, [checkboxError, whitelistState]);
+  }, [checkboxError, whitelistState])
 
   const handleChange = (e) => {
     if (e.target.value == '' && e.target.name !== 'email') {
       setFormErrors({
         ...formErrors,
         [e.target.name]: true,
-      });
+      })
     } else {
       setFormErrors({
         ...formErrors,
         [e.target.name]: false,
-      });
+      })
     }
 
     if (e.target.name === 'email') {
@@ -196,12 +196,12 @@ const Whitelist = () => {
         setFormErrors({
           ...formErrors,
           email: false,
-        });
+        })
       } else {
         setFormErrors({
           ...formErrors,
           email: true,
-        });
+        })
       }
     }
 
@@ -213,19 +213,19 @@ const Whitelist = () => {
         setFormErrors({
           ...formErrors,
           sigValue: false,
-        });
+        })
       } else {
-        const sigNumber = Number(e.target.value);
+        const sigNumber = Number(e.target.value)
         if (sigNumber <= whitelistData.individualCap && sigNumber > 0) {
           setFormErrors({
             ...formErrors,
             sigValue: false,
-          });
+          })
         } else {
           setFormErrors({
             ...formErrors,
             sigValue: true,
-          });
+          })
         }
       }
     }
@@ -235,8 +235,8 @@ const Whitelist = () => {
 
       // Trimming any whitespace
       [e.target.name]: e.target.value.trim(),
-    });
-  };
+    })
+  }
 
   const handleChecked = (e) => {
     setCheckboxState(
@@ -245,32 +245,32 @@ const Whitelist = () => {
           return {
             ...checkbox,
             check: e.target.checked,
-          };
+          }
         }
-        return checkbox;
-      }),
-    );
-  };
+        return checkbox
+      })
+    )
+  }
 
   // snackbar for error reporting
   const handleCloseError = (event, reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
-    setOpenError(false);
-  };
+    setOpenError(false)
+  }
 
   // modal for success message
   const handleCloseSuccess = () => {
-    setOpenSuccess(false);
-  };
+    setOpenSuccess(false)
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+    e.preventDefault()
+    setLoading(true)
 
-    const emptyCheck = formData.ergoAddress !== '' && formData.sigValue !== 0;
-    const errorCheck = Object.values(formErrors).every((v) => v === false);
+    const emptyCheck = formData.ergoAddress !== '' && formData.sigValue !== 0
+    const errorCheck = Object.values(formErrors).every((v) => v === false)
 
     const form = {
       name: '__anon_ergonaut',
@@ -278,63 +278,63 @@ const Whitelist = () => {
       sigValue: formData.sigValue === '[max]' ? 1 : formData.sigValue,
       ergoAddress: formData.ergoAddress,
       event: whitelistData.eventName,
-    };
+    }
 
     if (errorCheck && emptyCheck) {
       try {
         const res = await axios.post(
           `${process.env.API_URL}/whitelist/signup`,
-          { ...form },
-        );
+          { ...form }
+        )
         // modal for success message
         setSuccessMessage(
           whitelistData.additionalDetails.staker_snapshot_whitelist
             ? 'Saved'
-            : `Saved: ${res.data.detail}`,
-        );
-        setOpenSuccess(true);
+            : `Saved: ${res.data.detail}`
+        )
+        setOpenSuccess(true)
       } catch (err) {
         // snackbar for error message
         setErrorMessage(
-          'Error: ' + err.response.status + ' - ' + err.response.data,
-        );
-        setOpenError(true);
+          'Error: ' + err.response.status + ' - ' + err.response.data
+        )
+        setOpenError(true)
       }
     } else {
-      let updateErrors = {};
+      let updateErrors = {}
       Object.entries(formData).forEach((entry) => {
-        const [key, value] = entry;
+        const [key, value] = entry
         // special patch for email regex
         if (!['email', 'sigValue'].includes(key) && value == '') {
           // default
-          let newEntry = { [key]: true };
-          updateErrors = { ...updateErrors, ...newEntry };
+          let newEntry = { [key]: true }
+          updateErrors = { ...updateErrors, ...newEntry }
         } else if (
           key === 'email' &&
           !(emailRegex.test(value) || value === '')
         ) {
           // email check
-          let newEntry = { [key]: true };
-          updateErrors = { ...updateErrors, ...newEntry };
+          let newEntry = { [key]: true }
+          updateErrors = { ...updateErrors, ...newEntry }
         } else if (key === 'sigValue' && value === 0) {
           // handle sigValue case
-          let newEntry = { [key]: true };
-          updateErrors = { ...updateErrors, ...newEntry };
+          let newEntry = { [key]: true }
+          updateErrors = { ...updateErrors, ...newEntry }
         }
-      });
+      })
 
       setFormErrors({
         ...formErrors,
         ...updateErrors,
-      });
+      })
 
       // snackbar for error message
-      setErrorMessage('Please eliminate form errors and try again');
-      setOpenError(true);
+      setErrorMessage('Please eliminate form errors and try again')
+      setOpenError(true)
     }
     // turn off loading spinner for submit button
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   return (
     <>
@@ -542,7 +542,7 @@ const Whitelist = () => {
                                     name: 'sigValue',
                                     value: '[max]',
                                   },
-                                });
+                                })
                               }}
                             >
                               Max
@@ -645,7 +645,7 @@ const Whitelist = () => {
                       {whitelistState === NOT_STARTED &&
                         'This form is not yet active. The round will start at ' +
                           new Date(
-                            Date.parse(whitelistData.start_dtz),
+                            Date.parse(whitelistData.start_dtz)
                           ).toLocaleString(navigator.language, {
                             year: 'numeric',
                             month: 'short',
@@ -696,7 +696,7 @@ const Whitelist = () => {
         </>
       )}
     </>
-  );
-};
+  )
+}
 
-export default Whitelist;
+export default Whitelist

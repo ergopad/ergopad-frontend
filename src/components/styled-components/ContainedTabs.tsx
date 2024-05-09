@@ -7,25 +7,25 @@ import {
   useMediaQuery,
   TabsProps,
   TabProps,
-} from '@mui/material';
-import { FC, ReactNode } from 'react';
+} from '@mui/material'
+import { FC, ReactNode } from 'react'
 
 interface StyledTabsProps extends TabsProps {
-  sx?: SxProps<Theme>;
-  color?: string;
+  sx?: SxProps<Theme>
+  color?: string
 }
 
 export const ContainedTabs: FC<StyledTabsProps> = ({ sx, color, ...props }) => {
-  const theme = useTheme();
-  const upMd = useMediaQuery(theme.breakpoints.up('md'));
+  const theme = useTheme()
+  const upMd = useMediaQuery(theme.breakpoints.up('md'))
 
   const mergeSx = (defaultSx: SxProps<Theme>, newSx?: SxProps<Theme>) => {
-    if (!newSx) return defaultSx;
+    if (!newSx) return defaultSx
     return (theme: Theme) => ({
       ...(typeof defaultSx === 'function' ? defaultSx(theme) : defaultSx),
       ...(typeof newSx === 'function' ? newSx(theme) : newSx),
-    });
-  };
+    })
+  }
   return (
     <Tabs
       scrollButtons="auto"
@@ -53,27 +53,27 @@ export const ContainedTabs: FC<StyledTabsProps> = ({ sx, color, ...props }) => {
             justifyContent: upMd ? 'center' : null,
           },
         },
-        sx,
+        sx
       )}
       {...props}
     />
-  );
-};
+  )
+}
 
 interface StyledTabProps extends TabProps {
-  sx?: SxProps<Theme>;
+  sx?: SxProps<Theme>
 }
 
 export const ContainedTab: FC<StyledTabProps> = ({ sx, ...props }) => {
-  const theme = useTheme();
+  const theme = useTheme()
 
   const mergeSx = (defaultSx: SxProps<Theme>, newSx?: SxProps<Theme>) => {
-    if (!newSx) return defaultSx;
+    if (!newSx) return defaultSx
     return (theme: Theme) => ({
       ...(typeof defaultSx === 'function' ? defaultSx(theme) : defaultSx),
       ...(typeof newSx === 'function' ? newSx(theme) : newSx),
-    });
-  };
+    })
+  }
 
   return (
     <Tab
@@ -93,9 +93,9 @@ export const ContainedTab: FC<StyledTabProps> = ({ sx, ...props }) => {
             backgroundColor: 'rgba(100, 95, 228, 0.32)',
           },
         },
-        sx,
+        sx
       )}
       {...props}
     />
-  );
-};
+  )
+}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from 'react'
 import {
   Container,
   Typography,
@@ -14,10 +14,10 @@ import {
   useMediaQuery,
   useTheme,
   ListItemButton,
-} from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import DataTable from '@components/DataTable';
-import { scroller } from 'react-scroll';
+} from '@mui/material'
+import MenuIcon from '@mui/icons-material/Menu'
+import DataTable from '@components/DataTable'
+import { scroller } from 'react-scroll'
 
 const navBarLinks = [
   {
@@ -50,7 +50,7 @@ const navBarLinks = [
     icon: 'stacked_line_chart',
     link: 'staking',
   },
-];
+]
 
 const tokenomicsData = {
   header: ['Description', 'Value'],
@@ -65,7 +65,7 @@ const tokenomicsData = {
     ['Market cap at IDO', '800k sigUSD'],
     ['Total supply	', 400000000],
   ],
-};
+}
 
 const vestingData = {
   header: [
@@ -82,7 +82,7 @@ const vestingData = {
     ['DAO', 24000000, '30.3%', 'Quarterly for 6 Quarters'],
     ['Staking', 321000000, '-', 'Daily for 36 months'],
   ],
-};
+}
 
 const stakingTiers = {
   header: ['Tier', 'Amount', 'Allocation Weight'],
@@ -95,7 +95,7 @@ const stakingTiers = {
     ['(Φ) Phi', 500000, 420],
     ['(Σ) Sigma', 1500000, 1500],
   ],
-};
+}
 
 const earlyUnstakingTable = {
   header: ['Fee', 'Time staked'],
@@ -106,19 +106,19 @@ const earlyUnstakingTable = {
     ['5%', 'Between 6 and 8 weeks'],
     ['0%', 'More than 8 weeks'],
   ],
-};
+}
 
 const headingStyle = {
   fontWeight: '800',
   mt: { xs: '-100px', sm: '-110px', md: '-70px' },
   pt: { xs: '100px', sm: '110px', md: '70px' },
-};
+}
 
 const Whitepaper = () => {
-  const theme = useTheme();
-  const [mobileMenu, setMobileMenu] = useState(false);
+  const theme = useTheme()
+  const [mobileMenu, setMobileMenu] = useState(false)
 
-  const checkSmall = useMediaQuery(() => theme.breakpoints.up('md'));
+  const checkSmall = useMediaQuery(() => theme.breakpoints.up('md'))
 
   const toggleDrawer = (open: boolean) => (event: any) => {
     if (
@@ -126,18 +126,18 @@ const Whitepaper = () => {
       event.type === 'keydown' &&
       (event.key === 'Tab' || event.key === 'Shift')
     ) {
-      return;
+      return
     }
 
-    setMobileMenu(open);
-  };
+    setMobileMenu(open)
+  }
 
   const listItemSx = {
     borderRadius: '5px',
     '&:hover': {
       backgroundColor: 'rgba(255, 255, 255, 0.1)',
     },
-  };
+  }
 
   const navBarList = (
     <List>
@@ -146,7 +146,7 @@ const Whitepaper = () => {
           key={`scroller${i}`}
           sx={{ ...listItemSx }}
           onClick={() => {
-            scroller.scrollTo(link, { duration: 500, smooth: true });
+            scroller.scrollTo(link, { duration: 500, smooth: true })
           }}
         >
           <ListItemIcon>
@@ -156,7 +156,7 @@ const Whitepaper = () => {
         </ListItemButton>
       ))}
     </List>
-  );
+  )
 
   return (
     <Container maxWidth="lg" id="top">
@@ -416,7 +416,7 @@ const Whitepaper = () => {
         </Grid>
       </Grid>
     </Container>
-  );
-};
+  )
+}
 
-export default Whitepaper;
+export default Whitepaper

@@ -18,28 +18,28 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-} from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { forwardRef } from 'react';
-import { useEffect, useState } from 'react';
-import CircularProgress from '@mui/material/CircularProgress';
-import axios from 'axios';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-import { TransitionGroup } from 'react-transition-group';
-import { v4 as uuidv4 } from 'uuid';
-import NumberIncrement from '../NumberIncrement';
-import dayjs from 'dayjs';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+} from '@mui/material'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { forwardRef } from 'react'
+import { useEffect, useState } from 'react'
+import CircularProgress from '@mui/material/CircularProgress'
+import axios from 'axios'
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
+import { TransitionGroup } from 'react-transition-group'
+import { v4 as uuidv4 } from 'uuid'
+import NumberIncrement from '../NumberIncrement'
+import dayjs from 'dayjs'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 
-const utc = require('dayjs/plugin/utc');
-dayjs.extend(utc);
+const utc = require('dayjs/plugin/utc')
+dayjs.extend(utc)
 
 const Alert = forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 // {
 //   "roundName": "string",         -- ido_rounds.round_name
@@ -75,7 +75,7 @@ const initialFormData = Object({
       whitelistTokenMultiplier: 1,
     },
   ],
-});
+})
 
 const initialFormErrors = Object({
   idoName: false,
@@ -94,40 +94,40 @@ const initialFormErrors = Object({
       whitelistTokenMultiplier: false,
     },
   ],
-});
+})
 
 const Bootstrap = () => {
   // form data is all strings
-  const [formData, updateFormData] = useState(initialFormData);
+  const [formData, updateFormData] = useState(initialFormData)
   // form error object, all booleans
-  const [formErrors, setFormErrors] = useState(initialFormErrors);
+  const [formErrors, setFormErrors] = useState(initialFormErrors)
   // open error snackbar
-  const [openError, setOpenError] = useState(false);
+  const [openError, setOpenError] = useState(false)
   // open success modal
-  const [openSuccess, setOpenSuccess] = useState(false);
+  const [openSuccess, setOpenSuccess] = useState(false)
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again',
-  );
-  const [tgeDate, setTgeDate] = useState(dayjs.utc());
+    'Please eliminate form errors and try again'
+  )
+  const [tgeDate, setTgeDate] = useState(dayjs.utc())
 
-  const [jsonFormData, setJsonFormData] = useState([]);
+  const [jsonFormData, setJsonFormData] = useState([])
 
   // snackbar for error reporting
   const handleCloseError = (event, reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
-    setOpenError(false);
-  };
+    setOpenError(false)
+  }
 
   // modal for success message
   const handleCloseSuccess = (reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
-    setOpenSuccess(false);
-  };
+    setOpenSuccess(false)
+  }
 
   // sets date/time in unix time when date picker is changed
   useEffect(() => {
@@ -136,9 +136,9 @@ const Bootstrap = () => {
         name: 'tgeTime_ms',
         value: tgeDate.valueOf(),
       },
-    };
-    handleChange(event);
-  }, [tgeDate]);
+    }
+    handleChange(event)
+  }, [tgeDate])
 
   const handleChange = (e) => {
     if (
@@ -148,12 +148,12 @@ const Bootstrap = () => {
       setFormErrors({
         ...formErrors,
         [e.target.name]: true,
-      });
+      })
     } else if (Object.hasOwnProperty.call(formErrors, e.target.name)) {
       setFormErrors({
         ...formErrors,
         [e.target.name]: false,
-      });
+      })
     }
 
     updateFormData({
@@ -161,36 +161,36 @@ const Bootstrap = () => {
       [e.target.name]: e.target.value,
       roundEnd_ms:
         e.target.name == 'tgeTime_ms' ? e.target.value : formData.roundEnd_ms,
-    });
-  };
+    })
+  }
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
   const handleOpen = () => {
-    setOpenError(false);
-    let updateErrors = {};
+    setOpenError(false)
+    let updateErrors = {}
     Object.entries(formData).forEach((entry) => {
-      const [key, value] = entry;
+      const [key, value] = entry
       if (value == '' && Object.hasOwnProperty.call(formErrors, key)) {
-        let newEntry = { [key]: true };
-        updateErrors = { ...updateErrors, ...newEntry };
+        let newEntry = { [key]: true }
+        updateErrors = { ...updateErrors, ...newEntry }
       }
-    });
+    })
     setFormErrors({
       ...formErrors,
       ...updateErrors,
-    });
+    })
     formData.rounds.map((item, i) => {
       Object.entries(item).forEach((entry) => {
-        updateErrors = {};
-        const [key, value] = entry;
+        updateErrors = {}
+        const [key, value] = entry
         if (
           value == '' &&
           Object.hasOwnProperty.call(formErrors.rounds[i], key)
         ) {
-          let newEntry = { [key]: true };
-          updateErrors = { ...updateErrors, ...newEntry };
+          let newEntry = { [key]: true }
+          updateErrors = { ...updateErrors, ...newEntry }
         }
-      });
+      })
       setFormErrors((prevState) => ({
         ...prevState,
         rounds: [
@@ -201,20 +201,20 @@ const Bootstrap = () => {
           },
           ...prevState.rounds.slice(i + 1),
         ],
-      }));
-    });
+      }))
+    })
     if (Object.values(updateErrors).length === 0) {
       const errorCheck = Object.values(formErrors).every((v) => {
         if (typeof v == 'boolean' && v === false) {
-          return true;
+          return true
         }
         if (typeof v != 'boolean') {
-          return true;
+          return true
         }
-      });
+      })
       const roundsErrorCheck = formErrors.rounds.map((item) => {
-        return Object.values(item).every((v) => v === false);
-      });
+        return Object.values(item).every((v) => v === false)
+      })
       if (errorCheck && roundsErrorCheck.every((v) => v === true)) {
         setJsonFormData(
           formData.rounds.map((item) => {
@@ -231,20 +231,20 @@ const Bootstrap = () => {
               tgeTime_ms: formData.tgeTime_ms,
               tgePct: 0,
               roundEnd_ms: formData.roundEnd_ms,
-            };
-          }),
-        );
-        setOpen(true);
+            }
+          })
+        )
+        setOpen(true)
       } else {
-        setErrorMessage('Please eliminate form errors and try again');
-        setOpenError(true);
+        setErrorMessage('Please eliminate form errors and try again')
+        setOpenError(true)
       }
     } else {
-      setErrorMessage('Please eliminate form errors and try again');
-      setOpenError(true);
+      setErrorMessage('Please eliminate form errors and try again')
+      setOpenError(true)
     }
-  };
-  const handleClose = () => setOpen(false);
+  }
+  const handleClose = () => setOpen(false)
 
   const addButton = () => {
     updateFormData((prevState) => ({
@@ -262,7 +262,7 @@ const Bootstrap = () => {
           whitelistTokenMultiplier: 1,
         },
       ],
-    }));
+    }))
     setFormErrors((prevState) => ({
       ...prevState,
       rounds: [
@@ -277,8 +277,8 @@ const Bootstrap = () => {
           whitelistTokenMultiplier: false,
         },
       ],
-    }));
-  };
+    }))
+  }
 
   return (
     <Container maxWidth="md">
@@ -328,7 +328,7 @@ const Bootstrap = () => {
                 label="TGE Day/Time (UTC)"
                 value={tgeDate}
                 onChange={(newValue) => {
-                  setTgeDate(newValue);
+                  setTgeDate(newValue)
                 }}
               />
             </LocalizationProvider>
@@ -456,16 +456,16 @@ const Bootstrap = () => {
         </Alert>
       </Snackbar>
     </Container>
-  );
-};
+  )
+}
 
 const RoundForm = ({ index, id, data, setData, formErrors, setFormErrors }) => {
   // const [formErrors, setFormErrors] = useState(initialRoundErrors);
-  const [vestingMultiple, setVestingMultiple] = useState(2629800000);
-  const [vestingDuration, setVestingDuration] = useState('');
-  const [cliffMultiple, setCliffMultiple] = useState(2629800000);
-  const [cliffDuration, setCliffDuration] = useState('');
-  const [whitelistTokenMultiplier, setWhitelistTokenMultiplier] = useState(1);
+  const [vestingMultiple, setVestingMultiple] = useState(2629800000)
+  const [vestingDuration, setVestingDuration] = useState('')
+  const [cliffMultiple, setCliffMultiple] = useState(2629800000)
+  const [cliffDuration, setCliffDuration] = useState('')
+  const [whitelistTokenMultiplier, setWhitelistTokenMultiplier] = useState(1)
 
   useEffect(() => {
     const event = {
@@ -473,9 +473,9 @@ const RoundForm = ({ index, id, data, setData, formErrors, setFormErrors }) => {
         name: 'whitelistTokenMultiplier',
         value: whitelistTokenMultiplier,
       },
-    };
-    handleChange(event);
-  }, [whitelistTokenMultiplier]);
+    }
+    handleChange(event)
+  }, [whitelistTokenMultiplier])
 
   const handleChange = (e) => {
     if (
@@ -492,7 +492,7 @@ const RoundForm = ({ index, id, data, setData, formErrors, setFormErrors }) => {
           },
           ...prevState.rounds.slice(index + 1),
         ],
-      }));
+      }))
     } else if (
       Object.hasOwnProperty.call(formErrors.rounds[index], e.target.name)
     ) {
@@ -506,16 +506,16 @@ const RoundForm = ({ index, id, data, setData, formErrors, setFormErrors }) => {
           },
           ...prevState.rounds.slice(index + 1),
         ],
-      }));
+      }))
     }
 
     // console.log(formErrors)
 
-    let newValue = undefined;
+    let newValue = undefined
     if (e.target.name === 'vestingPeriodDuration_ms') {
       let newVestingPeriods = Number(
-        ((vestingDuration * vestingMultiple) / e.target.value).toFixed(0),
-      );
+        ((vestingDuration * vestingMultiple) / e.target.value).toFixed(0)
+      )
       setData((prevState) => ({
         ...prevState,
         rounds: [
@@ -526,33 +526,33 @@ const RoundForm = ({ index, id, data, setData, formErrors, setFormErrors }) => {
           },
           ...prevState.rounds.slice(index + 1),
         ],
-      }));
+      }))
     }
     if (e.target.name === 'vestingPeriods') {
-      setVestingDuration(e.target.value);
+      setVestingDuration(e.target.value)
       newValue = Number(
         (
           (e.target.value * vestingMultiple) /
           data.rounds[index].vestingPeriodDuration_ms
-        ).toFixed(0),
-      );
+        ).toFixed(0)
+      )
     }
     if (e.target.name === 'vestingDurationMultiple') {
-      setVestingMultiple(e.target.value);
-      newValue = vestingDuration * e.target.value;
-      e.target.name = 'vestingPeriods';
+      setVestingMultiple(e.target.value)
+      newValue = vestingDuration * e.target.value
+      e.target.name = 'vestingPeriods'
     }
     if (e.target.name === 'cliff_ms') {
-      setCliffDuration(e.target.value);
-      newValue = e.target.value * cliffMultiple;
+      setCliffDuration(e.target.value)
+      newValue = e.target.value * cliffMultiple
     }
     if (e.target.name === 'cliffDurationMultiple') {
-      setCliffMultiple(e.target.value);
-      e.target.name = 'cliff_ms';
+      setCliffMultiple(e.target.value)
+      e.target.name = 'cliff_ms'
       if (cliffDuration != '') {
-        newValue = cliffDuration * e.target.value;
+        newValue = cliffDuration * e.target.value
       } else {
-        newValue = 0;
+        newValue = 0
       }
     }
 
@@ -567,19 +567,19 @@ const RoundForm = ({ index, id, data, setData, formErrors, setFormErrors }) => {
         },
         ...prevState.rounds.slice(index + 1),
       ],
-    }));
-  }; // end handleChange function
+    }))
+  } // end handleChange function
 
   const removeItem = (i) => {
     setData((prevState) => ({
       ...prevState,
       rounds: prevState.rounds.filter((_item, idx) => idx !== i),
-    }));
+    }))
     setFormErrors((prevState) => ({
       ...prevState,
       rounds: prevState.rounds.filter((_item, idx) => idx !== i),
-    }));
-  };
+    }))
+  }
 
   return (
     <Paper sx={{ p: '24px', mb: '24px' }}>
@@ -689,8 +689,8 @@ const RoundForm = ({ index, id, data, setData, formErrors, setFormErrors }) => {
                   name="vestingDurationMultiple"
                   value={vestingMultiple}
                   onChange={(event) => {
-                    setVestingMultiple(event.target.value);
-                    handleChange(event);
+                    setVestingMultiple(event.target.value)
+                    handleChange(event)
                   }}
                   sx={{ borderRadius: '0 3px 3px 0' }}
                 >
@@ -727,8 +727,8 @@ const RoundForm = ({ index, id, data, setData, formErrors, setFormErrors }) => {
                   name="cliffDurationMultiple"
                   value={cliffMultiple}
                   onChange={(event) => {
-                    setCliffMultiple(event.target.value);
-                    handleChange(event);
+                    setCliffMultiple(event.target.value)
+                    handleChange(event)
                   }}
                   sx={{ borderRadius: '0 3px 3px 0' }}
                 >
@@ -747,8 +747,8 @@ const RoundForm = ({ index, id, data, setData, formErrors, setFormErrors }) => {
         </Button>
       </Box>
     </Paper>
-  );
-};
+  )
+}
 
 const SummaryModal = ({ formData, jsonFormData }) => {
   const bootstrapSummary = [
@@ -764,40 +764,40 @@ const SummaryModal = ({ formData, jsonFormData }) => {
       name: 'Seller Address: ',
       value: formData.sellerAddress,
     },
-  ];
+  ]
 
   const dataSummary = formData.rounds.map((item) => {
     const durationPeriod = (period) => {
       if (period == 86400000) {
-        return 'Daily';
+        return 'Daily'
       }
       if (period == 604800000) {
-        return 'Weekly';
+        return 'Weekly'
       }
       if (period == 2629800000) {
-        return 'Monthly';
+        return 'Monthly'
       }
-    };
+    }
     const duration = (duration) => {
       if (duration % 2629800000 == 0) {
-        return Number(duration) / 2629800000 + ' Months';
+        return Number(duration) / 2629800000 + ' Months'
       }
       if (duration % 604800000 == 0) {
-        return Number(duration) / 604800000 + ' Weeks';
+        return Number(duration) / 604800000 + ' Weeks'
       } else {
-        return Number(duration) / 86400000 + ' Days';
+        return Number(duration) / 86400000 + ' Days'
       }
-    };
+    }
     const dayWeekMonth = (duration) => {
       if (duration % 2629800000 == 0) {
-        return ' Months';
+        return ' Months'
       }
       if (duration % 604800000 == 0) {
-        return ' Weeks';
+        return ' Weeks'
       } else {
-        return ' Days';
+        return ' Days'
       }
-    };
+    }
     return [
       {
         name: 'Round Name: ',
@@ -828,8 +828,8 @@ const SummaryModal = ({ formData, jsonFormData }) => {
         name: 'Whitelist Multiplier: ',
         value: item.whitelistTokenMultiplier,
       },
-    ];
-  });
+    ]
+  })
 
   return (
     <Paper
@@ -853,7 +853,7 @@ const SummaryModal = ({ formData, jsonFormData }) => {
                 <Typography>{item.value}</Typography>
               </ListItemText>
             </ListItem>
-          );
+          )
         })}
       </List>
       {formData.rounds.map((_item, i) => {
@@ -864,37 +864,37 @@ const SummaryModal = ({ formData, jsonFormData }) => {
             dataSummary={dataSummary}
             jsonFormData={jsonFormData}
           />
-        );
+        )
       })}
     </Paper>
-  );
-};
+  )
+}
 
 const SummaryItem = ({ i, dataSummary, jsonFormData }) => {
   // loading spinner for submit button and disable button
-  const [isLoading, setLoading] = useState(false);
-  const [responseObject, setResponseObject] = useState({});
+  const [isLoading, setLoading] = useState(false)
+  const [responseObject, setResponseObject] = useState({})
 
   const [submitResponse, setSubmitResponse] = useState({
     message: 'Not yet submitted',
     status: undefined,
     severity: 'warning',
-  });
+  })
 
   const handleSubmit = async (index) => {
     const defaultOptions = {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem(
-          'jwt_token_login_422',
+          'jwt_token_login_422'
         )}`,
       },
-    };
-    setLoading(true);
+    }
+    setLoading(true)
     await axios
       .post(
         `${process.env.API_URL}/vesting/bootstrapRound`,
         jsonFormData[index],
-        defaultOptions,
+        defaultOptions
       )
       .then((res) => {
         // console.log(res.data)
@@ -902,42 +902,42 @@ const SummaryItem = ({ i, dataSummary, jsonFormData }) => {
           message: 'Success. Please see JSON output for token values. ',
           status: res.status,
           severity: 'success',
-        });
-        setResponseObject(res.data);
-        setLoading(false);
+        })
+        setResponseObject(res.data)
+        setLoading(false)
       })
       .catch((error) => {
         if (error.response) {
-          console.log(error.response.data);
-          console.log(error.response.status);
-          console.log(error.response.headers);
+          console.log(error.response.data)
+          console.log(error.response.status)
+          console.log(error.response.headers)
           setSubmitResponse({
             message: error.response.data?.details
               ? error.response.data?.details
               : error.response.data,
             status: error.response.status,
             severity: 'error',
-          });
-          setLoading(false);
+          })
+          setLoading(false)
         } else if (error.request) {
           setSubmitResponse({
             message: 'Service Unavailable',
             status: 503,
             severity: 'error',
-          });
-          console.log(error.request);
-          setLoading(false);
+          })
+          console.log(error.request)
+          setLoading(false)
         } else {
-          console.log('Error', error.message);
+          console.log('Error', error.message)
           setSubmitResponse({
             message: error.message,
             status: undefined,
             severity: 'error',
-          });
-          setLoading(false);
+          })
+          setLoading(false)
         }
-      });
-  };
+      })
+  }
   return (
     <Paper sx={{ p: '12px', mb: '12px', background: 'rgba(255,255,255,0.03)' }}>
       <List dense>
@@ -949,7 +949,7 @@ const SummaryItem = ({ i, dataSummary, jsonFormData }) => {
                 <Typography>{item.value}</Typography>
               </ListItemText>
             </ListItem>
-          );
+          )
         })}
       </List>
       <Box sx={{ width: '100%', textAlign: 'right' }}>
@@ -1031,7 +1031,7 @@ const SummaryItem = ({ i, dataSummary, jsonFormData }) => {
         </AccordionDetails>
       </Accordion>
     </Paper>
-  );
-};
+  )
+}
 
-export default Bootstrap;
+export default Bootstrap

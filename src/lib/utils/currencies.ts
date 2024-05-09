@@ -1,18 +1,18 @@
 export const getSymbol = (searchTerm: string) => {
   // Convert the search term to uppercase to make the comparison case-insensitive
-  const upperSearchTerm = searchTerm.toUpperCase();
+  const upperSearchTerm = searchTerm.toUpperCase()
 
   for (let currency of currencies) {
     if (
       currency.ticker.toUpperCase() === upperSearchTerm ||
       currency.name.toUpperCase() === upperSearchTerm
     ) {
-      return currency.symbol;
+      return currency.symbol
     }
   }
 
-  return null;
-};
+  return null
+}
 
 export const currencies = [
   {
@@ -25,4 +25,4 @@ export const currencies = [
     name: 'Ergo',
     symbol: 'Σ',
   },
-];
+]

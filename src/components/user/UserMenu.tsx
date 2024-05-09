@@ -1,24 +1,24 @@
-import React, { FC, useState, useEffect } from 'react';
-import { Typography, Button, Box } from '@mui/material';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Logout from '@mui/icons-material/Logout';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import SignIn from './SignIn';
-import { getShortAddress } from '@utils/general';
-import { signIn, signOut } from 'next-auth/react';
-import { useWallet } from '@contexts/WalletContext';
-import theme from '@styles/theme';
-import AddWalletModal from './AddWalletModal';
-import Link from 'next/link';
-import SettingsIcon from '@mui/icons-material/Settings';
+import React, { FC, useState, useEffect } from 'react'
+import { Typography, Button, Box } from '@mui/material'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import Logout from '@mui/icons-material/Logout'
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'
+import SignIn from './SignIn'
+import { getShortAddress } from '@utils/general'
+import { signIn, signOut } from 'next-auth/react'
+import { useWallet } from '@contexts/WalletContext'
+import theme from '@styles/theme'
+import AddWalletModal from './AddWalletModal'
+import Link from 'next/link'
+import SettingsIcon from '@mui/icons-material/Settings'
 
 interface IUserMenuProps {}
 
 const UserMenu: FC<IUserMenuProps> = () => {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [addWalletModal, setAddWalletModal] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false)
+  const [addWalletModal, setAddWalletModal] = useState(false)
   const {
     wallet,
     setWallet,
@@ -26,7 +26,7 @@ const UserMenu: FC<IUserMenuProps> = () => {
     sessionStatus,
     providerLoading,
     setProviderLoading,
-  } = useWallet();
+  } = useWallet()
 
   useEffect(() => {
     // console.log('session: ' + sessionStatus);
@@ -34,7 +34,7 @@ const UserMenu: FC<IUserMenuProps> = () => {
       sessionStatus === 'authenticated' ||
       sessionStatus === 'unauthenticated'
     ) {
-      setProviderLoading(false);
+      setProviderLoading(false)
     }
 
     // if (sessionStatus === 'authenticated' && sessionData?.user.walletType === 'nautilus') {
@@ -73,47 +73,47 @@ const UserMenu: FC<IUserMenuProps> = () => {
     //   console.log('User neeeds to add an address')
     //   setAddWalletModal(true)
     // }
-  }, [sessionStatus, setProviderLoading]);
+  }, [sessionStatus, setProviderLoading])
 
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
   const handleClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   const clearWallet = async () => {
-    window?.ergoConnector?.nautilus.disconnect();
-    signOut();
-  };
+    window?.ergoConnector?.nautilus.disconnect()
+    signOut()
+  }
 
   const handleAddWalletClose = () => {
     if (sessionStatus === 'authenticated' && sessionData?.user.address) {
-      setAddWalletModal(false);
+      setAddWalletModal(false)
     }
-  };
+  }
 
   useEffect(() => {
     if (!addWalletModal) {
-      handleAddWalletClose();
+      handleAddWalletClose()
     }
-  }, [addWalletModal]);
+  }, [addWalletModal])
 
   useEffect(() => {
     // console.log('address changed')
     // console.log(sessionData?.user.address)
     // console.log(sessionStatus)
     if (sessionStatus === 'authenticated' && !sessionData?.user.address) {
-      setAddWalletModal(true);
-      setWallet('');
+      setAddWalletModal(true)
+      setWallet('')
     }
     if (sessionStatus === 'authenticated' && sessionData?.user.address) {
-      setAddWalletModal(false);
-      setWallet(sessionData.user.address);
+      setAddWalletModal(false)
+      setWallet(sessionData.user.address)
     }
-  }, [sessionStatus, sessionData?.user.address]);
+  }, [sessionStatus, sessionData?.user.address])
 
   return (
     <>
@@ -243,10 +243,10 @@ const UserMenu: FC<IUserMenuProps> = () => {
         customTitle={'Account Created: Please connect a wallet to continue'}
       />
     </>
-  );
-};
+  )
+}
 
-export default UserMenu;
+export default UserMenu
 
 const walletButtonSx = {
   color: '#fff',
@@ -265,4 +265,4 @@ const walletButtonSx = {
   maxWidth: '10em',
   overflow: 'hidden',
   whiteSpace: 'nowrap',
-};
+}

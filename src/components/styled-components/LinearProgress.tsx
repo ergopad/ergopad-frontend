@@ -6,15 +6,15 @@ import {
   LinearProgress,
   linearProgressClasses,
   LinearProgressProps,
-} from '@mui/material';
-import { FC, ReactNode } from 'react';
+} from '@mui/material'
+import { FC, ReactNode } from 'react'
 
 interface StyledLinearProgressProps extends LinearProgressProps {
-  barColor?: string;
-  barColorStart?: string;
-  barColorEnd?: string;
-  bgColor?: string;
-  sx?: SxProps<Theme>;
+  barColor?: string
+  barColorStart?: string
+  barColorEnd?: string
+  bgColor?: string
+  sx?: SxProps<Theme>
 }
 
 export const LinearProgressStyled: FC<StyledLinearProgressProps> = ({
@@ -25,15 +25,15 @@ export const LinearProgressStyled: FC<StyledLinearProgressProps> = ({
   bgColor,
   ...props
 }) => {
-  const theme = useTheme();
+  const theme = useTheme()
 
   const mergeSx = (defaultSx: SxProps<Theme>, newSx?: SxProps<Theme>) => {
-    if (!newSx) return defaultSx;
+    if (!newSx) return defaultSx
     return (theme: Theme) => ({
       ...(typeof defaultSx === 'function' ? defaultSx(theme) : defaultSx),
       ...(typeof newSx === 'function' ? newSx(theme) : newSx),
-    });
-  };
+    })
+  }
 
   return (
     <LinearProgress
@@ -53,9 +53,9 @@ export const LinearProgressStyled: FC<StyledLinearProgressProps> = ({
                 : barColor || theme.palette.secondary.main,
           },
         },
-        sx,
+        sx
       )}
       {...props}
     />
-  );
-};
+  )
+}

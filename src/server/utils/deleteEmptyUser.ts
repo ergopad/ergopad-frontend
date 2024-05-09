@@ -1,12 +1,12 @@
-import { prisma } from '@server/prisma';
+import { prisma } from '@server/prisma'
 
 type DeleteEmptyUserResponse = {
-  success?: boolean;
-  error?: string;
-};
+  success?: boolean
+  error?: string
+}
 
 export const deleteEmptyUser = async (
-  userId: string,
+  userId: string
 ): Promise<DeleteEmptyUserResponse> => {
   const user = await prisma.user.findUnique({
     where: {
@@ -18,10 +18,10 @@ export const deleteEmptyUser = async (
       sessions: true,
       transactions: true,
     },
-  });
+  })
 
   if (!user) {
-    return { error: 'User not found' };
+    return { error: 'User not found' }
   }
 
   if (
@@ -35,9 +35,9 @@ export const deleteEmptyUser = async (
       where: {
         id: userId,
       },
-    });
-    return { success: true };
+    })
+    return { success: true }
   } else {
-    return { error: 'User account not empty' };
+    return { error: 'User account not empty' }
   }
-};
+}

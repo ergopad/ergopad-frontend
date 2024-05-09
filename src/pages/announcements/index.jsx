@@ -1,8 +1,8 @@
-import { Grid, useMediaQuery } from '@mui/material';
-import CenterTitle from '@components/CenterTitle';
-import Sidenav from '@components/announcements/Sidenav';
-import RelatedLinks from '@components/RelatedLinks/RelatedLinks';
-import theme from '@styles/theme';
+import { Grid, useMediaQuery } from '@mui/material'
+import CenterTitle from '@components/CenterTitle'
+import Sidenav from '@components/announcements/Sidenav'
+import RelatedLinks from '@components/RelatedLinks/RelatedLinks'
+import theme from '@styles/theme'
 
 const relatedLinkList = [
   {
@@ -29,10 +29,10 @@ const relatedLinkList = [
     href: '/apply',
     background: theme.palette.tertiary.main,
   },
-];
+]
 
 const Announcements = () => {
-  const smallCheck = useMediaQuery((theme) => theme.breakpoints.up('md'));
+  const smallCheck = useMediaQuery((theme) => theme.breakpoints.up('md'))
   return (
     <>
       <Grid
@@ -59,7 +59,7 @@ const Announcements = () => {
       </Grid>
       <RelatedLinks title="Learn More" subtitle="" links={relatedLinkList} />
     </>
-  );
-};
+  )
+}
 
-export default Announcements;
+export default Announcements

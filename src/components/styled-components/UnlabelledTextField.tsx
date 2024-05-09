@@ -1,13 +1,13 @@
-import React, { FC } from 'react';
-import TextField, { TextFieldProps } from '@mui/material/TextField';
-import { useTheme } from '@mui/material/styles';
+import React, { FC } from 'react'
+import TextField, { TextFieldProps } from '@mui/material/TextField'
+import { useTheme } from '@mui/material/styles'
 
 type TUnlabelledTextFieldProps = TextFieldProps & {
   // extended props if needed
-};
+}
 
 const UnlabelledTextField: FC<TUnlabelledTextFieldProps> = (props) => {
-  const theme = useTheme();
+  const theme = useTheme()
 
   return (
     <TextField
@@ -48,7 +48,7 @@ const UnlabelledTextField: FC<TUnlabelledTextFieldProps> = (props) => {
         },
       }}
     />
-  );
-};
+  )
+}
 
-export default UnlabelledTextField;
+export default UnlabelledTextField

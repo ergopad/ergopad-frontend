@@ -15,7 +15,7 @@ const TablerMenu = () => {
         strokeLinejoin="round"
       />
     </svg>
-  );
-};
+  )
+}
 
-export default TablerMenu;
+export default TablerMenu

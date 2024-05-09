@@ -1,17 +1,17 @@
-import { Box, InputBase, Paper, Typography, useTheme } from '@mui/material';
-import React, { FC, useEffect, useState } from 'react';
-import { trpc } from '@utils/trpc';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Box, InputBase, Paper, Typography, useTheme } from '@mui/material'
+import React, { FC, useEffect, useState } from 'react'
+import { trpc } from '@utils/trpc'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 interface ITokenInputProps {
-  inputTokenTicker?: string;
-  outputTokenTicker: string;
-  remainingTokens: number;
-  exchangeRate: number; // 1 input token = (exchangeRate * input) output tokens
-  inputValue: string;
-  setInputValue: React.Dispatch<React.SetStateAction<string>>;
-  outputValue: string;
-  setOutputValue: React.Dispatch<React.SetStateAction<string>>;
+  inputTokenTicker?: string
+  outputTokenTicker: string
+  remainingTokens: number
+  exchangeRate: number // 1 input token = (exchangeRate * input) output tokens
+  inputValue: string
+  setInputValue: React.Dispatch<React.SetStateAction<string>>
+  outputValue: string
+  setOutputValue: React.Dispatch<React.SetStateAction<string>>
 }
 
 const TokenInput: FC<ITokenInputProps> = ({
@@ -24,62 +24,62 @@ const TokenInput: FC<ITokenInputProps> = ({
   outputValue,
   setOutputValue,
 }) => {
-  const theme = useTheme();
-  const { data: adaPrice } = trpc.price.getCardanoPrice.useQuery();
-  const [adaAmount, setAdaAmount] = useState<number | undefined>(undefined);
+  const theme = useTheme()
+  const { data: adaPrice } = trpc.price.getCardanoPrice.useQuery()
+  const [adaAmount, setAdaAmount] = useState<number | undefined>(undefined)
 
   const getUserAdaAmount = async () => {
     try {
       if (connected) {
-        const lovelace = await wallet.getLovelace();
-        const ada = Number(lovelace) * 0.000001;
-        if (ada) setAdaAmount(ada);
+        const lovelace = await wallet.getLovelace()
+        const ada = Number(lovelace) * 0.000001
+        if (ada) setAdaAmount(ada)
       }
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
-  };
+  }
 
   useEffect(() => {
     if (wallet) {
-      getUserAdaAmount();
+      getUserAdaAmount()
     }
-  }, [wallet]);
+  }, [wallet])
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = event.target.value.replace(/,/g, '.');
+    const rawValue = event.target.value.replace(/,/g, '.')
 
     // Function to count the number of periods in the string
-    const countPeriods = (str: string) => (str.match(/\./g) || []).length;
+    const countPeriods = (str: string) => (str.match(/\./g) || []).length
 
     // Only update the input value if it doesn't result in multiple periods
     if (countPeriods(rawValue) <= 1) {
-      setInputValue(rawValue);
+      setInputValue(rawValue)
 
       // Convert to a number for output value, handling potential NaN
-      const numericValue = Number(rawValue);
+      const numericValue = Number(rawValue)
       if (!isNaN(numericValue)) {
-        setOutputValue((numericValue * exchangeRate).toFixed(0));
+        setOutputValue((numericValue * exchangeRate).toFixed(0))
       } else {
-        setOutputValue('');
+        setOutputValue('')
       }
     }
-  };
+  }
 
   const handleInputMax = () => {
     if (adaAmount) {
-      const roundedDown = adaAmount - 1.5;
-      setInputValue(roundedDown.toFixed(0));
-      setOutputValue((Number(roundedDown) * exchangeRate).toFixed(0));
+      const roundedDown = adaAmount - 1.5
+      setInputValue(roundedDown.toFixed(0))
+      setOutputValue((Number(roundedDown) * exchangeRate).toFixed(0))
     }
-  };
+  }
 
   const calculateUSDValue = () => {
-    const numericalValue = Number(inputValue.replace(/,/g, ''));
+    const numericalValue = Number(inputValue.replace(/,/g, ''))
     return (numericalValue * (adaPrice || 0)).toLocaleString(undefined, {
       maximumFractionDigits: 2,
-    });
-  };
+    })
+  }
 
   return (
     <Box sx={{ position: 'relative' }}>
@@ -220,7 +220,7 @@ const TokenInput: FC<ITokenInputProps> = ({
         <ExpandMoreIcon />
       </Paper>
     </Box>
-  );
-};
+  )
+}
 
-export default TokenInput;
+export default TokenInput

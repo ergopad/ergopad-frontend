@@ -1,14 +1,14 @@
-import { Button, Icon, Box, Typography, CircularProgress } from '@mui/material';
-import Section from '@components/layout/Section';
-import AccordionComponent from '@components/AccordionComponent';
-import { useState, useEffect } from 'react';
-import { styled } from '@mui/system';
-import theme from '@styles/theme';
-import Search from '@components/Search';
-import { useSearch } from '@contexts/SearchContext';
-import axios from 'axios';
+import { Button, Icon, Box, Typography, CircularProgress } from '@mui/material'
+import Section from '@components/layout/Section'
+import AccordionComponent from '@components/AccordionComponent'
+import { useState, useEffect } from 'react'
+import { styled } from '@mui/system'
+import theme from '@styles/theme'
+import Search from '@components/Search'
+import { useSearch } from '@contexts/SearchContext'
+import axios from 'axios'
 
-const faqItems = [];
+const faqItems = []
 
 const SortButton = styled(Button)({
   borderRadius: `20px`,
@@ -19,52 +19,52 @@ const SortButton = styled(Button)({
   '&:hover': {
     background: 'rgba(63,62,68,255)',
   },
-});
+})
 
 const Faq = () => {
-  const [tag, setCategory] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [apiData, setApiData] = useState(faqItems);
-  const [data, setData] = useState(apiData);
-  const { search } = useSearch();
+  const [tag, setCategory] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [apiData, setApiData] = useState(faqItems)
+  const [data, setData] = useState(apiData)
+  const { search } = useSearch()
 
   useEffect(() => {
     const getData = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
-        const res = await axios.get(`${process.env.API_URL}/faq/`);
-        setApiData(res.data);
+        const res = await axios.get(`${process.env.API_URL}/faq/`)
+        setApiData(res.data)
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
-      setLoading(false);
-    };
-    getData();
-  }, []);
+      setLoading(false)
+    }
+    getData()
+  }, [])
 
   useEffect(() => {
     if (tag === '') {
-      setData(apiData);
+      setData(apiData)
     } else {
-      const newFaqItems = apiData.filter((item) => item.tag.includes(tag));
-      setData(newFaqItems);
+      const newFaqItems = apiData.filter((item) => item.tag.includes(tag))
+      setData(newFaqItems)
     }
-  }, [tag, apiData]);
+  }, [tag, apiData])
 
   useEffect(() => {
     if (search != '') {
-      let lowerCase = search.toLowerCase();
+      let lowerCase = search.toLowerCase()
       const filtered = apiData.filter((item) => {
         return (
           item.question.toLowerCase().includes(lowerCase) ||
           item.solution.toLowerCase().includes(lowerCase)
-        );
-      });
-      setData(filtered);
+        )
+      })
+      setData(filtered)
     } else {
-      setData(apiData);
+      setData(apiData)
     }
-  }, [search, apiData]);
+  }, [search, apiData])
 
   return (
     <>
@@ -165,7 +165,7 @@ const Faq = () => {
         ) : data.length != 0 ? (
           <AccordionComponent
             accordionItems={data.map((faq) => {
-              return { ...faq, title: faq.question, bodyText: faq.solution };
+              return { ...faq, title: faq.question, bodyText: faq.solution }
             })}
             uniqueId="faq"
           />
@@ -174,7 +174,7 @@ const Faq = () => {
         )}
       </Section>
     </>
-  );
-};
+  )
+}
 
-export default Faq;
+export default Faq

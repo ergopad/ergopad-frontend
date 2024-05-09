@@ -1,21 +1,16 @@
-import React, { FC } from 'react';
-import TextField, { TextFieldProps } from '@mui/material/TextField';
-import {
-  useTheme,
-  Button,
-  Box,
-  ButtonPropsColorOverrides,
-} from '@mui/material';
+import React, { FC } from 'react'
+import TextField, { TextFieldProps } from '@mui/material/TextField'
+import { useTheme, Button, Box, ButtonPropsColorOverrides } from '@mui/material'
 
 type TTextFieldWithButtonProps = TextFieldProps & {
-  secondaryColor?: boolean;
-  buttonText: string;
-  buttonFunction: Function;
-};
+  secondaryColor?: boolean
+  buttonText: string
+  buttonFunction: Function
+}
 
 const TextFieldWithButton: FC<TTextFieldWithButtonProps> = (props) => {
-  const theme = useTheme();
-  const { secondaryColor, buttonText, buttonFunction } = props;
+  const theme = useTheme()
+  const { secondaryColor, buttonText, buttonFunction } = props
 
   return (
     <Box
@@ -77,7 +72,7 @@ const TextFieldWithButton: FC<TTextFieldWithButtonProps> = (props) => {
         {buttonText}
       </Button>
     </Box>
-  );
-};
+  )
+}
 
-export default TextFieldWithButton;
+export default TextFieldWithButton

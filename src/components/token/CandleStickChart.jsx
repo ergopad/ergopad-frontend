@@ -9,13 +9,13 @@ import {
   Box,
   CircularProgress,
   Fade,
-} from '@mui/material';
-import Link from '@components/MuiNextLink';
-import { createChart, CrosshairMode } from 'lightweight-charts';
-import theme from '@styles/theme';
-import { useState } from 'react';
-import { useEffect, useRef } from 'react';
-import axios from 'axios';
+} from '@mui/material'
+import Link from '@components/MuiNextLink'
+import { createChart, CrosshairMode } from 'lightweight-charts'
+import theme from '@styles/theme'
+import { useState } from 'react'
+import { useEffect, useRef } from 'react'
+import axios from 'axios'
 
 const stepUnitMapper = {
   '1h': {
@@ -42,12 +42,12 @@ const stepUnitMapper = {
     stepSize: 1,
     stepUnit: 'm',
   },
-};
+}
 
 const pairBaseCurrencyMapper = {
   ergopad_sigusd: 'sigusd',
   ergopad_erg: 'erg',
-};
+}
 
 const initHistoryData = [
   {
@@ -66,17 +66,17 @@ const initHistoryData = [
     close: 1,
     volume: 1,
   },
-];
+]
 
 const CandleStickChart = () => {
-  const mtheme = useTheme();
-  const matches = useMediaQuery(mtheme.breakpoints.up('md'));
-  const [rawData, setRawData] = useState(initHistoryData);
-  const [stepUnit, setStepUnit] = useState('1h');
-  const [pair, setPair] = useState('ergopad_erg');
-  const [loading, setLoading] = useState(false);
+  const mtheme = useTheme()
+  const matches = useMediaQuery(mtheme.breakpoints.up('md'))
+  const [rawData, setRawData] = useState(initHistoryData)
+  const [stepUnit, setStepUnit] = useState('1h')
+  const [pair, setPair] = useState('ergopad_erg')
+  const [loading, setLoading] = useState(false)
 
-  const chartContainerRef = useRef();
+  const chartContainerRef = useRef()
 
   const candleData = rawData.map((dataPoint) => {
     return {
@@ -85,21 +85,21 @@ const CandleStickChart = () => {
       high: dataPoint.high,
       low: dataPoint.low,
       close: dataPoint.close,
-    };
-  });
+    }
+  })
 
   const volumeData = rawData.map((dataPoint) => {
-    var color = theme.palette.primary.main;
-    if (dataPoint.open > dataPoint.close) color = theme.palette.secondary.main;
+    var color = theme.palette.primary.main
+    if (dataPoint.open > dataPoint.close) color = theme.palette.secondary.main
     return {
       time: new Date(dataPoint.time).valueOf() / 1000,
       value: dataPoint.volume,
       color: color,
-    };
-  });
+    }
+  })
 
   useEffect(() => {
-    chartContainerRef.current.replaceChildren();
+    chartContainerRef.current.replaceChildren()
     const Chart = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
       height: 500,
@@ -125,7 +125,7 @@ const CandleStickChart = () => {
         borderColor: 'rgba(197, 203, 206, 0.8)',
         timeVisible: true,
       },
-    });
+    })
 
     const candleSeries = Chart.addCandlestickSeries({
       upColor: theme.palette.primary.main,
@@ -135,7 +135,7 @@ const CandleStickChart = () => {
       wickDownColor: theme.palette.secondary.main,
       wickUpColor: theme.palette.primary.main,
       priceFormat: { type: 'price', precision: 6, minMove: 0.000001 },
-    });
+    })
 
     const volumeSeries = Chart.addHistogramSeries({
       color: theme.palette.secondary.main,
@@ -147,61 +147,61 @@ const CandleStickChart = () => {
         top: 0.8,
         bottom: 0,
       },
-    });
-    candleSeries.setData(candleData);
-    volumeSeries.setData(volumeData);
+    })
+    candleSeries.setData(candleData)
+    volumeSeries.setData(volumeData)
 
     // Chart.timeScale().fitContent();
     Chart.timeScale().applyOptions({
       barSpacing: 10,
-    });
+    })
 
     new ResizeObserver((entries) => {
       if (
         entries.length === 0 ||
         entries[0].target !== chartContainerRef.current
       ) {
-        return;
+        return
       }
-      const newRect = entries[0].contentRect;
-      Chart.applyOptions({ height: newRect.height, width: newRect.width });
-    }).observe(chartContainerRef.current);
-  }, [rawData]);
+      const newRect = entries[0].contentRect
+      Chart.applyOptions({ height: newRect.height, width: newRect.width })
+    }).observe(chartContainerRef.current)
+  }, [rawData])
 
   useEffect(() => {
     const getData = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
         const res = await axios.get(
-          `${process.env.API_URL}/asset/ohlcv/${pairBaseCurrencyMapper[pair]}/ergopad/${stepUnitMapper[stepUnit].stepSize}/${stepUnitMapper[stepUnit].stepUnit}/${new Date(Date.now() - 400000 * stepUnitMapper[stepUnit].inSeconds).toISOString().slice(0, 10)}/${new Date(Date.now() + 86400000).toISOString().slice(0, 10)}?offset=0&limit=500`,
-        );
-        setRawData(res.data);
+          `${process.env.API_URL}/asset/ohlcv/${pairBaseCurrencyMapper[pair]}/ergopad/${stepUnitMapper[stepUnit].stepSize}/${stepUnitMapper[stepUnit].stepUnit}/${new Date(Date.now() - 400000 * stepUnitMapper[stepUnit].inSeconds).toISOString().slice(0, 10)}/${new Date(Date.now() + 86400000).toISOString().slice(0, 10)}?offset=0&limit=500`
+        )
+        setRawData(res.data)
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
     // console.log(`${process.env.API_URL}/asset/ohlcv/${pairBaseCurrencyMapper[pair]}/ergopad/${stepUnitMapper[stepUnit].stepSize}/${stepUnitMapper[stepUnit].stepUnit}/${new Date(Date.now() - (400000 * stepUnitMapper[stepUnit].inSeconds)).toISOString().slice(0, 10)}/${new Date(Date.now() + 86400000).toISOString().slice(0, 10)}?offset=0&limit=500`)
 
-    getData();
-  }, [stepUnit, pair]);
+    getData()
+  }, [stepUnit, pair])
 
   const lastPrice = rawData.length
     ? Math.round(rawData[rawData.length - 1].close * 10000) / 10000
-    : 1;
+    : 1
 
   const handleStepChange = (e, newAlignment) => {
     if (newAlignment !== null) {
-      setStepUnit(newAlignment);
+      setStepUnit(newAlignment)
     }
-  };
+  }
 
   const handlePairChange = (e, newAlignment) => {
     if (newAlignment !== null) {
-      setPair(newAlignment);
+      setPair(newAlignment)
     }
-  };
+  }
 
   return (
     <>
@@ -316,7 +316,7 @@ const CandleStickChart = () => {
         </Grid>
       </Grid>
     </>
-  );
-};
+  )
+}
 
-export default CandleStickChart;
+export default CandleStickChart

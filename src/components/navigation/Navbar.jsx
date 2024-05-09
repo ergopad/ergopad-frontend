@@ -1,9 +1,9 @@
-import { useMediaQuery, Stack, useTheme } from '@mui/material';
-import MuiNextLink from '@components/MuiNextLink';
+import { useMediaQuery, Stack, useTheme } from '@mui/material'
+import MuiNextLink from '@components/MuiNextLink'
 
 const Navbar = ({ navLinks }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   return (
     <Stack
       direction="row"
@@ -35,7 +35,7 @@ const Navbar = ({ navLinks }) => {
         </>
       )}
     </Stack>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar

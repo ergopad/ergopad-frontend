@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react'
 import {
   Box,
   Typography,
@@ -8,22 +8,22 @@ import {
   Button,
   Alert,
   Skeleton,
-} from '@mui/material';
-import TimeRemaining from '@components/TimeRemaining';
-import { LinearProgressStyled } from '@components/styled-components/LinearProgress';
-import Grid from '@mui/system/Unstable_Grid/Grid';
-import { getSymbol } from '@utils/currencies';
-import AutorenewIcon from '@mui/icons-material/Autorenew';
-import ContributeCard from './ContributeCard';
-import { trpc } from '@utils/trpc';
-import { formatNumber, formatNumberDecimals } from '@utils/assets';
-import UnlabelledTextField from '@components/styled-components/UnlabelledTextField';
+} from '@mui/material'
+import TimeRemaining from '@components/TimeRemaining'
+import { LinearProgressStyled } from '@components/styled-components/LinearProgress'
+import Grid from '@mui/system/Unstable_Grid/Grid'
+import { getSymbol } from '@utils/currencies'
+import AutorenewIcon from '@mui/icons-material/Autorenew'
+import ContributeCard from './ContributeCard'
+import { trpc } from '@utils/trpc'
+import { formatNumber, formatNumberDecimals } from '@utils/assets'
+import UnlabelledTextField from '@components/styled-components/UnlabelledTextField'
 // import { checkPoolWeight } from '@utils/checkPoolWeight';
-import { useAlert } from '@lib/contexts/AlertContext';
-import { getShorterAddress } from '@utils/general';
-import { countryList } from '@utils/countryList';
-import axios from 'axios';
-import { useWallet } from '@lib/contexts/WalletContext';
+import { useAlert } from '@lib/contexts/AlertContext'
+import { getShorterAddress } from '@utils/general'
+import { countryList } from '@utils/countryList'
+import axios from 'axios'
+import { useWallet } from '@lib/contexts/WalletContext'
 
 const ProRataForm: FC<TProRataFormProps> = ({
   id,
@@ -42,49 +42,49 @@ const ProRataForm: FC<TProRataFormProps> = ({
   recipientAddress,
   restrictedCountries,
 }) => {
-  const theme = useTheme();
-  const { sessionStatus } = useWallet();
-  const currencySymbol = getSymbol(currency);
+  const theme = useTheme()
+  const { sessionStatus } = useWallet()
+  const currencySymbol = getSymbol(currency)
   const priceToCurrency = `1 ${currency} = ${(1 / price).toLocaleString(
     undefined,
     {
       maximumFractionDigits: 2,
-    },
-  )} ${tokenTicker}`;
-  const [priceSet, setPriceSet] = useState<string>(priceToCurrency);
+    }
+  )} ${tokenTicker}`
+  const [priceSet, setPriceSet] = useState<string>(priceToCurrency)
   // const getUserWhitelistSignups = trpc.whitelist.getUserWhitelistSlugs.useQuery({ projectSlug })
   // const [whitelistStatus, setWhitelistStatus] = useState<"pending" | "whitelisted" | "notWhitelisted">('pending');
   // const [whitelisted, setWhitelisted] = useState(false)
-  const currentDate = new Date();
+  const currentDate = new Date()
   const isCurrentDateBetween =
-    currentDate >= startDate && currentDate <= endDate;
+    currentDate >= startDate && currentDate <= endDate
   const usersTransactions = trpc.contributions.sumTransactions.useQuery({
     contributionId: id,
-  });
-  const { addAlert } = useAlert();
-  const [allowed, setAllowed] = useState(false);
+  })
+  const { addAlert } = useAlert()
+  const [allowed, setAllowed] = useState(false)
 
   useEffect(() => {
     const fetchUserLocation = async () => {
       try {
         const response = await axios.get(
-          `https://api.ipgeolocation.io/ipgeo?apiKey=${process.env.IPGEOLOCATION_API_KEY}`,
-        );
-        const data = response.data;
+          `https://api.ipgeolocation.io/ipgeo?apiKey=${process.env.IPGEOLOCATION_API_KEY}`
+        )
+        const data = response.data
 
         if (restrictedCountries.includes(data.country_code2)) {
-          setAllowed(false);
+          setAllowed(false)
         } else {
-          setAllowed(true);
+          setAllowed(true)
         }
       } catch (error) {
-        console.error('Error fetching geolocation:', error);
-        setAllowed(true);
+        console.error('Error fetching geolocation:', error)
+        setAllowed(true)
       }
-    };
+    }
 
-    fetchUserLocation();
-  }, []);
+    fetchUserLocation()
+  }, [])
 
   // useEffect(() => {
   //   if (sessionStatus === 'authenticated' && getUserWhitelistSignups.data?.data) {
@@ -104,14 +104,14 @@ const ProRataForm: FC<TProRataFormProps> = ({
   //   }
   // }, [getUserWhitelistSignups.data, sessionStatus])
 
-  const claimedAmount = deposited / price;
-  const depositTarget = tokenTarget * price;
+  const claimedAmount = deposited / price
+  const depositTarget = tokenTarget * price
 
   const handleFlipPrice = () => {
     if (priceSet === priceToCurrency) {
-      setPriceSet(`1 ${tokenTicker} = ${price} ${currency}`);
-    } else setPriceSet(priceToCurrency);
-  };
+      setPriceSet(`1 ${tokenTicker} = ${price} ${currency}`)
+    } else setPriceSet(priceToCurrency)
+  }
 
   // const poolData = trpc.contributions.contributedPoolWeight.useQuery({
   //   contributionId: id
@@ -142,8 +142,8 @@ const ProRataForm: FC<TProRataFormProps> = ({
   // }, [wallets, poolData.data?.apiResponse])
 
   const restrictedCountriesFiltered = countryList.filter((country) =>
-    restrictedCountries.includes(country.code),
-  );
+    restrictedCountries.includes(country.code)
+  )
 
   return (
     <>
@@ -263,7 +263,7 @@ const ProRataForm: FC<TProRataFormProps> = ({
               <Typography sx={{ fontWeight: '700' }}>
                 {((claimedAmount / tokenTarget) * 100).toLocaleString(
                   undefined,
-                  { maximumFractionDigits: 0 },
+                  { maximumFractionDigits: 0 }
                 )}
                 %
               </Typography>
@@ -335,7 +335,7 @@ const ProRataForm: FC<TProRataFormProps> = ({
                       {deposited - depositTarget > 0
                         ? (deposited - depositTarget).toLocaleString(
                             undefined,
-                            { maximumFractionDigits: 2 },
+                            { maximumFractionDigits: 2 }
                           )
                         : 0}{' '}
                       {currencySymbol}
@@ -432,14 +432,14 @@ const ProRataForm: FC<TProRataFormProps> = ({
         }
       </Paper> */}
     </>
-  );
-};
+  )
+}
 
-export default ProRataForm;
+export default ProRataForm
 
 const WhitelistResult: FC<{
-  whitelistStatus: 'whitelisted' | 'notWhitelisted' | 'pending';
-  sessionStatus: 'loading' | 'authenticated' | 'unauthenticated';
+  whitelistStatus: 'whitelisted' | 'notWhitelisted' | 'pending'
+  sessionStatus: 'loading' | 'authenticated' | 'unauthenticated'
 }> = ({ whitelistStatus, sessionStatus }) => {
   if (sessionStatus === 'loading') {
     return (
@@ -450,9 +450,9 @@ const WhitelistResult: FC<{
       >
         Loading whitelist status...
       </Alert>
-    );
+    )
   } else {
-    let content;
+    let content
     switch (whitelistStatus) {
       case 'whitelisted':
         content = (
@@ -463,8 +463,8 @@ const WhitelistResult: FC<{
           >
             Your account is whitelisted.
           </Alert>
-        );
-        break;
+        )
+        break
       case 'notWhitelisted':
         content = (
           <Alert
@@ -474,8 +474,8 @@ const WhitelistResult: FC<{
           >
             Your account is not whitelisted.
           </Alert>
-        );
-        break;
+        )
+        break
       case 'pending':
         content = (
           <Alert
@@ -485,12 +485,12 @@ const WhitelistResult: FC<{
           >
             Please sign in to verify status
           </Alert>
-        );
-        break;
+        )
+        break
       default:
-        content = null;
+        content = null
     }
 
-    return <>{content}</>;
+    return <>{content}</>
   }
-};
+}

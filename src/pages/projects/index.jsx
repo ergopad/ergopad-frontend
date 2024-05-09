@@ -1,16 +1,16 @@
-import { Typography, Box, Container, Grid } from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
-import CenterTitle from '@components/CenterTitle';
-import RelatedLinks from '@components/RelatedLinks/RelatedLinks';
-import theme from '@styles/theme';
-import Search from '@components/Search';
-import { useSearch } from '@contexts/SearchContext';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useWhitelistProjects } from '@hooks/useWhitelistProjects';
-import { useContributionProjects } from '@hooks/useContributionProjects';
-import { ProjectCard } from '@components/projects/ProjectCard';
-import { ActiveProjectCard } from '@components/projects/ActiveProjectCard';
+import { Typography, Box, Container, Grid } from '@mui/material'
+import CircularProgress from '@mui/material/CircularProgress'
+import CenterTitle from '@components/CenterTitle'
+import RelatedLinks from '@components/RelatedLinks/RelatedLinks'
+import theme from '@styles/theme'
+import Search from '@components/Search'
+import { useSearch } from '@contexts/SearchContext'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
+import { useWhitelistProjects } from '@hooks/useWhitelistProjects'
+import { useContributionProjects } from '@hooks/useContributionProjects'
+import { ProjectCard } from '@components/projects/ProjectCard'
+import { ActiveProjectCard } from '@components/projects/ActiveProjectCard'
 
 const relatedLinkList = [
   {
@@ -37,47 +37,47 @@ const relatedLinkList = [
     href: '/apply',
     background: theme.palette.tertiary.main,
   },
-];
+]
 
 const Projects = () => {
-  const { search } = useSearch();
+  const { search } = useSearch()
   // loading spinner for submit button
-  const [isLoading, setLoading] = useState(true);
-  const [projects, setProjects] = useState([]);
+  const [isLoading, setLoading] = useState(true)
+  const [projects, setProjects] = useState([])
 
   useEffect(() => {
     const getProjects = async () => {
       try {
-        const res = await axios.get(`${process.env.API_URL}/projects/`);
+        const res = await axios.get(`${process.env.API_URL}/projects/`)
         setProjects(
           res.data.filter(
-            (project) => !project.name.toLowerCase().startsWith('cardano-'),
-          ),
-        );
+            (project) => !project.name.toLowerCase().startsWith('cardano-')
+          )
+        )
       } catch (e) {
-        console.error(e);
+        console.error(e)
       }
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
-    getProjects();
-  }, []);
+    getProjects()
+  }, [])
 
   const filteredProjects = projects?.filter((project) =>
-    project.name.toLowerCase().includes(search.toLowerCase()),
-  );
+    project.name.toLowerCase().includes(search.toLowerCase())
+  )
   const launchedProjects = filteredProjects?.filter(
-    (project) => project.isLaunched,
-  );
+    (project) => project.isLaunched
+  )
   const upcomingProjects = filteredProjects?.filter(
-    (project) => !project.isLaunched,
-  );
+    (project) => !project.isLaunched
+  )
   const { whiteListProjectsActive, isLoading: whiteListProjectsIsLoading } =
-    useWhitelistProjects();
+    useWhitelistProjects()
   const {
     contributionProjectsActive,
     isLoading: contributionProjectsIsLoading,
-  } = useContributionProjects();
+  } = useContributionProjects()
 
   return (
     <>
@@ -146,7 +146,7 @@ const Projects = () => {
       </Container>
       <RelatedLinks title="Learn More" subtitle="" links={relatedLinkList} />
     </>
-  );
-};
+  )
+}
 
-export default Projects;
+export default Projects

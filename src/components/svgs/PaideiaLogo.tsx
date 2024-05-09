@@ -1,6 +1,6 @@
-import React, { FC } from 'react';
-import SvgIcon from '@mui/material/SvgIcon';
-import { SxProps } from '@mui/material';
+import React, { FC } from 'react'
+import SvgIcon from '@mui/material/SvgIcon'
+import { SxProps } from '@mui/material'
 
 const BlockheadsLogo: FC<{ sx?: SxProps }> = ({ sx }) => {
   return (
@@ -24,7 +24,7 @@ const BlockheadsLogo: FC<{ sx?: SxProps }> = ({ sx }) => {
       <path d="M48.5137 2.99776C48.5137 1.82593 49.4636 0.875977 50.6355 0.875977H73.5649C74.7367 0.875977 75.6866 1.82593 75.6866 2.99776V73.1845C75.6866 74.3563 74.7367 75.3063 73.5649 75.3063H50.6355C49.4636 75.3063 48.5137 74.3563 48.5137 73.1845V2.99776Z" />
       <path d="M48.5137 111.685C48.5137 110.513 49.4636 109.563 50.6355 109.563H73.5649C74.7367 109.563 75.6866 110.513 75.6866 111.685V181.872C75.6866 183.044 74.7367 183.994 73.5649 183.994H50.6355C49.4636 183.994 48.5137 183.044 48.5137 181.872V111.685Z" />
     </SvgIcon>
-  );
-};
+  )
+}
 
-export default BlockheadsLogo;
+export default BlockheadsLogo

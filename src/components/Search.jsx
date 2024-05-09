@@ -1,21 +1,21 @@
-import { useRef } from 'react';
-import { Icon, Paper, InputBase } from '@mui/material';
-import theme from '@styles/theme';
-import { useSearch } from '@contexts/SearchContext';
+import { useRef } from 'react'
+import { Icon, Paper, InputBase } from '@mui/material'
+import theme from '@styles/theme'
+import { useSearch } from '@contexts/SearchContext'
 
 const Search = (props, { placeholder }) => {
-  const { search, setSearch } = useSearch();
+  const { search, setSearch } = useSearch()
 
-  const thisComponent = useRef(null);
+  const thisComponent = useRef(null)
 
   const handleChange = (e) => {
-    e.preventDefault();
-    setSearch(e.target.value);
-  };
+    e.preventDefault()
+    setSearch(e.target.value)
+  }
   const submitForm = (e) => {
-    e.preventDefault();
-    thisComponent.current?.scrollIntoView();
-  };
+    e.preventDefault()
+    thisComponent.current?.scrollIntoView()
+  }
 
   return (
     <>
@@ -66,7 +66,7 @@ const Search = (props, { placeholder }) => {
       </Paper>
       <div id="top"></div>
     </>
-  );
-};
+  )
+}
 
-export default Search;
+export default Search

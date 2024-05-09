@@ -7,6 +7,6 @@ const boxStyles = {
   borderStyle: 'solid',
   border: 0,
   borderTop: 1,
-};
+}
 
-export default boxStyles;
+export default boxStyles

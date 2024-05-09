@@ -1,6 +1,6 @@
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import Link from '@components/MuiNextLink';
+import Grid from '@mui/material/Grid'
+import Typography from '@mui/material/Typography'
+import Link from '@components/MuiNextLink'
 import {
   List,
   ListItem,
@@ -8,19 +8,19 @@ import {
   IconButton,
   Divider,
   Skeleton,
-} from '@mui/material';
-import MuiNextLink from '@components/MuiNextLink';
-import Image from 'next/image';
-import { useWhitelistProjects } from '../../lib/hooks/useWhitelistProjects';
-import { useContributionProjects } from '../../lib/hooks/useContributionProjects';
+} from '@mui/material'
+import MuiNextLink from '@components/MuiNextLink'
+import Image from 'next/image'
+import { useWhitelistProjects } from '../../lib/hooks/useWhitelistProjects'
+import { useContributionProjects } from '../../lib/hooks/useContributionProjects'
 
 const Footer = () => {
   const { whiteListProjectsActive, isLoading: whiteListProjectsIsLoading } =
-    useWhitelistProjects();
+    useWhitelistProjects()
   const {
     contributionProjectsActive,
     isLoading: contributionProjectsIsLoading,
-  } = useContributionProjects();
+  } = useContributionProjects()
 
   return (
     <>
@@ -350,8 +350,8 @@ const Footer = () => {
         </Grid>
       </Grid>
     </>
-  );
-};
+  )
+}
 
 const titleStyles = {
   '& span': {
@@ -359,12 +359,12 @@ const titleStyles = {
   },
   fontWeight: 'normal',
   fontSize: 14,
-};
+}
 
 const textStyles = {
   color: (theme) => theme.palette.text.secondary,
   fontSize: 14,
-};
+}
 
 const linkStyles = {
   color: (theme) => theme.palette.text.secondary,
@@ -373,14 +373,14 @@ const linkStyles = {
     textDecoration: 'underline',
   },
   fontSize: 14,
-};
+}
 
 const listItemStyles = {
   lineHeight: 1.4,
   fontSize: 14,
   p: 0,
   pb: 0.7,
-};
+}
 
 const bottomStyles = {
   pt: 4,
@@ -390,7 +390,7 @@ const bottomStyles = {
     xs: 'center',
     md: 'space-between',
   },
-};
+}
 
 const socialStyles = {
   mx: 1,
@@ -402,11 +402,11 @@ const socialStyles = {
     color: (theme) => '#4BD0C9',
     transform: 'scale(1.2, 1.2)',
   },
-};
+}
 
 /* 
 const backgroundStyles = {
   ml: 24,
 } */
 
-export default Footer;
+export default Footer

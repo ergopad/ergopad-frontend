@@ -1,6 +1,6 @@
-import { Container, Grid, Divider } from '@mui/material';
-import CenterTitle from '@components/CenterTitle';
-import RelatedLinkItem from './RelatedLinkItem';
+import { Container, Grid, Divider } from '@mui/material'
+import CenterTitle from '@components/CenterTitle'
+import RelatedLinkItem from './RelatedLinkItem'
 
 // { id: 0, title: '', caption: '', icon: '', href: '', background: '' },
 
@@ -18,12 +18,12 @@ const Projects = ({ title, subtitle, links }) => {
           sx={{ flexGrow: 1, mb: 3 }}
         >
           {links.map((link) => {
-            return <RelatedLinkItem key={link.id} link={link} />;
+            return <RelatedLinkItem key={link.id} link={link} />
           })}
         </Grid>
       </Container>
     </>
-  );
-};
+  )
+}
 
-export default Projects;
+export default Projects

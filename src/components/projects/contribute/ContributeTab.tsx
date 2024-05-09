@@ -1,34 +1,34 @@
-import React, { FC, useEffect, useState } from 'react';
-import { Box, Paper, Typography, useTheme } from '@mui/material';
-import { trpc } from '@utils/trpc';
+import React, { FC, useEffect, useState } from 'react'
+import { Box, Paper, Typography, useTheme } from '@mui/material'
+import { trpc } from '@utils/trpc'
 import {
   ContainedTab,
   ContainedTabs,
-} from '@components/styled-components/ContainedTabs';
-import ProRataForm from './ProRataForm';
+} from '@components/styled-components/ContainedTabs'
+import ProRataForm from './ProRataForm'
 
 type ContributeTabProps = {
-  projectName: string;
-  projectIcon: string;
-  projectSlug: string;
-};
+  projectName: string
+  projectIcon: string
+  projectSlug: string
+}
 
 const ContributeTab: FC<ContributeTabProps> = ({
   projectName,
   projectIcon,
   projectSlug,
 }) => {
-  const theme = useTheme();
+  const theme = useTheme()
   const { data: rounds } =
     trpc.contributions.getContributionRoundsByProjectSlug.useQuery(
       { projectSlug: projectSlug || '' },
-      { enabled: !!projectSlug },
-    );
+      { enabled: !!projectSlug }
+    )
 
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useState(0)
   const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-  };
+    setTabValue(newValue)
+  }
 
   return (
     <Box sx={{ mb: 2 }}>
@@ -53,7 +53,7 @@ const ContributeTab: FC<ContributeTabProps> = ({
                     projectName={projectName}
                     projectIcon={projectIcon}
                   />
-                ),
+                )
             )}
           </Box>
         </>
@@ -63,7 +63,7 @@ const ContributeTab: FC<ContributeTabProps> = ({
         </Typography>
       )}
     </Box>
-  );
-};
+  )
+}
 
-export default ContributeTab;
+export default ContributeTab

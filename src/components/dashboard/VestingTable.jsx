@@ -1,31 +1,31 @@
-import React from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import theme from '@styles/theme';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { Button } from '@mui/material';
-import { useState } from 'react';
-import TokenRedeemModal from '@components/dashboard/TokenRedeemModal';
+import React from 'react'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
+import theme from '@styles/theme'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { Button } from '@mui/material'
+import { useState } from 'react'
+import TokenRedeemModal from '@components/dashboard/TokenRedeemModal'
 
 const vestedHeading = {
   amount: 'Number of Tokens',
   date: 'Date Releasing',
-};
+}
 
 const vestedWithNFTHeading = {
   remaining: 'Tokens Remaining',
   redeemable: 'Tokens Redeemable Now',
   nextUnlock: 'Next Unlock',
-};
+}
 
 const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
-  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
-  const [redeemModal, setRedeemModal] = useState(null);
+  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'))
+  const [redeemModal, setRedeemModal] = useState(null)
 
   if (
     vestedObject.length === 0 &&
@@ -44,12 +44,12 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
           </Typography>
         </Box>
       </>
-    );
+    )
   }
 
   const redeem = (box) => {
-    setRedeemModal(box);
-  };
+    setRedeemModal(box)
+  }
 
   return (
     <>
@@ -108,7 +108,7 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                         })}
                       </TableCell>
                     </TableRow>
-                  );
+                  )
                 })}
               </TableBody>
             </Table>
@@ -150,7 +150,7 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                         </TableCell>
                       </TableRow>
                     </React.Fragment>
-                  );
+                  )
                 })}
               </TableBody>
             </Table>
@@ -204,7 +204,7 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                     </TableCell>
                     <TableCell sx={{ color: theme.palette.text.secondary }}>
                       {new Date(
-                        Date.parse(box['Next unlock'] + 'Z'),
+                        Date.parse(box['Next unlock'] + 'Z')
                       ).toLocaleString()}
                     </TableCell>
                     <TableCell sx={{ color: theme.palette.text.secondary }}>
@@ -269,7 +269,7 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                       </TableCell>
                       <TableCell sx={{ border: 'none', p: 1 }}>
                         {new Date(
-                          Date.parse(box['Next unlock'] + 'Z'),
+                          Date.parse(box['Next unlock'] + 'Z')
                         ).toLocaleString()}
                       </TableCell>
                     </TableRow>
@@ -301,7 +301,7 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
         onClose={() => setRedeemModal(null)}
       />
     </>
-  );
-};
+  )
+}
 
-export default VestingTable;
+export default VestingTable

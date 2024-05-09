@@ -1,17 +1,17 @@
-import React from 'react';
+import React from 'react'
 import {
   Transition,
   TransitionGroup,
   TransitionStatus,
-} from 'react-transition-group';
-import Alert from '@mui/material/Alert';
-import { Box } from '@mui/system';
-import { useAlert } from '@contexts/AlertContext';
-import { Typography, useTheme } from '@mui/material';
+} from 'react-transition-group'
+import Alert from '@mui/material/Alert'
+import { Box } from '@mui/system'
+import { useAlert } from '@contexts/AlertContext'
+import { Typography, useTheme } from '@mui/material'
 
 const defaultStyle = {
   transition: `opacity 200ms ease-in-out, transform 300ms`,
-} as React.CSSProperties;
+} as React.CSSProperties
 
 const transitionStyles: Record<TransitionStatus, React.CSSProperties> = {
   entering: {
@@ -30,16 +30,16 @@ const transitionStyles: Record<TransitionStatus, React.CSSProperties> = {
     opacity: 0,
   },
   unmounted: {},
-};
+}
 
 const AlertComponent = () => {
-  const theme = useTheme();
+  const theme = useTheme()
 
-  const { alerts, removeAlert } = useAlert();
+  const { alerts, removeAlert } = useAlert()
 
   const handleRemoveAlert = (id: string) => {
-    removeAlert(id);
-  };
+    removeAlert(id)
+  }
 
   return (
     <Box
@@ -79,7 +79,7 @@ const AlertComponent = () => {
         ))}
       </TransitionGroup>
     </Box>
-  );
-};
+  )
+}
 
-export default AlertComponent;
+export default AlertComponent

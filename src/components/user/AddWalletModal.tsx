@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState } from 'react'
 import {
   Box,
   Button,
@@ -6,18 +6,18 @@ import {
   DialogContent,
   DialogTitle,
   DialogActions,
-} from '@mui/material';
-import AddNautilus from './AddNautilus';
-import AddMobile from './AddMobile';
+} from '@mui/material'
+import AddNautilus from './AddNautilus'
+import AddMobile from './AddMobile'
 
 interface AddWalletProps {
-  open: boolean;
-  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  customTitle?: string;
+  open: boolean
+  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>
+  customTitle?: string
 }
 
-export type AddWalletExpanded = 'mobile' | 'nautilus' | undefined;
+export type AddWalletExpanded = 'mobile' | 'nautilus' | undefined
 
 const AddWalletModal: FC<AddWalletProps> = ({
   open,
@@ -25,7 +25,7 @@ const AddWalletModal: FC<AddWalletProps> = ({
   setLoading,
   customTitle,
 }) => {
-  const [expanded, setExpanded] = useState<AddWalletExpanded>(undefined);
+  const [expanded, setExpanded] = useState<AddWalletExpanded>(undefined)
   return (
     <Dialog open={open}>
       <DialogTitle>
@@ -50,15 +50,15 @@ const AddWalletModal: FC<AddWalletProps> = ({
       <DialogActions>
         <Button
           onClick={() => {
-            setModalOpen(false);
-            setExpanded(undefined);
+            setModalOpen(false)
+            setExpanded(undefined)
           }}
         >
           Close
         </Button>
       </DialogActions>
     </Dialog>
-  );
-};
+  )
+}
 
-export default AddWalletModal;
+export default AddWalletModal

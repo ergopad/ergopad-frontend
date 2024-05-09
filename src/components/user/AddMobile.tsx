@@ -1,4 +1,4 @@
-import React, { useState, FC } from 'react';
+import React, { useState, FC } from 'react'
 import {
   Box,
   Button,
@@ -7,15 +7,15 @@ import {
   useTheme,
   useMediaQuery,
   Avatar,
-} from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import AddMobileOpen from './AddMobileOpen';
-import { AddWalletExpanded } from './AddWalletModal';
+} from '@mui/material'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import AddMobileOpen from './AddMobileOpen'
+import { AddWalletExpanded } from './AddWalletModal'
 
 interface IMobileLogin {
-  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  expanded: AddWalletExpanded;
-  setExpanded: React.Dispatch<React.SetStateAction<AddWalletExpanded>>;
+  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+  expanded: AddWalletExpanded
+  setExpanded: React.Dispatch<React.SetStateAction<AddWalletExpanded>>
 }
 
 const MobileLogin: FC<IMobileLogin> = ({
@@ -23,9 +23,9 @@ const MobileLogin: FC<IMobileLogin> = ({
   expanded,
   setExpanded,
 }) => {
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
-  const [localLoading, setLocalLoading] = useState(false);
+  const theme = useTheme()
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'))
+  const [localLoading, setLocalLoading] = useState(false)
 
   return (
     <Collapse in={expanded !== 'nautilus'}>
@@ -42,10 +42,10 @@ const MobileLogin: FC<IMobileLogin> = ({
         }}
         onClick={() => {
           if (expanded === 'mobile') {
-            setExpanded(undefined);
-            setLocalLoading(false);
+            setExpanded(undefined)
+            setLocalLoading(false)
           } else {
-            setExpanded('mobile');
+            setExpanded('mobile')
           }
         }}
       >
@@ -109,7 +109,7 @@ const MobileLogin: FC<IMobileLogin> = ({
         />
       </Collapse>
     </Collapse>
-  );
-};
+  )
+}
 
-export default MobileLogin;
+export default MobileLogin

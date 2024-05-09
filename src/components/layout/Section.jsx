@@ -1,5 +1,5 @@
-import { Box, Container } from '@mui/material';
-import CenterTitle from '@components/CenterTitle';
+import { Box, Container } from '@mui/material'
+import CenterTitle from '@components/CenterTitle'
 
 const boxStyles = {
   background:
@@ -10,7 +10,7 @@ const boxStyles = {
   borderStyle: 'solid',
   border: 0,
   borderTop: 1,
-};
+}
 
 const Section = ({ title, subtitle, children, toggleOutside, extra, main }) => {
   return (
@@ -53,7 +53,7 @@ const Section = ({ title, subtitle, children, toggleOutside, extra, main }) => {
         </>
       )}
     </>
-  );
-};
+  )
+}
 
-export default Section;
+export default Section

@@ -1,31 +1,31 @@
-import CenterTitle from '@components/CenterTitle';
-import { Grid, Box, Button } from '@mui/material';
-import axios from 'axios';
-import { useRouter } from 'next/router';
+import CenterTitle from '@components/CenterTitle'
+import { Grid, Box, Button } from '@mui/material'
+import axios from 'axios'
+import { useRouter } from 'next/router'
 
 const Home = () => {
-  const router = useRouter();
+  const router = useRouter()
   const onLogout = async () => {
-    const data = {};
+    const data = {}
     const defaultOptions = {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem(
-          'jwt_token_login_422',
+          'jwt_token_login_422'
         )}`,
       },
-    };
+    }
     try {
       await axios.post(
         `${process.env.API_URL}/auth/logout`,
         data,
-        defaultOptions,
-      );
+        defaultOptions
+      )
     } catch (e) {
-      console.log(e);
+      console.log(e)
     }
-    sessionStorage.removeItem('jwt_token_login_422');
-    router.reload();
-  };
+    sessionStorage.removeItem('jwt_token_login_422')
+    router.reload()
+  }
 
   return (
     <Grid item md={9} sx={12}>
@@ -54,7 +54,7 @@ const Home = () => {
         </Box>
       </Grid>
     </Grid>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

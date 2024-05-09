@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC } from 'react'
 import {
   Box,
   Card,
@@ -6,14 +6,14 @@ import {
   CircularProgress,
   Typography,
   Link,
-} from '@mui/material';
-import QRCode from 'react-qr-code';
+} from '@mui/material'
+import QRCode from 'react-qr-code'
 
 type ErgopayModalBodyProps = {
-  ergopayUrl: string;
-  address: string;
-  pending?: boolean;
-};
+  ergopayUrl: string
+  address: string
+  pending?: boolean
+}
 
 const ErgopayModalBody: FC<ErgopayModalBodyProps> = ({
   ergopayUrl,
@@ -73,7 +73,7 @@ const ErgopayModalBody: FC<ErgopayModalBodyProps> = ({
         )}
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default ErgopayModalBody;
+export default ErgopayModalBody

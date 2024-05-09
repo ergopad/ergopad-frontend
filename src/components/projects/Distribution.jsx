@@ -7,9 +7,9 @@ import {
   Paper,
   useMediaQuery,
   Typography,
-} from '@mui/material';
-import theme from '@styles/theme';
-import { Fragment } from 'react';
+} from '@mui/material'
+import theme from '@styles/theme'
+import { Fragment } from 'react'
 
 const tokenomicsHeading = {
   name: 'Name',
@@ -19,25 +19,25 @@ const tokenomicsHeading = {
   freq: 'Frequency',
   length: 'Length',
   lockup: 'Cliff',
-};
+}
 
-const tokenomicsKeys = Object.keys(tokenomicsHeading);
-const tokenomicsHeadingValues = Object.values(tokenomicsHeading);
+const tokenomicsKeys = Object.keys(tokenomicsHeading)
+const tokenomicsHeadingValues = Object.values(tokenomicsHeading)
 
 const Distribution = ({ data, total, name, ticker }) => {
-  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
-  const totalTokens = total ? total : 0;
-  const tokenName = name ? name : '';
-  const tokenTicker = ticker ? ticker : '';
-  const tokenomics = data ? data : [];
+  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'))
+  const totalTokens = total ? total : 0
+  const tokenName = name ? name : ''
+  const tokenTicker = ticker ? ticker : ''
+  const tokenomics = data ? data : []
 
   const largeHeading = tokenomicsHeadingValues.map((value, i) => {
     return (
       <TableCell key={i} sx={{ fontWeight: '800' }}>
         {value}
       </TableCell>
-    );
-  });
+    )
+  })
 
   return (
     <Paper sx={{ p: { xs: 2, sm: 4 }, borderRadius: 3 }}>
@@ -90,9 +90,9 @@ const Distribution = ({ data, total, name, ticker }) => {
                       maximumFractionDigits: 0,
                     })}
                   </TableCell>
-                );
-              });
-              return <TableRow key={round.name}>{keysLoop}</TableRow>;
+                )
+              })
+              return <TableRow key={round.name}>{keysLoop}</TableRow>
             })}
           </TableBody>
         </Table>
@@ -117,7 +117,7 @@ const Distribution = ({ data, total, name, ticker }) => {
                         {round?.[key]}
                       </TableCell>
                     </TableRow>
-                  );
+                  )
                 } else if (i < tokenomicsKeys.length - 1) {
                   return (
                     <TableRow key={i}>
@@ -136,7 +136,7 @@ const Distribution = ({ data, total, name, ticker }) => {
                         })}
                       </TableCell>
                     </TableRow>
-                  );
+                  )
                 } else {
                   return (
                     <TableRow key={i}>
@@ -153,16 +153,16 @@ const Distribution = ({ data, total, name, ticker }) => {
                         {round?.[key]}
                       </TableCell>
                     </TableRow>
-                  );
+                  )
                 }
               }
-            });
-            return <Fragment key={round.name}>{keysLoop}</Fragment>;
+            })
+            return <Fragment key={round.name}>{keysLoop}</Fragment>
           })}
         </Table>
       )}
     </Paper>
-  );
-};
+  )
+}
 
-export default Distribution;
+export default Distribution

@@ -1,22 +1,22 @@
-import React from 'react';
-import { useRouter } from 'next/router';
-import Card from '@mui/material/Card';
-import CardActionArea from '@mui/material/CardActionArea';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import TelegramIcon from '@mui/icons-material/Telegram';
-import TwitterIcon from '@mui/icons-material/Twitter';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import PublicIcon from '@mui/icons-material/Public';
-import ShareIcon from '@mui/icons-material/Share';
-import DiscordIcon from '@components/DiscordIcon';
-import Link from '@components/MuiNextLink';
-import { Grid, IconButton, Typography } from '@mui/material';
-import CopyToClipboard from '@components/CopyToClipboard';
+import React from 'react'
+import { useRouter } from 'next/router'
+import Card from '@mui/material/Card'
+import CardActionArea from '@mui/material/CardActionArea'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
+import CardMedia from '@mui/material/CardMedia'
+import TelegramIcon from '@mui/icons-material/Telegram'
+import TwitterIcon from '@mui/icons-material/Twitter'
+import GitHubIcon from '@mui/icons-material/GitHub'
+import PublicIcon from '@mui/icons-material/Public'
+import ShareIcon from '@mui/icons-material/Share'
+import DiscordIcon from '@components/DiscordIcon'
+import Link from '@components/MuiNextLink'
+import { Grid, IconButton, Typography } from '@mui/material'
+import CopyToClipboard from '@components/CopyToClipboard'
 
 export const ProjectCard = ({ project }) => {
-  const router = useRouter();
+  const router = useRouter()
 
   return (
     <Grid item xs={12} sm={6} md={4} key={project.id}>
@@ -36,8 +36,8 @@ export const ProjectCard = ({ project }) => {
                 project.name
                   .toLowerCase()
                   .replaceAll(' ', '')
-                  .replaceAll(/[^a-zA-Z0-9]/g, ''),
-            );
+                  .replaceAll(/[^a-zA-Z0-9]/g, '')
+            )
           }}
         >
           <CardMedia
@@ -138,7 +138,7 @@ export const ProjectCard = ({ project }) => {
                       project.name
                         .toLowerCase()
                         .replaceAll(' ', '')
-                        .replaceAll(/[^a-zA-Z0-9]/g, ''),
+                        .replaceAll(/[^a-zA-Z0-9]/g, '')
                   )
                 }
               >
@@ -149,5 +149,5 @@ export const ProjectCard = ({ project }) => {
         </CardActions>
       </Card>
     </Grid>
-  );
-};
+  )
+}

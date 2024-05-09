@@ -1,40 +1,40 @@
-import Head from 'next/head';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { CacheProvider } from '@emotion/react';
-import createEmotionCache from '@styles/createEmotionCache';
-import '@styles/globals.css';
-import theme from '@styles/theme';
-import Layout from '@components/layout/Layout';
-import { SnackbarProvider } from 'notistack';
-import { WalletProvider } from '@lib/contexts/WalletContext';
-import { AddWalletProvider } from '@contexts/AddWalletContext';
-import { SearchProvider } from '@contexts/SearchContext';
-import { useRouter } from 'next/router';
-import { AppProps } from 'next/app';
-import Script from 'next/script';
-import { SessionProvider } from 'next-auth/react';
-import { Session } from 'next-auth';
-import { trpc } from '@utils/trpc';
-import AlertComponent from '@components/Alert';
-import { AlertProvider } from '@lib/contexts/AlertContext';
+import Head from 'next/head'
+import { ThemeProvider } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
+import { CacheProvider } from '@emotion/react'
+import createEmotionCache from '@styles/createEmotionCache'
+import '@styles/globals.css'
+import theme from '@styles/theme'
+import Layout from '@components/layout/Layout'
+import { SnackbarProvider } from 'notistack'
+import { WalletProvider } from '@lib/contexts/WalletContext'
+import { AddWalletProvider } from '@contexts/AddWalletContext'
+import { SearchProvider } from '@contexts/SearchContext'
+import { useRouter } from 'next/router'
+import { AppProps } from 'next/app'
+import Script from 'next/script'
+import { SessionProvider } from 'next-auth/react'
+import { Session } from 'next-auth'
+import { trpc } from '@utils/trpc'
+import AlertComponent from '@components/Alert'
+import { AlertProvider } from '@lib/contexts/AlertContext'
 
 // Client-side cache, shared for the whole session of the user in the browser.
-const clientSideEmotionCache = createEmotionCache();
+const clientSideEmotionCache = createEmotionCache()
 
 type MyAppProps = AppProps & {
   pageProps: {
-    session?: Session;
-    [key: string]: any;
-  };
-};
+    session?: Session
+    [key: string]: any
+  }
+}
 
 function MyApp({
   Component,
   pageProps: { session, ...pageProps },
 }: MyAppProps) {
-  const emotionCache = clientSideEmotionCache;
-  const router = useRouter();
+  const emotionCache = clientSideEmotionCache
+  const router = useRouter()
 
   return (
     <CacheProvider value={emotionCache}>
@@ -85,7 +85,7 @@ function MyApp({
         </ThemeProvider>
       </SessionProvider>
     </CacheProvider>
-  );
+  )
 }
 
-export default trpc.withTRPC(MyApp);
+export default trpc.withTRPC(MyApp)

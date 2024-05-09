@@ -1,31 +1,31 @@
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import { Container, Typography, Divider } from '@mui/material';
-import { CircularProgress } from '@mui/material';
-import MuiNextLink from '@components/MuiNextLink';
-import CenterTitle from '@components/CenterTitle';
-import axios from 'axios';
-import MarkdownRender from '@components/MarkdownRender';
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import { Container, Typography, Divider } from '@mui/material'
+import { CircularProgress } from '@mui/material'
+import MuiNextLink from '@components/MuiNextLink'
+import CenterTitle from '@components/CenterTitle'
+import axios from 'axios'
+import MarkdownRender from '@components/MarkdownRender'
 
 const Job = () => {
-  const router = useRouter();
-  const { job_id } = router.query;
-  const [isLoading, setLoading] = useState(true);
-  const [job, setJob] = useState({});
+  const router = useRouter()
+  const { job_id } = router.query
+  const [isLoading, setLoading] = useState(true)
+  const [job, setJob] = useState({})
 
   useEffect(() => {
     const getJobDetails = async () => {
       try {
-        const res = await axios.get(`${process.env.API_URL}/jobs/${job_id}`);
-        setJob(res.data);
+        const res = await axios.get(`${process.env.API_URL}/jobs/${job_id}`)
+        setJob(res.data)
       } catch {
-        setJob(null);
+        setJob(null)
       }
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
-    if (job_id) getJobDetails();
-  }, [job_id]);
+    if (job_id) getJobDetails()
+  }, [job_id])
 
   return (
     <>
@@ -89,7 +89,7 @@ const Job = () => {
         />
       )}
     </>
-  );
-};
+  )
+}
 
-export default Job;
+export default Job

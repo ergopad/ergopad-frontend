@@ -1,52 +1,52 @@
-import { Button } from '@mui/material';
-import { useEffect, useState } from 'react';
-import CircularProgress from '@mui/material/CircularProgress';
-import axios from 'axios';
+import { Button } from '@mui/material'
+import { useEffect, useState } from 'react'
+import CircularProgress from '@mui/material/CircularProgress'
+import axios from 'axios'
 
 const FileUploadS3 = (props) => {
   // props should have a onUpload(response) handler
 
   // loading spinner for submit button
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false)
   // set true to disable submit button
-  const [buttonDisabled, setbuttonDisabled] = useState(false);
+  const [buttonDisabled, setbuttonDisabled] = useState(false)
 
   useEffect(() => {
     if (isLoading) {
-      setbuttonDisabled(true);
+      setbuttonDisabled(true)
     } else {
-      setbuttonDisabled(false);
+      setbuttonDisabled(false)
     }
-  }, [isLoading]);
+  }, [isLoading])
 
   const onFileChange = async (event) => {
-    setLoading(true);
+    setLoading(true)
 
     try {
-      const uploadFile = event.target.files[0];
+      const uploadFile = event.target.files[0]
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422',
+            'jwt_token_login_422'
           )}`,
           'Content-Type': uploadFile.type,
         },
-      };
-      const formData = new FormData();
-      formData.append('fileobject', uploadFile, uploadFile.name);
+      }
+      const formData = new FormData()
+      formData.append('fileobject', uploadFile, uploadFile.name)
       const res = await axios.post(
         `${process.env.API_URL}/projects/upload_image`,
         formData,
-        defaultOptions,
-      );
-      props.onUpload(res.data);
+        defaultOptions
+      )
+      props.onUpload(res.data)
     } catch (e) {
       props.onUpload({
         status: 'failed',
-      });
+      })
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   return (
     <>
@@ -67,7 +67,7 @@ const FileUploadS3 = (props) => {
         />
       )}
     </>
-  );
-};
+  )
+}
 
-export default FileUploadS3;
+export default FileUploadS3

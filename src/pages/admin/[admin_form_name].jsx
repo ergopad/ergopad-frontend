@@ -1,44 +1,44 @@
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import { Grid } from '@mui/material';
-import Sidenav from '@components/admin/Sidenav';
-import CenterTitle from '@components/CenterTitle';
-import CreateProjectForm from '@components/admin/CreateProjectForm';
-import EditProjectForm from '@components/admin/EditProjectForm';
-import DeleteProjectForm from '@components/admin/DeleteProjectForm';
-import EditUserForm from '@components/admin/EditUserForm';
-import CreateJobForm from '@components/admin/CreateJobForm';
-import EditJobForm from '@components/admin/EditJobForm';
-import DeleteJobForm from '@components/admin/DeleteJobForm';
-import CreateAnnouncementForm from '@components/admin/CreateAnnouncementForm';
-import EditAnnouncementForm from '@components/admin/EditAnnouncementForm';
-import DeleteAnnouncementForm from '@components/admin/DeleteAnnouncementForm';
-import CreateFaqForm from '@components/admin/CreateFaqForm';
-import EditFaqForm from '@components/admin/EditFaqForm';
-import DeleteFaqForm from '@components/admin/DeleteFaqForm';
-import CreateWhitelistEventForm from '@components/admin/CreateWhitelistEventForm';
-import EditWhitelistEventForm from '@components/admin/EditWhitelistEventForm';
-import DeleteWhitelistEventForm from '@components/admin/DeleteWhitelistEventForm';
-import GenerateWhitelistEventReportForm from '@components/admin/GenerateWhitelistEventReportForm';
-import CreateContributionEventForm from '@components/admin/CreateContributionEventForm';
-import EditContributionEventForm from '@components/admin/EditContributionEventForm';
-import DeleteContributionEventForm from '@components/admin/DeleteContributionEventForm';
-import CreateTutorialForm from '@components/admin/CreateTutorialForm';
-import EditTutorialForm from '@components/admin/EditTutorialForm';
-import DeleteTutorialForm from '@components/admin/DeleteTutorialForm';
-import CreateStakingConfigForm from '@components/admin/CreateStakingConfigForm';
-import EditStakingConfigForm from '@components/admin/EditStakingConfigForm';
-import DeleteStakingConfigForm from '@components/admin/DeleteStakingConfigForm';
-import Bootstrap from '@components/admin/Bootstrap';
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import { Grid } from '@mui/material'
+import Sidenav from '@components/admin/Sidenav'
+import CenterTitle from '@components/CenterTitle'
+import CreateProjectForm from '@components/admin/CreateProjectForm'
+import EditProjectForm from '@components/admin/EditProjectForm'
+import DeleteProjectForm from '@components/admin/DeleteProjectForm'
+import EditUserForm from '@components/admin/EditUserForm'
+import CreateJobForm from '@components/admin/CreateJobForm'
+import EditJobForm from '@components/admin/EditJobForm'
+import DeleteJobForm from '@components/admin/DeleteJobForm'
+import CreateAnnouncementForm from '@components/admin/CreateAnnouncementForm'
+import EditAnnouncementForm from '@components/admin/EditAnnouncementForm'
+import DeleteAnnouncementForm from '@components/admin/DeleteAnnouncementForm'
+import CreateFaqForm from '@components/admin/CreateFaqForm'
+import EditFaqForm from '@components/admin/EditFaqForm'
+import DeleteFaqForm from '@components/admin/DeleteFaqForm'
+import CreateWhitelistEventForm from '@components/admin/CreateWhitelistEventForm'
+import EditWhitelistEventForm from '@components/admin/EditWhitelistEventForm'
+import DeleteWhitelistEventForm from '@components/admin/DeleteWhitelistEventForm'
+import GenerateWhitelistEventReportForm from '@components/admin/GenerateWhitelistEventReportForm'
+import CreateContributionEventForm from '@components/admin/CreateContributionEventForm'
+import EditContributionEventForm from '@components/admin/EditContributionEventForm'
+import DeleteContributionEventForm from '@components/admin/DeleteContributionEventForm'
+import CreateTutorialForm from '@components/admin/CreateTutorialForm'
+import EditTutorialForm from '@components/admin/EditTutorialForm'
+import DeleteTutorialForm from '@components/admin/DeleteTutorialForm'
+import CreateStakingConfigForm from '@components/admin/CreateStakingConfigForm'
+import EditStakingConfigForm from '@components/admin/EditStakingConfigForm'
+import DeleteStakingConfigForm from '@components/admin/DeleteStakingConfigForm'
+import Bootstrap from '@components/admin/Bootstrap'
 
 const AdminForm = () => {
   const JWT_TOKEN =
     typeof window !== 'undefined'
       ? sessionStorage.getItem('jwt_token_login_422')
-      : null;
-  const router = useRouter();
-  const { admin_form_name } = router.query;
-  const [load, setLoad] = useState(false);
+      : null
+  const router = useRouter()
+  const { admin_form_name } = router.query
+  const [load, setLoad] = useState(false)
 
   const formMapper = {
     create_project: <CreateProjectForm />,
@@ -68,11 +68,11 @@ const AdminForm = () => {
     edit_staking_config: <EditStakingConfigForm />,
     delete_staking_config: <DeleteStakingConfigForm />,
     bootstrap: <Bootstrap />,
-  };
+  }
 
   useEffect(() => {
-    setLoad(true);
-  }, []);
+    setLoad(true)
+  }, [])
 
   return (
     <>
@@ -109,7 +109,7 @@ const AdminForm = () => {
         />
       )}
     </>
-  );
-};
+  )
+}
 
-export default AdminForm;
+export default AdminForm

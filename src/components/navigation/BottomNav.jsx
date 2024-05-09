@@ -4,7 +4,7 @@ import {
   FiberSmartRecordOutlined,
   HomeOutlined,
   MenuOutlined,
-} from '@mui/icons-material';
+} from '@mui/icons-material'
 import {
   Drawer,
   Typography,
@@ -12,10 +12,10 @@ import {
   BottomNavigation,
   BottomNavigationAction,
   Paper,
-} from '@mui/material';
-import { useRouter } from 'next/router';
-import { useState, useEffect } from 'react';
-import MuiNextLink from '@components/MuiNextLink';
+} from '@mui/material'
+import { useRouter } from 'next/router'
+import { useState, useEffect } from 'react'
+import MuiNextLink from '@components/MuiNextLink'
 
 const drawerLinks = [
   { title: 'Whitepaper', path: '/whitepaper' },
@@ -23,7 +23,7 @@ const drawerLinks = [
   { title: 'Apply for IDO', path: '/apply' },
   { title: 'Tutorials', path: '/guides' },
   { title: 'FAQ', path: '/faq' },
-];
+]
 
 const bottomNavLinks = [
   {
@@ -46,7 +46,7 @@ const bottomNavLinks = [
     link: '/dashboard',
     icon: <DashboardOutlined />,
   },
-];
+]
 
 const root = {
   position: 'fixed',
@@ -54,44 +54,44 @@ const root = {
   left: 0,
   right: 0,
   zIndex: 1,
-};
+}
 
 const BottomNav = () => {
-  const router = useRouter();
+  const router = useRouter()
   const [state, setState] = useState({
     left: false,
-  });
-  const [value, setValue] = useState(router.pathname);
+  })
+  const [value, setValue] = useState(router.pathname)
 
   const handleChange = (_, newValue) => {
     if (newValue != 'more') {
-      setValue(newValue);
-      router.push(newValue);
+      setValue(newValue)
+      router.push(newValue)
     }
-  };
+  }
 
   const toggleDrawer = (anchor, open) => (event) => {
     if (
       event.type === 'keydown' &&
       (event.key === 'Tab' || event.key === 'Shift')
     ) {
-      return;
+      return
     }
 
-    setState({ ...state, [anchor]: open });
-  };
+    setState({ ...state, [anchor]: open })
+  }
 
   useEffect(() => {
     if (router.pathname != value) {
-      setValue('more');
+      setValue('more')
     }
     bottomNavLinks.forEach((obj) => {
       if (router.pathname == obj.link) {
-        setValue(obj.link);
+        setValue(obj.link)
         // console.log(router.pathname + ' == ' + obj.link)
       }
-    });
-  }, [router.pathname]);
+    })
+  }, [router.pathname])
 
   const list = (anchor) => (
     <Box
@@ -114,7 +114,7 @@ const BottomNav = () => {
         </Typography>
       ))}
     </Box>
-  );
+  )
 
   return (
     <>
@@ -158,7 +158,7 @@ const BottomNav = () => {
         {list('left')}
       </Drawer>
     </>
-  );
-};
+  )
+}
 
-export default BottomNav;
+export default BottomNav

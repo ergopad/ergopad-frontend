@@ -1,10 +1,10 @@
-import { Grid, Typography, Button, Box } from '@mui/material';
-import LowerGradients from '@components/stylistic/LowerGradients';
-import TelegramIcon from '@mui/icons-material/Telegram';
-import DiscordIcon from '@components/DiscordIcon';
-import QqIcon from '@components/QqIcon';
-import theme from '@styles/theme';
-import Image from 'next/legacy/image';
+import { Grid, Typography, Button, Box } from '@mui/material'
+import LowerGradients from '@components/stylistic/LowerGradients'
+import TelegramIcon from '@mui/icons-material/Telegram'
+import DiscordIcon from '@components/DiscordIcon'
+import QqIcon from '@components/QqIcon'
+import theme from '@styles/theme'
+import Image from 'next/legacy/image'
 
 const Hero = ({ title, subtitle }) => {
   return (
@@ -124,7 +124,7 @@ const Hero = ({ title, subtitle }) => {
         </Grid>
       </Grid>
     </>
-  );
-};
+  )
+}
 
-export default Hero;
+export default Hero

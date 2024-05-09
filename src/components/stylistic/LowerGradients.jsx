@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { Box } from '@mui/material';
-import theme from '../../styles/theme';
+import * as React from 'react'
+import { Box } from '@mui/material'
+import theme from '../../styles/theme'
 
 const LowerGradients = () => {
   return (
@@ -69,7 +69,7 @@ const LowerGradients = () => {
         </svg>
       </Box>
     </>
-  );
-};
+  )
+}
 
-export default LowerGradients;
+export default LowerGradients

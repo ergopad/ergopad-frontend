@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react'
 import {
   Badge,
   Box,
@@ -9,15 +9,15 @@ import {
   Menu,
   MenuItem,
   Typography,
-} from '@mui/material';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import DoneAllIcon from '@mui/icons-material/DoneAll';
-import DoneIcon from '@mui/icons-material/Done';
-import ReplayIcon from '@mui/icons-material/Replay';
-import PublicIcon from '@mui/icons-material/Public';
-import PriorityHigh from '@mui/icons-material/PriorityHigh';
-import { useWallet } from '@contexts/WalletContext';
-import axios from 'axios';
+} from '@mui/material'
+import NotificationsIcon from '@mui/icons-material/Notifications'
+import DoneAllIcon from '@mui/icons-material/DoneAll'
+import DoneIcon from '@mui/icons-material/Done'
+import ReplayIcon from '@mui/icons-material/Replay'
+import PublicIcon from '@mui/icons-material/Public'
+import PriorityHigh from '@mui/icons-material/PriorityHigh'
+import { useWallet } from '@contexts/WalletContext'
+import axios from 'axios'
 
 /**
  * When do we show the notifcation dot?
@@ -46,18 +46,18 @@ import axios from 'axios';
 // ];
 
 interface Notification {
-  href: string | undefined;
-  icon: 'confirmed' | 'submitted' | 'refund' | 'failed' | 'default';
-  text: ReactNode;
-  id: any;
-  transactionStatus: any;
-  additionalText: string | string[];
-  transactionId: any;
+  href: string | undefined
+  icon: 'confirmed' | 'submitted' | 'refund' | 'failed' | 'default'
+  text: ReactNode
+  id: any
+  transactionStatus: any
+  additionalText: string | string[]
+  transactionId: any
 }
 
-const NOTIFICATION_STORAGE_KEY = 'notification_storage_758321';
-const NOTIFICATION_BADGE_DOT = 'notification_badge_dot_217936';
-const NOTIFICATION_TTL = 10 * 1000; // 10 sec
+const NOTIFICATION_STORAGE_KEY = 'notification_storage_758321'
+const NOTIFICATION_BADGE_DOT = 'notification_badge_dot_217936'
+const NOTIFICATION_TTL = 10 * 1000 // 10 sec
 
 const iconMap = {
   confirmed: <DoneAllIcon />,
@@ -65,31 +65,31 @@ const iconMap = {
   refund: <ReplayIcon />,
   failed: <PriorityHigh />,
   default: <PublicIcon />,
-};
+}
 
 const NotificationBell = () => {
   // wallet addresses
   // const { wallet, dAppWallet } = useWallet();
   // const [lastState, setLastState] = useState<string[]>([]);
   // menu
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
+  const [anchorEl, setAnchorEl] = useState(null)
+  const open = Boolean(anchorEl)
   // notifications
-  const [dot, setDot] = useState(false);
-  const [notifications, setNotifications] = useState([]);
+  const [dot, setDot] = useState(false)
+  const [notifications, setNotifications] = useState([])
 
   const handleClick = (event: any) => {
-    setAnchorEl(event.currentTarget);
-    setDot(false);
-    localStorage.setItem(NOTIFICATION_BADGE_DOT, 'false');
-  };
+    setAnchorEl(event.currentTarget)
+    setDot(false)
+    localStorage.setItem(NOTIFICATION_BADGE_DOT, 'false')
+  }
   const handleClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   useEffect(() => {
-    setDot(localStorage.getItem(NOTIFICATION_BADGE_DOT) === 'true');
-  }, []);
+    setDot(localStorage.getItem(NOTIFICATION_BADGE_DOT) === 'true')
+  }, [])
 
   // useEffect(() => {
   //   const walletAddresses: string[] = [wallet, ...dAppWallet.addresses].filter(
@@ -231,7 +231,7 @@ const NotificationBell = () => {
         )}
       </Menu>
     </>
-  );
-};
+  )
+}
 
-export default NotificationBell;
+export default NotificationBell

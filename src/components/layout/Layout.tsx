@@ -1,18 +1,18 @@
-import { useRouter } from 'next/router';
-import { useMediaQuery, Container, Box } from '@mui/material';
-import { useTheme } from '@mui/system';
-import Header from '@components/layout/Header';
-import Footer from '@components/layout/Footer';
-import BottomNav from '@components/navigation/BottomNav';
+import { useRouter } from 'next/router'
+import { useMediaQuery, Container, Box } from '@mui/material'
+import { useTheme } from '@mui/system'
+import Header from '@components/layout/Header'
+import Footer from '@components/layout/Footer'
+import BottomNav from '@components/navigation/BottomNav'
 
 type LayoutProps = {
-  children: React.ReactNode;
-};
+  children: React.ReactNode
+}
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const router = useRouter();
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+  const router = useRouter()
 
   return (
     <>
@@ -40,7 +40,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </Box>
       {isMobile && <BottomNav />}
     </>
-  );
-};
+  )
+}
 
-export default Layout;
+export default Layout

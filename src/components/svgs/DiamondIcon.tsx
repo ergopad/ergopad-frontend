@@ -1,6 +1,6 @@
-import React, { FC } from 'react';
-import SvgIcon from '@mui/material/SvgIcon';
-import { SxProps } from '@mui/material';
+import React, { FC } from 'react'
+import SvgIcon from '@mui/material/SvgIcon'
+import { SxProps } from '@mui/material'
 
 const DiamondIcon: FC<{ sx?: SxProps }> = ({ sx }) => {
   return (
@@ -11,7 +11,7 @@ const DiamondIcon: FC<{ sx?: SxProps }> = ({ sx }) => {
       <path d="M11.8246 21.3305V8.41992H1.05957L11.8246 21.3305Z" />
       <path d="M7.19636 6.54886L10.4645 0H4.02796L0.759766 6.54886H7.19636Z" />
     </SvgIcon>
-  );
-};
+  )
+}
 
-export default DiamondIcon;
+export default DiamondIcon

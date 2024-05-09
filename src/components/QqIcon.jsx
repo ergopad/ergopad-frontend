@@ -14,7 +14,7 @@ const QqIcon = () => {
         fill="white"
       />
     </svg>
-  );
-};
+  )
+}
 
-export default QqIcon;
+export default QqIcon

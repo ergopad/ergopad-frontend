@@ -1,19 +1,19 @@
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import { Typography, Box, Container, Grid, IconButton } from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
-import ShareIcon from '@mui/icons-material/Share';
-import CopyToClipboard from '@components/CopyToClipboard';
-import Card from '@mui/material/Card';
-import CardActionArea from '@mui/material/CardActionArea';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CenterTitle from '@components/CenterTitle';
-import Search from '@components/Search';
-import { useSearch } from '../../utils/SearchContext';
-import RelatedLinks from '@components/RelatedLinks/RelatedLinks';
-import theme from '@styles/theme';
-import axios from 'axios';
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import { Typography, Box, Container, Grid, IconButton } from '@mui/material'
+import CircularProgress from '@mui/material/CircularProgress'
+import ShareIcon from '@mui/icons-material/Share'
+import CopyToClipboard from '@components/CopyToClipboard'
+import Card from '@mui/material/Card'
+import CardActionArea from '@mui/material/CardActionArea'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
+import CenterTitle from '@components/CenterTitle'
+import Search from '@components/Search'
+import { useSearch } from '../../utils/SearchContext'
+import RelatedLinks from '@components/RelatedLinks/RelatedLinks'
+import theme from '@styles/theme'
+import axios from 'axios'
 
 const relatedLinkList = [
   {
@@ -40,32 +40,32 @@ const relatedLinkList = [
     href: '/apply',
     background: theme.palette.tertiary.main,
   },
-];
+]
 
 const Careers = () => {
-  const router = useRouter();
-  const { search } = useSearch();
+  const router = useRouter()
+  const { search } = useSearch()
   // loading spinner for submit button
-  const [isLoading, setLoading] = useState(true);
-  const [jobs, setJobs] = useState([]);
+  const [isLoading, setLoading] = useState(true)
+  const [jobs, setJobs] = useState([])
 
   useEffect(() => {
     const getJobs = async () => {
       try {
-        const res = await axios.get(`${process.env.API_URL}/jobs/`);
-        setJobs(res.data.filter((job) => !job.archived));
+        const res = await axios.get(`${process.env.API_URL}/jobs/`)
+        setJobs(res.data.filter((job) => !job.archived))
       } catch (e) {
-        console.error(e);
+        console.error(e)
       }
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
-    getJobs();
-  }, []);
+    getJobs()
+  }, [])
 
   const filteredJobs = jobs.filter((job) =>
-    job.title.toLowerCase().includes(search),
-  );
+    job.title.toLowerCase().includes(search)
+  )
 
   const jobCard = (job) => {
     return (
@@ -80,8 +80,8 @@ const Careers = () => {
         >
           <CardActionArea
             onClick={() => {
-              setLoading(true);
-              router.push('/careers/' + job.id.toString(10));
+              setLoading(true)
+              router.push('/careers/' + job.id.toString(10))
             }}
           >
             <CardContent>
@@ -109,8 +109,8 @@ const Careers = () => {
           </CardActions>
         </Card>
       </Grid>
-    );
-  };
+    )
+  }
 
   return (
     <>
@@ -145,7 +145,7 @@ const Careers = () => {
       </Container>
       <RelatedLinks title="Learn More" subtitle="" links={relatedLinkList} />
     </>
-  );
-};
+  )
+}
 
-export default Careers;
+export default Careers

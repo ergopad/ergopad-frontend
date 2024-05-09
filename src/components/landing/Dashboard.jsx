@@ -6,15 +6,15 @@ import {
   useTheme,
   List,
   ListItem,
-} from '@mui/material';
-import theme from '@styles/theme';
-import Image from 'next/legacy/image';
-import { useRouter } from 'next/router';
+} from '@mui/material'
+import theme from '@styles/theme'
+import Image from 'next/legacy/image'
+import { useRouter } from 'next/router'
 
 const Dashboard = () => {
-  const mtheme = useTheme();
-  const matches = useMediaQuery(mtheme.breakpoints.up('md'));
-  const router = useRouter();
+  const mtheme = useTheme()
+  const matches = useMediaQuery(mtheme.breakpoints.up('md'))
+  const router = useRouter()
 
   return (
     <>
@@ -85,7 +85,7 @@ const Dashboard = () => {
         </Grid>
       </Grid>
     </>
-  );
-};
+  )
+}
 
-export default Dashboard;
+export default Dashboard

@@ -1,5 +1,5 @@
-import { Box } from '@mui/material';
-import theme from '../../styles/theme';
+import { Box } from '@mui/material'
+import theme from '../../styles/theme'
 
 const Gradients = () => {
   return (
@@ -61,7 +61,7 @@ const Gradients = () => {
         </svg>
       </Box>
     </>
-  );
-};
+  )
+}
 
-export default Gradients;
+export default Gradients

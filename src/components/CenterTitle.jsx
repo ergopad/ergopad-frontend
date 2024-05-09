@@ -1,4 +1,4 @@
-import { Typography, Box } from '@mui/material';
+import { Typography, Box } from '@mui/material'
 
 const CenterTitle = ({ title, subtitle, main }) => {
   return (
@@ -21,7 +21,7 @@ const CenterTitle = ({ title, subtitle, main }) => {
         <Typography variant="subtitle1">{subtitle}</Typography>
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default CenterTitle;
+export default CenterTitle

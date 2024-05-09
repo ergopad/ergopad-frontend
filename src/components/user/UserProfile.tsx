@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react'
 import {
   Grid,
   Container,
@@ -14,24 +14,24 @@ import {
   ListItemIcon,
   ListItemText,
   Skeleton,
-} from '@mui/material';
-import Link from '@components/Link';
-import Image from 'next/legacy/image';
-import SocialIcons from '@components/svgs/SocialIcons';
+} from '@mui/material'
+import Link from '@components/Link'
+import Image from 'next/legacy/image'
+import SocialIcons from '@components/svgs/SocialIcons'
 
 interface IUserProfileProps {
-  address?: string;
-  username?: string;
-  pfpUrl?: string;
-  bannerUrl?: string;
-  tagline?: string;
-  website?: string;
+  address?: string
+  username?: string
+  pfpUrl?: string
+  bannerUrl?: string
+  tagline?: string
+  website?: string
   socialLinks?: {
-    socialNetwork: string;
-    url: string;
-  }[];
-  children?: React.ReactNode;
-  loading?: boolean;
+    socialNetwork: string
+    url: string
+  }[]
+  children?: React.ReactNode
+  loading?: boolean
 }
 
 const UserProfile: FC<IUserProfileProps> = ({
@@ -45,30 +45,30 @@ const UserProfile: FC<IUserProfileProps> = ({
   children,
   loading,
 }) => {
-  const theme = useTheme();
-  const upSm = useMediaQuery(theme.breakpoints.up('sm'));
-  const lessLg = useMediaQuery(theme.breakpoints.down('lg'));
+  const theme = useTheme()
+  const upSm = useMediaQuery(theme.breakpoints.up('sm'))
+  const lessLg = useMediaQuery(theme.breakpoints.down('lg'))
 
   const [websiteLink, setWebsiteLink] = useState({
     link: '',
     name: '',
-  });
+  })
   useEffect(() => {
-    let link = '';
-    let url = '';
+    let link = ''
+    let url = ''
     if (website !== undefined) {
-      link = website;
+      link = website
       if (!/(http[s]?:\/\/)/.test(link)) {
-        link = 'https://' + link;
+        link = 'https://' + link
       }
-      url = website.replace(/(http[s]?:\/\/)/, '');
-      url = url.replace(/(www\.)/, '');
+      url = website.replace(/(http[s]?:\/\/)/, '')
+      url = url.replace(/(www\.)/, '')
     }
     setWebsiteLink({
       link: link,
       name: url,
-    });
-  }, [website]);
+    })
+  }, [website])
 
   return (
     <>
@@ -264,17 +264,17 @@ const UserProfile: FC<IUserProfileProps> = ({
                       </Typography>
                       <MenuList dense>
                         {socialLinks.map((item, i) => {
-                          let link = item.url;
+                          let link = item.url
                           if (!/(http[s]?:\/\/)/.test(link)) {
-                            link = 'https://' + link;
+                            link = 'https://' + link
                           }
-                          let url = item.url.replace(/(http[s]?:\/\/)/, '');
-                          url = url.replace(/(www\.)/, '');
+                          let url = item.url.replace(/(http[s]?:\/\/)/, '')
+                          url = url.replace(/(www\.)/, '')
                           if (
                             item.socialNetwork !== 'other' &&
                             item.socialNetwork !== ''
                           ) {
-                            url = url.replace(/([^\/\s]+\/)/, '');
+                            url = url.replace(/([^\/\s]+\/)/, '')
                           }
                           return (
                             <MenuItem
@@ -307,7 +307,7 @@ const UserProfile: FC<IUserProfileProps> = ({
                                 </Typography>
                               </ListItemText>
                             </MenuItem>
-                          );
+                          )
                         })}
                       </MenuList>
                     </>
@@ -322,7 +322,7 @@ const UserProfile: FC<IUserProfileProps> = ({
         </Grid>
       </Container>
     </>
-  );
-};
+  )
+}
 
-export default UserProfile;
+export default UserProfile

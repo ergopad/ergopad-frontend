@@ -1,7 +1,7 @@
-import { Box, Grid, Typography, CircularProgress } from '@mui/material';
-import theme from '@styles/theme';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { Box, Grid, Typography, CircularProgress } from '@mui/material'
+import theme from '@styles/theme'
+import axios from 'axios'
+import { useEffect, useState } from 'react'
 
 const stakingItems = [
   {
@@ -19,7 +19,7 @@ const stakingItems = [
     value: '-',
     background: theme.palette.tertiary.main,
   },
-];
+]
 
 export const StakingItem = (item, md, ifSmall, loading = false) => {
   const extraStyles = {
@@ -32,7 +32,7 @@ export const StakingItem = (item, md, ifSmall, loading = false) => {
     borderRadius: 2,
     textDecoration: 'none',
     '&:hover': {},
-  };
+  }
 
   if (!ifSmall) {
     return (
@@ -46,7 +46,7 @@ export const StakingItem = (item, md, ifSmall, loading = false) => {
           </Typography>
         </Box>
       </Grid>
-    );
+    )
   } else {
     return (
       <Grid item xs={12} sx={{ maxWidth: '380px' }} key={item.title}>
@@ -68,45 +68,45 @@ export const StakingItem = (item, md, ifSmall, loading = false) => {
           </Typography>
         </Typography>
       </Grid>
-    );
+    )
   }
-};
+}
 
 const StakingSummary = ({ project_id }) => {
-  const [status, setStatus] = useState(stakingItems);
-  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState(stakingItems)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const getStatus = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
         const res = await axios.get(
           project_id
             ? `${process.env.API_URL}/staking/${project_id}/status/`
-            : `${process.env.API_URL}/staking/status/`,
-        );
-        const newState = JSON.parse(JSON.stringify(stakingItems));
+            : `${process.env.API_URL}/staking/status/`
+        )
+        const newState = JSON.parse(JSON.stringify(stakingItems))
         newState[0].value = res.data['Staking boxes']
           ? res.data['Staking boxes'].toLocaleString(navigator.language, {
               maximumFractionDigits: 0,
             })
-          : '-';
+          : '-'
         newState[1].value = res.data['Total amount staked']
           ? res.data['Total amount staked'].toLocaleString(navigator.language, {
               maximumFractionDigits: 0,
             })
-          : '-';
+          : '-'
         newState[2].value = res.data['APY']
           ? Math.round(res.data['APY'] * 100) / 100 + '%'
-          : '-';
-        setStatus(newState);
+          : '-'
+        setStatus(newState)
       } catch (e) {
-        console.log('ERROR FECTHING:', e);
+        console.log('ERROR FECTHING:', e)
       }
-      setLoading(false);
-    };
-    getStatus();
-  }, [project_id]);
+      setLoading(false)
+    }
+    getStatus()
+  }, [project_id])
 
   return (
     <>
@@ -118,11 +118,11 @@ const StakingSummary = ({ project_id }) => {
         sx={{ flexGrow: 1, mb: 3 }}
       >
         {status.map((item) => {
-          return StakingItem(item, 4, false, loading);
+          return StakingItem(item, 4, false, loading)
         })}
       </Grid>
     </>
-  );
-};
+  )
+}
 
-export default StakingSummary;
+export default StakingSummary
