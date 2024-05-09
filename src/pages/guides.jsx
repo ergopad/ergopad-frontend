@@ -18,7 +18,7 @@ import { styled } from '@mui/system'
 import PageTitle from '@components/PageTitle'
 import Search from '@components/Search'
 import CopyToClipboard from '@components/CopyToClipboard'
-import { useSearch } from '../utils/SearchContext'
+import { useSearch } from '@contexts/SearchContext'
 import axios from 'axios'
 
 const SortButton = styled(Button)({
