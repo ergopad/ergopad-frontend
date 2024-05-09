@@ -28,7 +28,7 @@ export default async function handler(
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: loginRequest.user_id },
+    where: { id: loginRequest.userId },
   })
 
   if (!user) {

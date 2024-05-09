@@ -74,141 +74,141 @@ const ContributeConfirm: FC<IContributeConfirmProps> = ({
     }
   }
 
-  const handleConnect = async (walletName: string) => {
-    try {
-      setButtonDisabled(true)
-      disconnect()
-    } catch (e: any) {
-      addAlert(
-        'error',
-        'Unable to disconnect from connected wallet. Please refresh the page'
-      )
-    }
+  // const handleConnect = async (walletName: string) => {
+  //   try {
+  //     setButtonDisabled(true)
+  //     disconnect()
+  //   } catch (e: any) {
+  //     addAlert(
+  //       'error',
+  //       'Unable to disconnect from connected wallet. Please refresh the page'
+  //     )
+  //   }
 
-    try {
-      console.log(`Connecting to ${walletName}`)
-      await connect(walletName)
-    } catch (e: any) {
-      // NOTE meshJS resolves the Promise, even with an error, so you never hit this catch block
-      addAlert(
-        'error',
-        'Unable to connect to selected wallet. Please try again'
-      )
-    } finally {
-      const niceName = walletsList.find(
-        (wallet) => wallet.connectName === walletName
-      )
-      if (niceName) {
-        setAlternateWalletType(niceName)
-      }
-      setOpenAlternativeWallet(false)
-    }
-  }
+  //   try {
+  //     console.log(`Connecting to ${walletName}`)
+  //     await connect(walletName)
+  //   } catch (e: any) {
+  //     // NOTE meshJS resolves the Promise, even with an error, so you never hit this catch block
+  //     addAlert(
+  //       'error',
+  //       'Unable to connect to selected wallet. Please try again'
+  //     )
+  //   } finally {
+  //     const niceName = walletsList.find(
+  //       (wallet) => wallet.connectName === walletName
+  //     )
+  //     if (niceName) {
+  //       setAlternateWalletType(niceName)
+  //     }
+  //     setOpenAlternativeWallet(false)
+  //   }
+  // }
 
-  const updateChangeAddress = async () => {
-    try {
-      const thisChangeAddress = await wallet.getChangeAddress()
-      setChangeAddress(thisChangeAddress)
-      const balance = await wallet.getLovelace()
-      if (Number(paymentAmount) * 1000000 > Number(balance)) {
-        // addAlert('error', `Wallet doesn't have ${Number(paymentAmount)} ADA available, please choose another wallet. `)
-        setButtonDisabled(true)
-        setErrorMessage(true)
-      } else {
-        setButtonDisabled(false)
-        setErrorMessage(false)
-      }
-    } catch (e: any) {
-      addAlert(
-        'error',
-        `Error connecting to wallet. Please try again, or contact support for help. `
-      )
-    }
-  }
+  // const updateChangeAddress = async () => {
+  //   try {
+  //     const thisChangeAddress = await wallet.getChangeAddress()
+  //     setChangeAddress(thisChangeAddress)
+  //     const balance = await wallet.getLovelace()
+  //     if (Number(paymentAmount) * 1000000 > Number(balance)) {
+  //       // addAlert('error', `Wallet doesn't have ${Number(paymentAmount)} ADA available, please choose another wallet. `)
+  //       setButtonDisabled(true)
+  //       setErrorMessage(true)
+  //     } else {
+  //       setButtonDisabled(false)
+  //       setErrorMessage(false)
+  //     }
+  //   } catch (e: any) {
+  //     addAlert(
+  //       'error',
+  //       `Error connecting to wallet. Please try again, or contact support for help. `
+  //     )
+  //   }
+  // }
 
-  useEffect(() => {
-    if (alternateWalletType && !openAlternativeWallet) {
-      updateChangeAddress()
-    }
-  }, [alternateWalletType, openAlternativeWallet])
+  // useEffect(() => {
+  //   if (alternateWalletType && !openAlternativeWallet) {
+  //     updateChangeAddress()
+  //   }
+  // }, [alternateWalletType, openAlternativeWallet])
 
-  useEffect(() => {
-    if (open && sessionData?.user.walletType) {
-      handleConnect(sessionData.user.walletType)
-    } else setAlternateWalletType(undefined)
-  }, [open])
+  // useEffect(() => {
+  //   if (open && sessionData?.user.walletType) {
+  //     handleConnect(sessionData.user.walletType)
+  //   } else setAlternateWalletType(undefined)
+  // }, [open])
 
-  const handleSubmit = async () => {
-    if (changeAddress || sessionData?.user.address) {
-      try {
-        const tx = new Transaction({ initiator: wallet }).sendLovelace(
-          recipientAddress,
-          (Number(paymentAmount) * 1000000).toString()
-        )
+  // const handleSubmit = async () => {
+  //   if (changeAddress || sessionData?.user.address) {
+  //     try {
+  //       const tx = new Transaction({ initiator: wallet }).sendLovelace(
+  //         recipientAddress,
+  //         (Number(paymentAmount) * 1000000).toString()
+  //       )
 
-        let unsignedTx, signedTx, txHash
+  //       let unsignedTx, signedTx, txHash
 
-        try {
-          unsignedTx = await tx.build()
-        } catch (error) {
-          console.error('Error building the transaction:', error)
-          addAlert(
-            'error',
-            'Failed to build the transaction. Please try again.'
-          )
-          return
-        }
+  //       try {
+  //         unsignedTx = await tx.build()
+  //       } catch (error) {
+  //         console.error('Error building the transaction:', error)
+  //         addAlert(
+  //           'error',
+  //           'Failed to build the transaction. Please try again.'
+  //         )
+  //         return
+  //       }
 
-        try {
-          signedTx = await wallet.signTx(unsignedTx)
-          try {
-            txHash = await wallet.submitTx(signedTx)
-            console.log(
-              'Transaction submitted successfully. Transaction Hash: ',
-              txHash
-            )
-            addAlert(
-              'success',
-              <>
-                Transaction submitted successfully. Hash:{' '}
-                <Link
-                  target="_blank"
-                  href={`https://cardanoscan.io/transaction/${txHash}`}
-                >
-                  {txHash}
-                </Link>
-              </>
-            )
-            const integerValue = parseInt(paymentAmount, 10).toString()
-            try {
-              await createTransaction.mutateAsync({
-                amount: integerValue,
-                currency: paymentCurrency || 'ADA',
-                address: (changeAddress || sessionData?.user.address)!,
-                txId: txHash,
-                contributionId: contributionRoundId,
-              })
-            } catch (e: any) {
-              console.log(e)
-            }
-            setOpen(false)
-          } catch (error) {
-            console.error('Error submitting the transaction:', error)
-            addAlert('error', `Error submitting the transaction: ${error}`)
-          }
-        } catch (error) {
-          console.error('Error signing the transaction:', error)
-          addAlert('error', 'Failed to sign the transaction. Please try again.')
-        }
-      } catch (error) {
-        // Handle the final error
-        console.error('Transaction failed:', error)
-        addAlert('error', `Transaction failed: ${error}`)
-      }
-    }
-  }
+  //       try {
+  //         signedTx = await wallet.signTx(unsignedTx)
+  //         try {
+  //           txHash = await wallet.submitTx(signedTx)
+  //           console.log(
+  //             'Transaction submitted successfully. Transaction Hash: ',
+  //             txHash
+  //           )
+  //           addAlert(
+  //             'success',
+  //             <>
+  //               Transaction submitted successfully. Hash:{' '}
+  //               <Link
+  //                 target="_blank"
+  //                 href={`https://cardanoscan.io/transaction/${txHash}`}
+  //               >
+  //                 {txHash}
+  //               </Link>
+  //             </>
+  //           )
+  //           const integerValue = parseInt(paymentAmount, 10).toString()
+  //           try {
+  //             await createTransaction.mutateAsync({
+  //               amount: integerValue,
+  //               currency: paymentCurrency || 'ADA',
+  //               address: (changeAddress || sessionData?.user.address)!,
+  //               txId: txHash,
+  //               contributionId: contributionRoundId,
+  //             })
+  //           } catch (e: any) {
+  //             console.log(e)
+  //           }
+  //           setOpen(false)
+  //         } catch (error) {
+  //           console.error('Error submitting the transaction:', error)
+  //           addAlert('error', `Error submitting the transaction: ${error}`)
+  //         }
+  //       } catch (error) {
+  //         console.error('Error signing the transaction:', error)
+  //         addAlert('error', 'Failed to sign the transaction. Please try again.')
+  //       }
+  //     } catch (error) {
+  //       // Handle the final error
+  //       console.error('Transaction failed:', error)
+  //       addAlert('error', `Transaction failed: ${error}`)
+  //     }
+  //   }
+  // }
 
-  const installedWallets = filterInstalledWallets(wallets)
+  // const installedWallets = filterInstalledWallets(wallets)
 
   return (
     <Dialog
@@ -241,7 +241,7 @@ const ContributeConfirm: FC<IContributeConfirmProps> = ({
       >
         <CloseIcon />
       </IconButton>
-      <DialogContent
+      {/* <DialogContent
         sx={{ minWidth: '350px', maxWidth: !fullScreen ? '460px' : null }}
       >
         <Typography sx={{ mb: 2 }}>
@@ -287,8 +287,8 @@ const ContributeConfirm: FC<IContributeConfirmProps> = ({
           }}
           fullWidth
           onClick={() => handleOpenAlternativeWallet()}
-        />
-        <Collapse in={openAlternativeWallet}>
+        /> 
+         <Collapse in={openAlternativeWallet}>
           {installedWallets.map((wallet) => (
             <WalletListItemComponent
               {...wallet}
@@ -364,7 +364,7 @@ const ContributeConfirm: FC<IContributeConfirmProps> = ({
         >
           {`Submit with ${alternateWalletType?.name || sessionData?.user.walletType} wallet`}
         </Button>
-      </DialogActions>
+      </DialogActions> */}
     </Dialog>
   )
 }

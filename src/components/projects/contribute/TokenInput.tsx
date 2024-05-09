@@ -25,26 +25,26 @@ const TokenInput: FC<ITokenInputProps> = ({
   setOutputValue,
 }) => {
   const theme = useTheme()
-  const { data: adaPrice } = trpc.price.getCardanoPrice.useQuery()
-  const [adaAmount, setAdaAmount] = useState<number | undefined>(undefined)
+  // const { data: adaPrice } = trpc.price.getCardanoPrice.useQuery()
+  // const [adaAmount, setAdaAmount] = useState<number | undefined>(undefined)
 
-  const getUserAdaAmount = async () => {
-    try {
-      if (connected) {
-        const lovelace = await wallet.getLovelace()
-        const ada = Number(lovelace) * 0.000001
-        if (ada) setAdaAmount(ada)
-      }
-    } catch (error) {
-      console.error(error)
-    }
-  }
+  // const getUserAdaAmount = async () => {
+  //   try {
+  //     if (connected) {
+  //       const lovelace = await wallet.getLovelace()
+  //       const ada = Number(lovelace) * 0.000001
+  //       if (ada) setAdaAmount(ada)
+  //     }
+  //   } catch (error) {
+  //     console.error(error)
+  //   }
+  // }
 
-  useEffect(() => {
-    if (wallet) {
-      getUserAdaAmount()
-    }
-  }, [wallet])
+  // useEffect(() => {
+  //   if (wallet) {
+  //     getUserAdaAmount()
+  //   }
+  // }, [wallet])
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = event.target.value.replace(/,/g, '.')
@@ -66,20 +66,20 @@ const TokenInput: FC<ITokenInputProps> = ({
     }
   }
 
-  const handleInputMax = () => {
-    if (adaAmount) {
-      const roundedDown = adaAmount - 1.5
-      setInputValue(roundedDown.toFixed(0))
-      setOutputValue((Number(roundedDown) * exchangeRate).toFixed(0))
-    }
-  }
+  // const handleInputMax = () => {
+  //   if (adaAmount) {
+  //     const roundedDown = adaAmount - 1.5
+  //     setInputValue(roundedDown.toFixed(0))
+  //     setOutputValue((Number(roundedDown) * exchangeRate).toFixed(0))
+  //   }
+  // }
 
-  const calculateUSDValue = () => {
-    const numericalValue = Number(inputValue.replace(/,/g, ''))
-    return (numericalValue * (adaPrice || 0)).toLocaleString(undefined, {
-      maximumFractionDigits: 2,
-    })
-  }
+  // const calculateUSDValue = () => {
+  //   const numericalValue = Number(inputValue.replace(/,/g, ''))
+  //   return (numericalValue * (adaPrice || 0)).toLocaleString(undefined, {
+  //     maximumFractionDigits: 2,
+  //   })
+  // }
 
   return (
     <Box sx={{ position: 'relative' }}>
@@ -127,7 +127,7 @@ const TokenInput: FC<ITokenInputProps> = ({
             ADA ₳
           </Typography>
         </Box>
-        <Box
+        {/* <Box
           sx={{
             display: 'flex',
             flexDirection: 'row',
@@ -153,7 +153,7 @@ const TokenInput: FC<ITokenInputProps> = ({
               '0'
             )}
           </Typography>
-        </Box>
+        </Box> */}
       </Box>
       <Box
         sx={{

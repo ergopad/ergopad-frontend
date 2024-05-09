@@ -13,7 +13,7 @@ export default async function handler(
   const deleteCount = await prisma.user.deleteMany({
     where: {
       status: 'pending',
-      created_at: {
+      createdAt: {
         lte: tenMinutesAgo,
       },
     },

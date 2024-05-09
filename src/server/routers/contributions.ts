@@ -219,10 +219,10 @@ export const contributionRouter = createTRPCRouter({
   //   // Aggregate transactions by user
   //   const userTotals = transactions.reduce((acc, transaction) => {
   //     const amount = parseFloat(transaction.amount);
-  //     if (!acc[transaction.user_id]) {
-  //       acc[transaction.user_id] = { totalAmount: 0, user: transaction.user };
+  //     if (!acc[transaction.userId]) {
+  //       acc[transaction.userId] = { totalAmount: 0, user: transaction.user };
   //     }
-  //     acc[transaction.user_id].totalAmount += amount;
+  //     acc[transaction.userId].totalAmount += amount;
   //     return acc;
   //   }, {});
 

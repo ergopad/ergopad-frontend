@@ -14,7 +14,6 @@ import {
 import Link from '@components/Link'
 import { useWallet } from '@contexts/WalletContext'
 import { AddWalletExpanded } from './AddWalletModal'
-import { Signature } from '@lib/types'
 
 interface IAddMobileOpen {
   localLoading: boolean
@@ -50,10 +49,10 @@ const AddMobileOpen: FC<IAddMobileOpen> = ({
       refetchInterval: (
         data:
           | {
-              status: 'PENDING' | 'SIGNED'
-              signedMessage: string
-              proof: string
-            }
+            status: 'PENDING' | 'SIGNED'
+            signedMessage: string
+            proof: string
+          }
           | undefined
       ) => {
         // If the status is 'SIGNED', stop polling

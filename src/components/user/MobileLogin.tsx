@@ -13,7 +13,6 @@ import {
 } from '@mui/material'
 import Link from '@components/Link'
 import { signIn } from 'next-auth/react'
-import { NonceResponse, Signature } from '@lib/types'
 import { isErgoMainnetAddress } from '@utils/general'
 import { useWallet } from '@contexts/WalletContext'
 
@@ -44,10 +43,10 @@ const MobileLogin: FC<IMobileLogin> = ({ setModalOpen }) => {
       refetchInterval: (
         data:
           | {
-              status: 'PENDING' | 'SIGNED'
-              signedMessage: string
-              proof: string
-            }
+            status: 'PENDING' | 'SIGNED'
+            signedMessage: string
+            proof: string
+          }
           | undefined
       ) => {
         // If the status is 'SIGNED', stop polling

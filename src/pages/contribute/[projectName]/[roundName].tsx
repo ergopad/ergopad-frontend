@@ -162,17 +162,15 @@ const Contribute: NextPage = () => {
   const [ergopayUrl, setErgopayUrl] = useState('')
   // erg conversion rate loading from backend
   const [conversionRate, setConversionRate] = useState(1.0)
-  const [currentWallet, setCurrentWallet] = useState<
-    | {
-        id: number
-        type: string | null
-        changeAddress: string
-        unusedAddresses: string[]
-        usedAddresses: string[]
-        user_id: string
-      }
-    | undefined
-  >(undefined)
+  const [currentWallet, setCurrentWallet] = useState<{
+    id: number
+    type: string | null
+    changeAddress: string
+    unusedAddresses: string[]
+    usedAddresses: string[]
+    userId: string
+  }
+    | undefined>(undefined)
 
   const shouldFetch = sessionStatus === 'authenticated'
   const walletsQuery = trpc.user.getWallets.useQuery(undefined, {
@@ -475,8 +473,8 @@ const Contribute: NextPage = () => {
           formData.currency === 'erg'
             ? 0
             : Math.round(
-                formData.vestingAmount * contributeData.tokenPrice * 100
-              ) / 100
+              formData.vestingAmount * contributeData.tokenPrice * 100
+            ) / 100
         // const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
         //   (x, i, a) => a.indexOf(x) == i && x
         // );
@@ -557,8 +555,8 @@ const Contribute: NextPage = () => {
           formData.currency === 'erg'
             ? 0
             : Math.round(
-                formData.vestingAmount * contributeData.tokenPrice * 100
-              ) / 100
+              formData.vestingAmount * contributeData.tokenPrice * 100
+            ) / 100
         const res = await axios.post(
           `${process.env.API_URL}/vesting/contribute`,
           {
@@ -844,22 +842,22 @@ const Contribute: NextPage = () => {
                           value={
                             formData.currency === 'erg'
                               ? Math.max(
-                                  0,
-                                  Math.round(
-                                    (contributeData.tokenPrice *
-                                      formData.vestingAmount *
-                                      Math.pow(
-                                        10,
-                                        contributeData.tokenDecimals
-                                      )) /
-                                      conversionRate
-                                  ) / Math.pow(10, contributeData.tokenDecimals)
-                                )
-                              : Math.round(
-                                  contributeData.tokenPrice *
+                                0,
+                                Math.round(
+                                  (contributeData.tokenPrice *
                                     formData.vestingAmount *
-                                    100
-                                ) / 100
+                                    Math.pow(
+                                      10,
+                                      contributeData.tokenDecimals
+                                    )) /
+                                  conversionRate
+                                ) / Math.pow(10, contributeData.tokenDecimals)
+                              )
+                              : Math.round(
+                                contributeData.tokenPrice *
+                                formData.vestingAmount *
+                                100
+                              ) / 100
                           }
                         />
                       </Grid>
@@ -959,9 +957,9 @@ const Contribute: NextPage = () => {
                   <Typography sx={{ color: theme.palette.text.secondary }}>
                     {formState === formOpenState.EARLY &&
                       'This form is not yet active. The round will start at ' +
-                        new Date(
-                          Date.parse(contributeData.start_dtz)
-                        ).toTimeString()}
+                      new Date(
+                        Date.parse(contributeData.start_dtz)
+                      ).toTimeString()}
                   </Typography>
                   <Typography sx={{ color: theme.palette.text.secondary }}>
                     {formState === formOpenState.CLOSED &&
