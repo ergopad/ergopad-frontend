@@ -3,10 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("POSTGRES_PRISMA_URL")
-  directUrl         = env("POSTGRES_URL_NON_POOLING")
-  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING")
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
 }
 
 model Account {
@@ -32,7 +30,7 @@ model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique @map("session_token")
   userId       String   @map("user_id")
-  walletType   String?
+  walletType   String?  @map("wallet_type")
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -40,26 +38,28 @@ model Session {
 }
 
 model User {
-  id             String         @id @default(cuid())
-  created_at     DateTime       @default(now())
-  updated_at     DateTime       @updatedAt
-  name           String?
-  status         String?
-  defaultAddress String?        @unique @map("default_address")
-  nonce          String?
-  email          String?        @unique
-  emailVerified  DateTime?      @map("email_verified")
-  image          String?
-  sumsubId       String?        @map("sumsub_id")
-  sumsubType     String?        @map("sumsub_type")
-  sumsubResult   Json?          @map("sumsub_result")
-  sumsubStatus   String?        @map("sumsub_status")
-  accounts       Account[]
-  sessions       Session[]
-  wallets        Wallet[]
-  loginRequests  LoginRequest[]
-  transactions   Transaction[]
-  whitelists     String[]
+  id                 String               @id @default(cuid())
+  createdAt          DateTime             @default(now()) @map("created_at")
+  updatedAt          DateTime             @updatedAt @map("updated_at")
+  name               String?
+  status             String?
+  isAdmin            Boolean              @default(false) @map("is_admin")
+  defaultAddress     String?              @unique @map("default_address")
+  nonce              String?
+  email              String?              @unique
+  emailVerified      DateTime?            @map("email_verified")
+  image              String?
+  sumsubId           String?              @map("sumsub_id")
+  sumsubType         String?              @map("sumsub_type")
+  sumsubResult       Json?                @map("sumsub_result")
+  sumsubStatus       String?              @map("sumsub_status")
+  whitelists         String[]
+  loginRequests      LoginRequest[]
+  accounts           Account[]
+  sessions           Session[]
+  transactions       Transaction[]
+  unsupportedWallets UnsupportedWallets[]
+  wallets            Wallet[]
 
   @@map("users")
 }
@@ -70,31 +70,58 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
-  @@map("verificationtokens")
+  @@map("verification_tokens")
 }
 
 model Wallet {
   id              Int      @id @default(autoincrement())
   type            String?
-  changeAddress   String   @unique
-  unusedAddresses String[]
-  usedAddresses   String[]
-  user_id         String
-  user            User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  changeAddress   String   @unique @map("change_address")
+  unusedAddresses String[] @map("unused_addresses")
+  usedAddresses   String[] @map("used_addresses")
+  userId          String   @map("user_id")
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("wallets")
 }
 
+model ContributionRound {
+  id                  Int           @id @default(autoincrement())
+  name                String
+  saleType            String        @map("sale_type")
+  startDate           DateTime      @map("start_date")
+  endDate             DateTime      @map("end_date")
+  tokenTicker         String        @map("token_ticker")
+  tokenTarget         Int           @map("token_target")
+  currency            String
+  price               Float
+  deposited           Float
+  whitelistSlug       String?       @unique @map("whitelist_slug")
+  transaction         Transaction[]
+  projectName         String        @map("project_name")
+  projectSlug         String        @map("project_slug")
+  recipientAddress    String?       @map("recipient_address")
+  restrictedCountries String[]      @map("restricted_countries")
+
+  @@map("contribution_rounds")
+}
+
 model Transaction {
-  id          String   @id @default(cuid())
-  description String
-  amount      String
-  currency    String
-  address     String
-  completed   Boolean  @default(false)
-  created_at  DateTime @default(now())
-  user_id     String
-  user        User     @relation(fields: [user_id], references: [id])
+  id                String            @id @default(cuid())
+  description       String?
+  amount            String
+  currency          String
+  address           String
+  completed         Boolean           @default(false)
+  txId              String?           @map("tx_id")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+  userId            String            @map("user_id")
+  user              User              @relation(fields: [userId], references: [id])
+  contributionId    Int               @map("contribution_id")
+  contributionRound ContributionRound @relation(fields: [contributionId], references: [id])
+
+  onChainTxData Json? @map("on_chain_tx_data")
 
   @@map("transactions")
 }
@@ -107,13 +134,27 @@ enum LoginRequestStatus {
 
 model LoginRequest {
   id             Int                @id @default(autoincrement())
-  user_id        String
-  user           User               @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  verificationId String             @unique
-  message        String // The message to be signed, which is the nonce from the User model
+  verificationId String             @unique @map("verification_id")
+  message        String
   status         LoginRequestStatus
-  signedMessage  String?
+  signedMessage  String?            @map("signed_message")
   proof          String?
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
+  createdAt      DateTime           @default(now()) @map("created_at")
+  updatedAt      DateTime           @updatedAt @map("updated_at")
+  userId         String             @map("user_id")
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("login_requests")
+}
+
+model UnsupportedWallets {
+  id              Int      @id @default(autoincrement())
+  type            String?
+  changeAddress   String   @unique
+  unusedAddresses String[]
+  usedAddresses   String[]
+  userId          String   @map("user_id")
+  users           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("unsupported_wallets")
 }
