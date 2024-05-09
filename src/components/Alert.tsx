@@ -1,5 +1,9 @@
 import React from 'react';
-import { Transition, TransitionGroup, TransitionStatus } from 'react-transition-group';
+import {
+  Transition,
+  TransitionGroup,
+  TransitionStatus,
+} from 'react-transition-group';
 import Alert from '@mui/material/Alert';
 import { Box } from '@mui/system';
 import { useAlert } from '@contexts/AlertContext';
@@ -23,7 +27,7 @@ const transitionStyles: Record<TransitionStatus, React.CSSProperties> = {
     transform: 'translateX(100%)',
   },
   exited: {
-    opacity: 0
+    opacity: 0,
   },
   unmounted: {},
 };
@@ -38,7 +42,9 @@ const AlertComponent = () => {
   };
 
   return (
-    <Box sx={{ position: 'fixed', bottom: 0, right: 0, margin: 2, zIndex: 9999 }}>
+    <Box
+      sx={{ position: 'fixed', bottom: 0, right: 0, margin: 2, zIndex: 9999 }}
+    >
       <TransitionGroup>
         {alerts.map((alert) => (
           <Transition
@@ -53,7 +59,7 @@ const AlertComponent = () => {
                 sx={{
                   ...defaultStyle,
                   ...transitionStyles[state],
-                  maxWidth: "500px",
+                  maxWidth: '500px',
                   background: theme.palette.background.paper,
                   // '& .MuiAlert-icon': {
                   //   alignSelf: 'center'
@@ -66,17 +72,14 @@ const AlertComponent = () => {
                 {/* <Typography sx={{ textTransform: 'uppercase' }}>
                   {alert.type}
                 </Typography> */}
-                <Typography>
-                  {alert.message}
-                </Typography>
+                <Typography>{alert.message}</Typography>
               </Alert>
             )}
-
           </Transition>
         ))}
       </TransitionGroup>
-    </Box >
+    </Box>
   );
-}
+};
 
 export default AlertComponent;

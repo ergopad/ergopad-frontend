@@ -1,11 +1,5 @@
 import React, { FC } from 'react';
-import {
-  Grid,
-  Icon,
-  TextField,
-  useTheme,
-  Button,
-} from '@mui/material'
+import { Grid, Icon, TextField, useTheme, Button } from '@mui/material';
 
 interface INumberIncrementProps {
   value: number;
@@ -15,22 +9,30 @@ interface INumberIncrementProps {
   label?: string;
 }
 
-const NumberIncrement: FC<INumberIncrementProps> = ({ value, setValue, max, name, label }) => {
-  const theme = useTheme()
-  const handleChangeNum = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+const NumberIncrement: FC<INumberIncrementProps> = ({
+  value,
+  setValue,
+  max,
+  name,
+  label,
+}) => {
+  const theme = useTheme();
+  const handleChangeNum = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     var regex = /^[0-9]+$/;
     if (e.target.value.match(regex) && Number(e.target.value) != 0) {
-      setValue(Number(e.target.value))
+      setValue(Number(e.target.value));
     }
-  }
+  };
   const handleNumberIncrement = (direction: 'up' | 'down') => {
     if (direction === 'up' && ((max && value < max) || max === undefined)) {
-      setValue(value + 1)
+      setValue(value + 1);
     }
     if (direction === 'down' && value > 1) {
-      setValue(value - 1)
+      setValue(value - 1);
     }
-  }
+  };
   return (
     <Grid container sx={{ flexWrap: 'nowrap' }}>
       <Grid item sx={{ flexGrow: '0' }}>
@@ -43,9 +45,7 @@ const NumberIncrement: FC<INumberIncrementProps> = ({ value, setValue, max, name
           }}
           onClick={() => handleNumberIncrement('down')}
         >
-          <Icon>
-            remove
-          </Icon>
+          <Icon>remove</Icon>
         </Button>
       </Grid>
       <Grid item sx={{ flexGrow: '1' }}>
@@ -59,14 +59,14 @@ const NumberIncrement: FC<INumberIncrementProps> = ({ value, setValue, max, name
           onChange={(e) => handleChangeNum(e)}
           inputProps={{
             inputMode: 'numeric',
-            step: 1
+            step: 1,
           }}
           sx={{
             '& .MuiInputBase-root': {
-              borderRadius: '0'
+              borderRadius: '0',
             },
             width: '100%',
-            flexGrow: '1'
+            flexGrow: '1',
           }}
         />
       </Grid>
@@ -80,9 +80,7 @@ const NumberIncrement: FC<INumberIncrementProps> = ({ value, setValue, max, name
           }}
           onClick={() => handleNumberIncrement('up')}
         >
-          <Icon>
-            add
-          </Icon>
+          <Icon>add</Icon>
         </Button>
       </Grid>
     </Grid>

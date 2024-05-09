@@ -5,7 +5,9 @@ interface AddWalletContextType {
   setAddWalletOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const AddWalletContext = createContext<AddWalletContextType | undefined>(undefined);
+const AddWalletContext = createContext<AddWalletContextType | undefined>(
+  undefined,
+);
 
 const AddWalletProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [addWalletOpen, setAddWalletOpen] = useState<boolean>(false);
@@ -33,7 +35,7 @@ const AddWalletConsumer: FC<AddWalletConsumerProps> = ({ children }) => {
       {(context) => {
         if (context === undefined) {
           throw new Error(
-            'AddWalletConsumer must be used within AddWalletProvider'
+            'AddWalletConsumer must be used within AddWalletProvider',
           );
         }
         return children(context);

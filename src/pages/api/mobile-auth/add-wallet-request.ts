@@ -7,13 +7,16 @@ interface ErgoAuthRequest {
   signingMessage: string;
   sigmaBoolean: string;
   userMessage: string;
-  messageSeverity: "INFORMATION";
+  messageSeverity: 'INFORMATION';
   replyTo: string;
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   const { verificationId, address } = req.query;
-  const addressString = address?.toString()
+  const addressString = address?.toString();
 
   // Fetch the login request using the verificationId
   const loginRequest = await prisma.loginRequest.findUnique({
@@ -44,7 +47,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const treeBytes = Array.from(tree.toBytes());
     treeBytes.shift();
     treeBytes.shift();
-    const sigmaBoolean = Buffer.from(treeBytes).toString("base64");
+    const sigmaBoolean = Buffer.from(treeBytes).toString('base64');
 
     const ergoAuthRequest: ErgoAuthRequest = {
       address: addressString,

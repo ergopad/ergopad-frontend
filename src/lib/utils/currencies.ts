@@ -3,23 +3,26 @@ export const getSymbol = (searchTerm: string) => {
   const upperSearchTerm = searchTerm.toUpperCase();
 
   for (let currency of currencies) {
-    if (currency.ticker.toUpperCase() === upperSearchTerm || currency.name.toUpperCase() === upperSearchTerm) {
+    if (
+      currency.ticker.toUpperCase() === upperSearchTerm ||
+      currency.name.toUpperCase() === upperSearchTerm
+    ) {
       return currency.symbol;
     }
   }
 
   return null;
-}
+};
 
 export const currencies = [
   {
     ticker: 'ADA',
     name: 'Cardano',
-    symbol: '₳'
+    symbol: '₳',
   },
   {
     ticker: 'ERG',
     name: 'Ergo',
-    symbol: 'Σ'
-  }
-]
+    symbol: 'Σ',
+  },
+];

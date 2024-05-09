@@ -1,4 +1,12 @@
-import { Avatar, Box, Button, Checkbox, FormControlLabel, Typography, useTheme } from '@mui/material';
+import {
+  Avatar,
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import React, { ChangeEvent, FC, useState } from 'react';
 import TokenInput from './TokenInput';
 import Link from '@components/Link';
@@ -30,28 +38,30 @@ const ContributeCard: FC<IContributeCardProps> = ({
   whitelisted,
   live,
   recipientAddress,
-  allowed
+  allowed,
 }) => {
-  const { sessionData } = useWallet()
+  const { sessionData } = useWallet();
 
-  const theme = useTheme()
-  const [termsCheck, setTermsCheck] = useState(false)
-  const [openContribution, setOpenContribution] = useState(false)
+  const theme = useTheme();
+  const [termsCheck, setTermsCheck] = useState(false);
+  const [openContribution, setOpenContribution] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [outputValue, setOutputValue] = useState('');
 
   const handleCheckTerms = (e: ChangeEvent) => {
-    setTermsCheck(!termsCheck)
-  }
+    setTermsCheck(!termsCheck);
+  };
 
   return (
-    <Box sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      height: '100%',
-      justifyContent: 'space-between'
-    }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        height: '100%',
+        justifyContent: 'space-between',
+      }}
+    >
       <Box sx={{ textAlign: 'center' }}>
         <Typography variant="h3" sx={{ mb: 1 }}>
           {projectName}
@@ -74,15 +84,42 @@ const ContributeCard: FC<IContributeCardProps> = ({
         </Box>
         <FormControlLabel
           control={
-            <Checkbox checked={termsCheck} onChange={handleCheckTerms} name="terms" size="small" color="secondary" />
+            <Checkbox
+              checked={termsCheck}
+              onChange={handleCheckTerms}
+              name="terms"
+              size="small"
+              color="secondary"
+            />
           }
           sx={{ mb: 2 }}
-          label={<Typography sx={{ fontSize: '1rem !important', color: theme.palette.text.secondary }}>
-            I agree to the&nbsp;<Link href="/terms" target="_blank">Terms of Use</Link> and <Link href="/privacy" target="_blank">Privacy Policy</Link>.
-          </Typography>}
+          label={
+            <Typography
+              sx={{
+                fontSize: '1rem !important',
+                color: theme.palette.text.secondary,
+              }}
+            >
+              I agree to the&nbsp;
+              <Link href="/terms" target="_blank">
+                Terms of Use
+              </Link>{' '}
+              and{' '}
+              <Link href="/privacy" target="_blank">
+                Privacy Policy
+              </Link>
+              .
+            </Typography>
+          }
         />
       </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          flexDirection: 'column',
+        }}
+      >
         <Box sx={{ width: '100%', textAlign: 'center' }}>
           <Button
             variant="contained"
@@ -100,43 +137,61 @@ const ContributeCard: FC<IContributeCardProps> = ({
               textTransform: 'none',
               fontSize: '20px',
               fontWeight: 600,
-              borderRadius: '6px'
+              borderRadius: '6px',
             }}
             onClick={() => setOpenContribution(true)}
           >
             Contribute now
           </Button>
         </Box>
-        {!recipientAddress &&
-          <Typography color="error" sx={{ mt: 1, fontSize: '0.9rem!important' }}>
-            Contribution form error, please notify support if you are trying to contribute.
+        {!recipientAddress && (
+          <Typography
+            color="error"
+            sx={{ mt: 1, fontSize: '0.9rem!important' }}
+          >
+            Contribution form error, please notify support if you are trying to
+            contribute.
           </Typography>
-        }
-        {!allowed &&
-          <Typography color="error" sx={{ mt: 1, fontSize: '0.9rem!important' }}>
-            We apologize, but we are unable to accept contributions from the restricted countries listed above.
+        )}
+        {!allowed && (
+          <Typography
+            color="error"
+            sx={{ mt: 1, fontSize: '0.9rem!important' }}
+          >
+            We apologize, but we are unable to accept contributions from the
+            restricted countries listed above.
           </Typography>
-        }
-        {sessionData == null &&
+        )}
+        {sessionData == null && (
           <Box sx={{ textAlign: 'center' }}>
-            <Typography color="error" sx={{ mt: 1, fontSize: '0.9rem!important' }}>
+            <Typography
+              color="error"
+              sx={{ mt: 1, fontSize: '0.9rem!important' }}
+            >
               Please sign in to contribute
             </Typography>
             <Typography sx={{ mt: 1, fontSize: '0.9rem!important' }}>
-              The wallet you send funds from doesn&apos;t need to be the same wallet you sign-in from.
+              The wallet you send funds from doesn&apos;t need to be the same
+              wallet you sign-in from.
             </Typography>
             <Typography sx={{ mt: 1, fontSize: '0.9rem!important' }}>
-              LEDGER USERS: Sign in with another wallet then contribute from your Ledger.
+              LEDGER USERS: Sign in with another wallet then contribute from
+              your Ledger.
             </Typography>
           </Box>
-        }
+        )}
       </Box>
-      {!whitelisted && <Box>
-        <Typography color="text.secondary" sx={{ fontSize: '0.9rem!important', fontStyle: 'italic' }}>
-          You must be whitelisted to contribute.
-        </Typography>
-      </Box>}
-      {recipientAddress !== null &&
+      {!whitelisted && (
+        <Box>
+          <Typography
+            color="text.secondary"
+            sx={{ fontSize: '0.9rem!important', fontStyle: 'italic' }}
+          >
+            You must be whitelisted to contribute.
+          </Typography>
+        </Box>
+      )}
+      {recipientAddress !== null && (
         <ContributeConfirm
           open={openContribution}
           setOpen={setOpenContribution}
@@ -146,7 +201,7 @@ const ContributeCard: FC<IContributeCardProps> = ({
           contributionRoundId={contributionRoundId}
           recipientAddress={recipientAddress}
         />
-      }
+      )}
     </Box>
   );
 };

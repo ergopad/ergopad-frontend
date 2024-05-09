@@ -1,15 +1,9 @@
 import React, { FC } from 'react';
 
-interface ICurrentIdoProps {
+interface ICurrentIdoProps {}
 
-}
-
-const CurrentIdo: FC<ICurrentIdoProps> = ({ }) => {
-  return (
-    <>
-      
-    </>
-  );
+const CurrentIdo: FC<ICurrentIdoProps> = ({}) => {
+  return <></>;
 };
 
 export default CurrentIdo;

@@ -48,7 +48,7 @@ const GenerateWhitelistEventReportForm = () => {
   const [openSuccess, setOpenSuccess] = useState(false);
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again'
+    'Please eliminate form errors and try again',
   );
 
   useEffect(() => {
@@ -125,19 +125,19 @@ const GenerateWhitelistEventReportForm = () => {
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422'
+            'jwt_token_login_422',
           )}`,
         },
       };
       try {
         const res = await axios.get(
           `${process.env.API_URL}/whitelist/events/${event.projectName}/${event.roundName}`,
-          defaultOptions
+          defaultOptions,
         );
         const eventName = res.data.eventName;
         const csv = await axios.get(
           `${process.env.API_URL}/whitelist/summary/${eventName}`,
-          defaultOptions
+          defaultOptions,
         );
         setCsvData(csv.data.data);
         setOpenSuccess(true);

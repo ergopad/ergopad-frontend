@@ -64,7 +64,7 @@ const Careers = () => {
   }, []);
 
   const filteredJobs = jobs.filter((job) =>
-    job.title.toLowerCase().includes(search)
+    job.title.toLowerCase().includes(search),
   );
 
   const jobCard = (job) => {

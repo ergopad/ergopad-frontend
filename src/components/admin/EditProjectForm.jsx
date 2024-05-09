@@ -85,7 +85,7 @@ const EditProjectForm = () => {
   const [openSuccess, setOpenSuccess] = useState(false);
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again'
+    'Please eliminate form errors and try again',
   );
 
   useEffect(() => {
@@ -100,7 +100,9 @@ const EditProjectForm = () => {
     const getTableData = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${process.env.API_URL}/projects/?include_drafts=true`);
+        const res = await axios.get(
+          `${process.env.API_URL}/projects/?include_drafts=true`,
+        );
         res.data.sort((a, b) => a.id - b.id);
         setProjectData(res.data);
       } catch (e) {
@@ -179,8 +181,9 @@ const EditProjectForm = () => {
     } else {
       updateFormData({
         ...formData,
-        [e.target.name]:
-          ['isLaunched', 'isDraft'].includes(e.target.name) ? e.target.checked : e.target.value,
+        [e.target.name]: ['isLaunched', 'isDraft'].includes(e.target.name)
+          ? e.target.checked
+          : e.target.value,
       });
     }
   };
@@ -193,7 +196,7 @@ const EditProjectForm = () => {
       const projectId = formData.id;
       if (projectId) {
         const res = await axios.get(
-          `${process.env.API_URL}/projects/${projectId}`
+          `${process.env.API_URL}/projects/${projectId}`,
         );
         updateFormData({ ...res.data });
         setFormErrors(initialFormErrors);
@@ -226,7 +229,7 @@ const EditProjectForm = () => {
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422'
+            'jwt_token_login_422',
           )}`,
         },
       };
@@ -235,7 +238,7 @@ const EditProjectForm = () => {
         await axios.put(
           `${process.env.API_URL}/projects/${projectId}`,
           data,
-          defaultOptions
+          defaultOptions,
         );
         setOpenSuccess(true);
         updateFormData(initialFormData);

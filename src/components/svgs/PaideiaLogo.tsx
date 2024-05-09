@@ -1,10 +1,17 @@
-import React, { FC } from "react";
-import SvgIcon from "@mui/material/SvgIcon";
-import { SxProps } from "@mui/material";
+import React, { FC } from 'react';
+import SvgIcon from '@mui/material/SvgIcon';
+import { SxProps } from '@mui/material';
 
 const BlockheadsLogo: FC<{ sx?: SxProps }> = ({ sx }) => {
   return (
-    <SvgIcon sx={{ fontSize: '120px', ...sx }} width="662" height="184" viewBox="0 0 662 184" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <SvgIcon
+      sx={{ fontSize: '120px', ...sx }}
+      width="662"
+      height="184"
+      viewBox="0 0 662 184"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path d="M226.58 46.1518C232.288 51.5863 235.142 59.5609 235.142 70.0756C235.142 80.5902 232.288 88.5648 226.58 93.9993C220.874 99.4356 212.822 102.153 202.425 102.151H183.353V132.373H164V38H202.425C212.816 38 220.868 40.7173 226.58 46.1518ZM215.79 70.0756C215.79 59.6499 211.01 54.4371 201.451 54.4371H183.353V85.5909H201.451C206.09 85.5909 209.64 84.3986 212.099 82.0139C214.557 79.6292 215.788 75.6497 215.79 70.0756Z" />
       <path d="M312.092 132.373H292.007L286.467 116.068H253.371L247.968 132.373H227.883L259.466 45.9532C260.851 42.9521 262.402 40.8754 264.118 39.7232C265.835 38.5709 267.934 37.9965 270.413 38C272.905 38 274.912 38.5308 276.434 39.5922C277.956 40.6537 279.318 42.774 280.52 45.9532L312.092 132.373ZM282.034 100.56L270.397 63.1795L258.207 100.56H282.034Z" />
       <path d="M345.489 132.373H326.614V38H345.489V132.373Z" />

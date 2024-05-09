@@ -7,14 +7,14 @@ import Projects from '@components/landing/Projects';
 // import Announcements from '@components/landing/Announcements';
 // import Social from '@components/landing/Social';
 import ActiveRound from '@components/landing/ActiveRound';
-import { useProjectList } from '@lib/hooks/useProjectList'
+import { useProjectList } from '@lib/hooks/useProjectList';
 
 const Homepage = () => {
   const { projectList, isLoading } = useProjectList();
-  const [projects, SetProjects] = useState([])
+  const [projects, SetProjects] = useState([]);
 
   useEffect(() => {
-    SetProjects(projectList)
+    SetProjects(projectList);
   }, [projectList]);
 
   return (

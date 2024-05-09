@@ -15,19 +15,19 @@ export const ZContributionRound = z.object({
   projectSlug: z.string(),
   whitelistSlug: z.string().nullable().optional(),
   recipientAddress: z.string().nullable().optional(),
-  restrictedCountries: z.array(z.string())
+  restrictedCountries: z.array(z.string()),
 });
 
 export const ZPoolWeightItem = z.object({
   address: z.string(),
   uniqueNfts: z.number(),
   totalStake: z.string(),
-  cummulativeWeight: z.number()
-})
+  cummulativeWeight: z.number(),
+});
 
 export const ZPoolWeightAPI = z.object({
   data: z.array(ZPoolWeightItem),
   totalStakers: z.number(),
   totalStake: z.string(),
-  totalCummulativeWeight: z.string()
-})
+  totalCummulativeWeight: z.string(),
+});

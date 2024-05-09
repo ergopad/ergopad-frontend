@@ -8,7 +8,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-  Skeleton
+  Skeleton,
 } from '@mui/material';
 import axios from 'axios';
 import { useRouter } from 'next/router';
@@ -19,7 +19,7 @@ const Announcements = () => {
   const mtheme = useTheme();
   const matches = useMediaQuery(mtheme.breakpoints.up('md'));
   const [announcements, setAnnouncements] = useState([]);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const getData = async () => {
@@ -55,10 +55,10 @@ const Announcements = () => {
             onClick={() =>
               router.push(
                 '/announcements/' +
-                announcement.title
-                  .toLowerCase()
-                  .replaceAll(' ', '_')
-                  .replaceAll(/[^a-zA-Z0-9_]/g, '')
+                  announcement.title
+                    .toLowerCase()
+                    .replaceAll(' ', '_')
+                    .replaceAll(/[^a-zA-Z0-9_]/g, ''),
               )
             }
           >
@@ -93,11 +93,15 @@ const Announcements = () => {
 
   const SkeletonCard = () => {
     return (
-    <Grid item xs={12} sm={6} md={6}>
-      <Skeleton variant="rectangular" height={300} sx={{ borderRadius: '10px' }} />
-    </Grid>
-    )
-  }
+      <Grid item xs={12} sm={6} md={6}>
+        <Skeleton
+          variant="rectangular"
+          height={300}
+          sx={{ borderRadius: '10px' }}
+        />
+      </Grid>
+    );
+  };
 
   return (
     <>
@@ -121,9 +125,7 @@ const Announcements = () => {
           <>
             {announcements?.map((annoucement) => annoucementCard(annoucement))}
           </>
-        )
-        }
-
+        )}
       </Grid>
     </>
   );

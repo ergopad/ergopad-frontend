@@ -22,7 +22,7 @@ const TokenInput: FC<ITokenInputProps> = ({
   inputValue,
   setInputValue,
   outputValue,
-  setOutputValue
+  setOutputValue,
 }) => {
   const theme = useTheme();
   const { data: adaPrice } = trpc.price.getCardanoPrice.useQuery();
@@ -36,7 +36,7 @@ const TokenInput: FC<ITokenInputProps> = ({
         if (ada) setAdaAmount(ada);
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
   };
 
@@ -68,15 +68,17 @@ const TokenInput: FC<ITokenInputProps> = ({
 
   const handleInputMax = () => {
     if (adaAmount) {
-      const roundedDown = adaAmount - 1.5
-      setInputValue(roundedDown.toFixed(0))
-      setOutputValue((Number(roundedDown) * exchangeRate).toFixed(0))
+      const roundedDown = adaAmount - 1.5;
+      setInputValue(roundedDown.toFixed(0));
+      setOutputValue((Number(roundedDown) * exchangeRate).toFixed(0));
     }
-  }
+  };
 
   const calculateUSDValue = () => {
     const numericalValue = Number(inputValue.replace(/,/g, ''));
-    return (numericalValue * (adaPrice || 0)).toLocaleString(undefined, { maximumFractionDigits: 2 });
+    return (numericalValue * (adaPrice || 0)).toLocaleString(undefined, {
+      maximumFractionDigits: 2,
+    });
   };
 
   return (
@@ -90,7 +92,10 @@ const TokenInput: FC<ITokenInputProps> = ({
           mb: 1,
           maxWidth: '400px',
           borderRadius: '8px',
-          background: theme.palette.mode === 'dark' ? 'rgba(235,245,255,0.03)' : 'rgba(255,255,255,0.55)'
+          background:
+            theme.palette.mode === 'dark'
+              ? 'rgba(235,245,255,0.03)'
+              : 'rgba(255,255,255,0.55)',
         }}
       >
         <Box
@@ -98,22 +103,27 @@ const TokenInput: FC<ITokenInputProps> = ({
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            justifyContent: 'space-between'
-          }}>
+            justifyContent: 'space-between',
+          }}
+        >
           <InputBase
             sx={{
               '& .MuiInputBase-input': {
                 fontSize: '32px',
-                fontWeight: 700
-              }
+                fontWeight: 700,
+              },
             }}
-            placeholder={"0.00"}
+            placeholder={'0.00'}
             value={inputValue}
             onChange={handleInputChange}
           />
-          <Typography sx={{
-            fontSize: '26px!important', fontWeight: 700, whiteSpace: 'nowrap',
-          }}>
+          <Typography
+            sx={{
+              fontSize: '26px!important',
+              fontWeight: 700,
+              whiteSpace: 'nowrap',
+            }}
+          >
             ADA ₳
           </Typography>
         </Box>
@@ -121,18 +131,27 @@ const TokenInput: FC<ITokenInputProps> = ({
           sx={{
             display: 'flex',
             flexDirection: 'row',
-            justifyContent: 'space-between'
-          }}>
+            justifyContent: 'space-between',
+          }}
+        >
           <Typography sx={{ fontSize: '1rem!important' }}>
             ${calculateUSDValue()}
           </Typography>
           <Typography sx={{ fontSize: '1rem!important', whiteSpace: 'nowrap' }}>
             Balance:&nbsp;
-            {adaAmount
-              ? <Box component="span" onClick={handleInputMax} sx={{ cursor: 'pointer' }}>
-                {adaAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+            {adaAmount ? (
+              <Box
+                component="span"
+                onClick={handleInputMax}
+                sx={{ cursor: 'pointer' }}
+              >
+                {adaAmount.toLocaleString(undefined, {
+                  maximumFractionDigits: 2,
+                })}
               </Box>
-              : '0'}
+            ) : (
+              '0'
+            )}
           </Typography>
         </Box>
       </Box>
@@ -144,7 +163,10 @@ const TokenInput: FC<ITokenInputProps> = ({
           px: 2,
           maxWidth: '400px',
           borderRadius: '8px',
-          background: theme.palette.mode === 'dark' ? 'rgba(235,245,255,0.03)' : 'rgba(255,255,255,0.55)'
+          background:
+            theme.palette.mode === 'dark'
+              ? 'rgba(235,245,255,0.03)'
+              : 'rgba(255,255,255,0.55)',
         }}
       >
         <Box
@@ -152,26 +174,34 @@ const TokenInput: FC<ITokenInputProps> = ({
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            justifyContent: 'space-between'
-          }}>
+            justifyContent: 'space-between',
+          }}
+        >
           <InputBase
             sx={{
               '& .MuiInputBase-input': {
                 fontSize: '32px',
-                fontWeight: 700
-              }
+                fontWeight: 700,
+              },
             }}
-            placeholder={"0"}
+            placeholder={'0'}
             value={outputValue}
           />
-          <Typography sx={{
-            fontSize: '26px!important', fontWeight: 700, whiteSpace: 'nowrap',
-          }}>
+          <Typography
+            sx={{
+              fontSize: '26px!important',
+              fontWeight: 700,
+              whiteSpace: 'nowrap',
+            }}
+          >
             {outputTokenTicker}
           </Typography>
         </Box>
         <Typography sx={{ fontSize: '1rem!important' }}>
-          {remainingTokens.toLocaleString(undefined, { maximumFractionDigits: 0 })} {outputTokenTicker} remaining
+          {remainingTokens.toLocaleString(undefined, {
+            maximumFractionDigits: 0,
+          })}{' '}
+          {outputTokenTicker} remaining
         </Typography>
       </Box>
       <Paper
@@ -184,7 +214,7 @@ const TokenInput: FC<ITokenInputProps> = ({
           zIndex: 5,
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
         }}
       >
         <ExpandMoreIcon />

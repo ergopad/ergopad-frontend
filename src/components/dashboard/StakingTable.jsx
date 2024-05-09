@@ -153,7 +153,7 @@ const StakingTable = ({ data }) => {
                 >
                   {stakeObject.addresses[address].totalStaked?.toLocaleString(
                     navigator.language,
-                    { maximumFractionDigits: 2 }
+                    { maximumFractionDigits: 2 },
                   )}
                 </Typography>
               </Typography>
@@ -176,104 +176,108 @@ const StakingTable = ({ data }) => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {stakeObject.addresses[address].stakeBoxes.map((stake, i) => {
-                      return (
-                        <TableRow key={i}>
-                          <TableCell
-                            sx={{ color: theme.palette.text.secondary }}
-                          >
-                            {stake.boxId}
-                          </TableCell>
-                          <TableCell
-                            sx={{ color: theme.palette.text.secondary }}
-                          >
-                            {stake.stakeAmount?.toLocaleString(
-                              navigator.language,
-                              {
-                                maximumFractionDigits: 2,
-                              }
-                            )}
-                          </TableCell>
-                          <TableCell
-                            sx={{ color: theme.palette.text.secondary }}
-                          >
-                            {stake.penaltyPct ?? 0}%
-                          </TableCell>
-                          <TableCell
-                            sx={{ color: theme.palette.text.secondary }}
-                          >
-                            {stake.penaltyEndTime
-                              ? new Date(stake.penaltyEndTime)
-                                .toISOString()
-                                .slice(0, 10)
-                              : '-'}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
+                    {stakeObject.addresses[address].stakeBoxes.map(
+                      (stake, i) => {
+                        return (
+                          <TableRow key={i}>
+                            <TableCell
+                              sx={{ color: theme.palette.text.secondary }}
+                            >
+                              {stake.boxId}
+                            </TableCell>
+                            <TableCell
+                              sx={{ color: theme.palette.text.secondary }}
+                            >
+                              {stake.stakeAmount?.toLocaleString(
+                                navigator.language,
+                                {
+                                  maximumFractionDigits: 2,
+                                },
+                              )}
+                            </TableCell>
+                            <TableCell
+                              sx={{ color: theme.palette.text.secondary }}
+                            >
+                              {stake.penaltyPct ?? 0}%
+                            </TableCell>
+                            <TableCell
+                              sx={{ color: theme.palette.text.secondary }}
+                            >
+                              {stake.penaltyEndTime
+                                ? new Date(stake.penaltyEndTime)
+                                    .toISOString()
+                                    .slice(0, 10)
+                                : '-'}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      },
+                    )}
                   </TableBody>
                 </Table>
               ) : (
                 <Table sx={{ p: 0 }}>
                   <TableBody>
-                    {stakeObject.addresses[address].stakeBoxes.map((stake, i) => {
-                      return (
-                        <React.Fragment key={i}>
-                          <TableRow sx={{ borderTop: `1px solid #444` }}>
-                            <TableCell
-                              sx={{
-                                color: theme.palette.text.secondary,
-                                border: 'none',
-                                p: 1,
-                                pt: 2,
-                              }}
-                            >
-                              {stakedHeading.stakeAmount}
-                            </TableCell>
-                            <TableCell sx={{ border: 'none', p: 1, pt: 2 }}>
-                              {stake.stakeAmount?.toLocaleString(
-                                navigator.language,
-                                {
-                                  maximumFractionDigits: 2,
-                                }
-                              )}
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell
-                              sx={{
-                                color: theme.palette.text.secondary,
-                                border: 'none',
-                                p: 1,
-                              }}
-                            >
-                              {stakedHeading.penaltyPct}
-                            </TableCell>
-                            <TableCell sx={{ border: 'none', p: 1 }}>
-                              {stake.penaltyPct ?? 0}%
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell
-                              sx={{
-                                color: theme.palette.text.secondary,
-                                border: 'none',
-                                p: 1,
-                              }}
-                            >
-                              {stakedHeading.penaltyEndTime}
-                            </TableCell>
-                            <TableCell sx={{ border: 'none', p: 1 }}>
-                              {stake.penaltyEndTime
-                                ? new Date(stake.penaltyEndTime)
-                                  .toISOString()
-                                  .slice(0, 10)
-                                : '-'}
-                            </TableCell>
-                          </TableRow>
-                        </React.Fragment>
-                      );
-                    })}
+                    {stakeObject.addresses[address].stakeBoxes.map(
+                      (stake, i) => {
+                        return (
+                          <React.Fragment key={i}>
+                            <TableRow sx={{ borderTop: `1px solid #444` }}>
+                              <TableCell
+                                sx={{
+                                  color: theme.palette.text.secondary,
+                                  border: 'none',
+                                  p: 1,
+                                  pt: 2,
+                                }}
+                              >
+                                {stakedHeading.stakeAmount}
+                              </TableCell>
+                              <TableCell sx={{ border: 'none', p: 1, pt: 2 }}>
+                                {stake.stakeAmount?.toLocaleString(
+                                  navigator.language,
+                                  {
+                                    maximumFractionDigits: 2,
+                                  },
+                                )}
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell
+                                sx={{
+                                  color: theme.palette.text.secondary,
+                                  border: 'none',
+                                  p: 1,
+                                }}
+                              >
+                                {stakedHeading.penaltyPct}
+                              </TableCell>
+                              <TableCell sx={{ border: 'none', p: 1 }}>
+                                {stake.penaltyPct ?? 0}%
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell
+                                sx={{
+                                  color: theme.palette.text.secondary,
+                                  border: 'none',
+                                  p: 1,
+                                }}
+                              >
+                                {stakedHeading.penaltyEndTime}
+                              </TableCell>
+                              <TableCell sx={{ border: 'none', p: 1 }}>
+                                {stake.penaltyEndTime
+                                  ? new Date(stake.penaltyEndTime)
+                                      .toISOString()
+                                      .slice(0, 10)
+                                  : '-'}
+                              </TableCell>
+                            </TableRow>
+                          </React.Fragment>
+                        );
+                      },
+                    )}
                   </TableBody>
                 </Table>
               )}

@@ -1,6 +1,6 @@
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-import Link from "@components/MuiNextLink";
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Link from '@components/MuiNextLink';
 import {
   List,
   ListItem,
@@ -8,11 +8,11 @@ import {
   IconButton,
   Divider,
   Skeleton,
-} from "@mui/material";
-import MuiNextLink from "@components/MuiNextLink";
-import Image from "next/image";
-import { useWhitelistProjects } from "../../lib/hooks/useWhitelistProjects";
-import { useContributionProjects } from "../../lib/hooks/useContributionProjects";
+} from '@mui/material';
+import MuiNextLink from '@components/MuiNextLink';
+import Image from 'next/image';
+import { useWhitelistProjects } from '../../lib/hooks/useWhitelistProjects';
+import { useContributionProjects } from '../../lib/hooks/useContributionProjects';
 
 const Footer = () => {
   const { whiteListProjectsActive, isLoading: whiteListProjectsIsLoading } =
@@ -25,10 +25,10 @@ const Footer = () => {
   return (
     <>
       <Divider sx={{ mt: 6, mb: 6 }} />
-      <Grid container spacing={1} sx={{ justifyContent: "space-between" }}>
+      <Grid container spacing={1} sx={{ justifyContent: 'space-between' }}>
         <Grid item xs={12} md={4}>
           <MuiNextLink activeClassName="active" href="/">
-            <IconButton sx={{ mb: "2rem" }}>
+            <IconButton sx={{ mb: '2rem' }}>
               <Image
                 src="/favicon-32x32.png"
                 alt="Ergopad Logo"
@@ -214,7 +214,7 @@ const Footer = () => {
           item
           xs={12}
           md={4}
-          sx={{ textAlign: { xs: "center", md: "left" } }}
+          sx={{ textAlign: { xs: 'center', md: 'left' } }}
         >
           <Typography variant="inherit" sx={textStyles}>
             © 2023 ErgoPad. All rights reserved.
@@ -224,12 +224,12 @@ const Footer = () => {
           item
           xs={12}
           md={4}
-          sx={{ textAlign: { xs: "center", md: "center" } }}
+          sx={{ textAlign: { xs: 'center', md: 'center' } }}
         >
           <Link activeClassName="active" href="/terms" sx={linkStyles}>
             Terms
-          </Link>{" "}
-          ·{" "}
+          </Link>{' '}
+          ·{' '}
           <Link activeClassName="active" href="/privacy" sx={linkStyles}>
             Privacy Policy
           </Link>
@@ -239,22 +239,22 @@ const Footer = () => {
           xs={12}
           md={4}
           sx={{
-            display: "flex",
-            textAlign: { xs: "center", md: "right" },
-            justifyContent: { xs: "center", md: "flex-end" },
+            display: 'flex',
+            textAlign: { xs: 'center', md: 'right' },
+            justifyContent: { xs: 'center', md: 'flex-end' },
           }}
         >
-          <List sx={{ display: "flex" }}>
+          <List sx={{ display: 'flex' }}>
             <ListItem sx={socialStyles}>
               <Link
-                sx={{ display: "flex", justifyContent: "center" }}
+                sx={{ display: 'flex', justifyContent: 'center' }}
                 href="https://twitter.com/ErgoPadOfficial"
                 aria-label="Twitter"
                 title="Twitter"
                 target="_blank"
               >
                 <SvgIcon
-                  sx={{ width: "32px", height: "32px" }}
+                  sx={{ width: '32px', height: '32px' }}
                   viewBox="0 0 32 32"
                   xmlns="http://www.w3.org/2000/svg"
                 >
@@ -264,14 +264,14 @@ const Footer = () => {
             </ListItem>
             <ListItem sx={socialStyles}>
               <Link
-                sx={{ display: "flex", justifyContent: "center" }}
+                sx={{ display: 'flex', justifyContent: 'center' }}
                 href="https://discord.gg/E8cHp6ThuZ"
                 aria-label="Discord"
                 title="Discord"
                 target="_blank"
               >
                 <SvgIcon
-                  sx={{ width: "32px", height: "32px" }}
+                  sx={{ width: '32px', height: '32px' }}
                   viewBox="0 0 32 32"
                   xmlns="http://www.w3.org/2000/svg"
                 >
@@ -281,14 +281,14 @@ const Footer = () => {
             </ListItem>
             <ListItem sx={socialStyles}>
               <Link
-                sx={{ display: "flex", justifyContent: "center" }}
+                sx={{ display: 'flex', justifyContent: 'center' }}
                 href="https://github.com/ergo-pad"
                 aria-label="Github"
                 title="Github"
                 target="_blank"
               >
                 <SvgIcon
-                  sx={{ width: "32px", height: "32px" }}
+                  sx={{ width: '32px', height: '32px' }}
                   viewBox="0 0 32 32"
                   xmlns="http://www.w3.org/2000/svg"
                 >
@@ -298,7 +298,7 @@ const Footer = () => {
             </ListItem>
             <ListItem sx={socialStyles}>
               <Link
-                sx={{ display: "flex", justifyContent: "center" }}
+                sx={{ display: 'flex', justifyContent: 'center' }}
                 href="https://t.me/ergopad_chat"
                 aria-label="Telegram"
                 title="Telegram"
@@ -306,7 +306,7 @@ const Footer = () => {
                 target="_blank"
               >
                 <SvgIcon
-                  sx={{ width: "32px", height: "32px" }}
+                  sx={{ width: '32px', height: '32px' }}
                   viewBox="0 0 32 32"
                   xmlns="http://www.w3.org/2000/svg"
                 >
@@ -354,10 +354,10 @@ const Footer = () => {
 };
 
 const titleStyles = {
-  "& span": {
+  '& span': {
     color: (theme) => theme.palette.text.primary,
   },
-  fontWeight: "normal",
+  fontWeight: 'normal',
   fontSize: 14,
 };
 
@@ -368,9 +368,9 @@ const textStyles = {
 
 const linkStyles = {
   color: (theme) => theme.palette.text.secondary,
-  textDecoration: "none",
-  "&:hover": {
-    textDecoration: "underline",
+  textDecoration: 'none',
+  '&:hover': {
+    textDecoration: 'underline',
   },
   fontSize: 14,
 };
@@ -385,10 +385,10 @@ const listItemStyles = {
 const bottomStyles = {
   pt: 4,
   // fontSize: 14,
-  display: "flex",
+  display: 'flex',
   justifyContent: {
-    xs: "center",
-    md: "space-between",
+    xs: 'center',
+    md: 'space-between',
   },
 };
 
@@ -396,11 +396,11 @@ const socialStyles = {
   mx: 1,
   p: 0,
   background: (theme) => theme.palette.background.paper,
-  borderRadius: "15px",
-  ".MuiSvgIcon-root": { transition: "100ms ease-in-out" },
-  "&:hover .MuiSvgIcon-root": {
-    color: (theme) => "#4BD0C9",
-    transform: "scale(1.2, 1.2)",
+  borderRadius: '15px',
+  '.MuiSvgIcon-root': { transition: '100ms ease-in-out' },
+  '&:hover .MuiSvgIcon-root': {
+    color: (theme) => '#4BD0C9',
+    transform: 'scale(1.2, 1.2)',
   },
 };
 

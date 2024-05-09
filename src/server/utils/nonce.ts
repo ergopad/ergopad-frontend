@@ -23,13 +23,13 @@ export async function generateNonceForLogin(userAddress: string) {
     user = await prisma.user.create({
       data: {
         defaultAddress: userAddress,
-        status: 'pending'
+        status: 'pending',
       },
     });
   }
 
   if (!user) {
-    throw new Error('Database error')
+    throw new Error('Database error');
   }
 
   const nonce = nanoid();
@@ -53,7 +53,7 @@ export async function generateNonceForAddWallet(userId: string) {
   });
 
   if (!user) {
-    throw new Error("User doesn't exist")
+    throw new Error("User doesn't exist");
   }
 
   return nonce;

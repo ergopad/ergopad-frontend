@@ -7,12 +7,12 @@ import MuiNextLink from '@components/MuiNextLink';
 
 const MarkdownList = styled(List)({
   listStyle: 'disc',
-  listStyleType: "disc",
+  listStyleType: 'disc',
   // listStylePosition: 'inside',
   padding: 0,
   marginLeft: '32px',
   marginBottom: '2rem',
-  "& li": {
+  '& li': {
     display: 'list-item',
     paddingLeft: '6px',
   },
@@ -36,7 +36,9 @@ const MarkdownRender = ({ description }) => {
         p: ({ node, ...props }) => <Typography variant="body2" {...props} />,
         ul: ({ node, ...props }) => <MarkdownList {...props} />,
         li: ({ node, ...props }) => <MarkdownListItem {...props} />,
-        a: ({ node, ...props }) => <MuiNextLink {...props} sx={{ wordBreak: 'break-all' }} />,
+        a: ({ node, ...props }) => (
+          <MuiNextLink {...props} sx={{ wordBreak: 'break-all' }} />
+        ),
       }}
       remarkPlugins={[remarkGfm]}
     >

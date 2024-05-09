@@ -103,7 +103,9 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                         {vested.date}
                       </TableCell>
                       <TableCell sx={{ color: theme.palette.text.secondary }}>
-                        {vested.amount?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
+                        {vested.amount?.toLocaleString(navigator.language, {
+                          maximumFractionDigits: 2,
+                        })}
                       </TableCell>
                     </TableRow>
                   );
@@ -128,7 +130,9 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                           {vestedHeading.amount}
                         </TableCell>
                         <TableCell sx={{ border: 'none', p: 1, pt: 2 }}>
-                          {vested.amount?.toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
+                          {vested.amount?.toLocaleString(navigator.language, {
+                            maximumFractionDigits: 2,
+                          })}
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -189,13 +193,19 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                 {vestedTokensWithNFT[vestedToken].map((box, i) => (
                   <TableRow key={i}>
                     <TableCell sx={{ color: theme.palette.text.secondary }}>
-                      {box['Remaining'].toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
+                      {box['Remaining'].toLocaleString(navigator.language, {
+                        maximumFractionDigits: 2,
+                      })}
                     </TableCell>
                     <TableCell sx={{ color: theme.palette.text.secondary }}>
-                      {box['Redeemable'].toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
+                      {box['Redeemable'].toLocaleString(navigator.language, {
+                        maximumFractionDigits: 2,
+                      })}
                     </TableCell>
                     <TableCell sx={{ color: theme.palette.text.secondary }}>
-                      {new Date(Date.parse(box['Next unlock'] + 'Z')).toLocaleString()}
+                      {new Date(
+                        Date.parse(box['Next unlock'] + 'Z'),
+                      ).toLocaleString()}
                     </TableCell>
                     <TableCell sx={{ color: theme.palette.text.secondary }}>
                       <Button
@@ -226,7 +236,9 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                         {vestedWithNFTHeading.remaining}
                       </TableCell>
                       <TableCell sx={{ border: 'none', p: 1, pt: 2 }}>
-                        {box['Remaining'].toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
+                        {box['Remaining'].toLocaleString(navigator.language, {
+                          maximumFractionDigits: 2,
+                        })}
                       </TableCell>
                     </TableRow>
                     <TableRow>
@@ -240,7 +252,9 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                         {vestedWithNFTHeading.redeemable}
                       </TableCell>
                       <TableCell sx={{ border: 'none', p: 1 }}>
-                        {box['Redeemable'].toLocaleString(navigator.language, { maximumFractionDigits: 2 })}
+                        {box['Redeemable'].toLocaleString(navigator.language, {
+                          maximumFractionDigits: 2,
+                        })}
                       </TableCell>
                     </TableRow>
                     <TableRow>
@@ -254,7 +268,9 @@ const VestingTable = ({ vestedObject, vestedTokensWithNFT }) => {
                         {vestedWithNFTHeading.nextUnlock}
                       </TableCell>
                       <TableCell sx={{ border: 'none', p: 1 }}>
-                        {new Date(Date.parse(box['Next unlock'] + 'Z')).toLocaleString()}
+                        {new Date(
+                          Date.parse(box['Next unlock'] + 'Z'),
+                        ).toLocaleString()}
                       </TableCell>
                     </TableRow>
                     <TableRow>

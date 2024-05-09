@@ -2,7 +2,12 @@ import { ZContributionRound } from '@lib/types/zod-schemas/contributionSchema';
 import { prisma } from '@server/prisma';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { adminProcedure, createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import {
+  adminProcedure,
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from '../trpc';
 
 export const contributionRouter = createTRPCRouter({
   addContributionRound: adminProcedure
@@ -50,7 +55,10 @@ export const contributionRouter = createTRPCRouter({
         await prisma.contributionRound.delete({
           where: { id: input.id },
         });
-        return { success: true, message: 'Contribution round deleted successfully' };
+        return {
+          success: true,
+          message: 'Contribution round deleted successfully',
+        };
       } catch (error) {
         console.error('Error deleting contribution round:', error);
         throw new TRPCError({
@@ -67,11 +75,14 @@ export const contributionRouter = createTRPCRouter({
         const { projectSlug } = input;
         const rounds = await prisma.contributionRound.findMany({
           where: { projectSlug },
-          orderBy: { startDate: 'asc' }
+          orderBy: { startDate: 'asc' },
         });
         return rounds;
       } catch (error) {
-        console.error(`Error fetching contribution rounds for projectSlug ${input.projectSlug}:`, error);
+        console.error(
+          `Error fetching contribution rounds for projectSlug ${input.projectSlug}:`,
+          error,
+        );
         throw new TRPCError({
           message: `An unexpected error occurred while fetching contribution rounds for projectSlug ${input.projectSlug}`,
           code: 'INTERNAL_SERVER_ERROR',
@@ -80,16 +91,18 @@ export const contributionRouter = createTRPCRouter({
     }),
 
   createTransaction: protectedProcedure
-    .input(z.object({
-      description: z.string().optional(),
-      amount: z.string(),
-      currency: z.string(),
-      address: z.string(),
-      txId: z.string().optional(),
-      contributionId: z.number(),
-    }))
+    .input(
+      z.object({
+        description: z.string().optional(),
+        amount: z.string(),
+        currency: z.string(),
+        address: z.string(),
+        txId: z.string().optional(),
+        contributionId: z.number(),
+      }),
+    )
     .mutation(async ({ input, ctx }) => {
-      const userId = ctx.session.user.id
+      const userId = ctx.session.user.id;
 
       try {
         const newTransaction = await prisma.transaction.create({
@@ -126,16 +139,18 @@ export const contributionRouter = createTRPCRouter({
     }),
 
   sumTransactions: protectedProcedure
-    .input(z.object({
-      contributionId: z.number()
-    }))
+    .input(
+      z.object({
+        contributionId: z.number(),
+      }),
+    )
     .query(async ({ input, ctx }) => {
-      const userId = ctx.session.user.id
+      const userId = ctx.session.user.id;
 
       const transactions = await prisma.transaction.findMany({
         where: {
           contributionId: input.contributionId,
-          userId: userId
+          userId: userId,
         },
         select: {
           amount: true, // Select only the amount field
@@ -146,33 +161,35 @@ export const contributionRouter = createTRPCRouter({
         return sum + parseFloat(transaction.amount);
       }, 0);
 
-      return totalAmount
+      return totalAmount;
     }),
 
   listTransactionsByContribution: adminProcedure
-    .input(z.object({
-      contributionId: z.number()
-    }))
+    .input(
+      z.object({
+        contributionId: z.number(),
+      }),
+    )
     .query(async ({ input }) => {
       const { contributionId } = input;
       const transactions = await prisma.transaction.findMany({
         where: {
-          contributionId: contributionId
+          contributionId: contributionId,
         },
         include: {
           user: {
             select: {
               defaultAddress: true,
               sumsubId: true,
-              sumsubResult: true
-            }
-          }
-        }
+              sumsubResult: true,
+            },
+          },
+        },
       });
-      return transactions.map(transaction => ({
+      return transactions.map((transaction) => ({
         ...transaction,
         userDefaultAddress: transaction.user?.defaultAddress,
-        userSumsubId: transaction.user?.sumsubId
+        userSumsubId: transaction.user?.sumsubId,
       }));
     }),
 
@@ -409,7 +426,7 @@ export const contributionRouter = createTRPCRouter({
   //       }
   //       else return []
   //     }),
-})
+});
 
 // async function fetchAllStakeData() {
 //   const response = await axios.post('https://api.coinecta.fi/stake/snapshot?limit=1000', [], {

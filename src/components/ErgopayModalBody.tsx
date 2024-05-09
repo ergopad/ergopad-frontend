@@ -5,7 +5,7 @@ import {
   CardContent,
   CircularProgress,
   Typography,
-  Link
+  Link,
 } from '@mui/material';
 import QRCode from 'react-qr-code';
 
@@ -13,9 +13,13 @@ type ErgopayModalBodyProps = {
   ergopayUrl: string;
   address: string;
   pending?: boolean;
-}
+};
 
-const ErgopayModalBody: FC<ErgopayModalBodyProps> = ({ ergopayUrl, address, pending }) => {
+const ErgopayModalBody: FC<ErgopayModalBodyProps> = ({
+  ergopayUrl,
+  address,
+  pending,
+}) => {
   return (
     <Box
       sx={{
@@ -54,19 +58,17 @@ const ErgopayModalBody: FC<ErgopayModalBodyProps> = ({ ergopayUrl, address, pend
             </Card>
             <Typography variant="h6" sx={{ mt: 2 }}>
               Scan QR using your mobile wallet or{' '}
-              <Link href={ergopayUrl}>click this link</Link> to
-              open your wallet app.
+              <Link href={ergopayUrl}>click this link</Link> to open your wallet
+              app.
             </Typography>
             <Link
-              href={
-                'https://explorer.ergoplatform.com/en/addresses/' +
-                address
-              }
+              href={'https://explorer.ergoplatform.com/en/addresses/' + address}
               rel="noreferrer"
               target="_blank"
             >
               View your wallet on explorer to check if it went through
-            </Link> (You may need to refresh a few times)
+            </Link>{' '}
+            (You may need to refresh a few times)
           </>
         )}
       </Box>

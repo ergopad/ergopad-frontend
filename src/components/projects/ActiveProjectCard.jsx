@@ -1,12 +1,12 @@
-import React from "react";
-import { useRouter } from "next/router";
-import Card from "@mui/material/Card";
-import CardActionArea from "@mui/material/CardActionArea";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import Link from "@components/MuiNextLink";
-import { Grid, Typography, Button } from "@mui/material";
-import { useProjectInfo } from "@hooks/useProjectInfo";
+import React from 'react';
+import { useRouter } from 'next/router';
+import Card from '@mui/material/Card';
+import CardActionArea from '@mui/material/CardActionArea';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Link from '@components/MuiNextLink';
+import { Grid, Typography, Button } from '@mui/material';
+import { useProjectInfo } from '@hooks/useProjectInfo';
 
 export const ActiveProjectCard = ({ project, type }) => {
   const router = useRouter();
@@ -17,7 +17,7 @@ export const ActiveProjectCard = ({ project, type }) => {
   }
 
   const projectLink =
-    type === "whitelist"
+    type === 'whitelist'
       ? `/whitelist/${project.projectName}/${project.roundName}`
       : `/contribute/${project.projectName}/${project.roundName}`;
 
@@ -25,11 +25,11 @@ export const ActiveProjectCard = ({ project, type }) => {
     <Grid item xs={12} sm={6} md={4} key={projectInfo.id}>
       <Card
         sx={{
-          display: "flex",
-          height: "100%",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          borderRadius: "8px",
+          display: 'flex',
+          height: '100%',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          borderRadius: '8px',
         }}
       >
         <CardActionArea
@@ -46,8 +46,8 @@ export const ActiveProjectCard = ({ project, type }) => {
             </Typography>
           </CardContent>
         </CardActionArea>
-        <CardActions sx={{ justifyContent: "right" }}>
-          <Link aria-label="share" href={"/projects/" + project.projectName}>
+        <CardActions sx={{ justifyContent: 'right' }}>
+          <Link aria-label="share" href={'/projects/' + project.projectName}>
             <Button>Project Page</Button>
           </Link>
         </CardActions>

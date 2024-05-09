@@ -9,7 +9,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     // Generate the signature
-    const requestUrl = 'https://api.sumsub.com'
+    const requestUrl = 'https://api.sumsub.com';
     const requestPath = `/resources/accessTokens?userId=${userId}&levelName=${levelName}`;
     const requestMethod = 'POST';
     const timestamp = Math.floor(Date.now() / 1000).toString();
@@ -22,7 +22,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const requestOptions = {
       method: requestMethod,
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'X-App-Token': appToken,
         'X-App-Access-Sig': signature,
         'X-App-Access-Ts': timestamp,
@@ -47,6 +47,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     console.error('Error generating access token:', error);
     res.status(500).json({ error: 'Error generating access token' });
   }
-}
+};
 
 export default handler;

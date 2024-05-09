@@ -13,93 +13,93 @@ import {
   ListItemIcon,
   Icon,
   Paper,
-} from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useState, useEffect } from "react";
-import { VictoryContainer, VictoryPie } from "victory";
-import CenterTitle from "@components/CenterTitle";
-import RelatedLinks from "@components/RelatedLinks/RelatedLinks";
-import theme from "@styles/theme";
-import MuiNextLink from "@components/MuiNextLink";
-import axios from "axios";
-import dynamic from "next/dynamic";
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { useState, useEffect } from 'react';
+import { VictoryContainer, VictoryPie } from 'victory';
+import CenterTitle from '@components/CenterTitle';
+import RelatedLinks from '@components/RelatedLinks/RelatedLinks';
+import theme from '@styles/theme';
+import MuiNextLink from '@components/MuiNextLink';
+import axios from 'axios';
+import dynamic from 'next/dynamic';
 
 const CandleStickChart = dynamic(
-  () => import("@components/token/CandleStickChart"),
+  () => import('@components/token/CandleStickChart'),
   {
     ssr: false,
-  }
+  },
 );
 
 const TOKEN_ID =
-  "d71693c49a84fbbecd4908c94813b46514b18b67a99952dc1e6e4791556de413";
+  'd71693c49a84fbbecd4908c94813b46514b18b67a99952dc1e6e4791556de413';
 
 const relatedLinkList = [
   {
     id: 0,
-    title: "Staking",
-    caption: "How to earn with ErgoPad tokens",
-    icon: "auto_graph",
-    href: "/staking",
+    title: 'Staking',
+    caption: 'How to earn with ErgoPad tokens',
+    icon: 'auto_graph',
+    href: '/staking',
     background: theme.palette.primary.main,
   },
   {
     id: 1,
-    title: "Projects",
-    caption: "See the projects we are building",
-    icon: "app_shortcut",
-    href: "/projects",
+    title: 'Projects',
+    caption: 'See the projects we are building',
+    icon: 'app_shortcut',
+    href: '/projects',
     background: theme.palette.secondary.main,
   },
   {
     id: 2,
-    title: "Documentation",
-    caption: "Read more about how ErgoPad Works",
-    icon: "auto_stories",
-    href: "/whitepaper",
+    title: 'Documentation',
+    caption: 'Read more about how ErgoPad Works',
+    icon: 'auto_stories',
+    href: '/whitepaper',
     background: theme.palette.tertiary.main,
   },
 ];
 
 const tokenAllocation = [
   {
-    x: "Seed Round",
+    x: 'Seed Round',
     y: 13,
-    color: "#67D5C2",
+    color: '#67D5C2',
   },
   {
-    x: "Strategic Round",
+    x: 'Strategic Round',
     y: 25,
-    color: "#3abab4",
+    color: '#3abab4',
   },
   {
-    x: "Pre-Sale",
+    x: 'Pre-Sale',
     y: 25,
-    color: "#1A6BD2",
+    color: '#1A6BD2',
   },
   {
-    x: "Liquidity",
+    x: 'Liquidity',
     y: 6,
-    color: "#3F7CDC",
+    color: '#3F7CDC',
   },
   {
-    x: "DAO",
+    x: 'DAO',
     y: 30,
-    color: "#36A9DA",
+    color: '#36A9DA',
   },
 ];
 
 const gridBox = {
-  background: "rgba(35, 35, 39, 0.7)",
-  display: "flex",
-  alignItems: "center",
-  flexDirection: "column",
-  textAlign: "center",
-  p: "1rem",
-  color: "#fff",
+  background: 'rgba(35, 35, 39, 0.7)',
+  display: 'flex',
+  alignItems: 'center',
+  flexDirection: 'column',
+  textAlign: 'center',
+  p: '1rem',
+  color: '#fff',
   borderRadius: 2,
   border: 1,
-  borderColor: "rgba(46,46,51,1)",
+  borderColor: 'rgba(46,46,51,1)',
 };
 
 const paperStyle = {
@@ -110,13 +110,13 @@ const paperStyle = {
 const Token = () => {
   const [expanded, setExpanded] = useState(false);
   const [initialErgopadSupply, setInitialErgopadSupply] =
-    useState("Loading...");
+    useState('Loading...');
   const [currentErgopadSupply, setCurrentErgopadSupply] =
-    useState("Loading...");
-  const [ergopadBurned, setErgopadBurned] = useState("Loading...");
+    useState('Loading...');
+  const [ergopadBurned, setErgopadBurned] = useState('Loading...');
   const [ergopadInCirculation, setErgopadInCirculation] =
-    useState("Loading...");
-  const [marketCap, setMarketCap] = useState("Loading...");
+    useState('Loading...');
+  const [marketCap, setMarketCap] = useState('Loading...');
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -129,32 +129,32 @@ const Token = () => {
         setInitialErgopadSupply(
           initialSupply.toLocaleString(window.navigator.language, {
             maximumFractionDigits: 0,
-          })
+          }),
         );
         const res = await axios.get(
-          `${process.env.API_URL}/blockchain/tokenomics/${TOKEN_ID}`
+          `${process.env.API_URL}/blockchain/tokenomics/${TOKEN_ID}`,
         );
         setCurrentErgopadSupply(
           res.data.current_total_supply.toLocaleString(
             window.navigator.language,
-            { maximumFractionDigits: 0 }
-          )
+            { maximumFractionDigits: 0 },
+          ),
         );
         setErgopadBurned(
           res.data.burned.toLocaleString(window.navigator.language, {
             maximumFractionDigits: 0,
-          })
+          }),
         );
         setErgopadInCirculation(
           res.data.in_circulation.toLocaleString(window.navigator.language, {
             maximumFractionDigits: 0,
-          })
+          }),
         );
         setMarketCap(
-          "$" +
+          '$' +
             res.data.market_cap.toLocaleString(window.navigator.language, {
               maximumFractionDigits: 0,
-            })
+            }),
         );
       } catch (e) {
         console.log(e);
@@ -166,34 +166,34 @@ const Token = () => {
 
   const tokenCards = [
     {
-      title: "Token Name:",
-      desc: "ErgoPad",
+      title: 'Token Name:',
+      desc: 'ErgoPad',
     },
     {
-      title: "Market Cap:",
+      title: 'Market Cap:',
       desc: marketCap,
     },
     {
-      title: "Initial Total Supply:",
+      title: 'Initial Total Supply:',
       desc: initialErgopadSupply,
     },
     {
-      title: "Current Total Supply:",
+      title: 'Current Total Supply:',
       desc: currentErgopadSupply,
     },
     {
-      title: "Ergopad Burned:",
+      title: 'Ergopad Burned:',
       desc: ergopadBurned,
     },
     {
-      title: "Ergopad in Circulation:",
+      title: 'Ergopad in Circulation:',
       desc: ergopadInCirculation,
     },
   ];
 
   return (
     <>
-      <Container maxWidth="lg" sx={{ mb: "3rem" }}>
+      <Container maxWidth="lg" sx={{ mb: '3rem' }}>
         <CenterTitle
           title="Tokenomics"
           subtitle="For Ergo projects, are tokenomics called Ergonomics? "
@@ -214,7 +214,7 @@ const Token = () => {
               md={4}
               sm={6}
               xs={12}
-              sx={{ maxWidth: { xs: "320px" } }}
+              sx={{ maxWidth: { xs: '320px' } }}
               key={value.title}
             >
               <Box sx={gridBox}>
@@ -240,9 +240,9 @@ const Token = () => {
             <iframe
               src="https://cruxfinance.io/ergopad-chart"
               style={{
-                width: "100%",
-                border: "none",
-                minHeight: "600px",
+                width: '100%',
+                border: 'none',
+                minHeight: '600px',
               }}
             />
           </Paper>
@@ -256,7 +256,7 @@ const Token = () => {
           subtitle="The ErgoPad token will be released in public sales only. No VCs, no private allocation. We believe in fair access."
         />
 
-        <Grid container sx={{ mb: "4rem" }} alignItems="center">
+        <Grid container sx={{ mb: '4rem' }} alignItems="center">
           <Grid item md={8} align="center">
             <VictoryPie
               id="victory-pie-chart-2"
@@ -265,13 +265,13 @@ const Token = () => {
               colorScale={tokenAllocation.map((value) => {
                 return value.color;
               })}
-              style={{ labels: { fill: "white" } }}
+              style={{ labels: { fill: 'white' } }}
               containerComponent={
                 <VictoryContainer
                   id="victory-pie-chart-container"
                   style={{
-                    touchAction: "auto",
-                    maxWidth: "500px",
+                    touchAction: 'auto',
+                    maxWidth: '500px',
                   }}
                 />
               }
@@ -296,7 +296,7 @@ const Token = () => {
         </Grid>
       </Container>
 
-      <Divider sx={{ my: 10, maxWidth: "lg", mx: "auto" }} />
+      <Divider sx={{ my: 10, maxWidth: 'lg', mx: 'auto' }} />
       <Container maxWidth="md" sx={{}}>
         <CenterTitle
           title="Token Utility"
@@ -305,8 +305,8 @@ const Token = () => {
 
         <Accordion
           key="panel1"
-          expanded={expanded === "panel1"}
-          onChange={handleChange("panel1")}
+          expanded={expanded === 'panel1'}
+          onChange={handleChange('panel1')}
         >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
@@ -315,7 +315,7 @@ const Token = () => {
           >
             <Typography
               variant="h5"
-              sx={{ width: "33%", flexShrink: 0, mb: 0 }}
+              sx={{ width: '33%', flexShrink: 0, mb: 0 }}
             >
               Governance
             </Typography>
@@ -329,8 +329,8 @@ const Token = () => {
         </Accordion>
         <Accordion
           key="panel2"
-          expanded={expanded === "panel2"}
-          onChange={handleChange("panel2")}
+          expanded={expanded === 'panel2'}
+          onChange={handleChange('panel2')}
         >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
@@ -339,7 +339,7 @@ const Token = () => {
           >
             <Typography
               variant="h5"
-              sx={{ width: "33%", flexShrink: 0, mb: 0 }}
+              sx={{ width: '33%', flexShrink: 0, mb: 0 }}
             >
               Staking
             </Typography>
@@ -347,7 +347,7 @@ const Token = () => {
           <AccordionDetails>
             <Typography variant="h6">Tiers</Typography>
             <Typography variant="body2">
-              The more you stake, the higher the tier. More detail found on the{" "}
+              The more you stake, the higher the tier. More detail found on the{' '}
               <MuiNextLink href="/staking">Staking Page</MuiNextLink>.
             </Typography>
             <Typography variant="h6">Allocations</Typography>
@@ -360,8 +360,8 @@ const Token = () => {
         </Accordion>
         <Accordion
           key="panel3"
-          expanded={expanded === "panel3"}
-          onChange={handleChange("panel3")}
+          expanded={expanded === 'panel3'}
+          onChange={handleChange('panel3')}
         >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
@@ -370,7 +370,7 @@ const Token = () => {
           >
             <Typography
               variant="h5"
-              sx={{ width: "33%", flexShrink: 0, mb: 0 }}
+              sx={{ width: '33%', flexShrink: 0, mb: 0 }}
             >
               Deflationary Mechanics
             </Typography>
@@ -386,8 +386,8 @@ const Token = () => {
         </Accordion>
         <Accordion
           key="panel4"
-          expanded={expanded === "panel4"}
-          onChange={handleChange("panel4")}
+          expanded={expanded === 'panel4'}
+          onChange={handleChange('panel4')}
         >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
@@ -396,7 +396,7 @@ const Token = () => {
           >
             <Typography
               variant="h5"
-              sx={{ width: "33%", flexShrink: 0, mb: 0 }}
+              sx={{ width: '33%', flexShrink: 0, mb: 0 }}
             >
               Liquidity Farming
             </Typography>

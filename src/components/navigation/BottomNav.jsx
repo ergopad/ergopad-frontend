@@ -3,15 +3,15 @@ import {
   DashboardOutlined,
   FiberSmartRecordOutlined,
   HomeOutlined,
-  MenuOutlined
+  MenuOutlined,
 } from '@mui/icons-material';
-import { 
-  Drawer, 
-  Typography, 
-  Box, 
-  BottomNavigation, 
+import {
+  Drawer,
+  Typography,
+  Box,
+  BottomNavigation,
   BottomNavigationAction,
-  Paper
+  Paper,
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
@@ -48,13 +48,13 @@ const bottomNavLinks = [
   },
 ];
 
-const root = { 
-  position: 'fixed', 
-  bottom: 0, 
-  left: 0, 
-  right: 0, 
-  zIndex: 1
- };
+const root = {
+  position: 'fixed',
+  bottom: 0,
+  left: 0,
+  right: 0,
+  zIndex: 1,
+};
 
 const BottomNav = () => {
   const router = useRouter();
@@ -72,8 +72,8 @@ const BottomNav = () => {
 
   const toggleDrawer = (anchor, open) => (event) => {
     if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
     ) {
       return;
     }
@@ -83,16 +83,15 @@ const BottomNav = () => {
 
   useEffect(() => {
     if (router.pathname != value) {
-      setValue('more')
+      setValue('more');
     }
     bottomNavLinks.forEach((obj) => {
       if (router.pathname == obj.link) {
-        setValue(obj.link)
+        setValue(obj.link);
         // console.log(router.pathname + ' == ' + obj.link)
       }
-    })
-    
-  }, [router.pathname])
+    });
+  }, [router.pathname]);
 
   const list = (anchor) => (
     <Box
@@ -109,7 +108,7 @@ const BottomNav = () => {
             my: 2,
           }}
         >
-          <MuiNextLink sx={{ color: "common.white" }} href={path}>
+          <MuiNextLink sx={{ color: 'common.white' }} href={path}>
             {title}
           </MuiNextLink>
         </Typography>
@@ -119,39 +118,46 @@ const BottomNav = () => {
 
   return (
     <>
-    <Paper sx={root} elevation={6}>
-      <BottomNavigation showLabels value={value} sx={{ height: '4rem', background: 'linear-gradient(0deg, rgba(29,29,32,1) 0%, rgba(40,40,45,1) 70%)' }} onChange={handleChange}>
-        {bottomNavLinks.map((link, i) => (
+      <Paper sx={root} elevation={6}>
+        <BottomNavigation
+          showLabels
+          value={value}
+          sx={{
+            height: '4rem',
+            background:
+              'linear-gradient(0deg, rgba(29,29,32,1) 0%, rgba(40,40,45,1) 70%)',
+          }}
+          onChange={handleChange}
+        >
+          {bottomNavLinks.map((link, i) => (
             <BottomNavigationAction
               key={`${i}_${link.label}`}
               label={link.label}
               value={link.link}
               icon={link.icon}
             />
-        ))}
-        <BottomNavigationAction
-            onClick={toggleDrawer("left", true)}
-            key='more'
-            label='More'
-            value='more'
+          ))}
+          <BottomNavigationAction
+            onClick={toggleDrawer('left', true)}
+            key="more"
+            label="More"
+            value="more"
             icon={<MenuOutlined />}
           />
-      </BottomNavigation> 
-    </Paper>
+        </BottomNavigation>
+      </Paper>
 
-    <Drawer
+      <Drawer
         anchor="left"
         open={state.left}
-        onClose={toggleDrawer("left", false)}
+        onClose={toggleDrawer('left', false)}
         sx={{
-          ".MuiDrawer-paper": {
-            
-          },
+          '.MuiDrawer-paper': {},
         }}
       >
-        {list("left")}
+        {list('left')}
       </Drawer>
-  </>
+    </>
   );
 };
 

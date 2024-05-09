@@ -12,7 +12,7 @@ import {
   Typography,
   Alert,
   useMediaQuery,
-  useTheme
+  useTheme,
 } from '@mui/material';
 import axios from 'axios';
 import { useEffect, useState, FC } from 'react';
@@ -24,8 +24,8 @@ type VestingBox = {
   boxId: string;
   Remaining: number;
   Redeemable: number;
-  "Vesting Key Id": string;
-  "Next unlock": string;
+  'Vesting Key Id': string;
+  'Next unlock': string;
   address: string;
   type: string;
 };
@@ -46,11 +46,11 @@ const modalStyle = {
 
 const initFormData = {
   address: '',
-}
+};
 
 const initFormErrors = {
   address: false,
-}
+};
 
 const defaultOptions = {
   headers: {
@@ -61,10 +61,10 @@ const defaultOptions = {
 type Props = {
   box: VestingBox;
   onClose: Function;
-}
+};
 
 const TokenRedeemModal: FC<Props> = ({ box, onClose }) => {
-  const theme = useTheme()
+  const theme = useTheme();
   const checkSmall = useMediaQuery(() => theme.breakpoints.up('md'));
   // wallet
   const { wallet } = useWallet();
@@ -78,7 +78,7 @@ const TokenRedeemModal: FC<Props> = ({ box, onClose }) => {
   // open error snackbar
   const [openError, setOpenError] = useState(false);
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and Try Again'
+    'Please eliminate form errors and Try Again',
   );
   // transaction submitted
   const [transactionSubmitted, setTransactionSubmitted] = useState(null);
@@ -98,13 +98,12 @@ const TokenRedeemModal: FC<Props> = ({ box, onClose }) => {
         usedAddresses.includes(walletAddress) ||
         unusedAddresses.includes(walletAddress)
       ) {
-        handleSubmit(walletAddress, [...usedAddresses, ...unusedAddresses])
-      }
-      else {
-        window.ergoConnector.nautilus.disconnect()
+        handleSubmit(walletAddress, [...usedAddresses, ...unusedAddresses]);
+      } else {
+        window.ergoConnector.nautilus.disconnect();
         setErrorMessage('Please connect the correct Nautilus wallet');
         setOpenError(true);
-        redeemWithNautilus(walletAddress)
+        redeemWithNautilus(walletAddress);
       }
     }
   };
@@ -132,9 +131,7 @@ const TokenRedeemModal: FC<Props> = ({ box, onClose }) => {
 
   const handleSubmit = async (address: string, addresses: any[]) => {
     setLoading(true);
-    const emptyCheck = Object.values(formData).every(
-      (v) => v !== ''
-    );
+    const emptyCheck = Object.values(formData).every((v) => v !== '');
     const errorCheck = Object.values(formErrors).every((v) => v === false);
     if (emptyCheck && errorCheck) {
       try {
@@ -150,7 +147,7 @@ const TokenRedeemModal: FC<Props> = ({ box, onClose }) => {
             txFormat: 'eip-12',
             addresses: addresses,
           },
-          defaultOptions
+          defaultOptions,
         );
         const unsignedtx = res.data;
         // @ts-ignore
@@ -162,7 +159,7 @@ const TokenRedeemModal: FC<Props> = ({ box, onClose }) => {
         // snackbar for error message
         if (e.response) {
           setErrorMessage(
-            'Error: ' + e.response.status + ' - ' + e.response.data
+            'Error: ' + e.response.status + ' - ' + e.response.data,
           );
         } else {
           console.log(e);
@@ -181,9 +178,7 @@ const TokenRedeemModal: FC<Props> = ({ box, onClose }) => {
 
   const handleSubmitErgopay = async () => {
     setErgopayLoading(true);
-    const emptyCheck = Object.values(formData).every(
-      (v) => v !== ''
-    );
+    const emptyCheck = Object.values(formData).every((v) => v !== '');
     const errorCheck = Object.values(formErrors).every((v) => v === false);
     if (emptyCheck && errorCheck) {
       try {
@@ -195,14 +190,14 @@ const TokenRedeemModal: FC<Props> = ({ box, onClose }) => {
             utxos: [],
             txFormat: 'ergo_pay',
           },
-          defaultOptions
+          defaultOptions,
         );
         setErgopayUrl(res.data.url);
       } catch (e: any) {
         // snackbar for error message
         if (e.response) {
           setErrorMessage(
-            'Error: ' + e.response.status + ' - ' + e.response.data
+            'Error: ' + e.response.status + ' - ' + e.response.data,
           );
         } else {
           console.log(e);
@@ -239,9 +234,16 @@ const TokenRedeemModal: FC<Props> = ({ box, onClose }) => {
             <>
               {transactionSubmitted || ergopayUrl ? (
                 transactionSubmitted ? (
-                  <TransactionSubmitted transactionId={transactionSubmitted} pending={undefined} />
+                  <TransactionSubmitted
+                    transactionId={transactionSubmitted}
+                    pending={undefined}
+                  />
                 ) : (
-                  <ErgopayModalBody ergopayUrl={ergopayUrl!} address={box.address} pending={undefined} />
+                  <ErgopayModalBody
+                    ergopayUrl={ergopayUrl!}
+                    address={box.address}
+                    pending={undefined}
+                  />
                 )
               ) : (
                 <Box>
@@ -279,7 +281,10 @@ const TokenRedeemModal: FC<Props> = ({ box, onClose }) => {
                       </FormControl>
                     </Grid>
                     <Grid item xs={12}>
-                      <Typography variant="body2" sx={{ fontSize: '1rem', mb: 0 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontSize: '1rem', mb: 0 }}
+                      >
                         You can now redeem <b>{box ? box['Redeemable'] : 0} </b>
                         tokens.
                       </Typography>
@@ -328,10 +333,7 @@ const TokenRedeemModal: FC<Props> = ({ box, onClose }) => {
         autoHideDuration={4500}
         onClose={handleCloseError}
       >
-        <Alert
-          severity="error"
-          sx={{ width: '100%' }}
-        >
+        <Alert severity="error" sx={{ width: '100%' }}>
           {errorMessage}
         </Alert>
       </Snackbar>

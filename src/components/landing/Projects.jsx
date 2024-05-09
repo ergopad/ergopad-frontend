@@ -5,7 +5,7 @@ import {
   CardContent,
   Grid,
   Typography,
-  Skeleton
+  Skeleton,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -18,7 +18,15 @@ const Projects = ({ projects, isLoading }) => {
 
   useEffect(() => {
     if (projects?.length !== 0) {
-      setUpcomingProjects(projects?.filter((project) => !project.isLaunched && !project.name.toLowerCase().startsWith('cardano-')).slice(0, 3))
+      setUpcomingProjects(
+        projects
+          ?.filter(
+            (project) =>
+              !project.isLaunched &&
+              !project.name.toLowerCase().startsWith('cardano-'),
+          )
+          .slice(0, 3),
+      );
     }
   }, [projects]);
 
@@ -40,10 +48,10 @@ const Projects = ({ projects, isLoading }) => {
             onClick={() => {
               router.push(
                 '/projects/' +
-                project.name
-                  .toLowerCase()
-                  .replaceAll(' ', '')
-                  .replaceAll(/[^a-zA-Z0-9]/g, '')
+                  project.name
+                    .toLowerCase()
+                    .replaceAll(' ', '')
+                    .replaceAll(/[^a-zA-Z0-9]/g, ''),
               );
             }}
           >
@@ -85,8 +93,8 @@ const Projects = ({ projects, isLoading }) => {
       <Grid item xs={12} sm={6} md={4}>
         <Skeleton variant="rectangular" height={400} />
       </Grid>
-    )
-  }
+    );
+  };
 
   return (
     <>
@@ -108,9 +116,7 @@ const Projects = ({ projects, isLoading }) => {
             <SkeletonCard />
           </>
         ) : (
-          <>
-            {upcomingProjects?.map((project) => projectCard(project))}
-          </>
+          <>{upcomingProjects?.map((project) => projectCard(project))}</>
         )}
       </Grid>
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>

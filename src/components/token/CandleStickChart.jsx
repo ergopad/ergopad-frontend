@@ -8,7 +8,7 @@ import {
   useTheme,
   Box,
   CircularProgress,
-  Fade
+  Fade,
 } from '@mui/material';
 import Link from '@components/MuiNextLink';
 import { createChart, CrosshairMode } from 'lightweight-charts';
@@ -74,7 +74,7 @@ const CandleStickChart = () => {
   const [rawData, setRawData] = useState(initHistoryData);
   const [stepUnit, setStepUnit] = useState('1h');
   const [pair, setPair] = useState('ergopad_erg');
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const chartContainerRef = useRef();
 
@@ -89,12 +89,12 @@ const CandleStickChart = () => {
   });
 
   const volumeData = rawData.map((dataPoint) => {
-    var color = theme.palette.primary.main
-    if (dataPoint.open > dataPoint.close) color = theme.palette.secondary.main
+    var color = theme.palette.primary.main;
+    if (dataPoint.open > dataPoint.close) color = theme.palette.secondary.main;
     return {
       time: new Date(dataPoint.time).valueOf() / 1000,
       value: dataPoint.volume,
-      color: color
+      color: color,
     };
   });
 
@@ -156,26 +156,30 @@ const CandleStickChart = () => {
       barSpacing: 10,
     });
 
-    new ResizeObserver(entries => {
-      if (entries.length === 0 || entries[0].target !== chartContainerRef.current) { return; }
+    new ResizeObserver((entries) => {
+      if (
+        entries.length === 0 ||
+        entries[0].target !== chartContainerRef.current
+      ) {
+        return;
+      }
       const newRect = entries[0].contentRect;
       Chart.applyOptions({ height: newRect.height, width: newRect.width });
     }).observe(chartContainerRef.current);
-
-  }, [rawData])
+  }, [rawData]);
 
   useEffect(() => {
     const getData = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
         const res = await axios.get(
-          `${process.env.API_URL}/asset/ohlcv/${pairBaseCurrencyMapper[pair]}/ergopad/${stepUnitMapper[stepUnit].stepSize}/${stepUnitMapper[stepUnit].stepUnit}/${new Date(Date.now() - (400000 * stepUnitMapper[stepUnit].inSeconds)).toISOString().slice(0, 10)}/${new Date(Date.now() + 86400000).toISOString().slice(0, 10)}?offset=0&limit=500`
+          `${process.env.API_URL}/asset/ohlcv/${pairBaseCurrencyMapper[pair]}/ergopad/${stepUnitMapper[stepUnit].stepSize}/${stepUnitMapper[stepUnit].stepUnit}/${new Date(Date.now() - 400000 * stepUnitMapper[stepUnit].inSeconds).toISOString().slice(0, 10)}/${new Date(Date.now() + 86400000).toISOString().slice(0, 10)}?offset=0&limit=500`,
         );
         setRawData(res.data);
       } catch (e) {
         console.log(e);
       }
-      setLoading(false)
+      setLoading(false);
     };
 
     // console.log(`${process.env.API_URL}/asset/ohlcv/${pairBaseCurrencyMapper[pair]}/ergopad/${stepUnitMapper[stepUnit].stepSize}/${stepUnitMapper[stepUnit].stepUnit}/${new Date(Date.now() - (400000 * stepUnitMapper[stepUnit].inSeconds)).toISOString().slice(0, 10)}/${new Date(Date.now() + 86400000).toISOString().slice(0, 10)}?offset=0&limit=500`)
@@ -199,13 +203,10 @@ const CandleStickChart = () => {
     }
   };
 
-
-
   return (
     <>
       <Typography variant="h4">
-        1 ErgoPad = {lastPrice} {' '}
-        {pairBaseCurrencyMapper[pair]}
+        1 ErgoPad = {lastPrice} {pairBaseCurrencyMapper[pair]}
       </Typography>
       <Grid>
         <Grid container>
@@ -252,7 +253,7 @@ const CandleStickChart = () => {
             mb: '24px',
             borderRadius: '12px',
             overflow: 'hidden',
-            position: 'relative'
+            position: 'relative',
           }}
         >
           <Fade in={loading}>
@@ -264,7 +265,7 @@ const CandleStickChart = () => {
                 width: '100%',
                 height: '100%',
                 background: theme.palette.background.paper,
-                zIndex: 100
+                zIndex: 100,
               }}
             >
               <Box

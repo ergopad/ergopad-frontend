@@ -1,11 +1,11 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement } from 'react';
 import Document, {
   Html,
   Head,
   Main,
   NextScript,
   DocumentContext,
-} from "next/document";
+} from 'next/document';
 
 export default class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
@@ -20,18 +20,27 @@ export default class MyDocument extends Document {
           <script
             async
             dangerouslySetInnerHTML={{
-              __html:
-                `window.dataLayer = window.dataLayer || [];
+              __html: `window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
 
-            gtag('config', 'G-XBTFK9GRMF');`
+            gtag('config', 'G-XBTFK9GRMF');`,
             }}
           />
           <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-          <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"></link>
+          <link
+            rel="preconnect"
+            href="https://fonts.gstatic.com"
+            crossOrigin="anonymous"
+          />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+            rel="stylesheet"
+          />
+          <link
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+            rel="stylesheet"
+          ></link>
         </Head>
         <body>
           <Main />
@@ -41,8 +50,6 @@ export default class MyDocument extends Document {
     );
   }
 }
-
-
 
 // import Document, { Html, Head, Main, NextScript } from 'next/document';
 // import createEmotionServer from '@emotion/server/create-instance';

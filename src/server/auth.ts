@@ -1,4 +1,4 @@
-import { ProviderType } from "next-auth/providers/index";
+import { ProviderType } from 'next-auth/providers/index';
 
 /**
  * Module augmentation for `next-auth` types.
@@ -7,7 +7,7 @@ import { ProviderType } from "next-auth/providers/index";
  *
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  **/
-declare module "next-auth" {
+declare module 'next-auth' {
   interface Session {
     user: {
       id: string;

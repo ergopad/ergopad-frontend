@@ -45,7 +45,7 @@ const DeleteProjectForm = () => {
   const [openSuccess, setOpenSuccess] = useState(false);
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again'
+    'Please eliminate form errors and try again',
   );
 
   useEffect(() => {
@@ -60,7 +60,9 @@ const DeleteProjectForm = () => {
     const getTableData = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${process.env.API_URL}/projects/?include_drafts=true`);
+        const res = await axios.get(
+          `${process.env.API_URL}/projects/?include_drafts=true`,
+        );
         res.data.sort((a, b) => a.id - b.id);
         setProjectData(res.data);
       } catch (e) {
@@ -121,14 +123,14 @@ const DeleteProjectForm = () => {
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422'
+            'jwt_token_login_422',
           )}`,
         },
       };
       try {
         await axios.delete(
           `${process.env.API_URL}/projects/${projectId}`,
-          defaultOptions
+          defaultOptions,
         );
         setOpenSuccess(true);
         updateFormData(initialFormData);

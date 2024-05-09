@@ -1,18 +1,13 @@
-import React, { useEffect, useState, FC } from 'react'
-import {
-  Box,
-  LinearProgress,
-  Typography,
-  Button
-} from '@mui/material';
+import React, { useEffect, useState, FC } from 'react';
+import { Box, LinearProgress, Typography, Button } from '@mui/material';
 import { Expanded } from '@components/user/SignIn';
-import { trpc } from "@utils/trpc";
-import { signIn } from "next-auth/react"
+import { trpc } from '@utils/trpc';
+import { signIn } from 'next-auth/react';
 import { useWallet } from '@contexts/WalletContext';
 import { NonceResponse } from '@lib/types';
 
 interface INautilusLogin {
-  expanded: Expanded
+  expanded: Expanded;
   setExpanded: React.Dispatch<React.SetStateAction<Expanded>>;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   localLoading: boolean;
@@ -23,21 +18,49 @@ interface INautilusLogin {
   dappConnection: Function;
 }
 
-const NautilusLogin: FC<INautilusLogin> = ({ setExpanded, setLoading, localLoading, setLocalLoading, setModalOpen, dappConnected, setDappConnected, dappConnection }) => {
-  const [defaultAddress, setDefaultAddress] = useState<string | undefined>(undefined);
-  const [usedAddresses, setUsedAddresses] = useState<string[]>([])
-  const [unusedAddresses, setUnusedAddresses] = useState<string[]>([])
-  const getNonce = trpc.user.getNonce.useQuery({ userAddress: defaultAddress }, { enabled: false, retry: false });
-  const [newNonce, setNewNonce] = useState<NonceResponse | undefined>(undefined)
-  const { wallet, setWallet, setDAppWallet, sessionData, sessionStatus, fetchSessionData } = useWallet()
-  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
-  const deleteEmptyUser = trpc.user.deleteEmptyUser.useMutation()
+const NautilusLogin: FC<INautilusLogin> = ({
+  setExpanded,
+  setLoading,
+  localLoading,
+  setLocalLoading,
+  setModalOpen,
+  dappConnected,
+  setDappConnected,
+  dappConnection,
+}) => {
+  const [defaultAddress, setDefaultAddress] = useState<string | undefined>(
+    undefined,
+  );
+  const [usedAddresses, setUsedAddresses] = useState<string[]>([]);
+  const [unusedAddresses, setUnusedAddresses] = useState<string[]>([]);
+  const getNonce = trpc.user.getNonce.useQuery(
+    { userAddress: defaultAddress },
+    { enabled: false, retry: false },
+  );
+  const [newNonce, setNewNonce] = useState<NonceResponse | undefined>(
+    undefined,
+  );
+  const {
+    wallet,
+    setWallet,
+    setDAppWallet,
+    sessionData,
+    sessionStatus,
+    fetchSessionData,
+  } = useWallet();
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(
+    undefined,
+  );
+  const deleteEmptyUser = trpc.user.deleteEmptyUser.useMutation();
 
   useEffect(() => {
-    if (defaultAddress && dappConnected && sessionStatus === 'unauthenticated') {
-      refetchData()
-    }
-    else if (dappConnected && !defaultAddress) getAddress()
+    if (
+      defaultAddress &&
+      dappConnected &&
+      sessionStatus === 'unauthenticated'
+    ) {
+      refetchData();
+    } else if (dappConnected && !defaultAddress) getAddress();
   }, [defaultAddress, dappConnected, sessionStatus]);
 
   const getAddress = async () => {
@@ -51,42 +74,47 @@ const NautilusLogin: FC<INautilusLogin> = ({ setExpanded, setLoading, localLoadi
       const fetchUsedAddresses = await ergo.get_used_addresses();
       // @ts-ignore
       const fetchUnusedAddresses = await ergo.get_unused_addresses();
-      setUsedAddresses(fetchUsedAddresses)
-      setUnusedAddresses(fetchUnusedAddresses)
+      setUsedAddresses(fetchUsedAddresses);
+      setUnusedAddresses(fetchUnusedAddresses);
       setDAppWallet({
         connected: true,
         name: 'nautilus',
-        addresses: [changeAddress, ...fetchUsedAddresses, ...fetchUnusedAddresses]
-      })
+        addresses: [
+          changeAddress,
+          ...fetchUsedAddresses,
+          ...fetchUnusedAddresses,
+        ],
+      });
     } catch {
-      setLocalLoading(false)
-      console.error('Error fetching wallet address')
+      setLocalLoading(false);
+      console.error('Error fetching wallet address');
     }
-  }
+  };
 
   // get the new nonce
   const refetchData = () => {
-    getNonce.refetch()
+    getNonce
+      .refetch()
       .then((response: any) => {
         if (response && response.error) {
           throw new Error(response.error.message);
         }
-        setNewNonce(response.data.nonce)
+        setNewNonce(response.data.nonce);
       })
       .catch((error: any) => {
         console.error('Nonce error: ' + error);
-        setErrorMessage(error.message)
-        setLocalLoading(false)
+        setErrorMessage(error.message);
+        setLocalLoading(false);
       });
-  }
+  };
 
   useEffect(() => {
     if (newNonce && defaultAddress) {
       if (sessionStatus === 'unauthenticated' && newNonce) {
-        verifyOwnership(newNonce, defaultAddress)
+        verifyOwnership(newNonce, defaultAddress);
       }
     }
-  }, [newNonce, sessionStatus])
+  }, [newNonce, sessionStatus]);
 
   const verifyOwnership = async (nonce: NonceResponse, address: string) => {
     if (!nonce) {
@@ -112,7 +140,7 @@ const NautilusLogin: FC<INautilusLogin> = ({ setExpanded, setLoading, localLoadi
 
       try {
         // Try for signIn
-        const response = await signIn("credentials", {
+        const response = await signIn('credentials', {
           nonce: nonce.nonce,
           userId: nonce.userId,
           signature: JSON.stringify(signature),
@@ -120,22 +148,20 @@ const NautilusLogin: FC<INautilusLogin> = ({ setExpanded, setLoading, localLoadi
             type: 'nautilus',
             defaultAddress: defaultAddress,
             usedAddresses,
-            unusedAddresses
+            unusedAddresses,
           }),
-          redirect: false
+          redirect: false,
         });
 
         if (!response?.status || response.status !== 200) {
           cleanupForAuth(nonce);
           return;
         }
-
       } catch (error) {
         console.error('Error during signIn:', error);
         cleanupForAuth(nonce);
         return;
       }
-
     } catch (error) {
       console.error('Error during wallet signature:', error);
       cleanupForAuth(nonce);
@@ -152,43 +178,44 @@ const NautilusLogin: FC<INautilusLogin> = ({ setExpanded, setLoading, localLoadi
     setDefaultAddress(undefined);
     setDappConnected(false);
     deleteEmptyUser.mutateAsync({
-      userId: nonce.userId
+      userId: nonce.userId,
     });
     window.ergoConnector.nautilus.disconnect();
   };
 
   const cleanup = () => {
     setDefaultAddress(undefined);
-    setDappConnected(false)
-    setErrorMessage(undefined)
+    setDappConnected(false);
+    setErrorMessage(undefined);
     window.ergoConnector.nautilus.disconnect();
-    dappConnection()
-  }
+    dappConnection();
+  };
 
   return (
     <>
-      {localLoading &&
+      {localLoading && (
         <Box>
           <Typography sx={{ mb: 1, textAlign: 'center' }}>
             Please follow the prompts on Nautilus
           </Typography>
           <LinearProgress />
         </Box>
-      }
+      )}
       {errorMessage && (
-        <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+        <Box
+          sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
+        >
           <Typography color="error" sx={{ flexGrow: 1 }}>
             Address already in use by another account
           </Typography>
-          <Button
-            variant="contained"
-            onClick={() => cleanup()}
-          >Try again</Button>
+          <Button variant="contained" onClick={() => cleanup()}>
+            Try again
+          </Button>
         </Box>
       )}
       {/* )} */}
     </>
   );
-}
+};
 
 export default NautilusLogin;

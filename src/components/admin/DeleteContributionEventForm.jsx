@@ -45,7 +45,7 @@ const DeleteContributionEventForm = () => {
   const [openSuccess, setOpenSuccess] = useState(false);
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again'
+    'Please eliminate form errors and try again',
   );
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const DeleteContributionEventForm = () => {
       setLoading(true);
       try {
         const res = await axios.get(
-          `${process.env.API_URL}/contribution/events`
+          `${process.env.API_URL}/contribution/events`,
         );
         res.data.sort((a, b) => a.id - b.id);
         setTableData(res.data);
@@ -123,14 +123,14 @@ const DeleteContributionEventForm = () => {
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422'
+            'jwt_token_login_422',
           )}`,
         },
       };
       try {
         await axios.delete(
           `${process.env.API_URL}/contribution/events/${id}`,
-          defaultOptions
+          defaultOptions,
         );
         setOpenSuccess(true);
         updateFormData(initialFormData);

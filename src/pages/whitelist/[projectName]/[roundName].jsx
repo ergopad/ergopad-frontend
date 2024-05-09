@@ -1,5 +1,5 @@
-import { useState, useEffect, forwardRef } from "react";
-import { useRouter } from "next/router";
+import { useState, useEffect, forwardRef } from 'react';
+import { useRouter } from 'next/router';
 import {
   Typography,
   Grid,
@@ -15,31 +15,31 @@ import {
   FilledInput,
   FormHelperText,
   CircularProgress,
-} from "@mui/material";
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import TelegramIcon from "@mui/icons-material/Telegram";
-import DiscordIcon from "@components/DiscordIcon";
-import PageTitle from "@components/PageTitle";
-import CenterTitle from "@components/CenterTitle";
-import MarkdownRender from "@components/MarkdownRender";
-import theme from "@styles/theme";
-import { useWallet } from "@contexts/WalletContext";
-import { useAddWallet } from "@contexts/AddWalletContext";
-import axios from "axios";
+} from '@mui/material';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+import TelegramIcon from '@mui/icons-material/Telegram';
+import DiscordIcon from '@components/DiscordIcon';
+import PageTitle from '@components/PageTitle';
+import CenterTitle from '@components/CenterTitle';
+import MarkdownRender from '@components/MarkdownRender';
+import theme from '@styles/theme';
+import { useWallet } from '@contexts/WalletContext';
+import { useAddWallet } from '@contexts/AddWalletContext';
+import axios from 'axios';
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
 // states
-const NOT_STARTED = "NOT_STARTED";
-const PUBLIC = "PUBLIC";
-const ROUND_END = "ROUND_END";
+const NOT_STARTED = 'NOT_STARTED';
+const PUBLIC = 'PUBLIC';
+const ROUND_END = 'ROUND_END';
 
 const initialFormData = Object.freeze({
-  email: "",
-  ergoAddress: "",
+  email: '',
+  ergoAddress: '',
   sigValue: 0,
 });
 
@@ -51,7 +51,7 @@ const initialFormErrors = Object.freeze({
 
 const defaultOptions = {
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 };
 
@@ -75,11 +75,11 @@ const Whitelist = () => {
   const [isLoading, setLoading] = useState(false);
   // open success modal
   const [openSuccess, setOpenSuccess] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("Saved");
+  const [successMessage, setSuccessMessage] = useState('Saved');
   // change error message for error snackbar
   const [openError, setOpenError] = useState(false);
   const [errorMessage, setErrorMessage] = useState(
-    "Please eliminate form errors and try again"
+    'Please eliminate form errors and try again',
   );
   // total staked
   const [totalStaked, setTotalStaked] = useState(0);
@@ -96,13 +96,13 @@ const Whitelist = () => {
       setWhitelistLoading(true);
       try {
         const res = await axios.get(
-          `${process.env.API_URL}/whitelist/events/${projectName}/${roundName}?format=adjust_early_bird`
+          `${process.env.API_URL}/whitelist/events/${projectName}/${roundName}?format=adjust_early_bird`,
         );
         setWhitelistData(res.data);
         setCheckboxState(
           res.data.checkBoxes.checkBoxText.map((text) => {
             return { text: text, check: false };
-          })
+          }),
         );
         const startTime = Date.parse(res.data.start_dtz);
         const endTime = Date.parse(res.data.end_dtz);
@@ -130,7 +130,7 @@ const Whitelist = () => {
           {
             addresses: [wallet],
           },
-          defaultOptions
+          defaultOptions,
         );
         setTotalStaked(Math.round(res.data.totalStaked * 100) / 100);
       } catch (e) {
@@ -179,7 +179,7 @@ const Whitelist = () => {
   }, [checkboxError, whitelistState]);
 
   const handleChange = (e) => {
-    if (e.target.value == "" && e.target.name !== "email") {
+    if (e.target.value == '' && e.target.name !== 'email') {
       setFormErrors({
         ...formErrors,
         [e.target.name]: true,
@@ -191,8 +191,8 @@ const Whitelist = () => {
       });
     }
 
-    if (e.target.name === "email") {
-      if (emailRegex.test(e.target.value) || e.target.value === "") {
+    if (e.target.name === 'email') {
+      if (emailRegex.test(e.target.value) || e.target.value === '') {
         setFormErrors({
           ...formErrors,
           email: false,
@@ -205,9 +205,9 @@ const Whitelist = () => {
       }
     }
 
-    if (e.target.name === "sigValue") {
+    if (e.target.name === 'sigValue') {
       if (
-        e.target.value === "[max]" &&
+        e.target.value === '[max]' &&
         whitelistData?.additionalDetails?.staker_snapshot_whitelist
       ) {
         setFormErrors({
@@ -248,13 +248,13 @@ const Whitelist = () => {
           };
         }
         return checkbox;
-      })
+      }),
     );
   };
 
   // snackbar for error reporting
   const handleCloseError = (event, reason) => {
-    if (reason === "clickaway") {
+    if (reason === 'clickaway') {
       return;
     }
     setOpenError(false);
@@ -269,13 +269,13 @@ const Whitelist = () => {
     e.preventDefault();
     setLoading(true);
 
-    const emptyCheck = formData.ergoAddress !== "" && formData.sigValue !== 0;
+    const emptyCheck = formData.ergoAddress !== '' && formData.sigValue !== 0;
     const errorCheck = Object.values(formErrors).every((v) => v === false);
 
     const form = {
-      name: "__anon_ergonaut",
+      name: '__anon_ergonaut',
       email: formData.email,
-      sigValue: formData.sigValue === "[max]" ? 1 : formData.sigValue,
+      sigValue: formData.sigValue === '[max]' ? 1 : formData.sigValue,
       ergoAddress: formData.ergoAddress,
       event: whitelistData.eventName,
     };
@@ -284,19 +284,19 @@ const Whitelist = () => {
       try {
         const res = await axios.post(
           `${process.env.API_URL}/whitelist/signup`,
-          { ...form }
+          { ...form },
         );
         // modal for success message
         setSuccessMessage(
           whitelistData.additionalDetails.staker_snapshot_whitelist
-            ? "Saved"
-            : `Saved: ${res.data.detail}`
+            ? 'Saved'
+            : `Saved: ${res.data.detail}`,
         );
         setOpenSuccess(true);
       } catch (err) {
         // snackbar for error message
         setErrorMessage(
-          "Error: " + err.response.status + " - " + err.response.data
+          'Error: ' + err.response.status + ' - ' + err.response.data,
         );
         setOpenError(true);
       }
@@ -305,18 +305,18 @@ const Whitelist = () => {
       Object.entries(formData).forEach((entry) => {
         const [key, value] = entry;
         // special patch for email regex
-        if (!["email", "sigValue"].includes(key) && value == "") {
+        if (!['email', 'sigValue'].includes(key) && value == '') {
           // default
           let newEntry = { [key]: true };
           updateErrors = { ...updateErrors, ...newEntry };
         } else if (
-          key === "email" &&
-          !(emailRegex.test(value) || value === "")
+          key === 'email' &&
+          !(emailRegex.test(value) || value === '')
         ) {
           // email check
           let newEntry = { [key]: true };
           updateErrors = { ...updateErrors, ...newEntry };
-        } else if (key === "sigValue" && value === 0) {
+        } else if (key === 'sigValue' && value === 0) {
           // handle sigValue case
           let newEntry = { [key]: true };
           updateErrors = { ...updateErrors, ...newEntry };
@@ -329,7 +329,7 @@ const Whitelist = () => {
       });
 
       // snackbar for error message
-      setErrorMessage("Please eliminate form errors and try again");
+      setErrorMessage('Please eliminate form errors and try again');
       setOpenError(true);
     }
     // turn off loading spinner for submit button
@@ -340,14 +340,14 @@ const Whitelist = () => {
     <>
       {whitelistLoading ? (
         <>
-          <Container sx={{ mb: "3rem" }}>
+          <Container sx={{ mb: '3rem' }}>
             <CircularProgress
               size={24}
               sx={{
-                position: "relative",
-                left: "50%",
-                marginLeft: "-12px",
-                marginTop: "120px",
+                position: 'relative',
+                left: '50%',
+                marginLeft: '-12px',
+                marginTop: '120px',
               }}
             />
           </Container>
@@ -367,8 +367,8 @@ const Whitelist = () => {
                 container
                 maxWidth="lg"
                 sx={{
-                  mx: "auto",
-                  flexDirection: "row-reverse",
+                  mx: 'auto',
+                  flexDirection: 'row-reverse',
                   px: { xs: 2, md: 3 },
                 }}
               >
@@ -376,13 +376,13 @@ const Whitelist = () => {
                   <Box sx={{ mt: { md: 0, xs: 4 } }}>
                     <Typography
                       variant="h4"
-                      sx={{ fontWeight: "700", lineHeight: "1.2" }}
+                      sx={{ fontWeight: '700', lineHeight: '1.2' }}
                     >
                       Join the discussion
                     </Typography>
                     <Typography
                       variant="body2"
-                      sx={{ fontSize: "1rem", mb: 3 }}
+                      sx={{ fontSize: '1rem', mb: 3 }}
                     >
                       Stay updated on the latest ErgoPad annoucements and
                       upcoming events.
@@ -397,19 +397,19 @@ const Whitelist = () => {
                           startIcon={<TelegramIcon />}
                           variant="contained"
                           sx={{
-                            color: "#fff",
-                            fontSize: "1rem",
-                            py: "0.6rem",
-                            px: "1.2rem",
-                            mr: "1.7rem",
-                            textTransform: "none",
+                            color: '#fff',
+                            fontSize: '1rem',
+                            py: '0.6rem',
+                            px: '1.2rem',
+                            mr: '1.7rem',
+                            textTransform: 'none',
                             backgroundColor: theme.palette.primary.main,
-                            "&:hover": {
-                              backgroundColor: "#4BD0C9",
-                              boxShadow: "none",
+                            '&:hover': {
+                              backgroundColor: '#4BD0C9',
+                              boxShadow: 'none',
                             },
-                            "&:active": {
-                              backgroundColor: "rgba(49, 151, 149, 0.25)",
+                            '&:active': {
+                              backgroundColor: 'rgba(49, 151, 149, 0.25)',
                             },
                           }}
                         >
@@ -425,18 +425,18 @@ const Whitelist = () => {
                           startIcon={<DiscordIcon />}
                           variant="contained"
                           sx={{
-                            color: "#fff",
-                            fontSize: "1rem",
-                            py: "0.6rem",
-                            px: "1.2rem",
-                            textTransform: "none",
+                            color: '#fff',
+                            fontSize: '1rem',
+                            py: '0.6rem',
+                            px: '1.2rem',
+                            textTransform: 'none',
                             backgroundColor: theme.palette.secondary.main,
-                            "&:hover": {
-                              backgroundColor: "#B886F9",
-                              boxShadow: "none",
+                            '&:hover': {
+                              backgroundColor: '#B886F9',
+                              boxShadow: 'none',
                             },
-                            "&:active": {
-                              backgroundColor: "rgba(128, 90, 213, 0.25)",
+                            '&:active': {
+                              backgroundColor: 'rgba(128, 90, 213, 0.25)',
                             },
                           }}
                         >
@@ -447,7 +447,7 @@ const Whitelist = () => {
                   </Box>
                   <Typography
                     variant="h4"
-                    sx={{ fontWeight: "700", lineHeight: "1.2", mt: 6 }}
+                    sx={{ fontWeight: '700', lineHeight: '1.2', mt: 6 }}
                   >
                     Details
                   </Typography>
@@ -455,7 +455,7 @@ const Whitelist = () => {
                 </Grid>
                 <Grid item md={8}>
                   <Box component="form" noValidate onSubmit={handleSubmit}>
-                    <Typography variant="h4" sx={{ mb: 1, fontWeight: "700" }}>
+                    <Typography variant="h4" sx={{ mb: 1, fontWeight: '700' }}>
                       Application Form
                     </Typography>
                     <Typography color="text.secondary" sx={{ mb: 3 }}>
@@ -497,7 +497,7 @@ const Whitelist = () => {
                             You can send ergo or SigUSD on the sale date.
                             {whitelistData?.additionalDetails
                               ?.staker_snapshot_whitelist &&
-                              " If you wish to obtain fewer whitelist tokens than you are allocated for, please fill out the field below with the maximum sigUSD amount of tokens you wish to acquire."}
+                              ' If you wish to obtain fewer whitelist tokens than you are allocated for, please fill out the field below with the maximum sigUSD amount of tokens you wish to acquire.'}
                           </Typography>
                         </Grid>
                         <Grid
@@ -539,8 +539,8 @@ const Whitelist = () => {
                               onClick={() => {
                                 handleChange({
                                   target: {
-                                    name: "sigValue",
-                                    value: "[max]",
+                                    name: 'sigValue',
+                                    value: '[max]',
                                   },
                                 });
                               }}
@@ -564,7 +564,7 @@ const Whitelist = () => {
                           <InputLabel
                             htmlFor="ergoAddress"
                             sx={{
-                              "&.Mui-focused": { color: "text.secondary" },
+                              '&.Mui-focused': { color: 'text.secondary' },
                             }}
                           >
                             Ergo Wallet Address
@@ -577,9 +577,9 @@ const Whitelist = () => {
                             disableUnderline={true}
                             name="ergoAddress"
                             sx={{
-                              width: "100%",
-                              border: "1px solid rgba(82,82,90,1)",
-                              borderRadius: "4px",
+                              width: '100%',
+                              border: '1px solid rgba(82,82,90,1)',
+                              borderRadius: '4px',
                             }}
                           />
                           <FormHelperText>
@@ -609,11 +609,11 @@ const Whitelist = () => {
                         ))}
                         <FormHelperText>
                           {checkboxError &&
-                            "Please accept the terms before submitting"}
+                            'Please accept the terms before submitting'}
                         </FormHelperText>
                       </FormGroup>
                     </FormControl>
-                    <Box sx={{ position: "relative" }}>
+                    <Box sx={{ position: 'relative' }}>
                       <Button
                         type="submit"
                         fullWidth
@@ -628,32 +628,32 @@ const Whitelist = () => {
                         <CircularProgress
                           size={24}
                           sx={{
-                            position: "absolute",
-                            top: "50%",
-                            left: "50%",
-                            marginTop: "-9px",
-                            marginLeft: "-12px",
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            marginTop: '-9px',
+                            marginLeft: '-12px',
                           }}
                         />
                       )}
                     </Box>
                     <Typography sx={{ color: theme.palette.text.secondary }}>
                       {whitelistState === ROUND_END &&
-                        "We apologize for the inconvenience, the round is sold out."}
+                        'We apologize for the inconvenience, the round is sold out.'}
                     </Typography>
                     <Typography sx={{ color: theme.palette.text.secondary }}>
                       {whitelistState === NOT_STARTED &&
-                        "This form is not yet active. The round will start at " +
+                        'This form is not yet active. The round will start at ' +
                           new Date(
-                            Date.parse(whitelistData.start_dtz)
+                            Date.parse(whitelistData.start_dtz),
                           ).toLocaleString(navigator.language, {
-                            year: "numeric",
-                            month: "short",
-                            day: "2-digit",
-                            hour12: "true",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            timeZoneName: "long",
+                            year: 'numeric',
+                            month: 'short',
+                            day: '2-digit',
+                            hour12: 'true',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            timeZoneName: 'long',
                           })}
                     </Typography>
                     <Snackbar
@@ -664,7 +664,7 @@ const Whitelist = () => {
                       <Alert
                         onClose={handleCloseError}
                         severity="error"
-                        sx={{ width: "100%" }}
+                        sx={{ width: '100%' }}
                       >
                         {errorMessage}
                       </Alert>
@@ -677,7 +677,7 @@ const Whitelist = () => {
                       <Alert
                         onClose={handleCloseSuccess}
                         severity="success"
-                        sx={{ width: "100%" }}
+                        sx={{ width: '100%' }}
                       >
                         {successMessage}
                       </Alert>

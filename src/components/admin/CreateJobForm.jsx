@@ -48,7 +48,7 @@ const CreateJobForm = () => {
   const [openSuccess, setOpenSuccess] = useState(false);
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again'
+    'Please eliminate form errors and try again',
   );
 
   useEffect(() => {
@@ -106,7 +106,7 @@ const CreateJobForm = () => {
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422'
+            'jwt_token_login_422',
           )}`,
         },
       };

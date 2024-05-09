@@ -1,23 +1,23 @@
-import React, { FC } from "react";
-import SvgIcon from "@mui/material/SvgIcon";
-import { SxProps } from "@mui/material";
+import React, { FC } from 'react';
+import SvgIcon from '@mui/material/SvgIcon';
+import { SxProps } from '@mui/material';
 
-const SocialIcons: FC<{ sx?: SxProps; icon: string; }> = ({ sx, icon }) => {
-  if (icon === 'youtube') return <YoutubeIcon sx={sx} />
-  if (icon === 'twitter') return <TwitterIcon sx={sx} />
-  if (icon === 'telegram') return <TelegramIcon sx={sx} />
-  if (icon === 'reddit') return <RedditIcon sx={sx} />
-  if (icon === 'medium') return <MediumIcon sx={sx} />
-  if (icon === 'linkedin') return <LinkedinIcon sx={sx} />
-  if (icon === 'discord') return <DiscordIcon sx={sx} />
-  if (icon === 'tiktok') return <TikTokIcon sx={sx} />
-  if (icon === 'twitch') return <TwitchIcon sx={sx} />
-  if (icon === 'facebook') return <FacebookIcon sx={sx} />
-  if (icon === 'behance') return <BehanceIcon sx={sx} />
-  if (icon === 'instagram') return <InstagramIcon sx={sx} />
-  if (icon === 'vimeo') return <VimeoIcon sx={sx} />
-  if (icon === 'github') return <GithubIcon sx={sx} />
-  else return null
+const SocialIcons: FC<{ sx?: SxProps; icon: string }> = ({ sx, icon }) => {
+  if (icon === 'youtube') return <YoutubeIcon sx={sx} />;
+  if (icon === 'twitter') return <TwitterIcon sx={sx} />;
+  if (icon === 'telegram') return <TelegramIcon sx={sx} />;
+  if (icon === 'reddit') return <RedditIcon sx={sx} />;
+  if (icon === 'medium') return <MediumIcon sx={sx} />;
+  if (icon === 'linkedin') return <LinkedinIcon sx={sx} />;
+  if (icon === 'discord') return <DiscordIcon sx={sx} />;
+  if (icon === 'tiktok') return <TikTokIcon sx={sx} />;
+  if (icon === 'twitch') return <TwitchIcon sx={sx} />;
+  if (icon === 'facebook') return <FacebookIcon sx={sx} />;
+  if (icon === 'behance') return <BehanceIcon sx={sx} />;
+  if (icon === 'instagram') return <InstagramIcon sx={sx} />;
+  if (icon === 'vimeo') return <VimeoIcon sx={sx} />;
+  if (icon === 'github') return <GithubIcon sx={sx} />;
+  else return null;
 };
 
 const GithubIcon: FC<{ sx?: SxProps }> = ({ sx }) => {
@@ -133,4 +133,4 @@ const RedditIcon: FC<{ sx?: SxProps }> = ({ sx }) => {
   );
 };
 
-export default SocialIcons
+export default SocialIcons;

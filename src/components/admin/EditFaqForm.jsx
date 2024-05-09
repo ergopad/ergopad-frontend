@@ -54,7 +54,7 @@ const EditFaqForm = () => {
   const [openSuccess, setOpenSuccess] = useState(false);
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again'
+    'Please eliminate form errors and try again',
   );
 
   useEffect(() => {
@@ -146,7 +146,7 @@ const EditFaqForm = () => {
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422'
+            'jwt_token_login_422',
           )}`,
         },
       };
@@ -155,7 +155,7 @@ const EditFaqForm = () => {
         await axios.put(
           `${process.env.API_URL}/faq/${id}`,
           data,
-          defaultOptions
+          defaultOptions,
         );
         setOpenSuccess(true);
         updateFormData(initialFormData);

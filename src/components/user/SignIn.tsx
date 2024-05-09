@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from 'react';
 import {
   Button,
   Dialog,
@@ -15,14 +15,13 @@ import {
   AccordionDetails,
   Box,
   Collapse,
-  IconButton
-} from "@mui/material";
-import { signIn } from "next-auth/react";
+  IconButton,
+} from '@mui/material';
+import { signIn } from 'next-auth/react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MobileLogin from "./MobileLogin";
-import NautilusLogin from "./NautilusLogin";
+import MobileLogin from './MobileLogin';
+import NautilusLogin from './NautilusLogin';
 import CloseIcon from '@mui/icons-material/Close';
-
 
 declare global {
   interface Window {
@@ -35,23 +34,22 @@ const wallets: {
   icon: string;
   description: string;
 }[] = [
-    {
-      name: "Nautilus",
-      icon: "/icons/wallets/nautilus-128.png",
-      description: "Connect automatically signing with your wallet",
-    },
-    {
-      name: "Mobile",
-      icon: "/icons/wallets/mobile.webp",
-      description: "Enter your wallet address then sign with the mobile app",
-    },
-    {
-      name: "GitHub",
-      icon: "/icons/wallets/github-mark-white.png",
-      description: "Connect with your OAuth provider",
-    },
-  ];
-
+  {
+    name: 'Nautilus',
+    icon: '/icons/wallets/nautilus-128.png',
+    description: 'Connect automatically signing with your wallet',
+  },
+  {
+    name: 'Mobile',
+    icon: '/icons/wallets/mobile.webp',
+    description: 'Enter your wallet address then sign with the mobile app',
+  },
+  {
+    name: 'GitHub',
+    icon: '/icons/wallets/github-mark-white.png',
+    description: 'Connect with your OAuth provider',
+  },
+];
 
 export type Expanded = 'Nautilus' | 'Mobile' | 'GitHub' | undefined;
 
@@ -63,17 +61,17 @@ interface ISignIn {
 
 export const SignIn: FC<ISignIn> = ({ open, setOpen, setLoading }) => {
   const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [isNautilusAvailable, setNautilusAvailable] = useState(false);
-  const [expanded, setExpanded] = useState<Expanded>(undefined)
+  const [expanded, setExpanded] = useState<Expanded>(undefined);
 
   useEffect(() => {
     setNautilusAvailable(!!window.ergoConnector?.nautilus);
   }, []);
 
   const handleClose = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
   // const handleConnect = async (walletName: string) => {
   //   // setLoading(true)
@@ -98,29 +96,28 @@ export const SignIn: FC<ISignIn> = ({ open, setOpen, setLoading }) => {
 
   const handleWalletChange = (wallet: Expanded) => {
     setExpanded(wallet !== undefined ? wallet : undefined);
-    if (wallet === 'GitHub') handleProviderSignIn("github")
-    if (wallet === 'Nautilus') dappConnection()
+    if (wallet === 'GitHub') handleProviderSignIn('github');
+    if (wallet === 'Nautilus') dappConnection();
   };
 
-  const [nautilusLoading, setNautilusLoading] = useState(false)
-  const [dappConnected, setDappConnected] = useState(false)
+  const [nautilusLoading, setNautilusLoading] = useState(false);
+  const [dappConnected, setDappConnected] = useState(false);
   const dappConnection = async () => {
-    setNautilusLoading(true)
+    setNautilusLoading(true);
     try {
-      const connect = await window.ergoConnector.nautilus.connect()
+      const connect = await window.ergoConnector.nautilus.connect();
       if (connect) {
         setDappConnected(true);
-      }
-      else {
-        console.log('error connecting nautilus')
-        setNautilusLoading(false)
-        setExpanded(undefined)
+      } else {
+        console.log('error connecting nautilus');
+        setNautilusLoading(false);
+        setExpanded(undefined);
       }
     } catch (error) {
-      console.error("Error connecting to dApp:", error);
-      setNautilusLoading(false)
+      console.error('Error connecting to dApp:', error);
+      setNautilusLoading(false);
     }
-  }
+  };
 
   return (
     <>
@@ -132,9 +129,9 @@ export const SignIn: FC<ISignIn> = ({ open, setOpen, setLoading }) => {
       >
         <DialogTitle
           sx={{
-            textAlign: "center",
+            textAlign: 'center',
             // fontWeight: "800",
-            fontSize: "32px",
+            fontSize: '32px',
           }}
         >
           Choose a provider
@@ -152,7 +149,13 @@ export const SignIn: FC<ISignIn> = ({ open, setOpen, setLoading }) => {
         </IconButton>
         <DialogContent sx={{ minWidth: '250px', pb: 0 }}>
           <Box sx={{ mb: 2 }}>
-            <Accordion sx={{ border: `1px solid ${theme.palette.divider}`, boxShadow: 'none', background: 'rgba(150,150,150,0.03)' }}>
+            <Accordion
+              sx={{
+                border: `1px solid ${theme.palette.divider}`,
+                boxShadow: 'none',
+                background: 'rgba(150,150,150,0.03)',
+              }}
+            >
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 New users: read this first
               </AccordionSummary>
@@ -161,7 +164,8 @@ export const SignIn: FC<ISignIn> = ({ open, setOpen, setLoading }) => {
                   You may add multiple supported login wallets to your account.
                 </Typography>
                 <Typography>
-                  If you want to view your account from a device which doesn't have an Ergo wallet, choose an OAuth provider (Github)
+                  If you want to view your account from a device which doesn't
+                  have an Ergo wallet, choose an OAuth provider (Github)
                 </Typography>
               </AccordionDetails>
             </Accordion>
@@ -178,12 +182,12 @@ export const SignIn: FC<ISignIn> = ({ open, setOpen, setLoading }) => {
                   fullWidth
                   // disabled={walletAddress != ""}
                   sx={{
-                    borderRadius: "6px",
-                    p: "0.5rem",
-                    justifyContent: "space-between",
-                    mb: "12px",
-                    display: "flex",
-                    minWidth: fullScreen ? "90vw" : "500px",
+                    borderRadius: '6px',
+                    p: '0.5rem',
+                    justifyContent: 'space-between',
+                    mb: '12px',
+                    display: 'flex',
+                    minWidth: fullScreen ? '90vw' : '500px',
                   }}
                   onClick={
                     expanded === undefined
@@ -193,38 +197,40 @@ export const SignIn: FC<ISignIn> = ({ open, setOpen, setLoading }) => {
                 >
                   <Box
                     sx={{
-                      fontSize: "1.2rem",
-                      color: "text.primary",
-                      fontWeight: "400",
-                      textAlign: "left",
-                      display: "flex",
+                      fontSize: '1.2rem',
+                      color: 'text.primary',
+                      fontWeight: '400',
+                      textAlign: 'left',
+                      display: 'flex',
                     }}
                   >
                     <Avatar
                       src={item.icon}
                       // variant="circular"
                       sx={{
-                        height: "3rem",
-                        width: "3rem",
-                        mr: "1rem",
+                        height: '3rem',
+                        width: '3rem',
+                        mr: '1rem',
                       }}
                     />
                     <Box>
                       <Typography
                         sx={{
-                          fontSize: "1.1rem",
-                          fontWeight: "400",
-                          textTransform: 'none'
+                          fontSize: '1.1rem',
+                          fontWeight: '400',
+                          textTransform: 'none',
                         }}
                       >
-                        {item.name === "Mobile" ? "Terminus/Mobile Wallet" : item.name}
+                        {item.name === 'Mobile'
+                          ? 'Terminus/Mobile Wallet'
+                          : item.name}
                       </Typography>
                       <Typography
                         sx={{
-                          fontSize: ".9rem",
-                          color: "text.secondary",
-                          fontWeight: "400",
-                          textTransform: 'none'
+                          fontSize: '.9rem',
+                          color: 'text.secondary',
+                          fontWeight: '400',
+                          textTransform: 'none',
                         }}
                       >
                         {item.description}
@@ -235,12 +241,12 @@ export const SignIn: FC<ISignIn> = ({ open, setOpen, setLoading }) => {
                     sx={{
                       transform:
                         expanded === item.name
-                          ? "rotate(0deg)"
-                          : "rotate(-90deg)",
-                      transition: "transform 100ms ease-in-out",
-                      textAlign: "right",
-                      lineHeight: "0",
-                      mr: "-0.5rem",
+                          ? 'rotate(0deg)'
+                          : 'rotate(-90deg)',
+                      transition: 'transform 100ms ease-in-out',
+                      textAlign: 'right',
+                      lineHeight: '0',
+                      mr: '-0.5rem',
                     }}
                   >
                     <ExpandMoreIcon />
@@ -249,21 +255,11 @@ export const SignIn: FC<ISignIn> = ({ open, setOpen, setLoading }) => {
               </Collapse>
             );
           })}
-          <Collapse
-            in={expanded === "Mobile"}
-            mountOnEnter
-            unmountOnExit
-          >
-            <MobileLogin
-              setModalOpen={setOpen}
-            />
+          <Collapse in={expanded === 'Mobile'} mountOnEnter unmountOnExit>
+            <MobileLogin setModalOpen={setOpen} />
           </Collapse>
           {isNautilusAvailable && (
-            <Collapse
-              in={expanded === "Nautilus"}
-              mountOnEnter
-              unmountOnExit
-            >
+            <Collapse in={expanded === 'Nautilus'} mountOnEnter unmountOnExit>
               <NautilusLogin
                 setLoading={setLoading}
                 expanded={expanded}

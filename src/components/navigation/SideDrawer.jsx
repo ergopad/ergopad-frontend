@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { useState } from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Drawer from "@mui/material/Drawer";
-import MuiNextLink from "@components/MuiNextLink";
+import { useState } from 'react';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Drawer from '@mui/material/Drawer';
+import MuiNextLink from '@components/MuiNextLink';
 import { MenuOutlined } from '@mui/icons-material';
-
 
 const SideDrawer = ({ navLinks }) => {
   const [state, setState] = useState({
@@ -14,8 +13,8 @@ const SideDrawer = ({ navLinks }) => {
 
   const toggleDrawer = (anchor, open) => (event) => {
     if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
     ) {
       return;
     }
@@ -38,7 +37,7 @@ const SideDrawer = ({ navLinks }) => {
             my: 2,
           }}
         >
-          <MuiNextLink sx={{ color: "common.white" }} href={path}>
+          <MuiNextLink sx={{ color: 'common.white' }} href={path}>
             {title}
           </MuiNextLink>
         </Typography>
@@ -50,20 +49,17 @@ const SideDrawer = ({ navLinks }) => {
     <>
       <MenuOutlined
         aria-label="menu"
-        onClick={toggleDrawer("left", true)}
-      >
-      </MenuOutlined>
+        onClick={toggleDrawer('left', true)}
+      ></MenuOutlined>
       <Drawer
         anchor="left"
         open={state.left}
-        onClose={toggleDrawer("left", false)}
+        onClose={toggleDrawer('left', false)}
         sx={{
-          ".MuiDrawer-paper": {
-            
-          },
+          '.MuiDrawer-paper': {},
         }}
       >
-        {list("left")}
+        {list('left')}
       </Drawer>
     </>
   );

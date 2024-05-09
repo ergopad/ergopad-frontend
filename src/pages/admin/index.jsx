@@ -53,7 +53,7 @@ const Admin = () => {
       formData.email === '' ||
         formData.password === '' ||
         formErrors.email ||
-        formErrors.password
+        formErrors.password,
     );
   }, [formData, formErrors]);
 

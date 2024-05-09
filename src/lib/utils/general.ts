@@ -1,22 +1,26 @@
 export const bytesToSize = (bytes: any) => {
-  var sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-  if (bytes == 0) return "0 Byte";
+  var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  if (bytes == 0) return '0 Byte';
   var i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return (bytes / Math.pow(1024, i)).toFixed(2) + " " + sizes[i];
-}
+  return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
+};
 
-export const aspectRatioResize = (sourceWidth: number, sourceHeight: number, maxWidth: number, maxHeight: number) => {
+export const aspectRatioResize = (
+  sourceWidth: number,
+  sourceHeight: number,
+  maxWidth: number,
+  maxHeight: number,
+) => {
   const isLandscape: boolean = sourceWidth > sourceHeight;
 
   let newHeight: number;
   let newWidth: number;
 
   if (isLandscape) {
-    newHeight = maxWidth * sourceHeight / sourceWidth;
+    newHeight = (maxWidth * sourceHeight) / sourceWidth;
     newWidth = maxWidth;
-  }
-  else {
-    newWidth = maxHeight * sourceWidth / sourceHeight;
+  } else {
+    newWidth = (maxHeight * sourceWidth) / sourceHeight;
     newHeight = maxHeight;
   }
 
@@ -24,14 +28,18 @@ export const aspectRatioResize = (sourceWidth: number, sourceHeight: number, max
     width: newWidth.toString() + 'px',
     // height: newHeight.toString() + 'px',
     '&::after': {
-      paddingTop: (newHeight / newWidth * 100).toString() + '%',
+      paddingTop: ((newHeight / newWidth) * 100).toString() + '%',
       display: 'block',
-      content: '""'
+      content: '""',
     },
-  }
-}
+  };
+};
 
-export const formatNumber = (num: number, sigFig: number = 3, fixed?: boolean) => {
+export const formatNumber = (
+  num: number,
+  sigFig: number = 3,
+  fixed?: boolean,
+) => {
   const sign = num < 0 ? '-' : '';
   const absNum = Math.abs(num);
 
@@ -45,23 +53,30 @@ export const formatNumber = (num: number, sigFig: number = 3, fixed?: boolean) =
     return rounded.toString();
   };
 
-  if (absNum >= 1e18) { // 1 quintillion
+  if (absNum >= 1e18) {
+    // 1 quintillion
     return sign + (absNum / 1e18).toFixed(2).replace(/\.0$/, '') + 'Qi';
-  } else if (absNum >= 1e15) { // 1 quadrillion
+  } else if (absNum >= 1e15) {
+    // 1 quadrillion
     return sign + (absNum / 1e15).toFixed(2).replace(/\.0$/, '') + 'Q';
-  } else if (absNum >= 1e12) { // 1 trillion
+  } else if (absNum >= 1e12) {
+    // 1 trillion
     return sign + (absNum / 1e12).toFixed(2).replace(/\.0$/, '') + 'T';
-  } else if (absNum >= 1e9) { // 1 billion
+  } else if (absNum >= 1e9) {
+    // 1 billion
     return sign + (absNum / 1e9).toFixed(2).replace(/\.0$/, '') + 'B';
-  } else if (absNum >= 1e6) { // 1 million
+  } else if (absNum >= 1e6) {
+    // 1 million
     return sign + (absNum / 1e6).toFixed(2).replace(/\.0$/, '') + 'M';
-  } else if (absNum >= 1000) { // 1 thousand
+  } else if (absNum >= 1000) {
+    // 1 thousand
     return sign + (absNum / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
   } else if (fixed && absNum < 10) {
     return sign + absNum.toFixed(sigFig);
   } else if (absNum >= 1) {
     // Round numbers close to whole numbers
-    const rounded = Math.round(absNum * Math.pow(10, sigFig)) / Math.pow(10, sigFig);
+    const rounded =
+      Math.round(absNum * Math.pow(10, sigFig)) / Math.pow(10, sigFig);
     return sign + parseFloat(rounded.toFixed(sigFig)).toString();
   } else {
     return sign + formatSmallNumber(absNum);
@@ -75,21 +90,22 @@ export const stringToUrl = (str: string): string | undefined => {
     // Remove all special characters using a regular expression
     str = str.replace(/[^\w-]+/g, '');
     return str;
-  }
-  else return undefined
-}
+  } else return undefined;
+};
 
 export const slugify = (str: string) => {
   const urlSafeChars = /[a-z0-9-]/;
   const slug = str
     .toLowerCase()
-    .replace(/[^\w\s-]/g, "") // Remove special characters
-    .replace(/\s+/g, "-") // Replace spaces with hyphens
-    .replace(/^-+|-+$/g, ""); // Remove leading/trailing hyphens
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
 
   let encodedSlug = '';
   for (let i = 0; i < slug.length; i++) {
-    encodedSlug += urlSafeChars.test(slug[i]) ? slug[i] : encodeURIComponent(slug[i]);
+    encodedSlug += urlSafeChars.test(slug[i])
+      ? slug[i]
+      : encodeURIComponent(slug[i]);
   }
 
   return encodeURIComponent(encodedSlug);
@@ -101,30 +117,39 @@ export const getShortAddress = (address: string): string => {
     shortAddress.length < 10
       ? shortAddress
       : shortAddress.substring(0, 6) +
-      '...' +
-      shortAddress.substring(shortAddress.length - 4, shortAddress.length);
+        '...' +
+        shortAddress.substring(shortAddress.length - 4, shortAddress.length);
 
   return shortAddress;
 };
-export const getShorterAddress = (address: string, substring?: number): string => {
+export const getShorterAddress = (
+  address: string,
+  substring?: number,
+): string => {
   let shortAddress = address ? address : '';
   shortAddress =
     shortAddress.length < 5
       ? shortAddress
-      : shortAddress.substring(0, substring ? substring : 3) + '..' +
-      shortAddress.substring(shortAddress.length - (substring ? substring : 3), shortAddress.length);
+      : shortAddress.substring(0, substring ? substring : 3) +
+        '..' +
+        shortAddress.substring(
+          shortAddress.length - (substring ? substring : 3),
+          shortAddress.length,
+        );
 
   return shortAddress;
 };
 
 export const isErgoMainnetAddress = (value: string): boolean => {
-  const base58Chars = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-  return value.startsWith('9') &&
+  const base58Chars =
+    '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+  return (
+    value.startsWith('9') &&
     value.length === 51 &&
-    [...value].every(char => base58Chars.includes(char));
+    [...value].every((char) => base58Chars.includes(char))
+  );
 };
-
 
 export const adjustDecimals = (amount: number, decimals: number): number => {
   return amount / Math.pow(10, decimals);
-}
+};

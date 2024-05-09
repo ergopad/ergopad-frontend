@@ -118,7 +118,7 @@ export const TeamInput = ({ data, setData }) => {
             value: res.image_url,
           },
         },
-        index
+        index,
       );
     } else {
       handleChange(
@@ -128,7 +128,7 @@ export const TeamInput = ({ data, setData }) => {
             value: 'upload_error',
           },
         },
-        index
+        index,
       );
     }
   };
@@ -187,7 +187,7 @@ export const TeamInput = ({ data, setData }) => {
                       value: '',
                     },
                   },
-                  index
+                  index,
                 )
               }
             >

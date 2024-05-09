@@ -68,7 +68,7 @@ const CreateWhitelistEventForm = () => {
   const [openSuccess, setOpenSuccess] = useState(false);
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again'
+    'Please eliminate form errors and try again',
   );
 
   useEffect(() => {
@@ -161,7 +161,7 @@ const CreateWhitelistEventForm = () => {
         });
       } else if (
         ['early_bird_min_stake', 'early_bird_round_length__s'].includes(
-          e.target.name
+          e.target.name,
         )
       ) {
         updateFormData({
@@ -171,7 +171,7 @@ const CreateWhitelistEventForm = () => {
             early_bird: {
               ...formData.additionalDetails.early_bird,
               [e.target.name.replace('early_bird_', '')]: isNaN(
-                parseInt(e.target.value)
+                parseInt(e.target.value),
               )
                 ? 0
                 : parseInt(e.target.value),
@@ -204,7 +204,7 @@ const CreateWhitelistEventForm = () => {
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422'
+            'jwt_token_login_422',
           )}`,
         },
       };
@@ -219,7 +219,7 @@ const CreateWhitelistEventForm = () => {
         await axios.post(
           `${process.env.API_URL}/whitelist/events`,
           data,
-          defaultOptions
+          defaultOptions,
         );
         setOpenSuccess(true);
         updateFormData(initialFormData);
@@ -567,7 +567,7 @@ const CreateWhitelistEventForm = () => {
                 {new Date(
                   Date.parse(formData.start_dtz) +
                     formData.additionalDetails.early_bird?.round_length__s *
-                      1000
+                      1000,
                 ).toUTCString()}
               </Typography>
               <Typography color="text.secondary" fontSize={12}>

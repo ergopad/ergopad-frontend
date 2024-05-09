@@ -1,4 +1,4 @@
-import { FC, ReactNode, createContext, useContext, useState } from 'react'
+import { FC, ReactNode, createContext, useContext, useState } from 'react';
 
 interface SearchContextType {
   search: string;
@@ -24,15 +24,13 @@ const SearchProvider: FC<SearchProviderProps> = ({ children }) => {
 
   const value = {
     search,
-    setSearch
+    setSearch,
   };
 
   return (
-    <SearchContext.Provider value={value}>
-      {children}
-    </SearchContext.Provider>
+    <SearchContext.Provider value={value}>{children}</SearchContext.Provider>
   );
-}
+};
 
 interface SearchConsumerProps {
   children: (context: SearchContextType) => ReactNode;
@@ -49,7 +47,7 @@ const SearchConsumer: FC<SearchConsumerProps> = ({ children }) => {
       }}
     </SearchContext.Consumer>
   );
-}
+};
 
 const useSearch = (): SearchContextType => {
   const context = useContext(SearchContext);
@@ -57,10 +55,6 @@ const useSearch = (): SearchContextType => {
     throw new Error('useSearch must be used within SearchProvider');
   }
   return context;
-}
+};
 
-export {
-  SearchProvider,
-  SearchConsumer,
-  useSearch
-}
+export { SearchProvider, SearchConsumer, useSearch };

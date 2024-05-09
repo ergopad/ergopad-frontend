@@ -1,5 +1,14 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
-import { Box, Typography, useTheme, Paper, IconButton, Button, Alert, Skeleton } from '@mui/material';
+import {
+  Box,
+  Typography,
+  useTheme,
+  Paper,
+  IconButton,
+  Button,
+  Alert,
+  Skeleton,
+} from '@mui/material';
 import TimeRemaining from '@components/TimeRemaining';
 import { LinearProgressStyled } from '@components/styled-components/LinearProgress';
 import Grid from '@mui/system/Unstable_Grid/Grid';
@@ -31,38 +40,46 @@ const ProRataForm: FC<TProRataFormProps> = ({
   projectSlug,
   whitelistSlug,
   recipientAddress,
-  restrictedCountries
+  restrictedCountries,
 }) => {
-  const theme = useTheme()
-  const { sessionStatus } = useWallet()
-  const currencySymbol = getSymbol(currency)
-  const priceToCurrency = `1 ${currency} = ${(1 / price).toLocaleString(undefined, {
-    maximumFractionDigits: 2,
-  })} ${tokenTicker}`
-  const [priceSet, setPriceSet] = useState<string>(priceToCurrency)
+  const theme = useTheme();
+  const { sessionStatus } = useWallet();
+  const currencySymbol = getSymbol(currency);
+  const priceToCurrency = `1 ${currency} = ${(1 / price).toLocaleString(
+    undefined,
+    {
+      maximumFractionDigits: 2,
+    },
+  )} ${tokenTicker}`;
+  const [priceSet, setPriceSet] = useState<string>(priceToCurrency);
   // const getUserWhitelistSignups = trpc.whitelist.getUserWhitelistSlugs.useQuery({ projectSlug })
   // const [whitelistStatus, setWhitelistStatus] = useState<"pending" | "whitelisted" | "notWhitelisted">('pending');
   // const [whitelisted, setWhitelisted] = useState(false)
   const currentDate = new Date();
-  const isCurrentDateBetween = currentDate >= startDate && currentDate <= endDate;
-  const usersTransactions = trpc.contributions.sumTransactions.useQuery({ contributionId: id })
-  const { addAlert } = useAlert()
+  const isCurrentDateBetween =
+    currentDate >= startDate && currentDate <= endDate;
+  const usersTransactions = trpc.contributions.sumTransactions.useQuery({
+    contributionId: id,
+  });
+  const { addAlert } = useAlert();
   const [allowed, setAllowed] = useState(false);
 
   useEffect(() => {
     const fetchUserLocation = async () => {
       try {
-        const response = await axios.get(`https://api.ipgeolocation.io/ipgeo?apiKey=${process.env.IPGEOLOCATION_API_KEY}`);
+        const response = await axios.get(
+          `https://api.ipgeolocation.io/ipgeo?apiKey=${process.env.IPGEOLOCATION_API_KEY}`,
+        );
         const data = response.data;
 
         if (restrictedCountries.includes(data.country_code2)) {
           setAllowed(false);
         } else {
-          setAllowed(true)
+          setAllowed(true);
         }
       } catch (error) {
         console.error('Error fetching geolocation:', error);
-        setAllowed(true)
+        setAllowed(true);
       }
     };
 
@@ -87,15 +104,14 @@ const ProRataForm: FC<TProRataFormProps> = ({
   //   }
   // }, [getUserWhitelistSignups.data, sessionStatus])
 
-  const claimedAmount = deposited / price
-  const depositTarget = tokenTarget * price
+  const claimedAmount = deposited / price;
+  const depositTarget = tokenTarget * price;
 
   const handleFlipPrice = () => {
     if (priceSet === priceToCurrency) {
-      setPriceSet(`1 ${tokenTicker} = ${price} ${currency}`)
-    }
-    else setPriceSet(priceToCurrency)
-  }
+      setPriceSet(`1 ${tokenTicker} = ${price} ${currency}`);
+    } else setPriceSet(priceToCurrency);
+  };
 
   // const poolData = trpc.contributions.contributedPoolWeight.useQuery({
   //   contributionId: id
@@ -114,7 +130,7 @@ const ProRataForm: FC<TProRataFormProps> = ({
   // const handleChangeCustomAddress = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
   //   setCustomAddressText(e.target.value)
   // }
-  // 
+  //
   // const getWallets = trpc.user.getWallets.useQuery()
   // const wallets = useMemo(() => getWallets.data && getWallets.data.wallets, [getWallets]);
   // const [usersStake, setUsersStake] = useState<IPoolWeightDataItem[]>([])
@@ -125,21 +141,32 @@ const ProRataForm: FC<TProRataFormProps> = ({
   //   }
   // }, [wallets, poolData.data?.apiResponse])
 
-  const restrictedCountriesFiltered = countryList.filter(country => restrictedCountries.includes(country.code))
+  const restrictedCountriesFiltered = countryList.filter((country) =>
+    restrictedCountries.includes(country.code),
+  );
 
   return (
     <>
-      {restrictedCountries.length > 0 &&
+      {restrictedCountries.length > 0 && (
         <Box sx={{ mb: 2 }}>
           <Typography>
-            Please note, the project is unable to accept contributions from residents of the following countries: {' '}
+            Please note, the project is unable to accept contributions from
+            residents of the following countries:{' '}
             {restrictedCountriesFiltered.map((country, i) => (
-              <React.Fragment key={country.code}>{`${country.label}${i + 1 === restrictedCountries.length ? '. ' : ', '}`}</React.Fragment>
+              <React.Fragment
+                key={country.code}
+              >{`${country.label}${i + 1 === restrictedCountries.length ? '. ' : ', '}`}</React.Fragment>
             ))}
           </Typography>
         </Box>
-      }
-      <Grid container spacing={2} alignItems="stretch" direction={{ xs: 'column-reverse', md: 'row' }} sx={{ mb: 2 }}>
+      )}
+      <Grid
+        container
+        spacing={2}
+        alignItems="stretch"
+        direction={{ xs: 'column-reverse', md: 'row' }}
+        sx={{ mb: 2 }}
+      >
         <Grid xs={12} md={7}>
           <Paper variant="outlined" sx={{ px: 2, py: 4, height: '100%' }}>
             <ContributeCard
@@ -167,62 +194,78 @@ const ProRataForm: FC<TProRataFormProps> = ({
                 flexDirection: 'column',
                 justifyContent: 'space-around',
                 mb: 2,
-                textAlign: 'center'
+                textAlign: 'center',
               }}
             >
               <Box>
-                <Typography variant="overline">
-                  Round open
-                </Typography>
+                <Typography variant="overline">Round open</Typography>
                 <Typography variant="h5" sx={{ mt: -1 }}>
                   <TimeRemaining noDay endTime={startDate} />
                 </Typography>
               </Box>
               <Box>
-                <Typography variant="overline">
-                  Round closed
-                </Typography>
+                <Typography variant="overline">Round closed</Typography>
                 <Typography variant="h5" sx={{ mt: -1 }}>
                   <TimeRemaining noDay endTime={endDate} />
                 </Typography>
               </Box>
             </Box>
-            <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', mb: 2, }}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                mb: 2,
+              }}
+            >
               <Box>
                 <Typography variant="overline">
                   {tokenTicker} Claimed
                 </Typography>
                 <Typography variant="h6" sx={{ mt: -1 }}>
-                  {(claimedAmount > tokenTarget ? tokenTarget : claimedAmount).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                  {(claimedAmount > tokenTarget
+                    ? tokenTarget
+                    : claimedAmount
+                  ).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </Typography>
               </Box>
               <Box sx={{ textAlign: 'right' }}>
-                <Typography variant="overline">
-                  {tokenTicker} Target
-                </Typography>
+                <Typography variant="overline">{tokenTicker} Target</Typography>
                 <Typography variant="h6" sx={{ mt: -1 }}>
-                  {tokenTarget.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                  {tokenTarget.toLocaleString(undefined, {
+                    maximumFractionDigits: 0,
+                  })}
                 </Typography>
               </Box>
             </Box>
-            <Box sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              mb: 2,
-              gap: 1
-            }}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mb: 2,
+                gap: 1,
+              }}
+            >
               <LinearProgressStyled
                 variant="determinate"
-                value={((claimedAmount / tokenTarget) * 100) <= 100 ? ((claimedAmount / tokenTarget) * 100) : 100}
+                value={
+                  (claimedAmount / tokenTarget) * 100 <= 100
+                    ? (claimedAmount / tokenTarget) * 100
+                    : 100
+                }
                 barColorStart={theme.palette.secondary.main}
                 barColorEnd={theme.palette.secondary.light}
                 sx={{ width: '100%' }}
                 bgColor={theme.palette.divider}
               />
               <Typography sx={{ fontWeight: '700' }}>
-                {(claimedAmount / tokenTarget * 100).toLocaleString(undefined, { maximumFractionDigits: 0 })}%
+                {((claimedAmount / tokenTarget) * 100).toLocaleString(
+                  undefined,
+                  { maximumFractionDigits: 0 },
+                )}
+                %
               </Typography>
             </Box>
             <Grid container>
@@ -232,18 +275,21 @@ const ProRataForm: FC<TProRataFormProps> = ({
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    mb: 2
+                    mb: 2,
                   }}
                 >
                   <Box>
-                    <Typography variant="overline">
-                      Price
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', mt: -1 }}>
+                    <Typography variant="overline">Price</Typography>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        mt: -1,
+                      }}
+                    >
                       <Box>
-                        <Typography variant="h6">
-                          {priceSet}
-                        </Typography>
+                        <Typography variant="h6">{priceSet}</Typography>
                       </Box>
                       <Button
                         variant="outlined"
@@ -256,15 +302,17 @@ const ProRataForm: FC<TProRataFormProps> = ({
                           border: `1px solid ${theme.palette.divider}`,
                           ml: 1,
                           minWidth: '0!important',
-                          p: 0
+                          p: 0,
                         }}
                         onClick={handleFlipPrice}
                       >
-                        <AutorenewIcon sx={{
-                          width: '20px',
-                          height: '20px',
-                          color: theme.palette.text.secondary
-                        }} />
+                        <AutorenewIcon
+                          sx={{
+                            width: '20px',
+                            height: '20px',
+                            color: theme.palette.text.secondary,
+                          }}
+                        />
                       </Button>
                     </Box>
                   </Box>
@@ -273,7 +321,10 @@ const ProRataForm: FC<TProRataFormProps> = ({
                       Total {currency} Deposited
                     </Typography>
                     <Typography variant="h6" sx={{ mt: -1 }}>
-                      {(deposited).toLocaleString(undefined, { maximumFractionDigits: 2 })} {currencySymbol}
+                      {deposited.toLocaleString(undefined, {
+                        maximumFractionDigits: 2,
+                      })}{' '}
+                      {currencySymbol}
                     </Typography>
                   </Box>
                   <Box>
@@ -281,7 +332,13 @@ const ProRataForm: FC<TProRataFormProps> = ({
                       Total {currency} to be refunded
                     </Typography>
                     <Typography variant="h6" sx={{ mt: -1 }}>
-                      {(deposited - depositTarget) > 0 ? (deposited - depositTarget).toLocaleString(undefined, { maximumFractionDigits: 2 }) : 0} {currencySymbol}
+                      {deposited - depositTarget > 0
+                        ? (deposited - depositTarget).toLocaleString(
+                            undefined,
+                            { maximumFractionDigits: 2 },
+                          )
+                        : 0}{' '}
+                      {currencySymbol}
                     </Typography>
                   </Box>
                 </Box>
@@ -293,7 +350,7 @@ const ProRataForm: FC<TProRataFormProps> = ({
                     flexDirection: 'column',
                     justifyContent: 'space-between',
                     mb: 2,
-                    textAlign: { xs: 'left', sm: 'right' }
+                    textAlign: { xs: 'left', sm: 'right' },
                   }}
                 >
                   {/* <Box>
@@ -308,19 +365,18 @@ const ProRataForm: FC<TProRataFormProps> = ({
                           : 'Error loading'}
                     </Typography>
                   </Box> */}
-                  {usersTransactions.data !== undefined
-                    && usersTransactions.data > 0
-                    &&
-                    <Box>
-                      <Typography variant="overline">
-                        Your contribution
-                      </Typography>
+                  {usersTransactions.data !== undefined &&
+                    usersTransactions.data > 0 && (
+                      <Box>
+                        <Typography variant="overline">
+                          Your contribution
+                        </Typography>
 
-                      <Typography variant="h6" sx={{ mt: -1 }}>
-                        {formatNumber(usersTransactions.data, '')} ₳
-                      </Typography>
-                    </Box>
-                  }
+                        <Typography variant="h6" sx={{ mt: -1 }}>
+                          {formatNumber(usersTransactions.data, '')} ₳
+                        </Typography>
+                      </Box>
+                    )}
                 </Box>
               </Grid>
             </Grid>
@@ -381,17 +437,21 @@ const ProRataForm: FC<TProRataFormProps> = ({
 
 export default ProRataForm;
 
-const WhitelistResult: FC<{ whitelistStatus: 'whitelisted' | 'notWhitelisted' | 'pending', sessionStatus: "loading" | "authenticated" | "unauthenticated" }> = ({ whitelistStatus, sessionStatus }) => {
+const WhitelistResult: FC<{
+  whitelistStatus: 'whitelisted' | 'notWhitelisted' | 'pending';
+  sessionStatus: 'loading' | 'authenticated' | 'unauthenticated';
+}> = ({ whitelistStatus, sessionStatus }) => {
   if (sessionStatus === 'loading') {
-    return <Alert
-      variant="outlined"
-      severity="info"
-      sx={{ mb: 2, justifyContent: 'center', alignItems: 'center' }}
-    >
-      Loading whitelist status...
-    </Alert>
-  }
-  else {
+    return (
+      <Alert
+        variant="outlined"
+        severity="info"
+        sx={{ mb: 2, justifyContent: 'center', alignItems: 'center' }}
+      >
+        Loading whitelist status...
+      </Alert>
+    );
+  } else {
     let content;
     switch (whitelistStatus) {
       case 'whitelisted':

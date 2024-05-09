@@ -1,24 +1,24 @@
-import { useState, useEffect, forwardRef } from "react";
-import { Typography, Grid, Box, TextField, Button } from "@mui/material";
-import FilledInput from "@mui/material/FilledInput";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import FormHelperText from "@mui/material/FormHelperText";
-import axios from "axios";
-import { useWallet } from "@contexts/WalletContext";
-import { useAddWallet } from "@contexts/AddWalletContext";
-import CircularProgress from "@mui/material/CircularProgress";
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import CenterTitle from "@components/CenterTitle";
+import { useState, useEffect, forwardRef } from 'react';
+import { Typography, Grid, Box, TextField, Button } from '@mui/material';
+import FilledInput from '@mui/material/FilledInput';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+import axios from 'axios';
+import { useWallet } from '@contexts/WalletContext';
+import { useAddWallet } from '@contexts/AddWalletContext';
+import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+import CenterTitle from '@components/CenterTitle';
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
 const initialFormData = Object.freeze({
-  wallet: "",
-  smartContract: "",
+  wallet: '',
+  smartContract: '',
 });
 
 const initialFormErrors = Object.freeze({
@@ -28,7 +28,7 @@ const initialFormErrors = Object.freeze({
 
 const defaultOptions = {
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 };
 
@@ -45,12 +45,12 @@ const Refund = () => {
   // error snackbar
   const [openError, setOpenError] = useState(false);
   const [errorMessage, setErrorMessage] = useState(
-    "Please eliminate form errors and try again"
+    'Please eliminate form errors and try again',
   );
   // success snackbar
   const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
   const [successMessageSnackbar, setSuccessMessageSnackbar] =
-    useState("OK processing...");
+    useState('OK processing...');
 
   useEffect(() => {
     setbuttonDisabled(isLoading);
@@ -58,10 +58,10 @@ const Refund = () => {
 
   useEffect(() => {
     setbuttonDisabled(
-      formData.wallet === "" ||
-        formData.smartContract === "" ||
+      formData.wallet === '' ||
+        formData.smartContract === '' ||
         formErrors.wallet ||
-        formErrors.smartContract
+        formErrors.smartContract,
     );
   }, [formData, formErrors]);
 
@@ -75,7 +75,7 @@ const Refund = () => {
 
   const handleChange = (e) => {
     if (
-      e.target.value == "" &&
+      e.target.value == '' &&
       Object.hasOwnProperty.call(formErrors, e.target.name)
     ) {
       setFormErrors({
@@ -97,14 +97,14 @@ const Refund = () => {
   };
 
   const handleCloseError = (e, reason) => {
-    if (reason === "clickaway") {
+    if (reason === 'clickaway') {
       return;
     }
     setOpenError(false);
   };
 
   const handleCloseSuccessSnackbar = (e, reason) => {
-    if (reason === "clickaway") {
+    if (reason === 'clickaway') {
       return;
     }
     setOpenSuccessSnackbar(false);
@@ -121,15 +121,15 @@ const Refund = () => {
       try {
         const res = await axios.get(
           `${process.env.API_URL}/assembler/return/${formData.wallet}/${formData.smartContract}`,
-          defaultOptions
+          defaultOptions,
         );
         setOpenSuccessSnackbar(true);
         // console.log(res);
       } catch (e) {
         if (e?.response?.data?.detail) {
-          setErrorMessage("Error: " + e.response.data.detail);
+          setErrorMessage('Error: ' + e.response.data.detail);
         } else {
-          setErrorMessage("Error: Network Error");
+          setErrorMessage('Error: Network Error');
         }
         setOpenError(true);
       }
@@ -137,7 +137,7 @@ const Refund = () => {
       let updateErrors = {};
       Object.entries(formData).forEach((entry) => {
         const [key, value] = entry;
-        if (value == "" && Object.hasOwnProperty.call(formErrors, key)) {
+        if (value == '' && Object.hasOwnProperty.call(formErrors, key)) {
           let newEntry = { [key]: true };
           updateErrors = { ...updateErrors, ...newEntry };
         }
@@ -146,7 +146,7 @@ const Refund = () => {
         ...formErrors,
         ...updateErrors,
       });
-      setErrorMessage("Please eliminate form errors and try again");
+      setErrorMessage('Please eliminate form errors and try again');
       setOpenError(true);
     }
 
@@ -166,15 +166,15 @@ const Refund = () => {
         alignItems="center"
         justifyContent="center"
         sx={{
-          mx: "auto",
-          flexDirection: "row-reverse",
+          mx: 'auto',
+          flexDirection: 'row-reverse',
           px: { xs: 2, md: 4 },
           mb: 10,
         }}
       >
         <Grid item md={4}>
           <Box component="form" noValidate onSubmit={handleSubmit}>
-            <Typography variant="h4" sx={{ mb: 4, fontWeight: "700" }}>
+            <Typography variant="h4" sx={{ mb: 4, fontWeight: '700' }}>
               Return funds
             </Typography>
             <Grid container spacing={2}>
@@ -188,7 +188,7 @@ const Refund = () => {
                 >
                   <InputLabel
                     htmlFor="ergoAddress"
-                    sx={{ "&.Mui-focused": { color: "text.secondary" } }}
+                    sx={{ '&.Mui-focused': { color: 'text.secondary' } }}
                   >
                     Ergo Wallet Address
                   </InputLabel>
@@ -201,14 +201,14 @@ const Refund = () => {
                     name="wallet"
                     type="ergoAddress"
                     sx={{
-                      width: "100%",
-                      border: "1px solid rgba(82,82,90,1)",
-                      borderRadius: "4px",
+                      width: '100%',
+                      border: '1px solid rgba(82,82,90,1)',
+                      borderRadius: '4px',
                     }}
                   />
                   <FormHelperText>
                     {formErrors.wallet &&
-                      "Enter the ergo wallet address you sent funds from"}
+                      'Enter the ergo wallet address you sent funds from'}
                   </FormHelperText>
                 </FormControl>
               </Grid>
@@ -226,12 +226,12 @@ const Refund = () => {
                   error={formErrors.smartContract}
                   helperText={
                     formErrors.smartContract &&
-                    "Enter smart contract address you sent funds to"
+                    'Enter smart contract address you sent funds to'
                   }
                 />
               </Grid>
             </Grid>
-            <Box sx={{ position: "relative" }}>
+            <Box sx={{ position: 'relative' }}>
               <Button
                 type="submit"
                 fullWidth
@@ -245,11 +245,11 @@ const Refund = () => {
                 <CircularProgress
                   size={24}
                   sx={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    marginTop: "-9px",
-                    marginLeft: "-12px",
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    marginTop: '-9px',
+                    marginLeft: '-12px',
                   }}
                 />
               )}
@@ -264,7 +264,7 @@ const Refund = () => {
           <Alert
             onClose={handleCloseError}
             severity="error"
-            sx={{ width: "100%" }}
+            sx={{ width: '100%' }}
           >
             {errorMessage}
           </Alert>
@@ -277,7 +277,7 @@ const Refund = () => {
           <Alert
             onClose={handleCloseSuccessSnackbar}
             severity="success"
-            sx={{ width: "100%" }}
+            sx={{ width: '100%' }}
           >
             {successMessageSnackbar}
           </Alert>

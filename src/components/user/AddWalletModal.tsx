@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, { FC, useState } from 'react';
 import {
   Box,
   Button,
@@ -17,10 +17,15 @@ interface AddWalletProps {
   customTitle?: string;
 }
 
-export type AddWalletExpanded = 'mobile' | 'nautilus' | undefined
+export type AddWalletExpanded = 'mobile' | 'nautilus' | undefined;
 
-const AddWalletModal: FC<AddWalletProps> = ({ open, setModalOpen, setLoading, customTitle }) => {
-  const [expanded, setExpanded] = useState<AddWalletExpanded>(undefined)
+const AddWalletModal: FC<AddWalletProps> = ({
+  open,
+  setModalOpen,
+  setLoading,
+  customTitle,
+}) => {
+  const [expanded, setExpanded] = useState<AddWalletExpanded>(undefined);
   return (
     <Dialog open={open}>
       <DialogTitle>
@@ -43,15 +48,17 @@ const AddWalletModal: FC<AddWalletProps> = ({ open, setModalOpen, setLoading, cu
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => {
-          setModalOpen(false)
-          setExpanded(undefined)
-        }}>
+        <Button
+          onClick={() => {
+            setModalOpen(false);
+            setExpanded(undefined);
+          }}
+        >
           Close
         </Button>
       </DialogActions>
     </Dialog>
-  )
-}
+  );
+};
 
-export default AddWalletModal
+export default AddWalletModal;

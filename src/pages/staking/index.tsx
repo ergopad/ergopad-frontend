@@ -71,36 +71,36 @@ type StakingConfig = {
     stakingV1: boolean;
     disableStaking?: boolean;
     disableUnstaking?: boolean;
-  }
-}
+  };
+};
 
 type StakingForm = {
   wallet: string;
   tokenAmount: number;
-}
+};
 const initStakingForm: StakingForm = {
   wallet: '',
   tokenAmount: 0,
-}
+};
 
 type StakingFormErrors = {
   wallet: boolean;
   tokenAmount: boolean;
-}
+};
 
 const initStakingFormErrors: StakingFormErrors = {
   wallet: false,
   tokenAmount: false,
-}
+};
 
 const initUnstakingForm = {
   tokenAmount: 0,
-}
+};
 
 const initUnstakingFormErrors = {
   wallet: false,
   tokenAmount: false,
-}
+};
 
 export type StakedData = {
   project: string;
@@ -125,7 +125,7 @@ const initStaked: StakedData = {
   tokenName: '',
   totalStaked: 0,
   addresses: {},
-}
+};
 
 export type Staked = {
   boxId: string;
@@ -133,15 +133,15 @@ export type Staked = {
   stakeAmount: number;
   penaltyPct: number;
   address: string;
-}
+};
 
 const initUnstaked: Staked = {
   boxId: '',
   stakeKeyId: '',
   stakeAmount: 0,
   penaltyPct: 25,
-  address: ''
-}
+  address: '',
+};
 
 const defaultOptions = {
   headers: {
@@ -173,7 +173,7 @@ function a11yProps(index: number) {
 }
 
 const Staking = () => {
-  const theme = useTheme()
+  const theme = useTheme();
   const checkSmall = useMediaQuery(theme.breakpoints.up('md'));
   // nav
   const router = useRouter();
@@ -184,7 +184,7 @@ const Staking = () => {
   const [openModal, setOpenModal] = useState(false);
   const [stakingForm, setStakingForm] = useState(initStakingForm);
   const [stakingFormErrors, setStakingFormErrors] = useState(
-    initStakingFormErrors
+    initStakingFormErrors,
   );
   const [stakeLoading, setStakeLoading] = useState(false);
   const [stakeErgopayLoading, setStakeErgopayLoading] = useState(false);
@@ -198,7 +198,7 @@ const Staking = () => {
   const [unstakeModalData, setUnstakeModalData] = useState(initUnstaked);
   const [unstakingForm, setUnstakingForm] = useState(initUnstakingForm);
   const [unstakingFormErrors, setUnstakingFormErrors] = useState(
-    initStakingFormErrors
+    initStakingFormErrors,
   );
   const [unstakePenalty, setUnstakePenalty] = useState(-1);
   // error snackbar
@@ -215,19 +215,22 @@ const Staking = () => {
   const [ergopayUrl, setErgopayUrl] = useState(null);
   // tabs
   const [tabValue, setTabValue] = useState(0);
-  const { wallet, providerLoading, sessionStatus } = useWallet()
-  const shouldFetch = sessionStatus === "authenticated";
-  const walletsQuery = trpc.user.getWallets.useQuery(
-    undefined,
-    {
-      refetchOnWindowFocus: false,
-      enabled: shouldFetch
-    }
-  )
-  const [currentWalletType, setCurrentWalletType] = useState<string | null>(null)
-  const [currentModalWalletType, setCurrentModalWalletType] = useState<string | null>(null)
-  const [dappWalletAddresses, setDappWalletAddresses] = useState<string[]>([])
-  const [currentDappWalletAddresses, setCurrentDappWalletAddresses] = useState<string[]>([])
+  const { wallet, providerLoading, sessionStatus } = useWallet();
+  const shouldFetch = sessionStatus === 'authenticated';
+  const walletsQuery = trpc.user.getWallets.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+    enabled: shouldFetch,
+  });
+  const [currentWalletType, setCurrentWalletType] = useState<string | null>(
+    null,
+  );
+  const [currentModalWalletType, setCurrentModalWalletType] = useState<
+    string | null
+  >(null);
+  const [dappWalletAddresses, setDappWalletAddresses] = useState<string[]>([]);
+  const [currentDappWalletAddresses, setCurrentDappWalletAddresses] = useState<
+    string[]
+  >([]);
 
   const handleTabChange = (event: any, newValue: SetStateAction<number>) => {
     setTabValue(newValue);
@@ -251,10 +254,9 @@ const Staking = () => {
     getTokenOptions();
   }, []);
 
-
   const getWallets = async (): Promise<Wallet[]> => {
     if (sessionStatus !== 'authenticated') {
-      return []
+      return [];
     }
     const fetchResult = await walletsQuery?.refetch();
     return fetchResult && fetchResult.data ? fetchResult.data.wallets : [];
@@ -268,7 +270,7 @@ const Staking = () => {
         const wallets = await getWallets();
         if (wallets) {
           let uniqueAddresses: string[] = [];
-          if (wallet) uniqueAddresses = [wallet]
+          if (wallet) uniqueAddresses = [wallet];
 
           if (wallets && wallets.length > 0) {
             let addressSet: Set<string> = new Set();
@@ -281,8 +283,12 @@ const Staking = () => {
               }
               addressSet.add(thisWallet.changeAddress);
               if (thisWallet.changeAddress === wallet) {
-                setCurrentWalletType(thisWallet.type)
-                if (thisWallet.type === 'nautilus') setDappWalletAddresses([...thisWallet.usedAddresses, ...thisWallet.unusedAddresses])
+                setCurrentWalletType(thisWallet.type);
+                if (thisWallet.type === 'nautilus')
+                  setDappWalletAddresses([
+                    ...thisWallet.usedAddresses,
+                    ...thisWallet.unusedAddresses,
+                  ]);
               }
             }
 
@@ -294,7 +300,7 @@ const Staking = () => {
           const res = await axios.post(
             `${process.env.API_URL}/staking/staked/`,
             request,
-            { ...defaultOptions }
+            { ...defaultOptions },
           );
           setStakedData(res.data);
         }
@@ -315,8 +321,7 @@ const Staking = () => {
     // reset staking Form on wallet change
     if (wallet) {
       setStakingForm({ ...initStakingForm, wallet: wallet });
-    }
-    else setStakingForm({ ...initStakingForm })
+    } else setStakingForm({ ...initStakingForm });
     setStakingFormErrors({
       ...initStakingFormErrors,
       wallet: wallet === '',
@@ -328,19 +333,21 @@ const Staking = () => {
   }, [wallet]);
 
   const getWalletType = (address: string) => {
-    const wallets = walletsQuery.data?.wallets
+    const wallets = walletsQuery.data?.wallets;
     if (wallets) {
-      const wallet = wallets.find(w =>
-        w.changeAddress === address ||
-        w.unusedAddresses.includes(address) ||
-        w.usedAddresses.includes(address)
+      const wallet = wallets.find(
+        (w) =>
+          w.changeAddress === address ||
+          w.unusedAddresses.includes(address) ||
+          w.usedAddresses.includes(address),
       );
-      if (wallet && wallet.type === 'nautilus') setCurrentDappWalletAddresses([
-        ...wallet?.unusedAddresses, ...wallet.usedAddresses
-      ])
+      if (wallet && wallet.type === 'nautilus')
+        setCurrentDappWalletAddresses([
+          ...wallet?.unusedAddresses,
+          ...wallet.usedAddresses,
+        ]);
       return wallet ? wallet.type : null;
-    }
-    else return null
+    } else return null;
   };
 
   useEffect(() => {
@@ -351,10 +358,10 @@ const Staking = () => {
           const res = await axios.post(
             `${process.env.API_URL}/asset/balances/`,
             { addresses: [wallet] },
-            { ...defaultOptions }
+            { ...defaultOptions },
           );
           const token = res.data.addresses[address].tokens.filter(
-            (token: { tokenId: string; }) => token.tokenId === STAKE_TOKEN_ID
+            (token: { tokenId: string }) => token.tokenId === STAKE_TOKEN_ID,
           )[0];
           if (token) {
             setTokenBalance(token.amount / Math.pow(10, STAKE_TOKEN_DECIMALS));
@@ -367,7 +374,7 @@ const Staking = () => {
       }
     };
     if (openUnstakeModal) {
-      setCurrentModalWalletType(getWalletType(unstakeModalData.address))
+      setCurrentModalWalletType(getWalletType(unstakeModalData.address));
     }
     if (openModal || openUnstakeModal) {
       getTokenBalance(openUnstakeModal ? unstakeModalData.address : wallet!);
@@ -381,14 +388,13 @@ const Staking = () => {
       // @ts-ignore
       const address = await ergo.get_change_address();
       if (address === walletAddress) {
-        StakeNautilus(address)
-      }
-      else {
+        StakeNautilus(address);
+      } else {
         // @ts-ignore
-        ergoConnector.nautilus.disconnect()
+        ergoConnector.nautilus.disconnect();
         setErrorMessage('Please connect the correct Nautilus wallet');
         setOpenError(true);
-        stakeWithDappConnector(walletAddress)
+        stakeWithDappConnector(walletAddress);
       }
     }
   };
@@ -396,18 +402,18 @@ const Staking = () => {
   const StakeNautilus = async (walletAddress: string) => {
     setStakeLoading(true);
     const emptyCheck = Object.values(stakingForm).every(
-      (v) => v !== '' && v !== 0
+      (v) => v !== '' && v !== 0,
     );
     const errorCheck = Object.values(stakingFormErrors).every(
-      (v) => v === false
+      (v) => v === false,
     );
     if (emptyCheck && errorCheck) {
       try {
         const tokenAmount = Math.round(
-          stakingForm.tokenAmount * Math.pow(10, STAKE_TOKEN_DECIMALS)
+          stakingForm.tokenAmount * Math.pow(10, STAKE_TOKEN_DECIMALS),
         );
         const walletAddresses = [walletAddress, ...dappWalletAddresses].filter(
-          (x, i, a) => a.indexOf(x) == i && x
+          (x, i, a) => a.indexOf(x) == i && x,
         );
         const request = {
           wallet: walletAddress,
@@ -419,7 +425,7 @@ const Staking = () => {
         const res = await axios.post(
           `${process.env.API_URL}/staking/stake/`,
           request,
-          { ...defaultOptions }
+          { ...defaultOptions },
         );
         const unsignedtx = res.data;
         // @ts-ignore
@@ -432,7 +438,7 @@ const Staking = () => {
       } catch (e: any) {
         if (e.response) {
           setErrorMessage(
-            'Error: ' + e.response.status + ' - ' + e.response.data
+            'Error: ' + e.response.status + ' - ' + e.response.data,
           );
         } else {
           setErrorMessage('Error: Failed to build transaction');
@@ -464,27 +470,27 @@ const Staking = () => {
   const stakeErgopay = async () => {
     setStakeErgopayLoading(true);
     const emptyCheck = Object.values(stakingForm).every(
-      (v) => v !== '' && v !== 0
+      (v) => v !== '' && v !== 0,
     );
     const errorCheck = Object.values(stakingFormErrors).every(
-      (v) => v === false
+      (v) => v === false,
     );
     if (emptyCheck && errorCheck) {
       try {
         const tokenAmount = Math.round(
-          stakingForm.tokenAmount * Math.pow(10, STAKE_TOKEN_DECIMALS)
+          stakingForm.tokenAmount * Math.pow(10, STAKE_TOKEN_DECIMALS),
         );
         const request = {
           wallet: wallet,
           amount: tokenAmount / Math.pow(10, STAKE_TOKEN_DECIMALS),
           utxos: [],
           txFormat: 'ergo_pay',
-          addresses: [wallet]
+          addresses: [wallet],
         };
         const res = await axios.post(
           `${process.env.API_URL}/staking/stake/`,
           request,
-          { ...defaultOptions }
+          { ...defaultOptions },
         );
         setErgopayUrl(res.data.url);
         setSuccessMessageSnackbar('Form Submitted');
@@ -492,7 +498,7 @@ const Staking = () => {
       } catch (e: any) {
         if (e.response) {
           setErrorMessage(
-            'Error: ' + e.response.status + ' - ' + e.response.data
+            'Error: ' + e.response.status + ' - ' + e.response.data,
           );
         } else {
           setErrorMessage('Error: Failed to build transaction');
@@ -539,14 +545,13 @@ const Staking = () => {
       // @ts-ignore
       const address = await ergo.get_change_address();
       if (address === walletAddress) {
-        unstakeNautilus(address)
-      }
-      else {
+        unstakeNautilus(address);
+      } else {
         // @ts-ignore
-        ergoConnector.nautilus.disconnect()
+        ergoConnector.nautilus.disconnect();
         setErrorMessage('Please connect the correct Nautilus wallet');
         setOpenError(true);
-        unstakeWithDappConnector(walletAddress)
+        unstakeWithDappConnector(walletAddress);
       }
     }
   };
@@ -554,18 +559,19 @@ const Staking = () => {
   const unstakeNautilus = async (walletAddress: string) => {
     setUnstakeModalLoading(true);
     const emptyCheck = Object.values(unstakingForm).every(
-      (v) => v !== undefined && v !== 0
+      (v) => v !== undefined && v !== 0,
     );
     const errorCheck = Object.values(unstakingFormErrors).every(
-      (v) => v === false
+      (v) => v === false,
     );
     if (emptyCheck && errorCheck) {
       try {
         const tokenAmount =
           unstakingForm.tokenAmount * Math.pow(10, STAKE_TOKEN_DECIMALS);
-        const walletAddresses = [walletAddress, ...currentDappWalletAddresses].filter(
-          (x, i, a) => a.indexOf(x) == i && x
-        );
+        const walletAddresses = [
+          walletAddress,
+          ...currentDappWalletAddresses,
+        ].filter((x, i, a) => a.indexOf(x) == i && x);
         const request = {
           stakeBox: unstakeModalData.boxId,
           amount: tokenAmount / Math.pow(10, STAKE_TOKEN_DECIMALS),
@@ -577,7 +583,7 @@ const Staking = () => {
         const res = await axios.post(
           `${process.env.API_URL}/staking/unstake/`,
           request,
-          { ...defaultOptions }
+          { ...defaultOptions },
         );
         const penalty = res.data.penalty;
         setUnstakePenalty(penalty);
@@ -592,7 +598,7 @@ const Staking = () => {
       } catch (e: any) {
         if (e.response) {
           setErrorMessage(
-            'Error: ' + e.response.status + ' - ' + e.response.data
+            'Error: ' + e.response.status + ' - ' + e.response.data,
           );
         } else {
           setErrorMessage('Error: Failed to build transaction');
@@ -625,14 +631,14 @@ const Staking = () => {
   const unstakeErgopay = async () => {
     setUnstakeErgopayLoading(true);
     const emptyCheck = Object.values(unstakingForm).every(
-      (v) => v !== undefined && v !== 0
+      (v) => v !== undefined && v !== 0,
     );
     const errorCheck = Object.values(unstakingFormErrors).every(
-      (v) => v === false
+      (v) => v === false,
     );
     if (emptyCheck && errorCheck) {
       try {
-        console.log(unstakeModalData.address)
+        console.log(unstakeModalData.address);
         const tokenAmount =
           unstakingForm.tokenAmount * Math.pow(10, STAKE_TOKEN_DECIMALS);
         const request = {
@@ -646,7 +652,7 @@ const Staking = () => {
         const res = await axios.post(
           `${process.env.API_URL}/staking/unstake/`,
           request,
-          { ...defaultOptions }
+          { ...defaultOptions },
         );
         const penalty = res.data.penalty;
         setUnstakePenalty(penalty);
@@ -656,7 +662,7 @@ const Staking = () => {
       } catch (e: any) {
         if (e.response) {
           setErrorMessage(
-            'Error: ' + e.response.status + ' - ' + e.response.data
+            'Error: ' + e.response.status + ' - ' + e.response.data,
           );
         } else {
           setErrorMessage('Error: Failed to build transaction');
@@ -702,13 +708,15 @@ const Staking = () => {
     setOpenSuccessSnackbar(false);
   };
 
-  const handleTokenChoiceChange = (event: { target: { value: SetStateAction<string>; }; }) => {
+  const handleTokenChoiceChange = (event: {
+    target: { value: SetStateAction<string> };
+  }) => {
     setTokenChoice(event.target.value);
     if (event.target.value === 'default') router.push('/staking');
     else router.push(`/staking/${event.target.value}`);
   };
 
-  const handleStakingFormChange = (e: { target: any; }) => {
+  const handleStakingFormChange = (e: { target: any }) => {
     if (e.target.name === 'stakingAmount') {
       const amount = Number(e.target.value);
       if (amount >= 10 && amount <= tokenBalance) {
@@ -733,7 +741,7 @@ const Staking = () => {
     }
   };
 
-  const handleUnstakingFormChange = (e: { target: any; }) => {
+  const handleUnstakingFormChange = (e: { target: any }) => {
     const calcPenalty = (value: number, penaltyPct: number) => {
       return Math.round(value * penaltyPct) / 100;
     };
@@ -905,7 +913,13 @@ const Staking = () => {
                   ) : (
                     <UnstakingTable
                       data={stakedData}
-                      unstake={(boxId, stakeKeyId, stakeAmount, penaltyPct, address) => {
+                      unstake={(
+                        boxId,
+                        stakeKeyId,
+                        stakeAmount,
+                        penaltyPct,
+                        address,
+                      ) => {
                         initUnstake();
                         setOpenUnstakeModal(true);
                         setUnstakeModalData({
@@ -913,7 +927,7 @@ const Staking = () => {
                           stakeKeyId,
                           stakeAmount,
                           penaltyPct,
-                          address
+                          address,
                         });
                       }}
                       addstake={null}
@@ -955,7 +969,10 @@ const Staking = () => {
           </Typography>
           {transactionSubmitted || ergopayUrl ? (
             transactionSubmitted ? (
-              <TransactionSubmitted transactionId={transactionSubmitted} pending={undefined} />
+              <TransactionSubmitted
+                transactionId={transactionSubmitted}
+                pending={undefined}
+              />
             ) : (
               <ErgopayModalBody ergopayUrl={ergopayUrl!} address={wallet!} />
             )
@@ -1020,9 +1037,9 @@ const Staking = () => {
                         disabled={
                           stakeErgopayLoading ||
                           stakeLoading ||
-                          stakingFormErrors.wallet
-                          || providerLoading
-                          || unstakeTableLoading
+                          stakingFormErrors.wallet ||
+                          providerLoading ||
+                          unstakeTableLoading
                         }
                         sx={{
                           color: '#fff',
@@ -1046,14 +1063,14 @@ const Staking = () => {
                         Stake with Desktop Wallet
                         {(stakeErgopayLoading ||
                           stakeLoading ||
-                          stakingFormErrors.wallet
-                          || providerLoading
-                          || unstakeTableLoading) && (
-                            <CircularProgress
-                              sx={{ ml: 2, color: 'white' }}
-                              size={'1.2rem'}
-                            />
-                          )}
+                          stakingFormErrors.wallet ||
+                          providerLoading ||
+                          unstakeTableLoading) && (
+                          <CircularProgress
+                            sx={{ ml: 2, color: 'white' }}
+                            size={'1.2rem'}
+                          />
+                        )}
                       </Button>
                     </Grid>
                   )}
@@ -1064,9 +1081,9 @@ const Staking = () => {
                         disabled={
                           stakeErgopayLoading ||
                           stakeLoading ||
-                          stakingFormErrors.wallet
-                          || providerLoading
-                          || unstakeTableLoading
+                          stakingFormErrors.wallet ||
+                          providerLoading ||
+                          unstakeTableLoading
                         }
                         sx={{
                           color: '#fff',
@@ -1089,14 +1106,14 @@ const Staking = () => {
                         Stake with Mobile Wallet
                         {(stakeErgopayLoading ||
                           stakeLoading ||
-                          stakingFormErrors.wallet
-                          || providerLoading
-                          || unstakeTableLoading) && (
-                            <CircularProgress
-                              sx={{ ml: 2, color: 'white' }}
-                              size={'1.2rem'}
-                            />
-                          )}
+                          stakingFormErrors.wallet ||
+                          providerLoading ||
+                          unstakeTableLoading) && (
+                          <CircularProgress
+                            sx={{ ml: 2, color: 'white' }}
+                            size={'1.2rem'}
+                          />
+                        )}
                       </Button>
                     </Grid>
                   )}
@@ -1123,9 +1140,16 @@ const Staking = () => {
           </Typography>
           {transactionSubmitted || ergopayUrl ? (
             transactionSubmitted ? (
-              <TransactionSubmitted transactionId={transactionSubmitted} pending={undefined} />
+              <TransactionSubmitted
+                transactionId={transactionSubmitted}
+                pending={undefined}
+              />
             ) : (
-              <ErgopayModalBody ergopayUrl={ergopayUrl!} address={unstakeModalData.address} pending={undefined} />
+              <ErgopayModalBody
+                ergopayUrl={ergopayUrl!}
+                address={unstakeModalData.address}
+                pending={undefined}
+              />
             )
           ) : (
             <>
@@ -1207,82 +1231,85 @@ const Staking = () => {
                     : ''}
                 </FormHelperText>
                 <Grid container justifyContent="center">
-
-                  {unstakeModalData.address && currentModalWalletType === 'nautilus' && (
-                    <Grid item>
-                      <Button
-                        variant="contained"
-                        disabled={
-                          unstakeModalLoading ||
-                          unstakeErgopayLoading ||
-                          unstakingFormErrors.wallet
-                        }
-                        sx={{
-                          color: '#fff',
-                          fontSize: '1rem',
-                          mt: 2,
-                          mr: 1,
-                          py: '0.6rem',
-                          px: '1.2rem',
-                          textTransform: 'none',
-                          background: theme.palette.secondary.main,
-                          '&:hover': {
-                            background: '#B886F9',
-                            boxShadow: 'none',
-                          },
-                          '&:active': {
-                            background: 'rgba(128, 90, 213, 0.25)',
-                          },
-                        }}
-                        onClick={() => unstakeWithDappConnector(unstakeModalData.address)}
-                      >
-                        Unstake with Desktop Wallet
-                        {unstakeModalLoading && (
-                          <CircularProgress
-                            sx={{ ml: 2, color: 'white' }}
-                            size={'1.2rem'}
-                          />
-                        )}
-                      </Button>
-                    </Grid>
-                  )}
-                  {unstakeModalData.address && currentModalWalletType === 'mobile' && (
-                    <Grid item>
-                      <Button
-                        variant="contained"
-                        disabled={
-                          unstakeModalLoading ||
-                          unstakeErgopayLoading ||
-                          unstakingFormErrors.wallet
-                        }
-                        sx={{
-                          color: '#fff',
-                          fontSize: '1rem',
-                          mt: 2,
-                          py: '0.6rem',
-                          px: '1.2rem',
-                          textTransform: 'none',
-                          background: theme.palette.secondary.main,
-                          '&:hover': {
-                            background: '#B886F9',
-                            boxShadow: 'none',
-                          },
-                          '&:active': {
-                            background: 'rgba(128, 90, 213, 0.25)',
-                          },
-                        }}
-                        onClick={unstakeErgopay}
-                      >
-                        Unstake with Mobile Wallet
-                        {unstakeErgopayLoading && (
-                          <CircularProgress
-                            sx={{ ml: 2, color: 'white' }}
-                            size={'1.2rem'}
-                          />
-                        )}
-                      </Button>
-                    </Grid>
-                  )}
+                  {unstakeModalData.address &&
+                    currentModalWalletType === 'nautilus' && (
+                      <Grid item>
+                        <Button
+                          variant="contained"
+                          disabled={
+                            unstakeModalLoading ||
+                            unstakeErgopayLoading ||
+                            unstakingFormErrors.wallet
+                          }
+                          sx={{
+                            color: '#fff',
+                            fontSize: '1rem',
+                            mt: 2,
+                            mr: 1,
+                            py: '0.6rem',
+                            px: '1.2rem',
+                            textTransform: 'none',
+                            background: theme.palette.secondary.main,
+                            '&:hover': {
+                              background: '#B886F9',
+                              boxShadow: 'none',
+                            },
+                            '&:active': {
+                              background: 'rgba(128, 90, 213, 0.25)',
+                            },
+                          }}
+                          onClick={() =>
+                            unstakeWithDappConnector(unstakeModalData.address)
+                          }
+                        >
+                          Unstake with Desktop Wallet
+                          {unstakeModalLoading && (
+                            <CircularProgress
+                              sx={{ ml: 2, color: 'white' }}
+                              size={'1.2rem'}
+                            />
+                          )}
+                        </Button>
+                      </Grid>
+                    )}
+                  {unstakeModalData.address &&
+                    currentModalWalletType === 'mobile' && (
+                      <Grid item>
+                        <Button
+                          variant="contained"
+                          disabled={
+                            unstakeModalLoading ||
+                            unstakeErgopayLoading ||
+                            unstakingFormErrors.wallet
+                          }
+                          sx={{
+                            color: '#fff',
+                            fontSize: '1rem',
+                            mt: 2,
+                            py: '0.6rem',
+                            px: '1.2rem',
+                            textTransform: 'none',
+                            background: theme.palette.secondary.main,
+                            '&:hover': {
+                              background: '#B886F9',
+                              boxShadow: 'none',
+                            },
+                            '&:active': {
+                              background: 'rgba(128, 90, 213, 0.25)',
+                            },
+                          }}
+                          onClick={unstakeErgopay}
+                        >
+                          Unstake with Mobile Wallet
+                          {unstakeErgopayLoading && (
+                            <CircularProgress
+                              sx={{ ml: 2, color: 'white' }}
+                              size={'1.2rem'}
+                            />
+                          )}
+                        </Button>
+                      </Grid>
+                    )}
                 </Grid>
               </Box>
             </>
@@ -1294,10 +1321,7 @@ const Staking = () => {
         autoHideDuration={4500}
         onClose={handleCloseError}
       >
-        <Alert
-          severity="error"
-          sx={{ width: '100%' }}
-        >
+        <Alert severity="error" sx={{ width: '100%' }}>
           {errorMessage}
         </Alert>
       </Snackbar>
@@ -1306,10 +1330,7 @@ const Staking = () => {
         autoHideDuration={10000}
         onClose={handleCloseSuccessSnackbar}
       >
-        <Alert
-          severity="success"
-          sx={{ width: '100%' }}
-        >
+        <Alert severity="success" sx={{ width: '100%' }}>
           {successMessageSnackbar}
         </Alert>
       </Snackbar>

@@ -4,7 +4,7 @@ import { checkAddressAvailability } from '@server/utils/checkAddress';
 import { deleteEmptyUser } from '@server/utils/deleteEmptyUser';
 import { nanoid } from 'nanoid';
 import { z } from 'zod';
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from '../trpc';
 import { generateNonceForLogin } from '../utils/nonce';
 
 // const isErgoMainnetAddress = (value: string): boolean => {
@@ -25,9 +25,11 @@ type SumsubResultType = {
 
 export const userRouter = createTRPCRouter({
   getNonce: publicProcedure
-    .input(z.object({
-      userAddress: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        userAddress: z.string().optional(),
+      }),
+    )
     .query(async ({ input }) => {
       const { userAddress } = input;
 
@@ -38,124 +40,130 @@ export const userRouter = createTRPCRouter({
       const nonce = await generateNonceForLogin(userAddress);
 
       if (!nonce) {
-        throw new Error('Address already in use by another user account')
+        throw new Error('Address already in use by another user account');
       }
 
       return { nonce };
     }),
-  getNonceProtected: protectedProcedure
-    .query(async ({ ctx }) => {
-      const { session } = ctx;
-      const nonce = nanoid();
-      // Update the user's nonce in the database
-      const updatedUser = await prisma.user.update({
-        where: { id: session.user.id },
-        data: { nonce },
-      });
-      if (!updatedUser) {
-        throw new Error('Unable to generate nonce')
-      }
-      return { nonce };
-    }),
+  getNonceProtected: protectedProcedure.query(async ({ ctx }) => {
+    const { session } = ctx;
+    const nonce = nanoid();
+    // Update the user's nonce in the database
+    const updatedUser = await prisma.user.update({
+      where: { id: session.user.id },
+      data: { nonce },
+    });
+    if (!updatedUser) {
+      throw new Error('Unable to generate nonce');
+    }
+    return { nonce };
+  }),
   checkAddressAvailable: publicProcedure
-    .input(z.object({
-      address: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        address: z.string().optional(),
+      }),
+    )
     .query(async ({ input }) => {
       const { address } = input;
 
       if (!address) {
-        return { status: "error", message: "Address not provided" };
+        return { status: 'error', message: 'Address not provided' };
       }
 
       const result = await checkAddressAvailability(address);
-      if (result.status === "unavailable") {
+      if (result.status === 'unavailable') {
         return {
-          status: "unavailable",
-          message: "Address is in use"
+          status: 'unavailable',
+          message: 'Address is in use',
         };
       }
 
-      return { status: "available", message: "Address is not in use" };
+      return { status: 'available', message: 'Address is not in use' };
     }),
   addAddress: protectedProcedure
-    .input(z.object({
-      nonce: z.string(),
-      address: z.string(),
-      signature: z.object({
-        signedMessage: z.string(),
-        proof: z.string()
+    .input(
+      z.object({
+        nonce: z.string(),
+        address: z.string(),
+        signature: z.object({
+          signedMessage: z.string(),
+          proof: z.string(),
+        }),
+        wallet: z.object({
+          type: z.string(),
+          defaultAddress: z.string(),
+          usedAddresses: z.string().array().optional(),
+          unusedAddresses: z.string().array().optional(),
+        }),
       }),
-      wallet: z.object({
-        type: z.string(),
-        defaultAddress: z.string(),
-        usedAddresses: z.string().array().optional(),
-        unusedAddresses: z.string().array().optional()
-      })
-    }))
+    )
     .mutation(async ({ input, ctx }) => {
-      const userId = ctx.session.user.id
-      const { address, nonce, signature, wallet } = input
-      const { type, defaultAddress, usedAddresses, unusedAddresses } = wallet
+      const userId = ctx.session.user.id;
+      const { address, nonce, signature, wallet } = input;
+      const { type, defaultAddress, usedAddresses, unusedAddresses } = wallet;
       const user = await prisma.user.findUnique({
         where: {
-          id: userId
-        }
+          id: userId,
+        },
       });
 
       if (!user) {
-        throw new Error("User not found in database");
+        throw new Error('User not found in database');
       }
 
       if (type === 'nautilus') {
-        const signedMessageSplit = signature.signedMessage.split(";");
+        const signedMessageSplit = signature.signedMessage.split(';');
         const nonce = signedMessageSplit[0];
         const url = signedMessageSplit[1];
         // console.log('\x1b[32m', 'Nonce: ', '\x1b[0m', nonce);
         // console.log('\x1b[32m', 'URL: ', '\x1b[0m', url);
         // console.log('\x1b[32m', 'User nonce: ', '\x1b[0m', user.nonce);
         if (nonce !== user.nonce) {
-          console.error(`Nonce doesn't match`)
-          throw new Error(`Nonce doesn't match`)
+          console.error(`Nonce doesn't match`);
+          throw new Error(`Nonce doesn't match`);
         }
         if (process.env.AUTH_DOMAIN !== `https://${url}`) {
-          console.error(`Source domain doesn't match`)
-          throw new Error('Source domain is invalid')
+          console.error(`Source domain doesn't match`);
+          throw new Error('Source domain is invalid');
         }
-      }
-      else if (type === 'mobile') {
+      } else if (type === 'mobile') {
         const nonce = signature.signedMessage.slice(20, 41);
         const url = signature.signedMessage.slice(41, -20);
         // console.log('\x1b[32m', 'Nonce: ', '\x1b[0m', nonce);
         // console.log('\x1b[32m', 'URL: ', '\x1b[0m', url);
         if (nonce !== user.nonce) {
-          console.error(`Nonce doesn't match`)
-          throw new Error(`Nonce doesn't match`)
+          console.error(`Nonce doesn't match`);
+          throw new Error(`Nonce doesn't match`);
         }
         if (url !== process.env.AUTH_DOMAIN) {
-          console.error(`Source domain is invalid`)
-          throw new Error('Source domain is invalid')
+          console.error(`Source domain is invalid`);
+          throw new Error('Source domain is invalid');
         }
-      }
-      else {
-        throw new Error('Unrecognized wallet type')
+      } else {
+        throw new Error('Unrecognized wallet type');
       }
 
-      const verified = verifySignature(address, signature.signedMessage, signature.proof, wallet.type)
+      const verified = verifySignature(
+        address,
+        signature.signedMessage,
+        signature.proof,
+        wallet.type,
+      );
       if (verified) {
         // Construct update data
         const updateData: {
-          wallets: any,
-          defaultAddress?: string
+          wallets: any;
+          defaultAddress?: string;
         } = {
           wallets: {
             create: {
               type,
               changeAddress: address,
               usedAddresses,
-              unusedAddresses
-            }
-          }
+              unusedAddresses,
+            },
+          },
         };
 
         // If the user does not have a default address, then set it.
@@ -166,23 +174,25 @@ export const userRouter = createTRPCRouter({
         try {
           return await prisma.user.update({
             where: {
-              id: userId
+              id: userId,
             },
-            data: updateData
+            data: updateData,
           });
         } catch (prismaError) {
-          console.error("Prisma error:", prismaError);
-          throw new Error("Failed to update user and create wallet.");
+          console.error('Prisma error:', prismaError);
+          throw new Error('Failed to update user and create wallet.');
         }
       }
-      throw new Error("User not updated in db");
+      throw new Error('User not updated in db');
     }),
   initAddWallet: protectedProcedure
-    .input(z.object({
-      address: z.string(),
-    }))
+    .input(
+      z.object({
+        address: z.string(),
+      }),
+    )
     .mutation(async ({ input, ctx }) => {
-      const userId = ctx.session.user.id
+      const userId = ctx.session.user.id;
       const verificationId = nanoid();
       const nonce = nanoid();
 
@@ -192,13 +202,13 @@ export const userRouter = createTRPCRouter({
       });
 
       if (!updatedUser) {
-        throw new Error('Unable to add nonce to user in database')
+        throw new Error('Unable to add nonce to user in database');
       }
 
-      const isAvailable = await checkAddressAvailability(input.address)
+      const isAvailable = await checkAddressAvailability(input.address);
 
       if (isAvailable.status !== 'available') {
-        throw new Error('Address in use by another wallet')
+        throw new Error('Address in use by another wallet');
       }
 
       const existingLoginRequests = await prisma.loginRequest.findMany({
@@ -220,67 +230,75 @@ export const userRouter = createTRPCRouter({
 
       return { verificationId, nonce };
     }),
-  getWallets: protectedProcedure
-    .query(async ({ ctx }) => {
-      const userId = ctx.session.user.id
-      const user = await prisma.user.findFirst({
-        where: {
-          id: userId,
-        },
-        include: {
-          wallets: true,
-        },
-      })
-      return user
-    }),
+  getWallets: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session.user.id;
+    const user = await prisma.user.findFirst({
+      where: {
+        id: userId,
+      },
+      include: {
+        wallets: true,
+      },
+    });
+    return user;
+  }),
   changeDefaultAddress: protectedProcedure
-    .input(z.object({
-      newDefault: z.string(),
-      walletId: z.number()
-    }))
+    .input(
+      z.object({
+        newDefault: z.string(),
+        walletId: z.number(),
+      }),
+    )
     .mutation(async ({ input, ctx }) => {
-      const userId = ctx.session.user.id
-      const { newDefault, walletId } = input
+      const userId = ctx.session.user.id;
+      const { newDefault, walletId } = input;
 
       // Fetch the wallet's associated addresses
       const wallet = await prisma.wallet.findUnique({
         where: {
           id: walletId,
-          userId
+          userId,
         },
         select: {
           changeAddress: true,
           unusedAddresses: true,
-          usedAddresses: true
-        }
+          usedAddresses: true,
+        },
       });
 
       if (!wallet) {
-        throw new Error("Wallet does not match user");
+        throw new Error('Wallet does not match user');
       }
 
       // Combine all the addresses associated with the wallet
-      const allWalletAddresses = [wallet.changeAddress, ...wallet.unusedAddresses, ...wallet.usedAddresses];
+      const allWalletAddresses = [
+        wallet.changeAddress,
+        ...wallet.unusedAddresses,
+        ...wallet.usedAddresses,
+      ];
 
       // Fetch the user's current default address
       const user = await prisma.user.findUnique({
         where: {
-          id: userId
+          id: userId,
         },
         select: {
-          defaultAddress: true
-        }
+          defaultAddress: true,
+        },
       });
 
       // If the user's default address is in the list of all wallet addresses, update it to the new address
-      if (user!.defaultAddress && allWalletAddresses.includes(user!.defaultAddress)) {
+      if (
+        user!.defaultAddress &&
+        allWalletAddresses.includes(user!.defaultAddress)
+      ) {
         await prisma.user.update({
           where: {
-            id: userId
+            id: userId,
           },
           data: {
-            defaultAddress: newDefault
-          }
+            defaultAddress: newDefault,
+          },
         });
       }
 
@@ -288,21 +306,23 @@ export const userRouter = createTRPCRouter({
       await prisma.wallet.update({
         where: {
           id: walletId,
-          userId
+          userId,
         },
         data: {
-          changeAddress: newDefault
-        }
+          changeAddress: newDefault,
+        },
       });
 
-      return { success: true }
+      return { success: true };
     }),
-  // Change the default user address. This is used for things like airdrops. 
+  // Change the default user address. This is used for things like airdrops.
   // Note: the user can login with any wallet, so change Login address is not the best name
   changeLoginAddress: protectedProcedure
-    .input(z.object({
-      changeAddress: z.string()
-    }))
+    .input(
+      z.object({
+        changeAddress: z.string(),
+      }),
+    )
     .mutation(async ({ input, ctx }) => {
       const userId = ctx.session.user.id;
       const { changeAddress } = input;
@@ -311,15 +331,17 @@ export const userRouter = createTRPCRouter({
       const wallet = await prisma.wallet.findFirst({
         where: {
           changeAddress,
-          userId
+          userId,
         },
         select: {
-          id: true // just selecting id for brevity; we just want to know if a record exists
-        }
+          id: true, // just selecting id for brevity; we just want to know if a record exists
+        },
       });
 
       if (!wallet) {
-        throw new Error("The provided address does not belong to any of the user's wallets");
+        throw new Error(
+          "The provided address does not belong to any of the user's wallets",
+        );
       }
 
       // Update the user's defaultAddress with the provided changeAddress
@@ -328,16 +350,18 @@ export const userRouter = createTRPCRouter({
           id: userId,
         },
         data: {
-          defaultAddress: changeAddress
-        }
+          defaultAddress: changeAddress,
+        },
       });
 
-      return { success: true }
+      return { success: true };
     }),
   removeWallet: protectedProcedure
-    .input(z.object({
-      walletId: z.number(),
-    }))
+    .input(
+      z.object({
+        walletId: z.number(),
+      }),
+    )
     .mutation(async ({ input, ctx }) => {
       const userId = ctx.session.user.id;
       const userAddress = ctx.session.user.address;
@@ -347,8 +371,8 @@ export const userRouter = createTRPCRouter({
       const wallet = await prisma.wallet.findUnique({
         where: {
           id: walletId,
-          userId
-        }
+          userId,
+        },
       });
 
       if (!wallet) {
@@ -356,62 +380,69 @@ export const userRouter = createTRPCRouter({
       }
 
       // Check if userAddress exists in any of the address fields of the fetched wallet
-      if (userAddress && wallet.changeAddress !== userAddress
-        && !wallet.unusedAddresses.includes(userAddress)
-        && !wallet.usedAddresses.includes(userAddress)) {
+      if (
+        userAddress &&
+        wallet.changeAddress !== userAddress &&
+        !wallet.unusedAddresses.includes(userAddress) &&
+        !wallet.usedAddresses.includes(userAddress)
+      ) {
         // Attempt to delete the wallet
         const deleteResponse = await prisma.wallet.delete({
           where: {
             id: walletId,
-          }
+          },
         });
         if (!deleteResponse) {
-          throw new Error("Error removing this wallet")
+          throw new Error('Error removing this wallet');
         }
         return { success: true }; // Return a success response or any other relevant data
-      }
-      else throw new Error("Cannot delete: wallet is currently the default address for this user");
+      } else
+        throw new Error(
+          'Cannot delete: wallet is currently the default address for this user',
+        );
     }),
-  getSumsubResult: protectedProcedure
-    .query(async ({ ctx }) => {
-      const userId = ctx.session.user.id;
+  getSumsubResult: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session.user.id;
 
-      // Fetch the user from the database
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-          sumsubId: true,
-          sumsubType: true,
-          sumsubResult: true,
-          sumsubStatus: true,
-        },
-      });
+    // Fetch the user from the database
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        sumsubId: true,
+        sumsubType: true,
+        sumsubResult: true,
+        sumsubStatus: true,
+      },
+    });
 
-      if (!user) {
-        throw new Error('Unable to retrieve user data');
-      }
+    if (!user) {
+      throw new Error('Unable to retrieve user data');
+    }
 
-      const sumsubResult: SumsubResultType = user.sumsubResult as SumsubResultType;
+    const sumsubResult: SumsubResultType =
+      user.sumsubResult as SumsubResultType;
 
-      return {
-        sumsubId: user.sumsubId,
-        sumsubType: user.sumsubType,
-        sumsubResult: sumsubResult,
-        sumsubStatus: user.sumsubStatus,
-      };
-    }),
+    return {
+      sumsubId: user.sumsubId,
+      sumsubType: user.sumsubType,
+      sumsubResult: sumsubResult,
+      sumsubStatus: user.sumsubStatus,
+    };
+  }),
   getUserDetails: protectedProcedure
-    .input(z.object({
-      name: z.boolean().optional(),
-      email: z.boolean().optional(),
-      whitelists: z.boolean().optional(),
-      wallets: z.boolean().optional(),
-      image: z.boolean().optional(),
-      sumsubStatus: z.boolean().optional()
-    }))
+    .input(
+      z.object({
+        name: z.boolean().optional(),
+        email: z.boolean().optional(),
+        whitelists: z.boolean().optional(),
+        wallets: z.boolean().optional(),
+        image: z.boolean().optional(),
+        sumsubStatus: z.boolean().optional(),
+      }),
+    )
     .query(async ({ input, ctx }) => {
       const userId = ctx.session.user.id;
-      const { name, email, whitelists, wallets, image, sumsubStatus } = input
+      const { name, email, whitelists, wallets, image, sumsubStatus } = input;
       const user = await prisma.user.findFirst({
         where: { id: userId },
         select: {
@@ -420,7 +451,7 @@ export const userRouter = createTRPCRouter({
           image: !!image,
           sumsubStatus: !!sumsubStatus,
           wallets: !!wallets,
-          whitelists: !!whitelists
+          whitelists: !!whitelists,
         },
       });
 
@@ -428,14 +459,16 @@ export const userRouter = createTRPCRouter({
         throw new Error('Unable to find user in database');
       }
 
-      return { user }
+      return { user };
     }),
   changeUserDetails: protectedProcedure
-    .input(z.object({
-      name: z.string().optional(),
-      email: z.string().optional(),
-      whitelist: z.string().optional()
-    }))
+    .input(
+      z.object({
+        name: z.string().optional(),
+        email: z.string().optional(),
+        whitelist: z.string().optional(),
+      }),
+    )
     .mutation(async ({ input, ctx }) => {
       const userId = ctx.session.user.id;
       const { name, email, whitelist } = input;
@@ -455,7 +488,7 @@ export const userRouter = createTRPCRouter({
       // If whitelist is provided, add it to the whitelists array
       if (whitelist) {
         updateData.whitelists = {
-          push: whitelist
+          push: whitelist,
         };
       }
 
@@ -468,40 +501,41 @@ export const userRouter = createTRPCRouter({
         throw new Error('Error updating user profile');
       }
 
-      return { success: true }
+      return { success: true };
     }),
   deleteEmptyUser: publicProcedure
-    .input(z.object({
-      userId: z.string()
-    }))
+    .input(
+      z.object({
+        userId: z.string(),
+      }),
+    )
     .mutation(async ({ input }) => {
-      const deleteUser = await deleteEmptyUser(input.userId)
-      if (deleteUser.success) return { success: true }
-      else return { error: deleteUser.error }
+      const deleteUser = await deleteEmptyUser(input.userId);
+      if (deleteUser.success) return { success: true };
+      else return { error: deleteUser.error };
     }),
-  deleteUserAccount: protectedProcedure
-    .mutation(async ({ ctx }) => {
-      const userId = ctx.session.user.id;
+  deleteUserAccount: protectedProcedure.mutation(async ({ ctx }) => {
+    const userId = ctx.session.user.id;
 
-      // clear all wallets associated with the user
-      await prisma.wallet.deleteMany({
-        where: {
-          userId
-        }
-      });
+    // clear all wallets associated with the user
+    await prisma.wallet.deleteMany({
+      where: {
+        userId,
+      },
+    });
 
-      const deleteUser = await prisma.user.update({
-        where: {
-          id: userId,
-        },
-        data: {
-          status: 'deleted',
-          defaultAddress: '',
-        }
-      });
-      if (!deleteUser) {
-        throw new Error("Error deleting user")
-      }
-      return { success: true }; // Return a success response or any other relevant data
-    })
+    const deleteUser = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        status: 'deleted',
+        defaultAddress: '',
+      },
+    });
+    if (!deleteUser) {
+      throw new Error('Error deleting user');
+    }
+    return { success: true }; // Return a success response or any other relevant data
+  }),
 });

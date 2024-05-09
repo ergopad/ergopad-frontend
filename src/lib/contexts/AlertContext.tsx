@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, FC, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  FC,
+  ReactNode,
+} from 'react';
 import { nanoid } from 'nanoid';
 
 interface Alert {
@@ -27,8 +33,8 @@ export const AlertProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const removeAlert = (id: string) => {
     setAlerts((prevAlerts) =>
       prevAlerts.map((alert) =>
-        alert.id === id ? { ...alert, exiting: true } : alert
-      )
+        alert.id === id ? { ...alert, exiting: true } : alert,
+      ),
     );
 
     // Schedule the actual removal after the animation duration
@@ -39,7 +45,9 @@ export const AlertProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const value = { alerts, addAlert, removeAlert };
 
-  return <AlertContext.Provider value={value}>{children}</AlertContext.Provider>;
+  return (
+    <AlertContext.Provider value={value}>{children}</AlertContext.Provider>
+  );
 };
 
 export const useAlert = () => {

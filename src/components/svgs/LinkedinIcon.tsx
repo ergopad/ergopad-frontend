@@ -1,6 +1,6 @@
-import React, { FC } from "react";
-import SvgIcon from "@mui/material/SvgIcon";
-import { SxProps } from "@mui/material";
+import React, { FC } from 'react';
+import SvgIcon from '@mui/material/SvgIcon';
+import { SxProps } from '@mui/material';
 
 const LinkedinIcon: FC<{ sx?: SxProps }> = ({ sx }) => {
   return (

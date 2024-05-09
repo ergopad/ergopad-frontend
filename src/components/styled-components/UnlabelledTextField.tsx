@@ -18,12 +18,14 @@ const UnlabelledTextField: FC<TUnlabelledTextFieldProps> = (props) => {
           borderRadius: '6px',
           borderStyle: 'solid',
           borderWidth: '1px',
-          borderColor: theme.palette.mode === 'dark'
-            ? 'rgba(200, 225, 255, 0.2)'
-            : 'rgba(20, 22, 25, 0.15)',
-          background: theme.palette.mode === 'dark'
-            ? 'radial-gradient(at right top, rgba(16,20,34,0.4), rgba(1, 4, 10, 0.4))'
-            : 'radial-gradient(at right top, rgba(16,20,34,0.05), rgba(1, 4, 10, 0.05))',
+          borderColor:
+            theme.palette.mode === 'dark'
+              ? 'rgba(200, 225, 255, 0.2)'
+              : 'rgba(20, 22, 25, 0.15)',
+          background:
+            theme.palette.mode === 'dark'
+              ? 'radial-gradient(at right top, rgba(16,20,34,0.4), rgba(1, 4, 10, 0.4))'
+              : 'radial-gradient(at right top, rgba(16,20,34,0.05), rgba(1, 4, 10, 0.05))',
           boxShadow: '2px 2px 5px 3px rgba(0,0,0,0.03)',
           fontFamily: 'sans-serif',
           fontSize: '1rem',
@@ -42,8 +44,8 @@ const UnlabelledTextField: FC<TUnlabelledTextFieldProps> = (props) => {
         },
         '& .Mui-error': {
           borderColor: theme.palette.error.dark,
-          borderWidth: '2px'
-        }
+          borderWidth: '2px',
+        },
       }}
     />
   );

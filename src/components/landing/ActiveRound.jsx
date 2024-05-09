@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   Grid,
   Typography,
@@ -7,26 +7,26 @@ import {
   CircularProgress,
   Box,
   Paper,
-} from "@mui/material";
-import { useWhitelistProjects } from "@lib/hooks/useWhitelistProjects";
-import { useContributionProjects } from "@lib/hooks/useContributionProjects";
-import Image from "next/legacy/image";
-import Link from "next/link";
+} from '@mui/material';
+import { useWhitelistProjects } from '@lib/hooks/useWhitelistProjects';
+import { useContributionProjects } from '@lib/hooks/useContributionProjects';
+import Image from 'next/legacy/image';
+import Link from 'next/link';
 
 var months = [
-  "",
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
+  '',
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
 ];
 
 // PROJECT SCHEMA
@@ -135,9 +135,9 @@ var months = [
 // },
 
 const buttonStyles = {
-  height: "60px",
-  width: "100%",
-  justifyContent: "flex-start",
+  height: '60px',
+  width: '100%',
+  justifyContent: 'flex-start',
 };
 
 const ButtonNextLink = ({
@@ -163,7 +163,7 @@ const ButtonNextLink = ({
   else
     return (
       <Link
-        href={"/" + roundType + "/" + projectName + "/" + roundName + "/"}
+        href={'/' + roundType + '/' + projectName + '/' + roundName + '/'}
         passHref
       >
         <Button variant="contained" sx={buttonStyles}>
@@ -175,25 +175,25 @@ const ButtonNextLink = ({
 
 const CheckButtonType = ({ name, activeRounds, project }) => {
   if (
-    name.toLowerCase().includes("whitelist") &&
-    name.toLowerCase().includes("seed") &&
+    name.toLowerCase().includes('whitelist') &&
+    name.toLowerCase().includes('seed') &&
     activeRounds.some(
       (attr) =>
         attr.projectName
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "") ===
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '') ===
           project.name
             .toLowerCase()
-            .replaceAll(" ", "")
-            .replaceAll(/[^a-zA-Z0-9]/g, "") &&
+            .replaceAll(' ', '')
+            .replaceAll(/[^a-zA-Z0-9]/g, '') &&
         attr.roundName
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "") === "seed" &&
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '') === 'seed' &&
         attr.title
           .toLowerCase()
-          .includes("whitelist" || "white list" || "white-list")
+          .includes('whitelist' || 'white list' || 'white-list'),
     )
   ) {
     return (
@@ -203,28 +203,28 @@ const CheckButtonType = ({ name, activeRounds, project }) => {
         itemName={name}
         projectName={project.name
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "")}
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '')}
       />
     );
   } else if (
-    name.toLowerCase().includes("contribution") &&
-    name.toLowerCase().includes("seed") &&
+    name.toLowerCase().includes('contribution') &&
+    name.toLowerCase().includes('seed') &&
     activeRounds.some(
       (attr) =>
         attr.projectName
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "") ===
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '') ===
           project.name
             .toLowerCase()
-            .replaceAll(" ", "")
-            .replaceAll(/[^a-zA-Z0-9]/g, "") &&
+            .replaceAll(' ', '')
+            .replaceAll(/[^a-zA-Z0-9]/g, '') &&
         attr.roundName
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "") === "seed" &&
-        attr.title.toLowerCase().includes("contribution")
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '') === 'seed' &&
+        attr.title.toLowerCase().includes('contribution'),
     )
   ) {
     return (
@@ -234,31 +234,31 @@ const CheckButtonType = ({ name, activeRounds, project }) => {
         itemName={name}
         projectName={project.name
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "")}
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '')}
       />
     );
   } else if (
-    (name.toLowerCase().includes("whitelist") ||
-      name.toLowerCase().includes("snapshot")) &&
-    name.toLowerCase().includes("staker") &&
+    (name.toLowerCase().includes('whitelist') ||
+      name.toLowerCase().includes('snapshot')) &&
+    name.toLowerCase().includes('staker') &&
     activeRounds.some(
       (attr) =>
         attr.projectName
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "") ===
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '') ===
           project.name
             .toLowerCase()
-            .replaceAll(" ", "")
-            .replaceAll(/[^a-zA-Z0-9]/g, "") &&
+            .replaceAll(' ', '')
+            .replaceAll(/[^a-zA-Z0-9]/g, '') &&
         attr.roundName
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "") === "staker" &&
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '') === 'staker' &&
         attr.title
           .toLowerCase()
-          .includes("whitelist" || "white list" || "white-list")
+          .includes('whitelist' || 'white list' || 'white-list'),
     )
   )
     return (
@@ -268,28 +268,28 @@ const CheckButtonType = ({ name, activeRounds, project }) => {
         itemName={name}
         projectName={project.name
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "")}
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '')}
       />
     );
   else if (
-    name.toLowerCase().includes("contribution") &&
-    name.toLowerCase().includes("staker") &&
+    name.toLowerCase().includes('contribution') &&
+    name.toLowerCase().includes('staker') &&
     activeRounds.some(
       (attr) =>
         attr.projectName
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "") ===
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '') ===
           project.name
             .toLowerCase()
-            .replaceAll(" ", "")
-            .replaceAll(/[^a-zA-Z0-9]/g, "") &&
+            .replaceAll(' ', '')
+            .replaceAll(/[^a-zA-Z0-9]/g, '') &&
         attr.roundName
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "") === "staker" &&
-        attr.title.toLowerCase().includes("contribution")
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '') === 'staker' &&
+        attr.title.toLowerCase().includes('contribution'),
     )
   )
     return (
@@ -299,30 +299,30 @@ const CheckButtonType = ({ name, activeRounds, project }) => {
         itemName={name}
         projectName={project.name
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "")}
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '')}
       />
     );
   else if (
-    name.toLowerCase().includes("whitelist") &&
-    name.toLowerCase().includes("strategic") &&
+    name.toLowerCase().includes('whitelist') &&
+    name.toLowerCase().includes('strategic') &&
     activeRounds.some(
       (attr) =>
         attr.projectName
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "") ===
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '') ===
           project.name
             .toLowerCase()
-            .replaceAll(" ", "")
-            .replaceAll(/[^a-zA-Z0-9]/g, "") &&
+            .replaceAll(' ', '')
+            .replaceAll(/[^a-zA-Z0-9]/g, '') &&
         attr.roundName
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "") === "strategic" &&
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '') === 'strategic' &&
         attr.title
           .toLowerCase()
-          .includes("whitelist" || "white list" || "white-list")
+          .includes('whitelist' || 'white list' || 'white-list'),
     )
   )
     return (
@@ -332,28 +332,28 @@ const CheckButtonType = ({ name, activeRounds, project }) => {
         itemName={name}
         projectName={project.name
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "")}
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '')}
       />
     );
   else if (
-    name.toLowerCase().includes("contribution") &&
-    name.toLowerCase().includes("strategic") &&
+    name.toLowerCase().includes('contribution') &&
+    name.toLowerCase().includes('strategic') &&
     activeRounds.some(
       (attr) =>
         attr.projectName
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "") ===
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '') ===
           project.name
             .toLowerCase()
-            .replaceAll(" ", "")
-            .replaceAll(/[^a-zA-Z0-9]/g, "") &&
+            .replaceAll(' ', '')
+            .replaceAll(/[^a-zA-Z0-9]/g, '') &&
         attr.roundName
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "") === "strategic" &&
-        attr.title.toLowerCase().includes("contribution")
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '') === 'strategic' &&
+        attr.title.toLowerCase().includes('contribution'),
     )
   )
     return (
@@ -363,30 +363,30 @@ const CheckButtonType = ({ name, activeRounds, project }) => {
         itemName={name}
         projectName={project.name
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "")}
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '')}
       />
     );
   else if (
-    name.toLowerCase().includes("whitelist") &&
-    name.toLowerCase().includes("public") &&
+    name.toLowerCase().includes('whitelist') &&
+    name.toLowerCase().includes('public') &&
     activeRounds.some(
       (attr) =>
         attr.projectName
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "") ===
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '') ===
           project.name
             .toLowerCase()
-            .replaceAll(" ", "")
-            .replaceAll(/[^a-zA-Z0-9]/g, "") &&
+            .replaceAll(' ', '')
+            .replaceAll(/[^a-zA-Z0-9]/g, '') &&
         attr.roundName
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "") === "public" &&
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '') === 'public' &&
         attr.title
           .toLowerCase()
-          .includes("whitelist" || "white list" || "white-list")
+          .includes('whitelist' || 'white list' || 'white-list'),
     )
   )
     return (
@@ -396,28 +396,28 @@ const CheckButtonType = ({ name, activeRounds, project }) => {
         itemName={name}
         projectName={project.name
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "")}
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '')}
       />
     );
   else if (
-    name.toLowerCase().includes("contribution") &&
-    name.toLowerCase().includes("public") &&
+    name.toLowerCase().includes('contribution') &&
+    name.toLowerCase().includes('public') &&
     activeRounds.some(
       (attr) =>
         attr.projectName
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "") ===
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '') ===
           project.name
             .toLowerCase()
-            .replaceAll(" ", "")
-            .replaceAll(/[^a-zA-Z0-9]/g, "") &&
+            .replaceAll(' ', '')
+            .replaceAll(/[^a-zA-Z0-9]/g, '') &&
         attr.roundName
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "") === "public" &&
-        attr.title.toLowerCase().includes("contribution")
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '') === 'public' &&
+        attr.title.toLowerCase().includes('contribution'),
     )
   )
     return (
@@ -427,28 +427,28 @@ const CheckButtonType = ({ name, activeRounds, project }) => {
         itemName={name}
         projectName={project.name
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "")}
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '')}
       />
     );
   else if (
-    name.toLowerCase().includes("contribution") &&
-    name.toLowerCase().includes("window") &&
+    name.toLowerCase().includes('contribution') &&
+    name.toLowerCase().includes('window') &&
     activeRounds.some(
       (attr) =>
         attr.projectName
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "") ===
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '') ===
           project.name
             .toLowerCase()
-            .replaceAll(" ", "")
-            .replaceAll(/[^a-zA-Z0-9]/g, "") &&
+            .replaceAll(' ', '')
+            .replaceAll(/[^a-zA-Z0-9]/g, '') &&
         attr.roundName
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "") === "staker" &&
-        attr.title.toLowerCase().includes("contribution")
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '') === 'staker' &&
+        attr.title.toLowerCase().includes('contribution'),
     )
   )
     return (
@@ -458,11 +458,11 @@ const CheckButtonType = ({ name, activeRounds, project }) => {
         itemName={name}
         projectName={project.name
           .toLowerCase()
-          .replaceAll(" ", "")
-          .replaceAll(/[^a-zA-Z0-9]/g, "")}
+          .replaceAll(' ', '')
+          .replaceAll(/[^a-zA-Z0-9]/g, '')}
       />
     );
-  else if (name.toLowerCase().includes("ido"))
+  else if (name.toLowerCase().includes('ido'))
     return (
       <ButtonNextLink
         roundName=""
@@ -499,8 +499,8 @@ const ActiveRound = ({ projects, isLoading }) => {
     return included.includes(
       project.name
         ?.toLowerCase()
-        .replaceAll(" ", "")
-        .replaceAll(/[^a-zA-Z0-9]/g, "")
+        .replaceAll(' ', '')
+        .replaceAll(/[^a-zA-Z0-9]/g, ''),
     );
   };
 
@@ -535,7 +535,7 @@ const ActiveRound = ({ projects, isLoading }) => {
         <>
           <Typography
             variant="h2"
-            sx={{ mt: 0, mb: "48px", textAlign: "center" }}
+            sx={{ mt: 0, mb: '48px', textAlign: 'center' }}
           >
             Active IDOs
           </Typography>
@@ -544,10 +544,10 @@ const ActiveRound = ({ projects, isLoading }) => {
               <CircularProgress
                 size={24}
                 sx={{
-                  position: "absolute",
-                  left: "50%",
-                  marginLeft: "-12px",
-                  marginTop: "72px",
+                  position: 'absolute',
+                  left: '50%',
+                  marginLeft: '-12px',
+                  marginTop: '72px',
                 }}
               />
             </>
@@ -562,13 +562,13 @@ const ActiveRound = ({ projects, isLoading }) => {
                 alignItems="center"
                 spacing={6}
                 sx={{
-                  mb: "80px",
+                  mb: '80px',
                 }}
               >
                 <Grid item md={6} xs={12}>
                   <Paper
                     sx={{
-                      p: "24px",
+                      p: '24px',
                       // height: '100%',
                     }}
                   >
@@ -576,7 +576,7 @@ const ActiveRound = ({ projects, isLoading }) => {
                       container
                       direction="column"
                       justifyContent="space-between"
-                      sx={{ height: "100%" }}
+                      sx={{ height: '100%' }}
                     >
                       <Grid item>
                         <Grid
@@ -585,13 +585,13 @@ const ActiveRound = ({ projects, isLoading }) => {
                           justifyContent="flex-start"
                           alignItems="center"
                           spacing={2}
-                          sx={{ mb: "24px" }}
+                          sx={{ mb: '24px' }}
                         >
                           <Grid item>
                             <Box
                               sx={{
-                                width: "80px",
-                                height: "80px",
+                                width: '80px',
+                                height: '80px',
                               }}
                             >
                               <Image
@@ -613,27 +613,27 @@ const ActiveRound = ({ projects, isLoading }) => {
                             </Typography>
                           </Grid>
                         </Grid>
-                        <Divider sx={{ mb: "24px" }} />
+                        <Divider sx={{ mb: '24px' }} />
                       </Grid>
                       <Grid item>
                         <Typography
                           variant="body2"
                           color="text.secondary"
-                          sx={{ mb: "24px" }}
+                          sx={{ mb: '24px' }}
                         >
                           {project.shortDescription}
                         </Typography>
                         <Link
                           href={
-                            "/projects/" +
+                            '/projects/' +
                             project.name
                               .toLowerCase()
-                              .replaceAll(" ", "")
-                              .replaceAll(/[^a-zA-Z0-9]/g, "")
+                              .replaceAll(' ', '')
+                              .replaceAll(/[^a-zA-Z0-9]/g, '')
                           }
                           passHref
                         >
-                          <Button sx={{ float: "right" }}>Learn More</Button>
+                          <Button sx={{ float: 'right' }}>Learn More</Button>
                         </Link>
                       </Grid>
                     </Grid>
@@ -641,13 +641,13 @@ const ActiveRound = ({ projects, isLoading }) => {
                 </Grid>
                 <Grid item md={6} xs={12}>
                   {project.roadmap.roadmap.map((item, i) => (
-                    <Grid container key={i} sx={{ mb: "24px" }}>
+                    <Grid container key={i} sx={{ mb: '24px' }}>
                       <Grid item xs={2}>
-                        <Typography sx={{ fontSize: ".875rem" }}>
+                        <Typography sx={{ fontSize: '.875rem' }}>
                           {months[parseInt(item.date.slice(5, 7))]}
                         </Typography>
                         <Typography
-                          sx={{ fontSize: "2.25rem", lineHeight: 0.7 }}
+                          sx={{ fontSize: '2.25rem', lineHeight: 0.7 }}
                         >
                           {item.date.slice(8, 10)}
                         </Typography>

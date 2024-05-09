@@ -78,7 +78,7 @@ const CreateProjectForm = () => {
   const [openSuccess, setOpenSuccess] = useState(false);
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again'
+    'Please eliminate form errors and try again',
   );
 
   useEffect(() => {
@@ -156,8 +156,9 @@ const CreateProjectForm = () => {
     } else {
       updateFormData({
         ...formData,
-        [e.target.name]:
-          ['isLaunched', 'isDraft'].includes(e.target.name) ? e.target.checked : e.target.value,
+        [e.target.name]: ['isLaunched', 'isDraft'].includes(e.target.name)
+          ? e.target.checked
+          : e.target.value,
       });
     }
   };
@@ -182,7 +183,7 @@ const CreateProjectForm = () => {
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422'
+            'jwt_token_login_422',
           )}`,
         },
       };
@@ -191,7 +192,7 @@ const CreateProjectForm = () => {
         await axios.post(
           `${process.env.API_URL}/projects/`,
           data,
-          defaultOptions
+          defaultOptions,
         );
         setOpenSuccess(true);
         updateFormData(initialFormData);

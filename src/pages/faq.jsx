@@ -1,28 +1,28 @@
-import { Button, Icon, Box, Typography, CircularProgress } from "@mui/material";
-import Section from "@components/layout/Section";
-import AccordionComponent from "@components/AccordionComponent";
-import { useState, useEffect } from "react";
-import { styled } from "@mui/system";
-import theme from "@styles/theme";
-import Search from "@components/Search";
-import { useSearch } from "@contexts/SearchContext";
-import axios from "axios";
+import { Button, Icon, Box, Typography, CircularProgress } from '@mui/material';
+import Section from '@components/layout/Section';
+import AccordionComponent from '@components/AccordionComponent';
+import { useState, useEffect } from 'react';
+import { styled } from '@mui/system';
+import theme from '@styles/theme';
+import Search from '@components/Search';
+import { useSearch } from '@contexts/SearchContext';
+import axios from 'axios';
 
 const faqItems = [];
 
 const SortButton = styled(Button)({
   borderRadius: `20px`,
-  background: "rgb(46, 46, 51)",
-  color: "rgb(228, 228, 231)",
-  fontSize: "1rem",
-  textTransform: "none",
-  "&:hover": {
-    background: "rgba(63,62,68,255)",
+  background: 'rgb(46, 46, 51)',
+  color: 'rgb(228, 228, 231)',
+  fontSize: '1rem',
+  textTransform: 'none',
+  '&:hover': {
+    background: 'rgba(63,62,68,255)',
   },
 });
 
 const Faq = () => {
-  const [tag, setCategory] = useState("");
+  const [tag, setCategory] = useState('');
   const [loading, setLoading] = useState(false);
   const [apiData, setApiData] = useState(faqItems);
   const [data, setData] = useState(apiData);
@@ -43,7 +43,7 @@ const Faq = () => {
   }, []);
 
   useEffect(() => {
-    if (tag === "") {
+    if (tag === '') {
       setData(apiData);
     } else {
       const newFaqItems = apiData.filter((item) => item.tag.includes(tag));
@@ -52,7 +52,7 @@ const Faq = () => {
   }, [tag, apiData]);
 
   useEffect(() => {
-    if (search != "") {
+    if (search != '') {
       let lowerCase = search.toLowerCase();
       const filtered = apiData.filter((item) => {
         return (
@@ -77,18 +77,18 @@ const Faq = () => {
       >
         <Box
           sx={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "center",
-            flexWrap: "wrap",
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
             gap: 2,
-            mb: "2rem",
+            mb: '2rem',
           }}
         >
           <SortButton
             variant="contained"
             disableElevation
-            onClick={() => setCategory("")}
+            onClick={() => setCategory('')}
             startIcon={<Icon>list</Icon>}
           >
             View All
@@ -96,14 +96,14 @@ const Faq = () => {
           <SortButton
             variant="contained"
             disableElevation
-            onClick={() => setCategory("token")}
+            onClick={() => setCategory('token')}
             sx={
-              tag === "token"
+              tag === 'token'
                 ? {
-                    background: "rgba(49, 151, 149, 0.25)",
+                    background: 'rgba(49, 151, 149, 0.25)',
                     color: theme.palette.primary.main,
-                    "&:hover": {
-                      background: "rgba(49, 151, 149, 0.25)",
+                    '&:hover': {
+                      background: 'rgba(49, 151, 149, 0.25)',
                     },
                   }
                 : {}
@@ -115,14 +115,14 @@ const Faq = () => {
           <SortButton
             variant="contained"
             disableElevation
-            onClick={() => setCategory("staking")}
+            onClick={() => setCategory('staking')}
             sx={
-              tag === "Staking"
+              tag === 'Staking'
                 ? {
-                    background: "rgba(128, 90, 213, 0.25)",
+                    background: 'rgba(128, 90, 213, 0.25)',
                     color: theme.palette.secondary.main,
-                    "&:hover": {
-                      background: "rgba(128, 90, 213, 0.25)",
+                    '&:hover': {
+                      background: 'rgba(128, 90, 213, 0.25)',
                     },
                   }
                 : {}
@@ -134,14 +134,14 @@ const Faq = () => {
           <SortButton
             variant="contained"
             disableElevation
-            onClick={() => setCategory("company")}
+            onClick={() => setCategory('company')}
             sx={
-              tag === "company"
+              tag === 'company'
                 ? {
-                    background: "rgba(90, 103, 216, 0.25)",
+                    background: 'rgba(90, 103, 216, 0.25)',
                     color: theme.palette.tertiary.main,
-                    "&:hover": {
-                      background: "rgba(90, 103, 216, 0.25)",
+                    '&:hover': {
+                      background: 'rgba(90, 103, 216, 0.25)',
                     },
                   }
                 : {}
@@ -157,9 +157,9 @@ const Faq = () => {
           <CircularProgress
             size={24}
             sx={{
-              position: "absolute",
-              left: "50%",
-              marginLeft: "-12px",
+              position: 'absolute',
+              left: '50%',
+              marginLeft: '-12px',
             }}
           />
         ) : data.length != 0 ? (

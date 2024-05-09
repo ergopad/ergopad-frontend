@@ -6,9 +6,9 @@ interface Signature {
 type NonceResponse = {
   nonce: string;
   userId: string;
-}
+};
 
-type Anchor = "bottom" | "left" | "right" | "top" | undefined
+type Anchor = 'bottom' | 'left' | 'right' | 'top' | undefined;
 
 type TWalletListItem = {
   name: string;
@@ -17,7 +17,7 @@ type TWalletListItem = {
   iconDark: string;
   mobile: boolean;
   url: string;
-}
+};
 
 type TProRataFormProps = {
   id: number;
@@ -35,4 +35,4 @@ type TProRataFormProps = {
   whitelistSlug: string | null;
   recipientAddress: string | null;
   restrictedCountries: string[];
-}
+};

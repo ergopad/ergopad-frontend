@@ -5,7 +5,6 @@ import { ListItem } from '@mui/material';
 const filter = createFilterOptions();
 
 const AutoCompleteSelect = ({ label, options, value, setValue }) => {
-
   return (
     <Autocomplete
       value={value}
@@ -29,7 +28,7 @@ const AutoCompleteSelect = ({ label, options, value, setValue }) => {
         const { inputValue } = params;
         // Suggest the creation of a new value
         const isExisting = options.some(
-          (option) => inputValue === option.title
+          (option) => inputValue === option.title,
         );
         if (inputValue !== '' && !isExisting) {
           filtered.push({

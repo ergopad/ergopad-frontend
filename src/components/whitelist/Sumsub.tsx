@@ -5,28 +5,33 @@ import SumsubWebSdk from '@sumsub/websdk-react';
 import { Box, Typography, useTheme } from '@mui/material';
 
 interface SumsubProps {
-  setSumsubStatus: React.Dispatch<React.SetStateAction<string | undefined>>
+  setSumsubStatus: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
 const Sumsub: FC<SumsubProps> = ({ setSumsubStatus }) => {
-  const theme = useTheme()
-  const [sumsubId, setSumsubId] = useState<string | undefined | null>(undefined)
+  const theme = useTheme();
+  const [sumsubId, setSumsubId] = useState<string | undefined | null>(
+    undefined,
+  );
   const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [userId, setUserId] = useState('')
-  const { sessionStatus, sessionData } = useWallet()
+  const [userId, setUserId] = useState('');
+  const { sessionStatus, sessionData } = useWallet();
 
-  const checkVerificationResult = trpc.user.getSumsubResult.useQuery(undefined, { enabled: false, retry: false })
+  const checkVerificationResult = trpc.user.getSumsubResult.useQuery(
+    undefined,
+    { enabled: false, retry: false },
+  );
 
   useEffect(() => {
     if (sessionStatus === 'authenticated' && sessionData?.user.id) {
-      const id = sessionData.user.id
-      setUserId(id)
+      const id = sessionData.user.id;
+      setUserId(id);
       // console.log(id)
       // Fetch the access token from your API when the component mounts
       fetch(`/api/sumsub/getAccessToken?userId=${id}`)
-        .then(response => response.json())
-        .then(data => setAccessToken(data.token))
-        .catch(error => console.error('Error fetching access token:', error));
+        .then((response) => response.json())
+        .then((data) => setAccessToken(data.token))
+        .catch((error) => console.error('Error fetching access token:', error));
     }
   }, [sessionStatus]);
 
@@ -36,7 +41,7 @@ const Sumsub: FC<SumsubProps> = ({ setSumsubStatus }) => {
     const data = await response.json();
     setAccessToken(data.token);
     return data.token;
-  }
+  };
 
   const config = {
     // Configuration settings for the SDK
@@ -48,31 +53,36 @@ const Sumsub: FC<SumsubProps> = ({ setSumsubStatus }) => {
 
   const messageHandler = (message: any) => {
     if (message.includes('applicantReviewComplete')) {
-      checkVerificationResult.refetch()
+      checkVerificationResult
+        .refetch()
         .then((response) => {
-          setSumsubStatus(response.data?.sumsubResult?.reviewAnswer)
-          setSumsubId(response.data?.sumsubId)
+          setSumsubStatus(response.data?.sumsubResult?.reviewAnswer);
+          setSumsubId(response.data?.sumsubId);
         })
         .catch((error: any) => {
           console.error(error);
         });
     }
     // console.log("Received message from SDK:", message);
-  }
+  };
 
   const errorHandler = (error: any) => {
     // Handle errors from the SDK
-    console.error("Received error from SDK:", error);
-  }
-
+    console.error('Received error from SDK:', error);
+  };
 
   return (
     <>
       {accessToken ? (
-        <Box sx={{
-          p: 4, pb: 0, background: '#ffffff', borderRadius: '16px',
-          minHeight: { xs: '457px', md: '570px' },
-        }}>
+        <Box
+          sx={{
+            p: 4,
+            pb: 0,
+            background: '#ffffff',
+            borderRadius: '16px',
+            minHeight: { xs: '457px', md: '570px' },
+          }}
+        >
           <SumsubWebSdk
             accessToken={accessToken}
             expirationHandler={expirationHandler}
@@ -83,13 +93,14 @@ const Sumsub: FC<SumsubProps> = ({ setSumsubStatus }) => {
           />
         </Box>
       ) : (
-        <Box sx={{
-          p: 4,
-          background: '#ffffff',
-          borderRadius: '16px',
-          height: { xs: '457px', md: '570px' },
-          position: 'relative'
-        }}
+        <Box
+          sx={{
+            p: 4,
+            background: '#ffffff',
+            borderRadius: '16px',
+            height: { xs: '457px', md: '570px' },
+            position: 'relative',
+          }}
         >
           <Typography
             sx={{
@@ -97,7 +108,7 @@ const Sumsub: FC<SumsubProps> = ({ setSumsubStatus }) => {
               position: 'absolute',
               left: '50%',
               top: '50%',
-              transform: 'translate(-50%,-50%)'
+              transform: 'translate(-50%,-50%)',
             }}
           >
             No KYC access token, please sign in first.

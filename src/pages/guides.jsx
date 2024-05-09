@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import {
   Typography,
   Container,
@@ -12,34 +12,34 @@ import {
   CardContent,
   CardActions,
   IconButton,
-} from "@mui/material";
-import ShareIcon from "@mui/icons-material/Share";
-import { styled } from "@mui/system";
-import PageTitle from "@components/PageTitle";
-import Search from "@components/Search";
-import CopyToClipboard from "@components/CopyToClipboard";
-import { useSearch } from "../utils/SearchContext";
-import axios from "axios";
+} from '@mui/material';
+import ShareIcon from '@mui/icons-material/Share';
+import { styled } from '@mui/system';
+import PageTitle from '@components/PageTitle';
+import Search from '@components/Search';
+import CopyToClipboard from '@components/CopyToClipboard';
+import { useSearch } from '../utils/SearchContext';
+import axios from 'axios';
 
 const SortButton = styled(Button)({
   borderRadius: `20px`,
-  background: "rgb(46, 46, 51)",
-  color: "rgb(228, 228, 231)",
-  fontSize: "1rem",
-  textTransform: "none",
-  "&:hover": {
-    background: "rgba(63,62,68,255)",
+  background: 'rgb(46, 46, 51)',
+  color: 'rgb(228, 228, 231)',
+  fontSize: '1rem',
+  textTransform: 'none',
+  '&:hover': {
+    background: 'rgba(63,62,68,255)',
   },
 });
 
 const generateYoutubeBannerUrl = (link) => {
-  const params = new URLSearchParams(link.split("?")[1]);
-  const v = params.get("v") ? params.get("v") : "default";
+  const params = new URLSearchParams(link.split('?')[1]);
+  const v = params.get('v') ? params.get('v') : 'default';
   return `https://img.youtube.com/vi/${v}/hqdefault.jpg`;
 };
 
 const Guides = () => {
-  const [category, setCategory] = useState("all");
+  const [category, setCategory] = useState('all');
   const [categories, setCategories] = useState([]);
   const [tutorials, setTutorials] = useState([]);
   const { search } = useSearch();
@@ -68,7 +68,7 @@ const Guides = () => {
   const filteredTutorials = tutorials.filter(
     (tutorial) =>
       tutorial.title.toLowerCase().includes(search.toLowerCase()) &&
-      (category === "all" || tutorial.category === category)
+      (category === 'all' || tutorial.category === category),
   );
 
   const tutorialCard = (tutorial) => {
@@ -76,15 +76,15 @@ const Guides = () => {
       <Grid item xs={12} sm={6} md={4} key={tutorial.id}>
         <Card
           sx={{
-            display: "flex",
-            height: "100%",
-            flexDirection: "column",
-            justifyContent: "space-between",
+            display: 'flex',
+            height: '100%',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
           }}
         >
           <CardActionArea
             onClick={() => {
-              window.open(tutorial.link, "_blank");
+              window.open(tutorial.link, '_blank');
             }}
           >
             <CardMedia
@@ -92,7 +92,7 @@ const Guides = () => {
               alt=""
               height="180"
               image={
-                tutorial.linkType === "youtube" &&
+                tutorial.linkType === 'youtube' &&
                 tutorial.config.use_youtube_banner
                   ? generateYoutubeBannerUrl(tutorial.link)
                   : tutorial.bannerImgUrl
@@ -107,7 +107,7 @@ const Guides = () => {
               </Typography>
             </CardContent>
           </CardActionArea>
-          <CardActions sx={{ justifyContent: "right" }}>
+          <CardActions sx={{ justifyContent: 'right' }}>
             <CopyToClipboard>
               {({ copy }) => (
                 <IconButton
@@ -126,16 +126,16 @@ const Guides = () => {
 
   return (
     <>
-      <Container sx={{ mx: "auto" }}>
+      <Container sx={{ mx: 'auto' }}>
         <PageTitle
           title="Learn how to use our dApps"
           subtitle="You can watch the videos or follow the guides and learn how our various dApps can be used"
         />
         <Box
           sx={{
-            display: "flex",
-            width: "100%",
-            justifyContent: "center",
+            display: 'flex',
+            width: '100%',
+            justifyContent: 'center',
             mb: 2,
           }}
         >
@@ -143,18 +143,18 @@ const Guides = () => {
         </Box>
         <Box
           sx={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "center",
-            flexWrap: "wrap",
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
             gap: 2,
-            mb: "2rem",
+            mb: '2rem',
           }}
         >
           <SortButton
             variant="contained"
             disableElevation
-            onClick={() => setCategory("all")}
+            onClick={() => setCategory('all')}
           >
             View All
           </SortButton>
@@ -174,9 +174,9 @@ const Guides = () => {
             <CircularProgress
               size={24}
               sx={{
-                position: "absolute",
-                left: "50%",
-                marginLeft: "-12px",
+                position: 'absolute',
+                left: '50%',
+                marginLeft: '-12px',
               }}
             />
           )}

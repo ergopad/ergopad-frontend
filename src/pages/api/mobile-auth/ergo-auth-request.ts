@@ -8,13 +8,16 @@ interface ErgoAuthRequest {
   signingMessage: string;
   sigmaBoolean: string;
   userMessage: string;
-  messageSeverity: "INFORMATION";
+  messageSeverity: 'INFORMATION';
   replyTo: string;
 }
 
-export default async function ergoauthLoginMobile(req: NextApiRequest, res: NextApiResponse) {
+export default async function ergoauthLoginMobile(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   const { verificationId, address } = req.query;
-  const addressString = address?.toString()
+  const addressString = address?.toString();
 
   // console.log('\x1b[32m', 'verificationID: ', '\x1b[0m', verificationId);
   // console.log('\x1b[32m', 'addressString: ', '\x1b[0m', addressString);
@@ -37,13 +40,15 @@ export default async function ergoauthLoginMobile(req: NextApiRequest, res: Next
   }
 
   if (!addressString) {
-    if (user.status === 'pending') deleteEmptyUser(user.id)
+    if (user.status === 'pending') deleteEmptyUser(user.id);
     return res.status(422).json({ error: 'No address provided' });
   }
 
   if (!user.nonce) {
-    if (user.status === 'pending') deleteEmptyUser(user.id)
-    return res.status(422).json({ error: 'Signing message was not generated, please try again' });
+    if (user.status === 'pending') deleteEmptyUser(user.id);
+    return res
+      .status(422)
+      .json({ error: 'Signing message was not generated, please try again' });
   }
 
   try {
@@ -54,7 +59,7 @@ export default async function ergoauthLoginMobile(req: NextApiRequest, res: Next
     const treeBytes = Array.from(tree.toBytes());
     treeBytes.shift();
     treeBytes.shift();
-    const sigmaBoolean = Buffer.from(treeBytes).toString("base64");
+    const sigmaBoolean = Buffer.from(treeBytes).toString('base64');
 
     const ergoAuthRequest: ErgoAuthRequest = {
       address: addressString,
@@ -67,7 +72,7 @@ export default async function ergoauthLoginMobile(req: NextApiRequest, res: Next
     // console.log('\x1b[32m', 'Ergo auth request: ', '\x1b[0m', ergoAuthRequest);
     res.status(200).json(ergoAuthRequest);
   } catch (e: any) {
-    if (user.status === 'pending') deleteEmptyUser(user.id)
+    if (user.status === 'pending') deleteEmptyUser(user.id);
     res.status(500).json({ error: `ERR::login::${e.message}` });
   }
 }

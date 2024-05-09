@@ -51,7 +51,7 @@ const EditAnnouncementForm = () => {
   const [openSuccess, setOpenSuccess] = useState(false);
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again'
+    'Please eliminate form errors and try again',
   );
 
   useEffect(() => {
@@ -124,7 +124,7 @@ const EditAnnouncementForm = () => {
       const id = formData.id;
       if (id) {
         const res = await axios.get(
-          `${process.env.API_URL}/announcements/${id}`
+          `${process.env.API_URL}/announcements/${id}`,
         );
         updateFormData({ ...res.data });
         setFormErrors(initialFormErrors);
@@ -155,7 +155,7 @@ const EditAnnouncementForm = () => {
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422'
+            'jwt_token_login_422',
           )}`,
         },
       };
@@ -164,7 +164,7 @@ const EditAnnouncementForm = () => {
         await axios.put(
           `${process.env.API_URL}/announcements/${id}`,
           data,
-          defaultOptions
+          defaultOptions,
         );
         setOpenSuccess(true);
         updateFormData(initialFormData);

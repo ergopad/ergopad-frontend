@@ -13,8 +13,7 @@ declare module '@mui/material/styles' {
   }
 }
 
-export const themeSetup =
-{
+export const themeSetup = {
   dark: {
     background: 'rgb( 29, 29, 32 )',
     greyBackground: 'rgb(46, 46, 51)',
@@ -22,9 +21,9 @@ export const themeSetup =
     secondaryText: 'rgb(162, 162, 168)',
     borderColor: 'rgba(82,82,90,1)',
     dividerColor: 'rgba(255,255,255,0.08)',
-    primaryMain: '#3ABAB4'
+    primaryMain: '#3ABAB4',
   },
-}
+};
 
 // Create a theme instance.
 let theme = createTheme({
@@ -86,8 +85,8 @@ let theme = createTheme({
           '&:hover': {
             backgroundColor: 'rgba(95, 95, 99, 1)',
           },
-        }
-      }
+        },
+      },
     },
     // MuiAppBar: {
     //   variants: [
@@ -102,9 +101,9 @@ let theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          textTransform: 'none'
-        }
-      }
+          textTransform: 'none',
+        },
+      },
     },
     MuiTextField: {
       variants: [
@@ -119,16 +118,16 @@ let theme = createTheme({
             //     color: themeSetup.dark.secondaryText,
             //   },
             // },
-          }
-        }
-      ]
+          },
+        },
+      ],
     },
     MuiTableCell: {
       styleOverrides: {
         root: {
-          borderColor: themeSetup.dark.dividerColor
-        }
-      }
+          borderColor: themeSetup.dark.dividerColor,
+        },
+      },
     },
     MuiFilledInput: {
       styleOverrides: {
@@ -147,13 +146,14 @@ let theme = createTheme({
             display: 'none',
           },
           borderColor: 'rgba(200, 225, 255, 0.2)',
-          background: 'radial-gradient(at right top, rgba(16,20,34,0.4), rgba(1, 4, 10, 0.4))',
+          background:
+            'radial-gradient(at right top, rgba(16,20,34,0.4), rgba(1, 4, 10, 0.4))',
           boxShadow: `2px 2px 5px 3px rgba(0,0,0,0.1)`,
           '&:hover': {
-            borderColor: themeSetup.dark.primaryMain
-          }
-        }
-      }
+            borderColor: themeSetup.dark.primaryMain,
+          },
+        },
+      },
     },
   },
 });
@@ -227,14 +227,14 @@ theme.typography.subtitle1 = {
   letterSpacing: '-.02em',
   fontWeight: '400',
   fontFamily: 'Inter, sans-serif',
-  color: theme.palette.text.secondary
-}
+  color: theme.palette.text.secondary,
+};
 
 theme.typography.body2 = {
   color: theme.palette.text.secondary,
   fontSize: '1.125rem',
   marginBottom: '1rem',
-  display: 'block'
-}
+  display: 'block',
+};
 
 export default theme;

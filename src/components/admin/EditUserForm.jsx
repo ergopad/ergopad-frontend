@@ -46,7 +46,7 @@ const EditUserForm = () => {
   const [openSuccess, setOpenSuccess] = useState(false);
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again'
+    'Please eliminate form errors and try again',
   );
 
   // get initial data
@@ -58,13 +58,13 @@ const EditUserForm = () => {
         const defaultOptions = {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem(
-              'jwt_token_login_422'
+              'jwt_token_login_422',
             )}`,
           },
         };
         const res = await axios.get(
           `${process.env.API_URL}/users/me`,
-          defaultOptions
+          defaultOptions,
         );
         updateFormData({ ...formData, ...res.data });
       } catch (e) {
@@ -132,7 +132,7 @@ const EditUserForm = () => {
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422'
+            'jwt_token_login_422',
           )}`,
         },
       };
@@ -141,7 +141,7 @@ const EditUserForm = () => {
         await axios.put(
           `${process.env.API_URL}/users/${formData.id}/password`,
           data,
-          defaultOptions
+          defaultOptions,
         );
         setOpenSuccess(true);
         updateFormData({ ...formData, password: '' });

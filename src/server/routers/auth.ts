@@ -7,9 +7,11 @@ import { generateNonceForLogin } from '../utils/nonce';
 
 export const authRouter = createTRPCRouter({
   initiateLogin: publicProcedure
-    .input(z.object({
-      address: z.string()
-    }))
+    .input(
+      z.object({
+        address: z.string(),
+      }),
+    )
     .mutation(async ({ input }) => {
       const verificationId = nanoid();
       const nonce = await generateNonceForLogin(input.address); // this will create the user if one doesn't exist
@@ -23,7 +25,7 @@ export const authRouter = createTRPCRouter({
       }
 
       if (!user.nonce) {
-        await deleteEmptyUser(nonce.userId) // remove empty user if something went wrong
+        await deleteEmptyUser(nonce.userId); // remove empty user if something went wrong
         throw new Error(`Nonce not generated correctly`);
       }
 
@@ -47,16 +49,18 @@ export const authRouter = createTRPCRouter({
       return { verificationId, nonce: nonce };
     }),
   checkLoginStatus: publicProcedure
-    .input(z.object({
-      verificationId: z.string(),
-    }))
+    .input(
+      z.object({
+        verificationId: z.string(),
+      }),
+    )
     .query(async ({ input }) => {
       const loginRequest = await prisma.loginRequest.findUnique({
         where: { verificationId: input.verificationId },
       });
 
       if (!loginRequest) {
-        throw new Error("Invalid verificationId");
+        throw new Error('Invalid verificationId');
       }
 
       if (loginRequest.status === 'PENDING') {
@@ -67,7 +71,7 @@ export const authRouter = createTRPCRouter({
         return {
           status: 'SIGNED',
           signedMessage: loginRequest.signedMessage,
-          proof: loginRequest.proof
+          proof: loginRequest.proof,
         };
       }
     }),

@@ -91,12 +91,19 @@ const AssetModal = ({ open, handleClose, asset, type, navigatorLanguage }) => {
             <strong>Token:</strong> {asset?.token}
           </pre>
           <pre>
-            <strong>Amount:</strong> {asset?.amount?.toLocaleString(navigatorLanguage, { maximumFractionDigits: 0 })}
+            <strong>Amount:</strong>{' '}
+            {asset?.amount?.toLocaleString(navigatorLanguage, {
+              maximumFractionDigits: 0,
+            })}
           </pre>
           {asset?.amountUSD != 0 && (
             <pre>
               <strong>Average Price:</strong> $
-              {getAveragePrice(asset?.amount, asset?.amountUSD).toLocaleString(navigatorLanguage, { maximumFractionDigits: 4 })} USD
+              {getAveragePrice(asset?.amount, asset?.amountUSD).toLocaleString(
+                navigatorLanguage,
+                { maximumFractionDigits: 4 },
+              )}{' '}
+              USD
             </pre>
           )}
           <Accordion>
@@ -107,17 +114,17 @@ const AssetModal = ({ open, handleClose, asset, type, navigatorLanguage }) => {
               {Object.keys(metadata)
                 .filter((key) => !key.match(/^[0-9]+$/))
                 .map((key, i) => (
-                    <Typography key={i} sx={{ fontSize: '0.9rem', mb: 1 }}>
-                      <strong>
-                        {key.charAt(0).toUpperCase() + key.slice(1)}:
-                      </strong>{' '}
-                      {metadata[key]}
-                    </Typography>
+                  <Typography key={i} sx={{ fontSize: '0.9rem', mb: 1 }}>
+                    <strong>
+                      {key.charAt(0).toUpperCase() + key.slice(1)}:
+                    </strong>{' '}
+                    {metadata[key]}
+                  </Typography>
                 ))}
             </AccordionDetails>
           </Accordion>
         </Typography>
-        {asset?.r9 && type !== "AudioNFT" ? (
+        {asset?.r9 && type !== 'AudioNFT' ? (
           <Paper variant="outlined" sx={{ mt: 5 }}>
             <img width="100%" src={asset?.r9} alt={asset?.name} />
           </Paper>

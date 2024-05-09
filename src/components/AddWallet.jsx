@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import {
   Button,
   Dialog,
@@ -15,17 +15,17 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-} from "@mui/material";
-import PaginatedTable from "@components/PaginatedTable";
-import { useWallet } from "@contexts/WalletContext";
-import { useAddWallet } from "@contexts/AddWalletContext";
-import { Address } from "@utils/Address";
-import theme from "@styles/theme";
+} from '@mui/material';
+import PaginatedTable from '@components/PaginatedTable';
+import { useWallet } from '@contexts/WalletContext';
+import { useAddWallet } from '@contexts/AddWalletContext';
+import { Address } from '@utils/Address';
+import theme from '@styles/theme';
 
-const WALLET_ADDRESS = "wallet_address_7621";
-const WALLET_ADDRESS_LIST = "wallet_address_list_1283";
-const DAPP_CONNECTED = "dapp_connected_6329";
-const DAPP_NAME = "dapp_name_8930";
+const WALLET_ADDRESS = 'wallet_address_7621';
+const WALLET_ADDRESS_LIST = 'wallet_address_list_1283';
+const DAPP_CONNECTED = 'dapp_connected_6329';
+const DAPP_NAME = 'dapp_name_8930';
 
 /**
  * Note on es-lint disable lines:
@@ -41,7 +41,7 @@ const DAPP_NAME = "dapp_name_8930";
  */
 export const AddWallet = () => {
   const router = useRouter();
-  const [walletInput, setWalletInput] = useState("");
+  const [walletInput, setWalletInput] = useState('');
   const { addWalletOpen, setAddWalletOpen } = useAddWallet();
   const { wallet, setWallet, dAppWallet, setDAppWallet } = useWallet();
   const [init, setInit] = useState(false);
@@ -73,14 +73,14 @@ export const AddWallet = () => {
     ) {
       setDAppWallet({
         connected:
-          localStorage.getItem(DAPP_CONNECTED) === "true" ? true : false,
+          localStorage.getItem(DAPP_CONNECTED) === 'true' ? true : false,
         name: localStorage.getItem(DAPP_NAME),
         addresses: JSON.parse(localStorage.getItem(WALLET_ADDRESS_LIST)),
       });
     }
     // refresh connection
     try {
-      if (localStorage.getItem(DAPP_CONNECTED) === "true") {
+      if (localStorage.getItem(DAPP_CONNECTED) === 'true') {
         window.ergoConnector[localStorage.getItem(DAPP_NAME)]
           .isConnected()
           .then((res) => {
@@ -107,7 +107,7 @@ export const AddWallet = () => {
       localStorage.setItem(DAPP_NAME, dAppWallet.name);
       localStorage.setItem(
         WALLET_ADDRESS_LIST,
-        JSON.stringify(dAppWallet.addresses)
+        JSON.stringify(dAppWallet.addresses),
       );
     }
   }, [dAppWallet, init]);
@@ -131,20 +131,20 @@ export const AddWallet = () => {
     setDAppError(false);
     setDAppWallet({
       connected: false,
-      name: "",
+      name: '',
       addresses: [],
     });
   };
 
   const clearWallet = (hardRefresh = false) => {
     // clear state and local storage
-    setWalletInput("");
-    setWallet("");
+    setWalletInput('');
+    setWallet('');
     // clear dApp state
     setDAppError(false);
     setDAppWallet({
       connected: false,
-      name: "",
+      name: '',
       addresses: [],
     });
     if (hardRefresh) router.reload();
@@ -187,7 +187,7 @@ export const AddWallet = () => {
       const address_unused = await ergo.get_unused_addresses(); // eslint-disable-line
       const addresses = [...address_used, ...address_unused];
       // use the first used address if available or the first unused one if not as default
-      const address = addresses.length ? addresses[0] : "";
+      const address = addresses.length ? addresses[0] : '';
       setWallet(address);
       setWalletInput(address);
       // update dApp state
@@ -202,7 +202,7 @@ export const AddWallet = () => {
       // update dApp state
       setDAppWallet({
         connected: false,
-        name: "",
+        name: '',
         addresses: [],
       });
       setDAppError(true);
@@ -239,17 +239,17 @@ export const AddWallet = () => {
       <Dialog open={addWalletOpen} onClose={handleClose}>
         <DialogTitle
           sx={{
-            textAlign: "center",
+            textAlign: 'center',
             mb: 0,
             pb: 0,
-            fontWeight: "800",
-            fontSize: "32px",
+            fontWeight: '800',
+            fontSize: '32px',
           }}
         >
-          {dAppWallet.connected ? "DApp Connected" : "Connect Wallet"}
+          {dAppWallet.connected ? 'DApp Connected' : 'Connect Wallet'}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ textAlign: "center", mb: "24px" }}>
+          <DialogContentText sx={{ textAlign: 'center', mb: '24px' }}>
             Your wallet info will never be stored on our server.
           </DialogContentText>
           {!dAppWallet.connected && (
@@ -257,26 +257,26 @@ export const AddWallet = () => {
               <Grid item xs={4}>
                 <Button
                   // disabled={loading || wallet}
-                  onClick={() => dAppConnect("nautilus")}
+                  onClick={() => dAppConnect('nautilus')}
                   sx={{
-                    color: "#fff",
-                    textTransform: "none",
+                    color: '#fff',
+                    textTransform: 'none',
                     backgroundColor: theme.palette.primary.main,
-                    "&:hover": {
-                      backgroundColor: "#4BD0C9",
-                      boxShadow: "none",
+                    '&:hover': {
+                      backgroundColor: '#4BD0C9',
+                      boxShadow: 'none',
                     },
-                    "&:active": {
-                      backgroundColor: "rgba(49, 151, 149, 0.25)",
+                    '&:active': {
+                      backgroundColor: 'rgba(49, 151, 149, 0.25)',
                     },
-                    width: "100%",
+                    width: '100%',
                   }}
                 >
                   Nautilus
                   {loading && (
                     <CircularProgress
-                      sx={{ ml: 2, color: "white" }}
-                      size={"1.2rem"}
+                      sx={{ ml: 2, color: 'white' }}
+                      size={'1.2rem'}
                     />
                   )}
                 </Button>
@@ -284,26 +284,26 @@ export const AddWallet = () => {
               <Grid item xs={4}>
                 <Button
                   // disabled={loading || wallet}
-                  onClick={() => dAppConnect("safew")}
+                  onClick={() => dAppConnect('safew')}
                   sx={{
-                    color: "#fff",
-                    textTransform: "none",
+                    color: '#fff',
+                    textTransform: 'none',
                     backgroundColor: theme.palette.secondary.main,
-                    "&:hover": {
-                      backgroundColor: "#B886F9",
-                      boxShadow: "none",
+                    '&:hover': {
+                      backgroundColor: '#B886F9',
+                      boxShadow: 'none',
                     },
-                    "&:active": {
-                      backgroundColor: "rgba(128, 90, 213, 0.25)",
+                    '&:active': {
+                      backgroundColor: 'rgba(128, 90, 213, 0.25)',
                     },
-                    width: "100%",
+                    width: '100%',
                   }}
                 >
                   SafeW
                   {loading && (
                     <CircularProgress
-                      sx={{ ml: 2, color: "white" }}
-                      size={"1.2rem"}
+                      sx={{ ml: 2, color: 'white' }}
+                      size={'1.2rem'}
                     />
                   )}
                 </Button>
@@ -312,17 +312,17 @@ export const AddWallet = () => {
                 <Button
                   onClick={() => setMobileAdd(!mobileAdd)}
                   sx={{
-                    color: "#fff",
-                    textTransform: "none",
+                    color: '#fff',
+                    textTransform: 'none',
                     backgroundColor: theme.palette.tertiary.main,
-                    "&:hover": {
-                      backgroundColor: "#8096F7",
-                      boxShadow: "none",
+                    '&:hover': {
+                      backgroundColor: '#8096F7',
+                      boxShadow: 'none',
                     },
-                    "&:active": {
-                      backgroundColor: "rgba(90, 103, 216, 0.25)",
+                    '&:active': {
+                      backgroundColor: 'rgba(90, 103, 216, 0.25)',
                     },
-                    width: "100%",
+                    width: '100%',
                   }}
                 >
                   Mobile
@@ -332,8 +332,8 @@ export const AddWallet = () => {
           )}
           <FormHelperText error={true}>
             {dAppError
-              ? "Failed to connect to wallet. Please retry after refreshing page."
-              : ""}
+              ? 'Failed to connect to wallet. Please retry after refreshing page.'
+              : ''}
           </FormHelperText>
           {dAppWallet.connected && (
             <Accordion sx={{ mt: 1 }}>
@@ -364,29 +364,29 @@ export const AddWallet = () => {
               onChange={handleWalletFormChange}
               error={!isAddressValid(walletInput)}
               sx={{
-                "& .MuiOutlinedInput-input:-webkit-autofill": {
-                  boxShadow: "0 0 0 100px rgba(35, 35, 39, 1) inset",
+                '& .MuiOutlinedInput-input:-webkit-autofill': {
+                  boxShadow: '0 0 0 100px rgba(35, 35, 39, 1) inset',
                 },
               }}
             />
             <FormHelperText error={true}>
-              {!isAddressValid(walletInput) ? "Invalid ergo address." : ""}
+              {!isAddressValid(walletInput) ? 'Invalid ergo address.' : ''}
             </FormHelperText>
           </Collapse>
         </DialogContent>
-        <DialogActions sx={{ justifyContent: "space-around", pb: 2 }}>
-          <Button sx={{ width: "150px" }} onClick={handleClose}>
+        <DialogActions sx={{ justifyContent: 'space-around', pb: 2 }}>
+          <Button sx={{ width: '150px' }} onClick={handleClose}>
             Close Window
           </Button>
           <Button
-            sx={{ width: "150px" }}
+            sx={{ width: '150px' }}
             disabled={!wallet}
             onClick={() => clearWallet(true)}
           >
             Remove Wallet
           </Button>
           <Button
-            sx={{ width: "150px" }}
+            sx={{ width: '150px' }}
             onClick={handleSubmitWallet}
             disabled={!isAddressValid(walletInput) || dAppWallet.connected}
           >

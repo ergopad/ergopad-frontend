@@ -18,26 +18,26 @@ interface ChangeDefaultAddressProps {
   title: string;
 }
 
-const ChangeDefaultAddress: FC<ChangeDefaultAddressProps> = ({
-  title
-}) => {
-  const { sessionStatus, sessionData, fetchSessionData, providerLoading, setProviderLoading } = useWallet()
+const ChangeDefaultAddress: FC<ChangeDefaultAddressProps> = ({ title }) => {
+  const {
+    sessionStatus,
+    sessionData,
+    fetchSessionData,
+    providerLoading,
+    setProviderLoading,
+  } = useWallet();
   const [addressOptions, setAddressOptions] = useState<string[]>([]);
   const [defaultAddress, setDefaultAddress] = useState('');
-  const changeLoginAddressMutation = trpc.user.changeLoginAddress.useMutation()
+  const changeLoginAddressMutation = trpc.user.changeLoginAddress.useMutation();
 
-  const shouldFetch = sessionStatus === "authenticated";
-  const walletsQuery = trpc.user.getWallets.useQuery(
-    undefined,
-    {
-
-      enabled: shouldFetch
-    }
-  )
+  const shouldFetch = sessionStatus === 'authenticated';
+  const walletsQuery = trpc.user.getWallets.useQuery(undefined, {
+    enabled: shouldFetch,
+  });
 
   const getWallets = async (): Promise<Wallet[]> => {
     if (sessionStatus !== 'authenticated') {
-      return []
+      return [];
     }
     const fetchResult = await walletsQuery.refetch();
     return fetchResult && fetchResult.data ? fetchResult.data.wallets : [];
@@ -45,48 +45,57 @@ const ChangeDefaultAddress: FC<ChangeDefaultAddressProps> = ({
 
   const updateLoginAddress = async (address: string) => {
     try {
-      setProviderLoading(true)
+      setProviderLoading(true);
       const changeLogin = await changeLoginAddressMutation.mutateAsync({
-        changeAddress: address
-      })
+        changeAddress: address,
+      });
       if (changeLogin) {
-        await fetchSessionData()
-        setProviderLoading(false)
+        await fetchSessionData();
+        setProviderLoading(false);
       }
     } catch (error) {
-      console.error("Error setting Login wallet", error);
-      setProviderLoading(false)
+      console.error('Error setting Login wallet', error);
+      setProviderLoading(false);
     }
-  }
+  };
   useEffect(() => {
     // console.log('fetch ' + sessionStatus)
     if (sessionStatus === 'authenticated') {
-      getWallets()
-      updateWallets()
+      getWallets();
+      updateWallets();
     }
   }, [sessionData, sessionStatus, fetchSessionData]);
   const updateWallets = async () => {
     if (walletsQuery.data) {
-      let changeAddresses = walletsQuery.data.wallets.map(wallet => wallet.changeAddress);
+      let changeAddresses = walletsQuery.data.wallets.map(
+        (wallet) => wallet.changeAddress,
+      );
 
       // If address exists, remove it from its current position and prepend it
       if (sessionData?.user.address) {
-        const address = sessionData?.user.address
-        changeAddresses = changeAddresses.filter(addr => addr !== address);
+        const address = sessionData?.user.address;
+        changeAddresses = changeAddresses.filter((addr) => addr !== address);
         changeAddresses.unshift(address);
         setDefaultAddress(address);
       }
 
       setAddressOptions(changeAddresses);
     }
-  }
+  };
   const handleChangeAddress = (event: SelectChangeEvent) => {
     setDefaultAddress(event.target.value);
-    updateLoginAddress(event.target.value)
+    updateLoginAddress(event.target.value);
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 1 }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 1,
+      }}
+    >
       <Box sx={{ flexGrow: 1 }}>
         <FormControl
           variant="filled"
@@ -103,8 +112,10 @@ const ChangeDefaultAddress: FC<ChangeDefaultAddressProps> = ({
           >
             {addressOptions.map((item, i) => {
               return (
-                <MenuItem value={item} key={`address-option-${i}`}>{getShorterAddress(item, 6)}</MenuItem>
-              )
+                <MenuItem value={item} key={`address-option-${i}`}>
+                  {getShorterAddress(item, 6)}
+                </MenuItem>
+              );
             })}
           </Select>
         </FormControl>
@@ -120,7 +131,7 @@ const ChangeDefaultAddress: FC<ChangeDefaultAddressProps> = ({
         </Button>
       </Box> */}
     </Box>
-  )
-}
+  );
+};
 
-export default ChangeDefaultAddress
+export default ChangeDefaultAddress;

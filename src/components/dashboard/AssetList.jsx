@@ -13,14 +13,31 @@ import AssetItem from './AssetItem';
 const AssetList = ({ assets, title, type, navigatorLanguage }) => {
   return (
     <Box>
-    <Typography align='center' variant='h4'>
+      <Typography align="center" variant="h4">
         {title}
       </Typography>
-    <Box sx={{ px: '0', maxHeight: '400px', overflowY: 'scroll', overflowX: 'hidden', mr: '-18px', pr: '12px' }}>
-      {assets.map((asset, i) => {
-        if (asset.name != '') return <AssetItem key={i} asset={asset} type={type} navigatorLanguage={navigatorLanguage} />;
-      })}
-    </Box>
+      <Box
+        sx={{
+          px: '0',
+          maxHeight: '400px',
+          overflowY: 'scroll',
+          overflowX: 'hidden',
+          mr: '-18px',
+          pr: '12px',
+        }}
+      >
+        {assets.map((asset, i) => {
+          if (asset.name != '')
+            return (
+              <AssetItem
+                key={i}
+                asset={asset}
+                type={type}
+                navigatorLanguage={navigatorLanguage}
+              />
+            );
+        })}
+      </Box>
     </Box>
   );
 };

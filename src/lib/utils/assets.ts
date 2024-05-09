@@ -4,19 +4,27 @@ export const toTokenId = (policyId: string, assetName: string): string => {
   return policyId + hexAssetName;
 };
 
-export const formatTokenWithDecimals = (amount: bigint, decimals: number): string => {
+export const formatTokenWithDecimals = (
+  amount: bigint,
+  decimals: number,
+): string => {
   let amountStr = amount.toString();
   if (amountStr.length <= decimals) {
     amountStr = '0'.repeat(decimals - amountStr.length + 1) + amountStr;
   }
   const indexToInsertDecimal = amountStr.length - decimals;
-  const formattedAmountStr = amountStr.substring(0, indexToInsertDecimal) + '.' + amountStr.substring(indexToInsertDecimal);
+  const formattedAmountStr =
+    amountStr.substring(0, indexToInsertDecimal) +
+    '.' +
+    amountStr.substring(indexToInsertDecimal);
   const resultStr = formattedAmountStr.replace(/^0+/, '');
   return resultStr;
-}
+};
 
-export const parseTokenFromString = (formattedAmount: string, decimals: number): bigint => {
-
+export const parseTokenFromString = (
+  formattedAmount: string,
+  decimals: number,
+): bigint => {
   let amountStr = formattedAmount.replace('.', '');
 
   const digitsAfterDecimal = formattedAmount.split('.')[1]?.length || 0;
@@ -26,15 +34,21 @@ export const parseTokenFromString = (formattedAmount: string, decimals: number):
   }
 
   return BigInt(amountStr);
-}
+};
 
-export const formatNumber = (num: number, key: string): string => `${num.toLocaleString(undefined, {
-  maximumFractionDigits: 2
-})}${key !== '' && key != null ? ` ${key}` : ''}`;
+export const formatNumber = (num: number, key: string): string =>
+  `${num.toLocaleString(undefined, {
+    maximumFractionDigits: 2,
+  })}${key !== '' && key != null ? ` ${key}` : ''}`;
 
-export const formatNumberDecimals = (num: number, decimals?: number): string => {
-
-  return `${Math.floor(num / Math.pow(10, decimals ?? 0)).toLocaleString(undefined, {
-    maximumFractionDigits: 2
-  })}`
-}
+export const formatNumberDecimals = (
+  num: number,
+  decimals?: number,
+): string => {
+  return `${Math.floor(num / Math.pow(10, decimals ?? 0)).toLocaleString(
+    undefined,
+    {
+      maximumFractionDigits: 2,
+    },
+  )}`;
+};

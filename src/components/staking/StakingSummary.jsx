@@ -75,8 +75,7 @@ export const StakingItem = (item, md, ifSmall, loading = false) => {
 const StakingSummary = ({ project_id }) => {
   const [status, setStatus] = useState(stakingItems);
   const [loading, setLoading] = useState(false);
-  
-  
+
   useEffect(() => {
     const getStatus = async () => {
       setLoading(true);
@@ -84,7 +83,7 @@ const StakingSummary = ({ project_id }) => {
         const res = await axios.get(
           project_id
             ? `${process.env.API_URL}/staking/${project_id}/status/`
-            : `${process.env.API_URL}/staking/status/`
+            : `${process.env.API_URL}/staking/status/`,
         );
         const newState = JSON.parse(JSON.stringify(stakingItems));
         newState[0].value = res.data['Staking boxes']
@@ -108,8 +107,6 @@ const StakingSummary = ({ project_id }) => {
     };
     getStatus();
   }, [project_id]);
-
-  
 
   return (
     <>

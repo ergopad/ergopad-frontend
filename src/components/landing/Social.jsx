@@ -19,13 +19,12 @@ const Social = () => {
   return (
     <>
       <Grid container spacing={2}>
-        
         <Grid item xs={12} md={6} sx={{ mb: 10 }}>
           <Typography variant="h2">Social</Typography>
           <Typography variant="body2">
-            The Ergopad Social lets you keep track of all your Ergo assets,
-            and displays all your staked and vested tokens, even when
-            they&apos;re locked in smart contracts and not in your wallet.
+            The Ergopad Social lets you keep track of all your Ergo assets, and
+            displays all your staked and vested tokens, even when they&apos;re
+            locked in smart contracts and not in your wallet.
           </Typography>
           <Typography variant="body2">Other features include:</Typography>
           <List

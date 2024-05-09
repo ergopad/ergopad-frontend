@@ -27,9 +27,7 @@ const Hero = ({ title, subtitle }) => {
         <Grid item xs={12} md={5} sx={{ mt: { xs: 12, md: 6 } }}>
           <Typography variant="h1">{title}</Typography>
           <Typography variant="subtitle1">{subtitle}</Typography>
-          <Typography variant="subtitle1">
-            Join our communities:
-          </Typography>
+          <Typography variant="subtitle1">Join our communities:</Typography>
 
           <Box sx={{ my: '1rem' }}>
             <a href="http://t.me/ergopad_chat" target="_blank" rel="noreferrer">
@@ -115,14 +113,14 @@ const Hero = ({ title, subtitle }) => {
           </Box>
         </Grid>
         <Grid item xs={12} md={7} sx={{ pb: { xs: 4, md: 16 } }}>
-           <Image
+          <Image
             src="/ergo-illustration.png"
             alt="ErgoPad Illustration"
             layout="responsive"
             width="600"
             height="600"
             priority={true}
-          /> 
+          />
         </Grid>
       </Grid>
     </>

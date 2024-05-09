@@ -27,7 +27,7 @@ const FileUploadS3 = (props) => {
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422'
+            'jwt_token_login_422',
           )}`,
           'Content-Type': uploadFile.type,
         },
@@ -37,7 +37,7 @@ const FileUploadS3 = (props) => {
       const res = await axios.post(
         `${process.env.API_URL}/projects/upload_image`,
         formData,
-        defaultOptions
+        defaultOptions,
       );
       props.onUpload(res.data);
     } catch (e) {

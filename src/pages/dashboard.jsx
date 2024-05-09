@@ -1,4 +1,4 @@
-import AssetList from "@components/dashboard/AssetList";
+import AssetList from '@components/dashboard/AssetList';
 import {
   Grid,
   Typography,
@@ -9,35 +9,35 @@ import {
   useMediaQuery,
   FormHelperText,
   FormGroup,
-} from "@mui/material";
-import React, { useState, useEffect, useMemo } from "react";
-import axios from "axios";
-import { useWallet } from "@contexts/WalletContext";
-import CenterTitle from "@components/CenterTitle";
-import VestingTable from "@components/dashboard/VestingTable";
-import StakingTable from "@components/dashboard/StakingTable";
-import StackedAreaPortfolioHistory from "@components/dashboard/StackedAreaPortfolioHistory";
-import PieChart from "@components/dashboard/PieChart";
-import { trpc } from "@utils/trpc";
+} from '@mui/material';
+import React, { useState, useEffect, useMemo } from 'react';
+import axios from 'axios';
+import { useWallet } from '@contexts/WalletContext';
+import CenterTitle from '@components/CenterTitle';
+import VestingTable from '@components/dashboard/VestingTable';
+import StakingTable from '@components/dashboard/StakingTable';
+import StackedAreaPortfolioHistory from '@components/dashboard/StackedAreaPortfolioHistory';
+import PieChart from '@components/dashboard/PieChart';
+import { trpc } from '@utils/trpc';
 
 // CONFIG for portfolio history
 // step size
 const STEP_SIZE = 2;
-const STEP_UNIT = "w";
+const STEP_UNIT = 'w';
 
 // token
 const ERGOPAD_TOKEN =
-  "d71693c49a84fbbecd4908c94813b46514b18b67a99952dc1e6e4791556de413";
+  'd71693c49a84fbbecd4908c94813b46514b18b67a99952dc1e6e4791556de413';
 
 // placeholder data
 const rawData2 = {
   balance: 0,
   tokens: [
     {
-      tokenId: "0xdead",
+      tokenId: '0xdead',
       amount: 1,
       decimals: 0,
-      name: "No assets",
+      name: 'No assets',
       price: 1,
     },
   ],
@@ -46,7 +46,7 @@ const rawData2 = {
 
 const initHistoryData = [
   {
-    token: "No Assets",
+    token: 'No Assets',
     resolution: 1,
     history: [
       {
@@ -76,7 +76,7 @@ defaultHoldingData[defaultHoldingData.length - 1].y = portfolioValue;
 const paperStyle = {
   p: 3,
   borderRadius: 2,
-  height: "100%",
+  height: '100%',
 };
 
 const Dashboard = () => {
@@ -101,19 +101,19 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [loadingVestingTable, setLoadingVestingTable] = useState(false);
   const [loadingStakingTable, setLoadingStakingTable] = useState(false);
-  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up("md"));
-  const [navigatorLanguage, setNavigatorLanguage] = useState("en-US");
+  const checkSmall = useMediaQuery((theme) => theme.breakpoints.up('md'));
+  const [navigatorLanguage, setNavigatorLanguage] = useState('en-US');
   const [walletAddresses, setWalletAddresses] = useState([]);
   const [addressesWithType, setAddressesWithType] = useState([]);
 
   const { wallet, providerLoading, sessionStatus } = useWallet();
-  const shouldFetch = sessionStatus === "authenticated";
+  const shouldFetch = sessionStatus === 'authenticated';
   const walletsQuery = trpc.user.getWallets.useQuery(undefined, {
     refetchOnWindowFocus: false,
     enabled: shouldFetch,
   });
   const getWallets = async () => {
-    if (sessionStatus !== "authenticated") {
+    if (sessionStatus !== 'authenticated') {
       return [];
     }
     const fetchResult = await walletsQuery?.refetch();
@@ -152,17 +152,17 @@ const Dashboard = () => {
           addressesWithType.filter(
             (elem, index) =>
               addressesWithType.findIndex(
-                (obj) => obj.address === elem.address
-              ) === index
-          )
+                (obj) => obj.address === elem.address,
+              ) === index,
+          ),
         );
       } catch (e) {
-        console.log("ERROR FETCHING: ", e);
+        console.log('ERROR FETCHING: ', e);
       }
       setLoading(false);
     };
 
-    if (wallet !== "" && sessionStatus === "authenticated") {
+    if (wallet !== '' && sessionStatus === 'authenticated') {
       getStaked();
     }
   }, [wallet]);
@@ -183,7 +183,7 @@ const Dashboard = () => {
     const noAssetList = [
       {
         id: 0,
-        name: "No assets",
+        name: 'No assets',
       },
     ];
     setAssetList(noAssetList);
@@ -201,7 +201,7 @@ const Dashboard = () => {
     async function getWalletData(addresses) {
       const defaultOptions = {
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           // Authorization: auth?.accessToken ? `Bearer ${auth.accessToken}` : '',
         },
       };
@@ -212,7 +212,7 @@ const Dashboard = () => {
           addresses: addresses,
         })
         .catch((err) => {
-          console.log("ERROR FETCHING: ", err);
+          console.log('ERROR FETCHING: ', err);
           return {
             data: {},
           };
@@ -234,7 +234,7 @@ const Dashboard = () => {
         const assetListPromises = [];
         const indexMapper = {};
         for (let i = 0; i < initialAssetList.length; i++) {
-          if (initialAssetList[i].id != "ergid") {
+          if (initialAssetList[i].id != 'ergid') {
             const promise = getIssuingBoxPromise(initialAssetList[i].id);
             indexMapper[initialAssetList[i].id] = i;
             assetListPromises.push(promise);
@@ -255,12 +255,12 @@ const Dashboard = () => {
               name: data[0].assets[0].name,
               ch: data[0].creationHeight,
               description: toUtf8String(
-                data[0].additionalRegisters.R5
+                data[0].additionalRegisters.R5,
               ).substring(2),
               r7: data[0].additionalRegisters.R7,
               r9: data[0].additionalRegisters?.R9
                 ? resolveIpfs(
-                    toUtf8String(data[0].additionalRegisters?.R9).substring(2)
+                    toUtf8String(data[0].additionalRegisters?.R9).substring(2),
                   )
                 : undefined,
               r5: toUtf8String(data[0].additionalRegisters.R5).substring(2),
@@ -272,33 +272,33 @@ const Dashboard = () => {
               amount: initialAssetList[i].amount,
               amountUSD: initialAssetList[i].amountUSD
                 ? initialAssetList[i].amountUSD
-                : "",
+                : '',
             };
 
             // if audio NFT
             if (
-              tokenObject.ext == ".mp3" ||
-              tokenObject.ext == ".ogg" ||
-              tokenObject.ext == ".wma" ||
-              tokenObject.ext == ".wav" ||
-              tokenObject.ext == ".aac" ||
-              tokenObject.ext == "aiff" ||
-              tokenObject.r7 == "0e020102"
+              tokenObject.ext == '.mp3' ||
+              tokenObject.ext == '.ogg' ||
+              tokenObject.ext == '.wma' ||
+              tokenObject.ext == '.wav' ||
+              tokenObject.ext == '.aac' ||
+              tokenObject.ext == 'aiff' ||
+              tokenObject.r7 == '0e020102'
             ) {
               newAudNftList[newAudNftList.length] = tokenObject;
             }
             // if image NFT
             else if (
-              tokenObject.ext == ".png" ||
-              tokenObject.ext == ".gif" ||
-              tokenObject.ext == ".jpg" ||
-              tokenObject.ext == "jpeg" ||
-              tokenObject.ext == ".bmp" ||
-              tokenObject.ext == ".svg" ||
-              tokenObject.ext == ".raf" ||
-              tokenObject.ext == ".nef" ||
-              tokenObject.r7 == "0e020101" ||
-              tokenObject.r7 == "0e0430313031"
+              tokenObject.ext == '.png' ||
+              tokenObject.ext == '.gif' ||
+              tokenObject.ext == '.jpg' ||
+              tokenObject.ext == 'jpeg' ||
+              tokenObject.ext == '.bmp' ||
+              tokenObject.ext == '.svg' ||
+              tokenObject.ext == '.raf' ||
+              tokenObject.ext == '.nef' ||
+              tokenObject.r7 == '0e020101' ||
+              tokenObject.r7 == '0e0430313031'
             ) {
               newImgNftList[newImgNftList.length] = tokenObject;
             } else {
@@ -310,7 +310,7 @@ const Dashboard = () => {
         try {
           const res = await axios.get(
             `${process.env.API_URL}/asset/price/history/all?stepSize=${STEP_SIZE}&stepUnit=${STEP_UNIT}&limit=26`,
-            { ...defaultOptions }
+            { ...defaultOptions },
           );
           const priceHistory = res.data;
           const amountData = historyDataArray(balance);
@@ -318,19 +318,19 @@ const Dashboard = () => {
           const totals = calculateHistoricTotal(
             priceHistory,
             amountData,
-            orderingData
+            orderingData,
           );
           setHistoryData(totals);
           // store current ergopad price
           const ergopadPrice = res.data
-            .filter((pt) => pt.token === "ergopad")
+            .filter((pt) => pt.token === 'ergopad')
             .map((token) => token.history[0].price);
           setPriceDataErgopad({
             ergopad: ergopadPrice.length ? ergopadPrice[0] : 0,
           });
           setPriceHistoryData([...res.data]);
         } catch (e) {
-          console.log("Error: building history", e);
+          console.log('Error: building history', e);
         }
 
         setHoldingData(victoryData);
@@ -346,7 +346,7 @@ const Dashboard = () => {
       setLoadingVestingTable(true);
       const defaultOptions = {
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       };
 
@@ -357,10 +357,10 @@ const Dashboard = () => {
           .post(
             `${process.env.API_URL}/vesting/v2/`,
             { addresses: [address] },
-            { ...defaultOptions }
+            { ...defaultOptions },
           )
           .catch((e) => {
-            console.log("ERROR FETCHING", e);
+            console.log('ERROR FETCHING', e);
             return {
               data: [],
             };
@@ -379,7 +379,7 @@ const Dashboard = () => {
 
       // Fetch vested tokens for all addresses
       const allVestedTokens = await Promise.all(
-        addresses.map(fetchVestedTokensForAddress)
+        addresses.map(fetchVestedTokensForAddress),
       );
 
       // Combine all responses
@@ -400,7 +400,7 @@ const Dashboard = () => {
         const pricesObject = {};
         const tokenPrices = await axios.post(
           `${process.env.API_URL}/asset/prices`,
-          { tokens: tokens }
+          { tokens: tokens },
         );
         tokenPrices.data.forEach((price) => {
           pricesObject[price.name] = price.price;
@@ -416,7 +416,7 @@ const Dashboard = () => {
       setLoadingStakingTable(true);
       const defaultOptions = {
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       };
 
@@ -424,10 +424,10 @@ const Dashboard = () => {
         .post(
           `${process.env.API_URL}/staking/staked-all/`,
           { addresses: [...addresses] },
-          { ...defaultOptions }
+          { ...defaultOptions },
         )
         .catch((e) => {
-          console.log("ERROR FETCHING", e);
+          console.log('ERROR FETCHING', e);
           return {
             data: [],
           };
@@ -463,7 +463,7 @@ const Dashboard = () => {
           const pricesObject = {};
           const tokenPrices = await axios.post(
             `${process.env.API_URL}/asset/prices`,
-            { tokens: tokens }
+            { tokens: tokens },
           );
           tokenPrices.data.forEach((price) => {
             pricesObject[price.name] = price.price;
@@ -498,16 +498,16 @@ const Dashboard = () => {
         try {
           // vesting ergopad
           const ergopadValueOpt = vestedTokens.filter(
-            (token) => token.tokenId === ERGOPAD_TOKEN
+            (token) => token.tokenId === ERGOPAD_TOKEN,
           );
           if (ergopadValueOpt.length) {
             const ergopadValue =
               ergopadValueOpt[0].totalVested * priceDataErgopad.ergopad;
-            holdingState.push({ x: "ergopad (vesting)", y: ergopadValue });
+            holdingState.push({ x: 'ergopad (vesting)', y: ergopadValue });
           }
           // vesting ergopad history
           const ergopadHistoryOpt = priceHistoryData.filter(
-            (token) => token.token === "ergopad"
+            (token) => token.token === 'ergopad',
           );
           if (ergopadValueOpt.length && ergopadHistoryOpt.length) {
             const history = ergopadHistoryOpt[0].history.map((pt) => {
@@ -516,7 +516,7 @@ const Dashboard = () => {
                 value: pt.price * ergopadValueOpt[0].totalVested,
               };
             });
-            historyState.push({ token: "ergopad (vesting)", history: history });
+            historyState.push({ token: 'ergopad (vesting)', history: history });
           }
         } catch (e) {
           console.log(e);
@@ -525,7 +525,7 @@ const Dashboard = () => {
       // vested with NFT
       const reducedVestedNFT = reduceVestedNFT(vestedTokensNFT).map((price) => {
         return {
-          x: price.name + " (vesting)",
+          x: price.name + ' (vesting)',
           y: price.amount * (priceDataVested[price.name] ?? 0),
         };
       });
@@ -536,7 +536,7 @@ const Dashboard = () => {
       if (stakedTokens.length > 0) {
         const reducedStaked = reduceStaked(stakedTokens).map((price) => {
           return {
-            x: price.name + " (staked)",
+            x: price.name + ' (staked)',
             y: price.amount * (priceDataStaked[price.name] ?? 0),
           };
         });
@@ -544,12 +544,12 @@ const Dashboard = () => {
       }
       // staked ergopad history
       const ergopadHistoryOpt = priceHistoryData.filter(
-        (token) => token.token === "ergopad"
+        (token) => token.token === 'ergopad',
       );
 
       if (stakedTokens.length > 0) {
         const ergopadValueOpt = reduceStaked(stakedTokens).filter((price) =>
-          price.name.toLowerCase().includes("ergopad")
+          price.name.toLowerCase().includes('ergopad'),
         );
         if (ergopadValueOpt.length > 0 && ergopadHistoryOpt.length > 0) {
           const history = ergopadHistoryOpt[0].history.map((pt) => {
@@ -559,7 +559,7 @@ const Dashboard = () => {
             };
           });
           historyState.push({
-            token: ergopadValueOpt[0].name + " (staked)",
+            token: ergopadValueOpt[0].name + ' (staked)',
             history: history,
           });
         }
@@ -588,7 +588,7 @@ const Dashboard = () => {
         subtitle="Connect wallet above to see all your ergo assets"
         main="true"
       />
-      <Container maxWidth="lg" sx={{ mx: "auto" }}>
+      <Container maxWidth="lg" sx={{ mx: 'auto' }}>
         <Grid container spacing={3} alignItems="stretch" sx={{ pt: 4 }}>
           <Grid item xs={12} md={6}>
             <Paper sx={paperStyle}>
@@ -606,8 +606,8 @@ const Dashboard = () => {
           </Grid>
           <Grid item xs={12} md={6}>
             <Paper sx={paperStyle}>
-              <Typography variant="h4" sx={{ mb: loading ? "1rem" : 0 }}>
-                Portfolio History {!loading && "*"}
+              <Typography variant="h4" sx={{ mb: loading ? '1rem' : 0 }}>
+                Portfolio History {!loading && '*'}
               </Typography>
               {loading ? (
                 <>
@@ -662,7 +662,7 @@ const Dashboard = () => {
             <Paper sx={paperStyle}>
               <Grid container>
                 <Grid item xs={12} md={8}>
-                  <Typography variant="h4" sx={{ fontWeight: "700" }}>
+                  <Typography variant="h4" sx={{ fontWeight: '700' }}>
                     Tokens Locked in Vesting Contracts
                   </Typography>
                 </Grid>
@@ -673,12 +673,12 @@ const Dashboard = () => {
                     xs={12}
                     md={4}
                     sx={{
-                      justifyContent: checkSmall ? "flex-end" : "flex-start",
+                      justifyContent: checkSmall ? 'flex-end' : 'flex-start',
                     }}
                   >
                     <FormGroup
                       sx={{
-                        alignItems: checkSmall ? "flex-end" : "flex-start",
+                        alignItems: checkSmall ? 'flex-end' : 'flex-start',
                       }}
                     >
                       <Switch
@@ -709,7 +709,7 @@ const Dashboard = () => {
             <Paper sx={paperStyle}>
               <Grid container>
                 <Grid item xs={12} md={8}>
-                  <Typography variant="h4" sx={{ fontWeight: "700" }}>
+                  <Typography variant="h4" sx={{ fontWeight: '700' }}>
                     Tokens Locked in Staking Contracts
                   </Typography>
                 </Grid>
@@ -719,12 +719,12 @@ const Dashboard = () => {
                     xs={12}
                     md={4}
                     sx={{
-                      justifyContent: checkSmall ? "flex-end" : "flex-start",
+                      justifyContent: checkSmall ? 'flex-end' : 'flex-start',
                     }}
                   >
                     <FormGroup
                       sx={{
-                        alignItems: checkSmall ? "flex-end" : "flex-start",
+                        alignItems: checkSmall ? 'flex-end' : 'flex-start',
                       }}
                     >
                       <Switch
@@ -767,7 +767,7 @@ function tokenDataArray(data) {
     if (token.price > 0) res.push(obj);
   }
   const ergoValue = {
-    x: "Ergo",
+    x: 'Ergo',
     y: data.price * data.balance,
   };
   if (ergoValue.y > 0) res.unshift(ergoValue);
@@ -783,7 +783,7 @@ const historyDataOrdering = (data) => {
     if (token.price > 0) res[token.name.toLowerCase()] = i;
   }
   const ergoValue = data.balance;
-  if (ergoValue > 0) res["ergo"] = -1;
+  if (ergoValue > 0) res['ergo'] = -1;
   return res;
 };
 
@@ -800,7 +800,7 @@ const historyDataArray = (data) => {
       };
   }
   const ergoValue = data.balance;
-  if (ergoValue > 0) res["ergo"] = { name: "Ergo", amount: ergoValue };
+  if (ergoValue > 0) res['ergo'] = { name: 'Ergo', amount: ergoValue };
   return res;
 };
 
@@ -813,8 +813,8 @@ function assetListArray(data) {
     const amount = +parseFloat(token.amount * Math.pow(10, -token.decimals));
     const price = token.price * amount;
     const obj = {
-      token: token.name ? token.name.substring(0, 3).toUpperCase() : "",
-      name: token.name ? token.name : "",
+      token: token.name ? token.name.substring(0, 3).toUpperCase() : '',
+      name: token.name ? token.name : '',
       id: token.tokenId,
       amount: amount,
       amountUSD: price,
@@ -822,9 +822,9 @@ function assetListArray(data) {
     res.push(obj);
   }
   const ergoValue = {
-    token: "ERG",
-    name: "Ergo",
-    id: "ergid",
+    token: 'ERG',
+    name: 'Ergo',
+    id: 'ergid',
     amount: data.balance,
     amountUSD: data.price * data.balance,
   };
@@ -839,9 +839,9 @@ function sumTotals(data) {
 
 function toUtf8String(hex) {
   if (!hex) {
-    hex = "";
+    hex = '';
   }
-  var str = "";
+  var str = '';
   for (var i = 0; i < hex.length; i += 2) {
     str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
   }
@@ -849,9 +849,9 @@ function toUtf8String(hex) {
 }
 
 function resolveIpfs(url) {
-  const ipfsPrefix = "ipfs://";
-  if (!url.startsWith(ipfsPrefix) && url.startsWith("http://"))
-    return "https://" + url.substring(7);
+  const ipfsPrefix = 'ipfs://';
+  if (!url.startsWith(ipfsPrefix) && url.startsWith('http://'))
+    return 'https://' + url.substring(7);
   else if (!url.startsWith(ipfsPrefix)) return url;
   else return url.replace(ipfsPrefix, `https://cloudflare-ipfs.com/ipfs/`);
 }
@@ -874,7 +874,7 @@ const calculateHistoricTotal = (priceHistory, amountData, orderingData) => {
     });
   ret.sort(
     (a, b) =>
-      orderingData[a.token.toLowerCase()] - orderingData[b.token.toLowerCase()]
+      orderingData[a.token.toLowerCase()] - orderingData[b.token.toLowerCase()],
   );
   return ret;
 };
@@ -963,7 +963,7 @@ const getIssuingBoxPromise = (id) => {
     return axios
       .get(`https://api.ergoplatform.com/api/v0/assets/${id}/issuingBox`)
       .catch((err) => {
-        console.log("ERROR FETCHING: ", err);
+        console.log('ERROR FETCHING: ', err);
       });
   }
   return JSON.parse(box);
@@ -973,7 +973,7 @@ const setIssuingBox = (id, res) => {
   if (res?.data) {
     localStorage.setItem(
       generateIssueingBoxStorageKey(id),
-      JSON.stringify(res)
+      JSON.stringify(res),
     );
   }
 };

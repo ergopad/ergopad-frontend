@@ -74,7 +74,7 @@ const PriceChart = () => {
     const getData = async () => {
       try {
         const res = await axios.get(
-          `${process.env.API_URL}/asset/price/chart/${pair}?stepSize=${stepUnitMapper[stepUnit].stepSize}&stepUnit=${stepUnitMapper[stepUnit].stepUnit}`
+          `${process.env.API_URL}/asset/price/chart/${pair}?stepSize=${stepUnitMapper[stepUnit].stepSize}&stepUnit=${stepUnitMapper[stepUnit].stepUnit}`,
         );
         setRawData(res.data);
       } catch (e) {
@@ -198,7 +198,7 @@ const PriceChart = () => {
             invertAxis
             tickFormat={(timestamp) => {
               let theDate = new Date(Date.parse(timestamp));
-              let parseDate = (theDate.getMonth() + 1) + '/' + theDate.getDate();
+              let parseDate = theDate.getMonth() + 1 + '/' + theDate.getDate();
               return parseDate;
             }}
             style={{

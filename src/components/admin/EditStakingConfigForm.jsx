@@ -61,7 +61,7 @@ const EditStakingConfigForm = () => {
   const [openSuccess, setOpenSuccess] = useState(false);
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again'
+    'Please eliminate form errors and try again',
   );
 
   useEffect(() => {
@@ -134,7 +134,7 @@ const EditStakingConfigForm = () => {
 
     if (
       ['stakingV1', 'disableStaking', 'disableUnstaking'].includes(
-        e.target.name
+        e.target.name,
       )
     ) {
       updateFormData({
@@ -158,11 +158,11 @@ const EditStakingConfigForm = () => {
     setOpenError(false);
     try {
       const project = tableData.filter(
-        (project) => project.id === formData.id
+        (project) => project.id === formData.id,
       )[0].project;
       if (project) {
         const res = await axios.get(
-          `${process.env.API_URL}/staking/config/${project}`
+          `${process.env.API_URL}/staking/config/${project}`,
         );
         updateFormData({ ...res.data });
         setFormErrors(initialFormErrors);
@@ -189,7 +189,7 @@ const EditStakingConfigForm = () => {
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422'
+            'jwt_token_login_422',
           )}`,
         },
       };
@@ -198,7 +198,7 @@ const EditStakingConfigForm = () => {
         await axios.put(
           `${process.env.API_URL}/staking/config/${id}`,
           data,
-          defaultOptions
+          defaultOptions,
         );
         setOpenSuccess(true);
         updateFormData(initialFormData);

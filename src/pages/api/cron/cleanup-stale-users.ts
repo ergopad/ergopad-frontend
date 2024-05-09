@@ -1,7 +1,10 @@
 import { prisma } from '@server/prisma';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   if (req.method !== 'POST') {
     return res.status(405).end();
   }
@@ -11,9 +14,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     where: {
       status: 'pending',
       created_at: {
-        lte: tenMinutesAgo
-      }
-    }
+        lte: tenMinutesAgo,
+      },
+    },
   });
 
   res.status(200).json({ deleted: deleteCount.count });

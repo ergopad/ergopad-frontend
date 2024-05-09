@@ -10,7 +10,7 @@ const Home = () => {
     const defaultOptions = {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem(
-          'jwt_token_login_422'
+          'jwt_token_login_422',
         )}`,
       },
     };
@@ -18,7 +18,7 @@ const Home = () => {
       await axios.post(
         `${process.env.API_URL}/auth/logout`,
         data,
-        defaultOptions
+        defaultOptions,
       );
     } catch (e) {
       console.log(e);

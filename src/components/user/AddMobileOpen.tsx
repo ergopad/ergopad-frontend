@@ -1,5 +1,5 @@
-import React, { useEffect, useState, FC } from 'react'
-import { trpc } from "@utils/trpc";
+import React, { useEffect, useState, FC } from 'react';
+import { trpc } from '@utils/trpc';
 import QRCode from 'react-qr-code';
 import {
   Box,
@@ -23,23 +23,39 @@ interface IAddMobileOpen {
   setExpanded: React.Dispatch<React.SetStateAction<AddWalletExpanded>>;
 }
 
-const AddMobileOpen: FC<IAddMobileOpen> = ({ localLoading, setLocalLoading, setModalOpen, setExpanded }) => {
-  const theme = useTheme()
-  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
+const AddMobileOpen: FC<IAddMobileOpen> = ({
+  localLoading,
+  setLocalLoading,
+  setModalOpen,
+  setExpanded,
+}) => {
+  const theme = useTheme();
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(
+    undefined,
+  );
   const [address, setAddress] = useState<string>('');
   const [verificationId, setVerificationId] = useState<string | null>(null);
   const [nonce, setNonce] = useState<string | null>(null);
-  const [signature, setSignature] = useState<Signature | undefined>(undefined)
-  const [isSignatureProcessed, setIsSignatureProcessed] = useState<boolean>(false);
-  const { setWallet } = useWallet()
-  const mutateAddAddress = trpc.user.addAddress.useMutation()
+  const [signature, setSignature] = useState<Signature | undefined>(undefined);
+  const [isSignatureProcessed, setIsSignatureProcessed] =
+    useState<boolean>(false);
+  const { setWallet } = useWallet();
+  const mutateAddAddress = trpc.user.addAddress.useMutation();
   const loginMutation = trpc.user.initAddWallet.useMutation();
   trpc.auth.checkLoginStatus.useQuery(
     // @ts-ignore
     { verificationId },
     {
       enabled: !!verificationId,
-      refetchInterval: (data: { status: 'PENDING' | 'SIGNED'; signedMessage: string, proof: string } | undefined) => {
+      refetchInterval: (
+        data:
+          | {
+              status: 'PENDING' | 'SIGNED';
+              signedMessage: string;
+              proof: string;
+            }
+          | undefined,
+      ) => {
         // If the status is 'SIGNED', stop polling
         if (data?.status === 'SIGNED') {
           return false;
@@ -53,22 +69,22 @@ const AddMobileOpen: FC<IAddMobileOpen> = ({ localLoading, setLocalLoading, setM
           // console.log(data)
           setSignature({
             signedMessage: data.signedMessage,
-            proof: data.proof
+            proof: data.proof,
           });
         }
-      }
-    }
+      },
+    },
   );
 
   const initiateLoginFlow = async () => {
     try {
-      setLocalLoading(true)
+      setLocalLoading(true);
       const response = await loginMutation.mutateAsync({ address });
       setVerificationId(response.verificationId);
       setNonce(response.nonce);
       setIsSignatureProcessed(false); // Reset the processed state
     } catch (error: any) {
-      setErrorMessage(error.message)
+      setErrorMessage(error.message);
     }
   };
 
@@ -82,28 +98,30 @@ const AddMobileOpen: FC<IAddMobileOpen> = ({ localLoading, setLocalLoading, setM
           wallet: {
             type: 'mobile',
             defaultAddress: address,
-          }
+          },
         });
 
         if (response.defaultAddress) {
-          setWallet(response.defaultAddress)
-          setModalOpen(false)
-          setExpanded(undefined)
-          setLocalLoading(false)
+          setWallet(response.defaultAddress);
+          setModalOpen(false);
+          setExpanded(undefined);
+          setLocalLoading(false);
         } else {
-          setLocalLoading(false)
-          setErrorMessage('Error: address not added')
+          setLocalLoading(false);
+          setErrorMessage('Error: address not added');
         }
       }
     } catch (error: any) {
-      setLocalLoading(false)
+      setLocalLoading(false);
       if (error.message && error.message.includes("Nonce doesn't match")) {
-        setErrorMessage('Error: Nonce doesn\'t match database, try again or contact support')
+        setErrorMessage(
+          "Error: Nonce doesn't match database, try again or contact support",
+        );
       } else {
-        setErrorMessage('An unexpected error occurred.')
+        setErrorMessage('An unexpected error occurred.');
       }
     }
-  }
+  };
 
   useEffect(() => {
     if (!isSignatureProcessed && signature) {
@@ -117,14 +135,14 @@ const AddMobileOpen: FC<IAddMobileOpen> = ({ localLoading, setLocalLoading, setM
   const ergoAuthDomain = `ergoauth://${authUrl.host}`;
 
   const resetForm = () => {
-    setLocalLoading(false)
-    setIsSignatureProcessed(false)
-    setSignature(undefined)
-    setVerificationId(null)
-    setNonce(null)
-    setAddress('')
-    setErrorMessage(undefined)
-  }
+    setLocalLoading(false);
+    setIsSignatureProcessed(false);
+    setSignature(undefined);
+    setVerificationId(null);
+    setNonce(null);
+    setAddress('');
+    setErrorMessage(undefined);
+  };
 
   return (
     <Box>
@@ -143,7 +161,7 @@ const AddMobileOpen: FC<IAddMobileOpen> = ({ localLoading, setLocalLoading, setM
               },
               '& .MuiInputBase-root': {
                 '&:hover': {
-                  borderColor: theme.palette.primary.main
+                  borderColor: theme.palette.primary.main,
                 },
                 '&:before': {
                   display: 'none',
@@ -151,7 +169,7 @@ const AddMobileOpen: FC<IAddMobileOpen> = ({ localLoading, setLocalLoading, setM
                 '&:after': {
                   display: 'none',
                 },
-              }
+              },
             }}
           />
           <Button
@@ -159,10 +177,7 @@ const AddMobileOpen: FC<IAddMobileOpen> = ({ localLoading, setLocalLoading, setM
             onClick={initiateLoginFlow}
             disabled={localLoading}
           >
-            {!localLoading
-              ? 'Submit'
-              : <CircularProgress size={18} />
-            }
+            {!localLoading ? 'Submit' : <CircularProgress size={18} />}
           </Button>
         </Box>
       </Collapse>
@@ -175,17 +190,41 @@ const AddMobileOpen: FC<IAddMobileOpen> = ({ localLoading, setLocalLoading, setM
         </Box>
       </Collapse>
       <Collapse in={verificationId !== null && !isSignatureProcessed}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 3 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            py: 3,
+          }}
+        >
           <Typography sx={{ mb: 2 }}>
-            Scan the QR code or click <Link href={`${ergoAuthDomain}/api/mobile-auth/add-wallet-request?verificationId=${verificationId}&address=${address}`}>this link</Link> to sign in.
+            Scan the QR code or click{' '}
+            <Link
+              href={`${ergoAuthDomain}/api/mobile-auth/add-wallet-request?verificationId=${verificationId}&address=${address}`}
+            >
+              this link
+            </Link>{' '}
+            to sign in.
           </Typography>
-          <Box sx={{ display: 'inline-block', p: 4, background: '#fff', borderRadius: '12px' }}>
-            <QRCode value={`${ergoAuthDomain}/api/mobile-auth/add-wallet-request?verificationId=${verificationId}&address=${address}`} />
+          <Box
+            sx={{
+              display: 'inline-block',
+              p: 4,
+              background: '#fff',
+              borderRadius: '12px',
+            }}
+          >
+            <QRCode
+              value={`${ergoAuthDomain}/api/mobile-auth/add-wallet-request?verificationId=${verificationId}&address=${address}`}
+            />
           </Box>
         </Box>
       </Collapse>
       {errorMessage && (
-        <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+        <Box
+          sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
+        >
           <Typography color="error" sx={{ flexGrow: 1 }}>
             {errorMessage}
           </Typography>
@@ -196,6 +235,6 @@ const AddMobileOpen: FC<IAddMobileOpen> = ({ localLoading, setLocalLoading, setM
       )}
     </Box>
   );
-}
+};
 
-export default AddMobileOpen
+export default AddMobileOpen;

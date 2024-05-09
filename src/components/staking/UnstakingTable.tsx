@@ -27,14 +27,14 @@ export type Unstake = {
   stakeAmount: number;
   penaltyPct: number;
   address: string;
-}
+};
 
 type StakeFunction = (
   boxId: string,
   stakeKeyId: string,
   stakeAmount: number,
   penaltyPct: number,
-  address: string
+  address: string,
 ) => void;
 
 const friendlyAddress = (addr: string, tot = 8) => {
@@ -56,9 +56,9 @@ const UnstakingTable: FC<UnstakingTableProps> = ({
   unstake,
   addstake,
   disableUnstaking,
-  disableAddStake
+  disableAddStake,
 }) => {
-  const theme = useTheme()
+  const theme = useTheme();
   const checkSmall = useMediaQuery(theme.breakpoints.up('md'));
   const stakeObject = { ...data };
 
@@ -133,7 +133,7 @@ const UnstakingTable: FC<UnstakingTableProps> = ({
             >
               {stakeObject.addresses[address].totalStaked?.toLocaleString(
                 navigator.language,
-                { maximumFractionDigits: 2 }
+                { maximumFractionDigits: 2 },
               )}
             </Typography>
           </Typography>
@@ -186,8 +186,8 @@ const UnstakingTable: FC<UnstakingTableProps> = ({
                       <TableCell sx={{ border: 'none', p: 1 }}>
                         {stake.penaltyEndTime
                           ? new Date(stake.penaltyEndTime)
-                            .toISOString()
-                            .slice(0, 10)
+                              .toISOString()
+                              .slice(0, 10)
                           : '-'}
                       </TableCell>
                     </TableRow>
@@ -199,7 +199,7 @@ const UnstakingTable: FC<UnstakingTableProps> = ({
                           pt: 1,
                           pb:
                             index ===
-                              stakeObject.addresses[address].stakeBoxes.length - 1
+                            stakeObject.addresses[address].stakeBoxes.length - 1
                               ? 0
                               : 3,
                         }}
@@ -235,7 +235,7 @@ const UnstakingTable: FC<UnstakingTableProps> = ({
                                   stake.stakeKeyId,
                                   stake.stakeAmount,
                                   stake.penaltyPct ?? 0,
-                                  address
+                                  address,
                                 )
                               }
                               disabled={disableAddStake}
@@ -265,7 +265,7 @@ const UnstakingTable: FC<UnstakingTableProps> = ({
                                 stake.stakeKeyId,
                                 stake.stakeAmount,
                                 stake.penaltyPct ?? 0,
-                                address
+                                address,
                               )
                             }
                           >

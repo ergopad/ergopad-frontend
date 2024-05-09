@@ -21,7 +21,7 @@ import {
   Modal,
   useMediaQuery,
   Link,
-  useTheme
+  useTheme,
 } from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
@@ -68,12 +68,12 @@ const initialFormData = {
   vestingAmount: 0,
   address: '',
   currency: 'erg',
-}
+};
 
 const initialFormErrors = {
   vestingAmount: false,
   address: false,
-}
+};
 
 const initialWalletBalance = {
   whitelist: 0,
@@ -85,7 +85,7 @@ const formOpenState = {
   EARLY: 'EARLY',
   OPEN: 'OPEN',
   CLOSED: 'CLOSED',
-}
+};
 
 const transactionModalState = {
   SUBMITTED: 'SUBMITTED',
@@ -106,18 +106,27 @@ const defaultOptions = {
 const checkboxes = [
   {
     check: false,
-    text: <>
-      I have read and agree to the Ergopad <Link target="_blank" href="/terms">Terms of Service</Link> and <Link target="_blank" href="/privacy">Privacy Policy</Link>
-    </>
+    text: (
+      <>
+        I have read and agree to the Ergopad{' '}
+        <Link target="_blank" href="/terms">
+          Terms of Service
+        </Link>{' '}
+        and{' '}
+        <Link target="_blank" href="/privacy">
+          Privacy Policy
+        </Link>
+      </>
+    ),
   },
   {
     check: false,
-    text: <>I verify that the funds I am sending are aquired legally</>
-  }
-]
+    text: <>I verify that the funds I am sending are aquired legally</>,
+  },
+];
 
 const Contribute: NextPage = () => {
-  const theme = useTheme()
+  const theme = useTheme();
   const checkSmall = useMediaQuery(theme.breakpoints.up('md'));
   // routing
   const router = useRouter();
@@ -141,7 +150,7 @@ const Contribute: NextPage = () => {
   // open error snackbar
   const [openError, setOpenError] = useState(false);
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and Try Again'
+    'Please eliminate form errors and Try Again',
   );
   // success snackbar
   const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
@@ -153,23 +162,23 @@ const Contribute: NextPage = () => {
   const [ergopayUrl, setErgopayUrl] = useState('');
   // erg conversion rate loading from backend
   const [conversionRate, setConversionRate] = useState(1.0);
-  const [currentWallet, setCurrentWallet] = useState<{
-    id: number;
-    type: string | null;
-    changeAddress: string;
-    unusedAddresses: string[];
-    usedAddresses: string[];
-    user_id: string;
-  } | undefined>(undefined)
+  const [currentWallet, setCurrentWallet] = useState<
+    | {
+        id: number;
+        type: string | null;
+        changeAddress: string;
+        unusedAddresses: string[];
+        usedAddresses: string[];
+        user_id: string;
+      }
+    | undefined
+  >(undefined);
 
-  const shouldFetch = sessionStatus === "authenticated";
-  const walletsQuery = trpc.user.getWallets.useQuery(
-    undefined,
-    {
-      refetchOnWindowFocus: false,
-      enabled: shouldFetch
-    }
-  )
+  const shouldFetch = sessionStatus === 'authenticated';
+  const walletsQuery = trpc.user.getWallets.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+    enabled: shouldFetch,
+  });
 
   useEffect(() => {
     const getMatchingWallet = async () => {
@@ -184,7 +193,11 @@ const Contribute: NextPage = () => {
         for (let thisWallet of wallets) {
           const { unusedAddresses, usedAddresses, changeAddress } = thisWallet;
 
-          if ([...unusedAddresses, ...usedAddresses, changeAddress].includes(wallet!)) {
+          if (
+            [...unusedAddresses, ...usedAddresses, changeAddress].includes(
+              wallet!,
+            )
+          ) {
             matchedWallet = thisWallet;
             break;
           }
@@ -194,7 +207,6 @@ const Contribute: NextPage = () => {
           setCurrentWallet(matchedWallet);
           // console.log(matchedWallet)
         }
-
       } catch (e) {
         console.log('ERROR FETCHING: ', e);
       }
@@ -202,7 +214,11 @@ const Contribute: NextPage = () => {
       setLoading(false);
     };
 
-    if (wallet !== undefined && wallet !== '' && sessionStatus === 'authenticated') {
+    if (
+      wallet !== undefined &&
+      wallet !== '' &&
+      sessionStatus === 'authenticated'
+    ) {
       getMatchingWallet();
     }
   }, [wallet]);
@@ -212,7 +228,7 @@ const Contribute: NextPage = () => {
       setContributeLoading(true);
       try {
         const res = await axios.get(
-          `${process.env.API_URL}/contribution/events/${projectName}/${roundName}`
+          `${process.env.API_URL}/contribution/events/${projectName}/${roundName}`,
         );
         setContributeData(res.data);
         // setCheckboxState(
@@ -220,7 +236,7 @@ const Contribute: NextPage = () => {
         //     return { text: text, check: false };
         //   })
         // );
-        setCheckboxState(checkboxes)
+        setCheckboxState(checkboxes);
       } catch (e) {
         console.log(e);
       }
@@ -235,8 +251,10 @@ const Contribute: NextPage = () => {
     try {
       if (dAppWallet.connected) {
         // @ts-ignore
-        const whitelistBalance = await ergo.get_balance(contributeData?.whitelistTokenId);
-        // const sigUSDBalance = await ergo.get_balance(SIGUSD_TOKEN_ID); 
+        const whitelistBalance = await ergo.get_balance(
+          contributeData?.whitelistTokenId,
+        );
+        // const sigUSDBalance = await ergo.get_balance(SIGUSD_TOKEN_ID);
         // @ts-ignore
         const ergBalance = await ergo.get_balance(); // eslint-disable-line
         setWalletBalance({
@@ -249,11 +267,11 @@ const Contribute: NextPage = () => {
         const res = await axios.post(
           `${process.env.API_URL}/asset/balances/`,
           { addresses: [wallet] },
-          { ...defaultOptions }
+          { ...defaultOptions },
         );
         const ergs = res.data.addresses[wallet].balance;
         const token = res.data.addresses[wallet].tokens.filter(
-          (token: any) => token.tokenId === contributeData.whitelistTokenId
+          (token: any) => token.tokenId === contributeData.whitelistTokenId,
         )[0];
         if (token) {
           setWalletBalance({
@@ -303,10 +321,10 @@ const Contribute: NextPage = () => {
       try {
         const res = await axios.get(
           `${process.env.API_URL}/vesting/activeRounds`,
-          defaultOptions
+          defaultOptions,
         );
         const round = res.data.activeRounds.filter(
-          (round: any) => round.proxyNFT === contributeData.proxyNFTId
+          (round: any) => round.proxyNFT === contributeData.proxyNFTId,
         )[0];
         setRoundDetails(round ? round : initialRoundDetails);
       } catch (e) {
@@ -372,7 +390,7 @@ const Contribute: NextPage = () => {
           };
         }
         return checkbox;
-      })
+      }),
     );
   };
 
@@ -437,11 +455,10 @@ const Contribute: NextPage = () => {
         usedAddresses.includes(currentWallet?.changeAddress) ||
         unusedAddresses.includes(currentWallet?.changeAddress)
       ) {
-        handleSubmit(address, [...usedAddresses, ...unusedAddresses])
-      }
-      else {
+        handleSubmit(address, [...usedAddresses, ...unusedAddresses]);
+      } else {
         // @ts-ignore
-        ergoConnector.nautilus.disconnect()
+        ergoConnector.nautilus.disconnect();
         setErrorMessage('Please connect the correct Nautilus wallet');
         setOpenError(true);
       }
@@ -451,7 +468,7 @@ const Contribute: NextPage = () => {
   const handleSubmit = async (address: string, otherAddresses: string[]) => {
     setLoading(true);
     const emptyCheck = Object.values(formData).every(
-      (v) => v !== '' && v !== 0
+      (v) => v !== '' && v !== 0,
     );
     const errorCheck = Object.values(formErrors).every((v) => v === false);
     if (errorCheck && emptyCheck) {
@@ -460,8 +477,8 @@ const Contribute: NextPage = () => {
           formData.currency === 'erg'
             ? 0
             : Math.round(
-              formData.vestingAmount * contributeData.tokenPrice * 100
-            ) / 100;
+                formData.vestingAmount * contributeData.tokenPrice * 100,
+              ) / 100;
         // const walletAddresses = [wallet, ...dAppWallet.addresses].filter(
         //   (x, i, a) => a.indexOf(x) == i && x
         // );
@@ -473,12 +490,12 @@ const Contribute: NextPage = () => {
           utxos: [],
           addresses: otherAddresses,
           txFormat: 'eip-12',
-        }
+        };
         // console.log(body)
         const res = await axios.post(
           `${process.env.API_URL}/vesting/contribute`,
           body,
-          defaultOptions
+          defaultOptions,
         );
         const unsignedtx = res.data;
         // form submitted
@@ -498,7 +515,7 @@ const Contribute: NextPage = () => {
         // snackbar for error message
         if (e.response) {
           setErrorMessage(
-            'Error: ' + e.response.status + ' - ' + e.response.data
+            'Error: ' + e.response.status + ' - ' + e.response.data,
           );
         } else {
           console.log(e);
@@ -535,7 +552,7 @@ const Contribute: NextPage = () => {
   const handleSubmitErgopay = async () => {
     setLoading(true);
     const emptyCheck = Object.values(formData).every(
-      (v) => v !== '' && v !== 0
+      (v) => v !== '' && v !== 0,
     );
     const errorCheck = Object.values(formErrors).every((v) => v === false);
     if (errorCheck && emptyCheck) {
@@ -544,8 +561,8 @@ const Contribute: NextPage = () => {
           formData.currency === 'erg'
             ? 0
             : Math.round(
-              formData.vestingAmount * contributeData.tokenPrice * 100
-            ) / 100;
+                formData.vestingAmount * contributeData.tokenPrice * 100,
+              ) / 100;
         const res = await axios.post(
           `${process.env.API_URL}/vesting/contribute`,
           {
@@ -556,7 +573,7 @@ const Contribute: NextPage = () => {
             utxos: [],
             txFormat: 'ergo_pay',
           },
-          defaultOptions
+          defaultOptions,
         );
         setErgopayUrl(res.data.url);
         setSuccessMessageSnackbar('Form Submitted');
@@ -566,7 +583,7 @@ const Contribute: NextPage = () => {
         // snackbar for error message
         if (e.response) {
           setErrorMessage(
-            'Error: ' + e.response.status + ' - ' + e.response.data
+            'Error: ' + e.response.status + ' - ' + e.response.data,
           );
         } else {
           console.log(e);
@@ -677,7 +694,7 @@ const Contribute: NextPage = () => {
                             {
                               maximumFractionDigits:
                                 contributeData.tokenDecimals,
-                            }
+                            },
                           )}{' '}
                           whitelist tokens.
                         </Typography>
@@ -777,7 +794,7 @@ const Contribute: NextPage = () => {
                             {
                               maximumFractionDigits:
                                 contributeData.tokenDecimals,
-                            }
+                            },
                           )}{' '}
                           {contributeData.tokenName} tokens at $
                           {contributeData.tokenPrice} per token. Your total
@@ -831,22 +848,23 @@ const Contribute: NextPage = () => {
                           value={
                             formData.currency === 'erg'
                               ? Math.max(
-                                0,
-                                Math.round(
-                                  (contributeData.tokenPrice *
-                                    formData.vestingAmount *
-                                    Math.pow(
-                                      10,
-                                      contributeData.tokenDecimals
-                                    )) /
-                                  conversionRate
-                                ) / Math.pow(10, contributeData.tokenDecimals)
-                              )
+                                  0,
+                                  Math.round(
+                                    (contributeData.tokenPrice *
+                                      formData.vestingAmount *
+                                      Math.pow(
+                                        10,
+                                        contributeData.tokenDecimals,
+                                      )) /
+                                      conversionRate,
+                                  ) /
+                                    Math.pow(10, contributeData.tokenDecimals),
+                                )
                               : Math.round(
-                                contributeData.tokenPrice *
-                                formData.vestingAmount *
-                                100
-                              ) / 100
+                                  contributeData.tokenPrice *
+                                    formData.vestingAmount *
+                                    100,
+                                ) / 100
                           }
                         />
                       </Grid>
@@ -880,10 +898,9 @@ const Contribute: NextPage = () => {
                       variant="body2"
                       sx={{ fontSize: '1rem', mb: '1rem' }}
                     >
-                      Once you receive your vesting key,
-                      view the{' '}
-                      <Link href="/dashboard">dashboard</Link> to
-                      redeem them after the unlock date.
+                      Once you receive your vesting key, view the{' '}
+                      <Link href="/dashboard">dashboard</Link> to redeem them
+                      after the unlock date.
                     </Typography>
                     {/* <Typography
                       variant="body2"
@@ -899,14 +916,16 @@ const Contribute: NextPage = () => {
                           type="submit"
                           fullWidth
                           disabled={
-                            buttonDisabled
-                            || formErrors.address
-                            || currentWallet?.type !== 'nautilus'
-                            || providerLoading
+                            buttonDisabled ||
+                            formErrors.address ||
+                            currentWallet?.type !== 'nautilus' ||
+                            providerLoading
                           }
                           variant="contained"
                           sx={{ mt: 3, mb: 3, textTransform: 'none', px: 0 }}
-                          onClick={() => submitWithNautilus(currentWallet?.changeAddress!)}
+                          onClick={() =>
+                            submitWithNautilus(currentWallet?.changeAddress!)
+                          }
                         >
                           Send with Desktop Wallet
                         </Button>
@@ -916,10 +935,10 @@ const Contribute: NextPage = () => {
                           type="submit"
                           fullWidth
                           disabled={
-                            buttonDisabled
-                            || formErrors.address
-                            || currentWallet?.type !== 'mobile'
-                            || providerLoading
+                            buttonDisabled ||
+                            formErrors.address ||
+                            currentWallet?.type !== 'mobile' ||
+                            providerLoading
                           }
                           variant="contained"
                           sx={{ mt: 3, mb: 3, textTransform: 'none', px: 0 }}
@@ -945,9 +964,9 @@ const Contribute: NextPage = () => {
                   <Typography sx={{ color: theme.palette.text.secondary }}>
                     {formState === formOpenState.EARLY &&
                       'This form is not yet active. The round will start at ' +
-                      new Date(
-                        Date.parse(contributeData.start_dtz)
-                      ).toTimeString()}
+                        new Date(
+                          Date.parse(contributeData.start_dtz),
+                        ).toTimeString()}
                   </Typography>
                   <Typography sx={{ color: theme.palette.text.secondary }}>
                     {formState === formOpenState.CLOSED &&
@@ -974,7 +993,10 @@ const Contribute: NextPage = () => {
                     Contribution
                   </Typography>
                   {ergopayUrl && currentWallet?.changeAddress ? (
-                    <ErgopayModalBody ergopayUrl={ergopayUrl} address={currentWallet.changeAddress} />
+                    <ErgopayModalBody
+                      ergopayUrl={ergopayUrl}
+                      address={currentWallet.changeAddress}
+                    />
                   ) : (
                     <TransactionSubmitted
                       transactionId={transactionId}
@@ -988,10 +1010,7 @@ const Contribute: NextPage = () => {
                 autoHideDuration={4500}
                 onClose={handleCloseError}
               >
-                <Alert
-                  severity="error"
-                  sx={{ width: '100%' }}
-                >
+                <Alert severity="error" sx={{ width: '100%' }}>
                   {errorMessage}
                 </Alert>
               </Snackbar>
@@ -1000,10 +1019,7 @@ const Contribute: NextPage = () => {
                 autoHideDuration={4500}
                 onClose={handleCloseSuccessSnackbar}
               >
-                <Alert
-                  severity="success"
-                  sx={{ width: '100%' }}
-                >
+                <Alert severity="success" sx={{ width: '100%' }}>
                   {successMessageSnackbar}
                 </Alert>
               </Snackbar>

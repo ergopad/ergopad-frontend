@@ -1,6 +1,11 @@
 import React, { FC } from 'react';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
-import { useTheme, Button, Box, ButtonPropsColorOverrides } from '@mui/material';
+import {
+  useTheme,
+  Button,
+  Box,
+  ButtonPropsColorOverrides,
+} from '@mui/material';
 
 type TTextFieldWithButtonProps = TextFieldProps & {
   secondaryColor?: boolean;
@@ -10,15 +15,17 @@ type TTextFieldWithButtonProps = TextFieldProps & {
 
 const TextFieldWithButton: FC<TTextFieldWithButtonProps> = (props) => {
   const theme = useTheme();
-  const { secondaryColor, buttonText, buttonFunction } = props
+  const { secondaryColor, buttonText, buttonFunction } = props;
 
   return (
-    <Box sx={{
-      display: 'flex',
-      alignItems: 'flex-start',
-      borderRadius: '6px',
-      flexWrap: 'nowrap',
-    }}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        borderRadius: '6px',
+        flexWrap: 'nowrap',
+      }}
+    >
       <TextField
         {...props}
         variant="filled"
@@ -32,9 +39,10 @@ const TextFieldWithButton: FC<TTextFieldWithButtonProps> = (props) => {
               : theme.palette.mode === 'dark'
                 ? 'rgba(200, 225, 255, 0.2)'
                 : 'rgba(20, 22, 25, 0.15)',
-            background: theme.palette.mode === 'dark'
-              ? 'radial-gradient(at right top, rgba(16,20,34,0.4), rgba(1, 4, 10, 0.4))'
-              : 'radial-gradient(at right top, rgba(16,20,34,0.05), rgba(1, 4, 10, 0.05))',
+            background:
+              theme.palette.mode === 'dark'
+                ? 'radial-gradient(at right top, rgba(16,20,34,0.4), rgba(1, 4, 10, 0.4))'
+                : 'radial-gradient(at right top, rgba(16,20,34,0.05), rgba(1, 4, 10, 0.05))',
             fontFamily: 'sans-serif',
             height: '32px',
             '& input': {
@@ -62,7 +70,7 @@ const TextFieldWithButton: FC<TTextFieldWithButtonProps> = (props) => {
         sx={{
           height: '32px',
           borderRadius: '0 6px 6px 0',
-          textTransform: 'none'
+          textTransform: 'none',
         }}
         onClick={() => buttonFunction()}
       >

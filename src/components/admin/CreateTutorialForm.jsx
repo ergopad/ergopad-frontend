@@ -57,7 +57,7 @@ const CreateTutorialForm = () => {
   const [openSuccess, setOpenSuccess] = useState(false);
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again'
+    'Please eliminate form errors and try again',
   );
   // categories
   const [categories, setCategories] = useState([]);
@@ -66,7 +66,7 @@ const CreateTutorialForm = () => {
     const getCategories = async () => {
       try {
         const res = await axios.get(
-          `${process.env.API_URL}/tutorials/categories`
+          `${process.env.API_URL}/tutorials/categories`,
         );
         setCategories(res.data);
       } catch (e) {
@@ -151,7 +151,7 @@ const CreateTutorialForm = () => {
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422'
+            'jwt_token_login_422',
           )}`,
         },
       };
@@ -163,7 +163,7 @@ const CreateTutorialForm = () => {
         await axios.post(
           `${process.env.API_URL}/tutorials/`,
           data,
-          defaultOptions
+          defaultOptions,
         );
         setOpenSuccess(true);
         updateFormData(initialFormData);

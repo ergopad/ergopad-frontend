@@ -47,7 +47,7 @@ const Announcement = () => {
       setLoading(true);
       try {
         const res = await axios.get(
-          `${process.env.API_URL}/announcements/${announcement_id}`
+          `${process.env.API_URL}/announcements/${announcement_id}`,
         );
         setAnnouncement(res.data);
       } catch (e) {

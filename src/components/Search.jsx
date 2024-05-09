@@ -1,7 +1,7 @@
-import { useRef } from "react";
-import { Icon, Paper, InputBase } from "@mui/material";
-import theme from "@styles/theme";
-import { useSearch } from "@contexts/SearchContext";
+import { useRef } from 'react';
+import { Icon, Paper, InputBase } from '@mui/material';
+import theme from '@styles/theme';
+import { useSearch } from '@contexts/SearchContext';
 
 const Search = (props, { placeholder }) => {
   const { search, setSearch } = useSearch();
@@ -41,15 +41,15 @@ const Search = (props, { placeholder }) => {
         component="form"
         onSubmit={submitForm}
         sx={{
-          p: "8px",
-          display: "flex",
-          alignItems: "center",
-          background: "rgb(46, 46, 51)",
-          border: "1px solid",
-          borderColor: "rgba(82,82,90,1)",
+          p: '8px',
+          display: 'flex',
+          alignItems: 'center',
+          background: 'rgb(46, 46, 51)',
+          border: '1px solid',
+          borderColor: 'rgba(82,82,90,1)',
           width: {
-            md: "60%",
-            xs: "90%",
+            md: '60%',
+            xs: '90%',
           },
           color: theme.palette.text.primary,
         }}
@@ -59,7 +59,7 @@ const Search = (props, { placeholder }) => {
         <InputBase
           sx={{ ml: 1, flex: 1 }}
           placeholder={placeholder}
-          inputProps={{ "aria-label": "search" }}
+          inputProps={{ 'aria-label': 'search' }}
           value={search}
           onChange={handleChange}
         />

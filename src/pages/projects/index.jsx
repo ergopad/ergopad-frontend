@@ -1,40 +1,40 @@
-import { Typography, Box, Container, Grid } from "@mui/material";
-import CircularProgress from "@mui/material/CircularProgress";
-import CenterTitle from "@components/CenterTitle";
-import RelatedLinks from "@components/RelatedLinks/RelatedLinks";
-import theme from "@styles/theme";
-import Search from "@components/Search";
-import { useSearch } from "@contexts/SearchContext";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { useWhitelistProjects } from "@hooks/useWhitelistProjects";
-import { useContributionProjects } from "@hooks/useContributionProjects";
-import { ProjectCard } from "@components/projects/ProjectCard";
-import { ActiveProjectCard } from "@components/projects/ActiveProjectCard";
+import { Typography, Box, Container, Grid } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+import CenterTitle from '@components/CenterTitle';
+import RelatedLinks from '@components/RelatedLinks/RelatedLinks';
+import theme from '@styles/theme';
+import Search from '@components/Search';
+import { useSearch } from '@contexts/SearchContext';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useWhitelistProjects } from '@hooks/useWhitelistProjects';
+import { useContributionProjects } from '@hooks/useContributionProjects';
+import { ProjectCard } from '@components/projects/ProjectCard';
+import { ActiveProjectCard } from '@components/projects/ActiveProjectCard';
 
 const relatedLinkList = [
   {
     id: 0,
-    title: "Documentation",
-    caption: "Read about how Ergopad Works",
-    icon: "auto_stories",
-    href: "/whitepaper",
+    title: 'Documentation',
+    caption: 'Read about how Ergopad Works',
+    icon: 'auto_stories',
+    href: '/whitepaper',
     background: theme.palette.primary.main,
   },
   {
     id: 1,
-    title: "About",
-    caption: "Learn more about who we are",
-    icon: "emoji_people",
-    href: "/about",
+    title: 'About',
+    caption: 'Learn more about who we are',
+    icon: 'emoji_people',
+    href: '/about',
     background: theme.palette.secondary.main,
   },
   {
     id: 2,
-    title: "Apply for IDO",
-    caption: "Submit your own project proposal",
-    icon: "chat",
-    href: "/apply",
+    title: 'Apply for IDO',
+    caption: 'Submit your own project proposal',
+    icon: 'chat',
+    href: '/apply',
     background: theme.palette.tertiary.main,
   },
 ];
@@ -51,8 +51,8 @@ const Projects = () => {
         const res = await axios.get(`${process.env.API_URL}/projects/`);
         setProjects(
           res.data.filter(
-            (project) => !project.name.toLowerCase().startsWith("cardano-")
-          )
+            (project) => !project.name.toLowerCase().startsWith('cardano-'),
+          ),
         );
       } catch (e) {
         console.error(e);
@@ -64,13 +64,13 @@ const Projects = () => {
   }, []);
 
   const filteredProjects = projects?.filter((project) =>
-    project.name.toLowerCase().includes(search.toLowerCase())
+    project.name.toLowerCase().includes(search.toLowerCase()),
   );
   const launchedProjects = filteredProjects?.filter(
-    (project) => project.isLaunched
+    (project) => project.isLaunched,
   );
   const upcomingProjects = filteredProjects?.filter(
-    (project) => !project.isLaunched
+    (project) => !project.isLaunched,
   );
   const { whiteListProjectsActive, isLoading: whiteListProjectsIsLoading } =
     useWhitelistProjects();
@@ -81,22 +81,22 @@ const Projects = () => {
 
   return (
     <>
-      <Container sx={{ mb: "3rem" }}>
+      <Container sx={{ mb: '3rem' }}>
         <CenterTitle
           title="ErgoPad Projects"
           subtitle="Building the future of the Ergo ecosystem"
           main={true}
         />
-        <Box sx={{ display: "flex", width: "100%", justifyContent: "center" }}>
+        <Box sx={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
           <Search placeholder="Search projects" sx={{}} />
           {isLoading && (
             <CircularProgress
               size={24}
               sx={{
-                position: "absolute",
-                left: "50%",
-                marginLeft: "-12px",
-                marginTop: "72px",
+                position: 'absolute',
+                left: '50%',
+                marginLeft: '-12px',
+                marginTop: '72px',
               }}
             />
           )}
@@ -106,7 +106,7 @@ const Projects = () => {
         {contributionProjectsActive?.length !== 0 ||
         whiteListProjectsActive?.length !== 0 ? (
           <>
-            <Typography variant="h4" sx={{ fontWeight: "800", mb: 4 }}>
+            <Typography variant="h4" sx={{ fontWeight: '800', mb: 4 }}>
               Active Rounds
             </Typography>
             <Grid container spacing={3} alignItems="stretch" sx={{ mb: 6 }}>
@@ -127,7 +127,7 @@ const Projects = () => {
             </Grid>
           </>
         ) : null}
-        <Typography variant="h4" sx={{ fontWeight: "800", mb: 4 }}>
+        <Typography variant="h4" sx={{ fontWeight: '800', mb: 4 }}>
           Upcoming IDOs
         </Typography>
         <Grid container spacing={3} alignItems="stretch" sx={{ mb: 6 }}>
@@ -135,7 +135,7 @@ const Projects = () => {
             <ProjectCard key={project.id} project={project} />
           ))}
         </Grid>
-        <Typography variant="h4" sx={{ fontWeight: "800", mb: 4 }}>
+        <Typography variant="h4" sx={{ fontWeight: '800', mb: 4 }}>
           Completed
         </Typography>
         <Grid container spacing={3} alignItems="stretch" sx={{ mb: 6 }}>

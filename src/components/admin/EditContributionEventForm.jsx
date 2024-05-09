@@ -79,7 +79,7 @@ const EditContributionEventForm = () => {
   const [openSuccess, setOpenSuccess] = useState(false);
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again'
+    'Please eliminate form errors and try again',
   );
 
   useEffect(() => {
@@ -95,7 +95,7 @@ const EditContributionEventForm = () => {
       setLoading(true);
       try {
         const res = await axios.get(
-          `${process.env.API_URL}/contribution/events`
+          `${process.env.API_URL}/contribution/events`,
         );
         res.data.sort((a, b) => a.id - b.id);
         setTableData(res.data);
@@ -117,7 +117,7 @@ const EditContributionEventForm = () => {
       if (id) {
         const event = tableData.filter((event) => event.id === id)[0];
         const res = await axios.get(
-          `${process.env.API_URL}/contribution/events/${event.projectName}/${event.roundName}`
+          `${process.env.API_URL}/contribution/events/${event.projectName}/${event.roundName}`,
         );
         updateFormData({ ...res.data });
         setFormErrors(initialFormErrors);
@@ -215,7 +215,7 @@ const EditContributionEventForm = () => {
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422'
+            'jwt_token_login_422',
           )}`,
         },
       };
@@ -226,7 +226,7 @@ const EditContributionEventForm = () => {
         await axios.put(
           `${process.env.API_URL}/contribution/events/${formData.id}`,
           data,
-          defaultOptions
+          defaultOptions,
         );
         setOpenSuccess(true);
         updateFormData(initialFormData);

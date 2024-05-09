@@ -58,7 +58,7 @@ const Sidenav = () => {
                     announcement.title
                       .toLowerCase()
                       .replaceAll(' ', '_')
-                      .replaceAll(/[^a-zA-Z0-9_]/g, '')
+                      .replaceAll(/[^a-zA-Z0-9_]/g, ''),
                 );
             }}
           >

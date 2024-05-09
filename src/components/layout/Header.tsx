@@ -29,7 +29,7 @@ export const navLinks = [
 ];
 
 const Header = () => {
-  const theme = useTheme()
+  const theme = useTheme();
   const trigger = useScrollTrigger({
     disableHysteresis: true,
     threshold: 0,
@@ -92,7 +92,7 @@ const Header = () => {
           p: 0,
           display: 'flex',
           alignItems: 'center',
-          background: trigger ? theme.palette.background.default : 'none'
+          background: trigger ? theme.palette.background.default : 'none',
         }}
       >
         <Toolbar
@@ -105,10 +105,7 @@ const Header = () => {
         >
           <Box sx={{ display: 'flex', flexGrow: 1 }}>
             <Box sx={{ display: 'inline-flex' }}>
-              <Link
-                href="/"
-                style={{ paddingRight: '2rem' }}
-              >
+              <Link href="/" style={{ paddingRight: '2rem' }}>
                 <IconButton>
                   <Image
                     priority

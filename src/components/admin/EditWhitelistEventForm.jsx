@@ -76,7 +76,7 @@ const EditWhitelistEventForm = () => {
   const [openSuccess, setOpenSuccess] = useState(false);
   // change error message for error snackbar
   const [errorMessage, setErrorMessage] = useState(
-    'Please eliminate form errors and try again'
+    'Please eliminate form errors and try again',
   );
 
   useEffect(() => {
@@ -112,7 +112,7 @@ const EditWhitelistEventForm = () => {
       if (id) {
         const event = tableData.filter((event) => event.id === id)[0];
         const res = await axios.get(
-          `${process.env.API_URL}/whitelist/events/${event.projectName}/${event.roundName}`
+          `${process.env.API_URL}/whitelist/events/${event.projectName}/${event.roundName}`,
         );
         updateFormData({ ...res.data });
         setFormErrors(initialFormErrors);
@@ -209,7 +209,7 @@ const EditWhitelistEventForm = () => {
         });
       } else if (
         ['early_bird_min_stake', 'early_bird_round_length__s'].includes(
-          e.target.name
+          e.target.name,
         )
       ) {
         updateFormData({
@@ -219,7 +219,7 @@ const EditWhitelistEventForm = () => {
             early_bird: {
               ...formData.additionalDetails.early_bird,
               [e.target.name.replace('early_bird_', '')]: isNaN(
-                parseInt(e.target.value)
+                parseInt(e.target.value),
               )
                 ? 0
                 : parseInt(e.target.value),
@@ -252,7 +252,7 @@ const EditWhitelistEventForm = () => {
       const defaultOptions = {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem(
-            'jwt_token_login_422'
+            'jwt_token_login_422',
           )}`,
         },
       };
@@ -267,7 +267,7 @@ const EditWhitelistEventForm = () => {
         await axios.put(
           `${process.env.API_URL}/whitelist/events/${formData.id}`,
           data,
-          defaultOptions
+          defaultOptions,
         );
         setOpenSuccess(true);
         updateFormData(initialFormData);
@@ -670,7 +670,7 @@ const EditWhitelistEventForm = () => {
                 {new Date(
                   Date.parse(formData.start_dtz) +
                     formData.additionalDetails.early_bird?.round_length__s *
-                      1000
+                      1000,
                 ).toUTCString()}
               </Typography>
               <Typography color="text.secondary" fontSize={12}>

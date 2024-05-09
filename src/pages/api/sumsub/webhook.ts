@@ -8,7 +8,10 @@ export const config = {
   },
 };
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   const customHeaderName = process.env.SUMSUB_WEBHOOK_HEADER_NAME;
   const webhookSecretKey = process.env.SUMSUB_WEBHOOK_SECRET_KEY;
   const hmacSecretKey = process.env.SUMSUB_HMAC_SECRET_KEY;
@@ -22,7 +25,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'POST') {
     try {
       // 1. Check the custom header for the secret key
-      const customHeaderValue = req.headers[customHeaderName.toLowerCase() as keyof typeof req.headers];
+      const customHeaderValue =
+        req.headers[customHeaderName.toLowerCase() as keyof typeof req.headers];
 
       if (customHeaderValue !== webhookSecretKey) {
         return res.status(403).json({ error: 'Invalid signature' });
@@ -30,18 +34,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // 2. Verify the HMAC digest
       let rawBody = '';
-      req.on('data', chunk => {
+      req.on('data', (chunk) => {
         rawBody += chunk;
       });
 
       req.on('end', () => {
         const receivedSignature = req.headers['x-payload-digest'];
 
-        const digestAlgorithmHeader = req.headers['x-payload-digest-alg'] as string;
+        const digestAlgorithmHeader = req.headers[
+          'x-payload-digest-alg'
+        ] as string;
         const algorithms: { [key: string]: string } = {
-          'HMAC_SHA1_HEX': 'sha1',
-          'HMAC_SHA256_HEX': 'sha256',
-          'HMAC_SHA512_HEX': 'sha512',
+          HMAC_SHA1_HEX: 'sha1',
+          HMAC_SHA256_HEX: 'sha256',
+          HMAC_SHA512_HEX: 'sha512',
         };
         // console.log(`Digest algorithm header: ${digestAlgorithmHeader}`)
 
@@ -58,9 +64,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           console.error('HMAC validation failed. Signatures do not match.');
           return res.status(403).json({ error: 'Invalid digest' });
         }
-        const parsedData = JSON.parse(rawBody)
+        const parsedData = JSON.parse(rawBody);
         res.status(200).json({ status: 'Payload received and validated' });
-        processWebhookData(parsedData)
+        processWebhookData(parsedData);
       });
     } catch (error) {
       console.error('Error handling webhook:', error);
