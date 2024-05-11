@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react'
-import { Box, Paper, Typography, useTheme } from '@mui/material'
+import { Box, Paper, Tab, Tabs, Typography, useTheme } from '@mui/material'
 import { trpc } from '@utils/trpc'
 import {
   ContainedTab,
@@ -34,15 +34,15 @@ const ContributeTab: FC<ContributeTabProps> = ({
     <Box sx={{ mb: 2 }}>
       {rounds && rounds.length > 0 ? (
         <>
-          <ContainedTabs
+          <Tabs
             value={tabValue}
             onChange={handleChangeTab}
             aria-label="styled tabs example"
           >
             {rounds.map((round, i) => (
-              <ContainedTab key={`tab-${i}`} label={round.name} />
+              <Tab key={`tab-${i}`} label={round.name} />
             ))}
-          </ContainedTabs>
+          </Tabs>
           <Box sx={{ my: 2 }}>
             {rounds.map(
               (round, i) =>

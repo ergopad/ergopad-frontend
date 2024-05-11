@@ -35,7 +35,7 @@ interface IContributeConfirmProps {
   paymentCurrency?: string
   receiveAmount: string
   receiveCurrency: string
-  contributionRoundId: number
+  contributionRoundId: string
   recipientAddress: string
 }
 

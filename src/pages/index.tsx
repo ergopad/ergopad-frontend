@@ -24,8 +24,10 @@ const Homepage = () => {
           title="Welcome to ErgoPad"
           subtitle="We are a token launch platform for Ergo giving you an opportunity to get in on the ground floor with Ergo token IDOs. We help projects navigate Ergoscript to build safe apps for all."
         />
+        {/* <Divider sx={{ mb: 10 }} />
+        <ActiveRound projects={projects} isLoading={isLoading} /> */}
         <Divider sx={{ mb: 10 }} />
-        <ActiveRound projects={projects} isLoading={isLoading} />
+        <Projects projects={projects} isLoading={isLoading} />
         <Features />
         {/* 
         <Divider sx={{ mb: 10 }} />
@@ -33,8 +35,7 @@ const Homepage = () => {
         <Divider sx={{ mb: 10 }} />
         <Social /> 
         */}
-        <Divider sx={{ mb: 10 }} />
-        <Projects projects={projects} isLoading={isLoading} />
+
         <Divider sx={{ mb: 10 }} />
         <Dashboard />
       </Container>

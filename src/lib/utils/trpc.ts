@@ -10,7 +10,7 @@ function getBaseUrl() {
   if (process.env.VERCEL_URL !== '' || process.env.VERCEL_URL !== undefined)
     // reference for vercel.com
     return `https://${process.env.VERCEL_URL}`
-  return `${process.env.AUTH_DOMAIN}`
+  return `${process.env.BASE_URL}`
 }
 
 export const trpc = createTRPCNext<AppRouter>({

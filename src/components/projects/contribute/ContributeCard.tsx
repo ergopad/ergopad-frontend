@@ -12,6 +12,7 @@ import TokenInput from './TokenInput'
 import Link from '@components/Link'
 import ContributeConfirm from './ContributeConfirm'
 import { useWallet } from '@lib/contexts/WalletContext'
+import PayContributionDialog from './PayContributionDialog'
 
 interface IContributeCardProps {
   projectName: string
@@ -22,7 +23,7 @@ interface IContributeCardProps {
   exchangeRate: number
   whitelisted: boolean
   live: boolean
-  contributionRoundId: number
+  contributionRoundId: string
   recipientAddress: string | null
   allowed: boolean
 }
@@ -192,7 +193,7 @@ const ContributeCard: FC<IContributeCardProps> = ({
         </Box>
       )}
       {recipientAddress !== null && (
-        <ContributeConfirm
+        <PayContributionDialog
           open={openContribution}
           setOpen={setOpenContribution}
           paymentAmount={inputValue}
@@ -200,6 +201,8 @@ const ContributeCard: FC<IContributeCardProps> = ({
           receiveCurrency={tokenTicker}
           contributionRoundId={contributionRoundId}
           recipientAddress={recipientAddress}
+          contributionRoundName={roundName}
+          projectName={projectName}
         />
       )}
     </Box>

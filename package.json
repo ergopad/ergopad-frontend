@@ -11,6 +11,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.572.0",
     "@babel/core": "^7.0.0",
     "@emotion/cache": "^11.4.0",
     "@emotion/react": "^11.4.0",
@@ -54,6 +55,7 @@
     "react-markdown": "^8.0.0",
     "react-qr-code": "^2.0.3",
     "react-scroll": "^1.8.9",
+    "react-simplemde-editor": "^5.2.0",
     "react-transition-group": "^4.4.5",
     "remark-gfm": "^3.0.1",
     "superjson": "^1.13.1",
