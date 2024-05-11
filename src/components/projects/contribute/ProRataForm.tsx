@@ -148,7 +148,7 @@ const ProRataForm: FC<TProRataFormProps> = ({
   return (
     <>
       {restrictedCountries.length > 0 && (
-        <Box sx={{ mb: 2 }}>
+        <Box maxWidth="sm" sx={{ mb: 3 }}>
           <Typography>
             Please note, the project is unable to accept contributions from
             residents of the following countries:{' '}
@@ -168,7 +168,7 @@ const ProRataForm: FC<TProRataFormProps> = ({
         sx={{ mb: 2 }}
       >
         <Grid xs={12} md={7}>
-          <Paper variant="outlined" sx={{ px: 2, py: 4, height: '100%' }}>
+          <Paper sx={{ ...paperStyle, px: 2, py: 4, height: '100%' }}>
             <ContributeCard
               projectName={projectName}
               projectIcon={projectIcon}
@@ -187,7 +187,7 @@ const ProRataForm: FC<TProRataFormProps> = ({
         </Grid>
         <Grid xs={12} md={5}>
           {/* {whitelistSlug && <WhitelistResult whitelistStatus={whitelistStatus} sessionStatus={sessionStatus} />} */}
-          <Paper variant="outlined" sx={{ px: 3, py: 2, height: '100%' }}>
+          <Paper sx={{ ...paperStyle, px: 3, py: 2, height: '100%' }}>
             <Box
               sx={{
                 display: 'flex',
@@ -334,9 +334,9 @@ const ProRataForm: FC<TProRataFormProps> = ({
                     <Typography variant="h6" sx={{ mt: -1 }}>
                       {deposited - depositTarget > 0
                         ? (deposited - depositTarget).toLocaleString(
-                            undefined,
-                            { maximumFractionDigits: 2 }
-                          )
+                          undefined,
+                          { maximumFractionDigits: 2 }
+                        )
                         : 0}{' '}
                       {currencySymbol}
                     </Typography>
@@ -493,4 +493,10 @@ const WhitelistResult: FC<{
 
     return <>{content}</>
   }
+}
+
+const paperStyle = {
+  p: 3,
+  borderRadius: 2,
+  height: '100%',
 }

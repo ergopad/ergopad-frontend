@@ -19,6 +19,7 @@ import {
   ListItemButton,
   useTheme,
   Link,
+  Fade,
 } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
 import CenterTitle from '@components/CenterTitle'
@@ -38,6 +39,13 @@ import axios from 'axios'
 import { useWhitelistProjects } from '../../lib/hooks/useWhitelistProjects'
 import { useContributionProjects } from '../../lib/hooks/useContributionProjects'
 import { scroller } from 'react-scroll'
+import { trpc } from '@utils/trpc'
+import { projectSlugify } from '@utils/general'
+import {
+  ContainedTab,
+  ContainedTabs,
+} from '@components/styled-components/ContainedTabs'
+import ContributeTab from '@components/projects/contribute/ContributeTab'
 
 export interface Project {
   name: string
@@ -223,8 +231,28 @@ const Project = () => {
     },
   }
 
+  const constributionRoundList = trpc.contributions.getContributionRoundsByProjectSlug.useQuery(
+    {
+      projectSlug: projectSlugify(project?.name ?? '')
+    },
+    {
+      enabled: !!project?.name
+    }
+  )
+
   const navBarList = (
     <List>
+      {constributionRoundList?.data && constributionRoundList.data.length > 0 &&
+        <ListItemButton
+          sx={{ ...listItemButtonSx, backgroundColor: '#3abab4' }}
+          onClick={() => { router.push(`/sales/${project_id}`) }}
+        >
+          <ListItemIcon>
+            <Icon>layers</Icon>
+          </ListItemIcon>
+          <ListItemText primary="Public Sales" />
+        </ListItemButton>
+      }
       {activeRound ? (
         <ListItemButton
           sx={{ ...listItemButtonSx, backgroundColor: '#3abab4' }}
@@ -240,14 +268,14 @@ const Project = () => {
       ) : null}
       {navBarLinks.map(({ icon, name, link }, i) =>
         name == 'Description' ||
-        (name == 'Team' && project?.team?.team && project.team.team.length) ||
-        (name == 'Roadmap' &&
-          project?.roadmap?.roadmap &&
-          project.roadmap.roadmap.length) ||
-        (name == 'Tokenomics' &&
-          project?.tokenomics?.tokenomics &&
-          project?.tokenomics?.tokenomics.length) ||
-        (name == 'Distribution' && project?.tokenomics?.tokenName) ? (
+          (name == 'Team' && project?.team?.team && project.team.team.length) ||
+          (name == 'Roadmap' &&
+            project?.roadmap?.roadmap &&
+            project.roadmap.roadmap.length) ||
+          (name == 'Tokenomics' &&
+            project?.tokenomics?.tokenomics &&
+            project?.tokenomics?.tokenomics.length) ||
+          (name == 'Distribution' && project?.tokenomics?.tokenName) ? (
           <ListItemButton
             key={`scroller${i}`}
             sx={{ ...listItemSx }}
@@ -264,6 +292,8 @@ const Project = () => {
       )}
     </List>
   )
+
+
 
   return (
     <>
@@ -480,7 +510,7 @@ const Project = () => {
                 </Box>
               ) : null}
               {project?.tokenomics?.tokenomics &&
-              project?.tokenomics?.tokenomics.length ? (
+                project?.tokenomics?.tokenomics.length ? (
                 <Box sx={{ mb: '2rem' }}>
                   <Typography variant="h4" sx={headingStyle} id="tokenomics">
                     Tokenomics

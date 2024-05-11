@@ -29,7 +29,7 @@ export const contributionRouter = createTRPCRouter({
 
   // Update ContributionRound
   updateContributionRound: adminProcedure
-    .input(ZContributionRound.extend({ id: z.number() })) // Include 'id' for updates
+    .input(ZContributionRound.extend({ id: z.string() })) // Include 'id' for updates
     .mutation(async ({ input }) => {
       const { id, ...data } = input
       try {
@@ -49,7 +49,7 @@ export const contributionRouter = createTRPCRouter({
 
   // Delete ContributionRound
   deleteContributionRound: adminProcedure
-    .input(z.object({ id: z.number() })) // Expect an object with an 'id' for deletion
+    .input(z.object({ id: z.string() }))
     .mutation(async ({ input }) => {
       try {
         await prisma.contributionRound.delete({
@@ -98,7 +98,7 @@ export const contributionRouter = createTRPCRouter({
         currency: z.string(),
         address: z.string(),
         txId: z.string().optional(),
-        contributionId: z.number(),
+        contributionId: z.string(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -141,7 +141,7 @@ export const contributionRouter = createTRPCRouter({
   sumTransactions: protectedProcedure
     .input(
       z.object({
-        contributionId: z.number(),
+        contributionId: z.string(),
       })
     )
     .query(async ({ input, ctx }) => {
@@ -167,7 +167,7 @@ export const contributionRouter = createTRPCRouter({
   listTransactionsByContribution: adminProcedure
     .input(
       z.object({
-        contributionId: z.number(),
+        contributionId: z.string(),
       })
     )
     .query(async ({ input }) => {

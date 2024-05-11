@@ -25,26 +25,23 @@ const TokenInput: FC<ITokenInputProps> = ({
   setOutputValue,
 }) => {
   const theme = useTheme()
-  // const { data: adaPrice } = trpc.price.getCardanoPrice.useQuery()
-  // const [adaAmount, setAdaAmount] = useState<number | undefined>(undefined)
+  const [price, setPrice] = useState(null);
+  useEffect(() => {
+    const fetchPrice = async () => {
+      try {
+        const response = await fetch('https://api.cruxfinance.io/coingecko/erg_price');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setPrice(data.price);
+      } catch (error) {
+        console.error('Failed to fetch price:', error);
+      }
+    };
 
-  // const getUserAdaAmount = async () => {
-  //   try {
-  //     if (connected) {
-  //       const lovelace = await wallet.getLovelace()
-  //       const ada = Number(lovelace) * 0.000001
-  //       if (ada) setAdaAmount(ada)
-  //     }
-  //   } catch (error) {
-  //     console.error(error)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if (wallet) {
-  //     getUserAdaAmount()
-  //   }
-  // }, [wallet])
+    fetchPrice();
+  }, []);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = event.target.value.replace(/,/g, '.')
@@ -66,20 +63,12 @@ const TokenInput: FC<ITokenInputProps> = ({
     }
   }
 
-  // const handleInputMax = () => {
-  //   if (adaAmount) {
-  //     const roundedDown = adaAmount - 1.5
-  //     setInputValue(roundedDown.toFixed(0))
-  //     setOutputValue((Number(roundedDown) * exchangeRate).toFixed(0))
-  //   }
-  // }
-
-  // const calculateUSDValue = () => {
-  //   const numericalValue = Number(inputValue.replace(/,/g, ''))
-  //   return (numericalValue * (adaPrice || 0)).toLocaleString(undefined, {
-  //     maximumFractionDigits: 2,
-  //   })
-  // }
+  const calculateUSDValue = () => {
+    const numericalValue = Number(inputValue.replace(/,/g, ''))
+    return (numericalValue * (price || 0)).toLocaleString(undefined, {
+      maximumFractionDigits: 2,
+    })
+  }
 
   return (
     <Box sx={{ position: 'relative' }}>
@@ -124,10 +113,10 @@ const TokenInput: FC<ITokenInputProps> = ({
               whiteSpace: 'nowrap',
             }}
           >
-            ADA ₳
+            ERG Σ
           </Typography>
         </Box>
-        {/* <Box
+        <Box
           sx={{
             display: 'flex',
             flexDirection: 'row',
@@ -137,23 +126,7 @@ const TokenInput: FC<ITokenInputProps> = ({
           <Typography sx={{ fontSize: '1rem!important' }}>
             ${calculateUSDValue()}
           </Typography>
-          <Typography sx={{ fontSize: '1rem!important', whiteSpace: 'nowrap' }}>
-            Balance:&nbsp;
-            {adaAmount ? (
-              <Box
-                component="span"
-                onClick={handleInputMax}
-                sx={{ cursor: 'pointer' }}
-              >
-                {adaAmount.toLocaleString(undefined, {
-                  maximumFractionDigits: 2,
-                })}
-              </Box>
-            ) : (
-              '0'
-            )}
-          </Typography>
-        </Box> */}
+        </Box>
       </Box>
       <Box
         sx={{
@@ -207,6 +180,7 @@ const TokenInput: FC<ITokenInputProps> = ({
       <Paper
         variant="outlined"
         sx={{
+          background: 'rgb(43, 45, 49)',
           position: 'absolute',
           top: '50%',
           left: '50%',

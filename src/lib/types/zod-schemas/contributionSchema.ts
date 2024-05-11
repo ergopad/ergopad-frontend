@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export const ZContributionRound = z.object({
-  id: z.number().optional(),
+  id: z.string().optional(),
   name: z.string(),
   saleType: z.string(),
   startDate: z.date(),

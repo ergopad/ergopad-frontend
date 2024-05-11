@@ -111,14 +111,34 @@ export const slugify = (str: string) => {
   return encodeURIComponent(encodedSlug)
 }
 
+export const projectSlugify = (str: String) => {
+  if (str) {
+    const urlSafeChars = /[a-z0-9-]/
+    const slug = str
+      .toLowerCase()
+      .replaceAll(' ', '')
+      .replaceAll(/[^a-zA-Z0-9]/g, '')
+
+    let encodedSlug = ''
+    for (let i = 0; i < slug.length; i++) {
+      encodedSlug += urlSafeChars.test(slug[i])
+        ? slug[i]
+        : encodeURIComponent(slug[i])
+    }
+
+    return encodeURIComponent(encodedSlug)
+  }
+  else return ''
+}
+
 export const getShortAddress = (address: string): string => {
   let shortAddress = address ? address : ''
   shortAddress =
     shortAddress.length < 10
       ? shortAddress
       : shortAddress.substring(0, 6) +
-        '...' +
-        shortAddress.substring(shortAddress.length - 4, shortAddress.length)
+      '...' +
+      shortAddress.substring(shortAddress.length - 4, shortAddress.length)
 
   return shortAddress
 }
@@ -131,11 +151,11 @@ export const getShorterAddress = (
     shortAddress.length < 5
       ? shortAddress
       : shortAddress.substring(0, substring ? substring : 3) +
-        '..' +
-        shortAddress.substring(
-          shortAddress.length - (substring ? substring : 3),
-          shortAddress.length
-        )
+      '..' +
+      shortAddress.substring(
+        shortAddress.length - (substring ? substring : 3),
+        shortAddress.length
+      )
 
   return shortAddress
 }

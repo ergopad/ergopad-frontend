@@ -60,6 +60,7 @@ model User {
   transactions       Transaction[]
   unsupportedWallets UnsupportedWallets[]
   wallets            Wallet[]
+  mobileVerification MobileVerification[]
 
   @@map("users")
 }
@@ -86,7 +87,7 @@ model Wallet {
 }
 
 model ContributionRound {
-  id                  Int           @id @default(autoincrement())
+  id                  String        @id @default(cuid())
   name                String
   saleType            String        @map("sale_type")
   startDate           DateTime      @map("start_date")
@@ -118,7 +119,7 @@ model Transaction {
   updatedAt         DateTime          @updatedAt @map("updated_at")
   userId            String            @map("user_id")
   user              User              @relation(fields: [userId], references: [id])
-  contributionId    Int               @map("contribution_id")
+  contributionId    String            @map("contribution_id")
   contributionRound ContributionRound @relation(fields: [contributionId], references: [id])
 
   onChainTxData Json? @map("on_chain_tx_data")
@@ -157,4 +158,24 @@ model UnsupportedWallets {
   users           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("unsupported_wallets")
+}
+
+model KeyValuePair {
+  key       String    @id
+  value     String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  expiresAt DateTime? @map("expires_at")
+
+  @@map("key_value_pair")
+}
+
+model MobileVerification {
+  verificationId String   @id @default(cuid())
+  createdAt      DateTime @default(now()) @map("created_at")
+  address        String?
+  userId         String   @map("user_id")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("mobile_verification")
 }
