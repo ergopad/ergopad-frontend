@@ -70,6 +70,15 @@ const ContributeCard: FC<IContributeCardProps> = ({
         <Typography variant="h4" sx={{ mb: 3 }}>
           {roundName} contribution
         </Typography>
+        {projectName.toLowerCase() === 'pandav' &&
+          <>
+            <Typography sx={{ mb: 1, color: theme.palette.error.main, fontWeight: 700 }}>
+              This round is only open to Ergopad Stakers who meet at least the Mini tier. Make sure your stake NFTs are in the same wallet as the one you contribute from.
+            </Typography>
+            <Typography sx={{ mb: 3 }}>
+              You can stake any time until the round closes. The snapshot is at the very end.
+            </Typography>
+          </>}
       </Box>
       <Box sx={{ mb: 2 }}>
         <Box sx={{ mb: 2 }}>
