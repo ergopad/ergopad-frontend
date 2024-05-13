@@ -373,7 +373,7 @@ const ProRataForm: FC<TProRataFormProps> = ({
                         </Typography>
 
                         <Typography variant="h6" sx={{ mt: -1 }}>
-                          {formatNumber(usersTransactions.data, '')} ₳
+                          {formatNumber(usersTransactions.data, '')} Σ
                         </Typography>
                       </Box>
                     )}
@@ -437,63 +437,63 @@ const ProRataForm: FC<TProRataFormProps> = ({
 
 export default ProRataForm
 
-const WhitelistResult: FC<{
-  whitelistStatus: 'whitelisted' | 'notWhitelisted' | 'pending'
-  sessionStatus: 'loading' | 'authenticated' | 'unauthenticated'
-}> = ({ whitelistStatus, sessionStatus }) => {
-  if (sessionStatus === 'loading') {
-    return (
-      <Alert
-        variant="outlined"
-        severity="info"
-        sx={{ mb: 2, justifyContent: 'center', alignItems: 'center' }}
-      >
-        Loading whitelist status...
-      </Alert>
-    )
-  } else {
-    let content
-    switch (whitelistStatus) {
-      case 'whitelisted':
-        content = (
-          <Alert
-            variant="outlined"
-            severity="success"
-            sx={{ mb: 2, justifyContent: 'center', alignItems: 'center' }}
-          >
-            Your account is whitelisted.
-          </Alert>
-        )
-        break
-      case 'notWhitelisted':
-        content = (
-          <Alert
-            variant="outlined"
-            severity="error"
-            sx={{ mb: 2, justifyContent: 'center', alignItems: 'center' }}
-          >
-            Your account is not whitelisted.
-          </Alert>
-        )
-        break
-      case 'pending':
-        content = (
-          <Alert
-            variant="outlined"
-            severity="warning"
-            sx={{ mb: 2, justifyContent: 'center', alignItems: 'center' }}
-          >
-            Please sign in to verify status
-          </Alert>
-        )
-        break
-      default:
-        content = null
-    }
+// const WhitelistResult: FC<{
+//   whitelistStatus: 'whitelisted' | 'notWhitelisted' | 'pending'
+//   sessionStatus: 'loading' | 'authenticated' | 'unauthenticated'
+// }> = ({ whitelistStatus, sessionStatus }) => {
+//   if (sessionStatus === 'loading') {
+//     return (
+//       <Alert
+//         variant="outlined"
+//         severity="info"
+//         sx={{ mb: 2, justifyContent: 'center', alignItems: 'center' }}
+//       >
+//         Loading whitelist status...
+//       </Alert>
+//     )
+//   } else {
+//     let content
+//     switch (whitelistStatus) {
+//       case 'whitelisted':
+//         content = (
+//           <Alert
+//             variant="outlined"
+//             severity="success"
+//             sx={{ mb: 2, justifyContent: 'center', alignItems: 'center' }}
+//           >
+//             Your account is whitelisted.
+//           </Alert>
+//         )
+//         break
+//       case 'notWhitelisted':
+//         content = (
+//           <Alert
+//             variant="outlined"
+//             severity="error"
+//             sx={{ mb: 2, justifyContent: 'center', alignItems: 'center' }}
+//           >
+//             Your account is not whitelisted.
+//           </Alert>
+//         )
+//         break
+//       case 'pending':
+//         content = (
+//           <Alert
+//             variant="outlined"
+//             severity="warning"
+//             sx={{ mb: 2, justifyContent: 'center', alignItems: 'center' }}
+//           >
+//             Please sign in to verify status
+//           </Alert>
+//         )
+//         break
+//       default:
+//         content = null
+//     }
 
-    return <>{content}</>
-  }
-}
+//     return <>{content}</>
+//   }
+// }
 
 const paperStyle = {
   p: 3,
