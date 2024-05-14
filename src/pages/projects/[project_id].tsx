@@ -41,13 +41,8 @@ import { useContributionProjects } from '../../lib/hooks/useContributionProjects
 import { scroller } from 'react-scroll'
 import { trpc } from '@utils/trpc'
 import { projectSlugify } from '@utils/general'
-import {
-  ContainedTab,
-  ContainedTabs,
-} from '@components/styled-components/ContainedTabs'
-import ContributeTab from '@components/projects/contribute/ContributeTab'
 
-export interface Project {
+export interface IProject {
   name: string
   shortDescription: string
   description: string
@@ -152,7 +147,7 @@ const Project = () => {
   const router = useRouter()
   const { project_id } = router.query
   const [isLoading, setLoading] = useState(true)
-  const [project, setProject] = useState<Project | undefined>(undefined)
+  const [project, setProject] = useState<IProject | undefined>(undefined)
   const [mobileMenu, setMobileMenu] = useState(false)
 
   const { whiteListProjectsActive, isLoading: whiteListProjectsIsLoading } =
